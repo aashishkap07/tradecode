@@ -975,7 +975,24 @@ class Config:
         # ═══ C441: CAP THE TARGET AT WHAT THE MARKET ACTUALLY GIVES ══════════
         # 17% win rate -> the C420-4 solve demanded 2.85R from trades that peak
         # at 0.7-1.3 PRU. Five of six round-tripped. Every loss raised the bar.
-        self.C441_CAP_TO_REALISED  = True
+        # ═══ C459-3: A POLICY-CONDITIONED ESTIMATE MAY NOT CONSTRAIN THE ══
+        # ═══ POLICY THAT PRODUCED IT ═══════════════════════════════════════
+        # C441-2 caps the target at the 70th percentile of _c441_peaks_r -- "a
+        # target the market has never given is not a target". The reasoning is
+        # appealing and it is CIRCULAR: peak_pnl_pct is the maximum favourable
+        # excursion DURING THE HOLD, and the hold is ended by the very exit
+        # stack whose target this cap is setting. Trades do not reach 4 ATR
+        # because they are closed long before 4 ATR, and the cap then reads
+        # that back as proof that 4 ATR is unreachable and locks the target at
+        # 1.3 ATR. Estimating the achievable target under the current policy
+        # and using it to constrain the policy is a fixed point, not a
+        # measurement -- and its fixed point is the losing configuration.
+        # It is also fed by a CONTAMINATED ledger: peak_pnl_pct only updates on
+        # a monitor tick, so every unwatched gap (C458-9) understates the peak.
+        # ZEC 20260914 recorded 0.28R against a true 1.21R.
+        # The unconditional barrier study is the right instrument: it measures
+        # what the TAPE gives, not what this exit stack allows itself to take.
+        self.C441_CAP_TO_REALISED  = False
         self.C441_PEAK_PCTL        = 70.0   # percentile of realised peaks, in R
         self.C441_MIN_PEAKS        = 10     # below this the cap does not bind
         # ═══ C442: A HORIZON IS AN ESTIMATE, NOT AN EXPIRY ═══════════════════
@@ -1064,7 +1081,28 @@ class Config:
         # C457-2: steer toward the ATR band the bot's OWN 2,388-trade ledger
         #         says works (0.50-0.67%, the 3x bucket, 58.1% win).
         self.C457_ATR_BAND         = True    # master switch
-        self.C457_ATR_MAX          = 0.18    # max cut at the worst-measured band
+        # ═══ C459-6: REDUCED PENDING RE-MEASUREMENT, NOT DELETED ═══════════
+        # C457-2 was measured on the bot's OWN 2,388 closed trades and
+        # validated on within-window splits. Standing Rule 9 is explicit that
+        # within-window splits are "a necessary check against overfitting and
+        # NOT evidence of an edge" -- a separate batch is required.
+        # This session ran that separate batch, and the MIDDLE of the curve did
+        # not replicate. C457-2 penalises the 2x (0.67-1.00%) and 1x
+        # (1.00-2.00%) bands by 11-13%; on independent data those are the two
+        # BEST bands (-0.0157 and -0.0197 against the favoured 3x at -0.0234).
+        # The TAILS did replicate and are kept in full: ATR below 0.50% is
+        # worse in both datasets, and C459-6a adds the >2.00% exclusion that
+        # C457-2's label could not express.
+        # The two studies measure different estimands -- theirs is conditioned
+        # on the bot's own entries and exits, mine is unconditional -- so this
+        # is a CONFLICT to resolve with data, not a refutation to act on
+        # wholesale. Authority cut from 18% to 8% so the tails still steer and
+        # the unreplicated middle can no longer dominate a candidate's score.
+        # THE NEXT SESSION'S JOB: re-bucket trades_v60.csv by TRUE ATR rather
+        # than by the leverage label, with the >2% tail separated, and report
+        # the raw pooled estimate beside the bucketed one (Standing Rule 13).
+        self.C457_ATR_MAX          = 0.08    # was 0.18 — see C459-6
+        self.C459_ATR_CEILING      = 2.0     # above this, no band label applies
         self.C457_PRU_CAP          = 2.0     # must match C61's ATR x lev ceiling
 
         # ═══════════════════════════════════════════════════════════════════
@@ -1095,7 +1133,36 @@ class Config:
         # -- C458-16: the scale-out rung ------------------------------------
         # THE ONE CHANGE AIMED AT PROFITABILITY RATHER THAN AT A DEFECT.
         # The rung is READ FROM _c441_peaks_r, not set here; these bound it.
-        self.C458_LADDER           = True
+        # ═══ C459-1: STOOD DOWN. I SHIPPED THIS WITHOUT THE HARNESS AND IT ══
+        # ═══ IS MEASURABLY HARMFUL. ══════════════════════════════════════════
+        # C458-16 banked half at a rung and moved the stop to breakeven. I
+        # justified it on ONE retro trade and on C441-2's observation that
+        # winners give their peaks back. The Atlas records a STANDING RULE that
+        # forbids exactly that: "No entry/exit rule ships again without a
+        # four-way out-of-sample harness result." I did not run one. I have now.
+        # MEASURED, 35 Bitget pairs x 2,400 15m bars, 5,116 NON-OVERLAPPING
+        # barrier trades per config, adverse extreme assumed first inside a bar:
+        #     shipped T1.9/S3.0        -0.0926 %/trade   win 58.0%   payoff 0.64
+        #     C458-16 ladder           -0.1185 %/trade   win 68.5%   payoff 0.36
+        #     proposed T4.0/S1.5       -0.0439 %/trade   win 33.1%   payoff 1.90
+        # The ladder is WORSE than what it replaced in ALL FOUR SPLITS and at
+        # EVERY horizon tested (2, 4, 8, 16, 32, 64 bars), and it gets worse as
+        # the horizon lengthens. It also raised the win rate from 58% to 68.5%,
+        # which is the tell: the Atlas already measured that "win rate and
+        # expectancy move in OPPOSITE directions -- the highest win rate tested
+        # had the WORST expectancy". I built a machine for manufacturing the
+        # wrong variable and called it a profitability fix.
+        # THE ROOT ERROR IS THE ONE THIS PROJECT KEEPS PAYING FOR: I reasoned
+        # from a one-sided excursion ("five of six peaked positive and gave it
+        # back") without asking the mirror question -- how often do WINNERS dip
+        # to the rung first? Standing Rule 4a exists for precisely this and I
+        # did not apply it. The rung banks half of every winner at 1.0 ATR on
+        # the way to a 4 ATR move, and the breakeven stop then scratches
+        # positions that were about to work.
+        # Switched OFF rather than deleted, per C403's convention: functionally
+        # identical to never having shipped it, reversible in one line, and the
+        # measurement stays in the file where the next session can see it.
+        self.C458_LADDER           = False
         self.C458_RUNG1_R          = 0.50    # fallback until the ledger speaks
         # 0.50, NOT a free parameter: _c336_partial_close closes pos.size/2.0
         # and has done since C336. Reusing that proven path rather than adding
@@ -1122,6 +1189,26 @@ class Config:
         # into 11 at -$0.007, and exploration must not become a quota.
         self.C458_EXPLORE_AFTER_SCANS = 10   # ~1h of scans with zero entries
         self.C458_EXPLORE_MAX_PER_DAY = 4
+        # ═══ C459-4: THE HORIZON MUST BE LONG ENOUGH TO REACH THE TARGET ═══
+        # A 4 ATR target is not reachable in 35 minutes, and the measured
+        # surface says so explicitly. Same 5,116-trade study, expectancy by
+        # holding horizon:
+        #     2 bars (30m)  T2.0/S3.0 -0.0805   T4.0/S1.5 -0.0783
+        #     8 bars (2h)   T2.0/S3.0 -0.0726   T4.0/S1.5 -0.0956   <- wide LOSES
+        #    32 bars (8h)   T2.0/S3.0 -0.0836   T4.0/S1.5 -0.0439   <- wide WINS
+        #    64 bars (16h)  T2.0/S3.0 -0.0786   T4.0/S1.5 -0.0257
+        # A wide target with a short horizon is the WORST of both worlds: the
+        # target is never reached, so the trade exits at the clock having paid
+        # two fees and worn a stop the whole way. The target and the horizon
+        # are ONE decision and this code set them in two places that never met.
+        # expected_hold_min is the single point every time-based exit reads --
+        # time_pressure (4x and 8x it), the C373 capture release, C383, the
+        # stagnation clocks, the C404 sqrt(t) horizon scaling -- so flooring it
+        # here moves all of them together and nothing can disagree.
+        self.C459_MIN_HOLD_MIN     = 120.0   # -> time pressure starts at 8h,
+                                             #    saturates at 16h
+        self.C459_MIN_PAYOFF_N     = 4       # wins AND losses in R before the
+                                             # realised payoff anchors the edge
 
         # ═══ C450: THE PHASE LADDER NO LONGER NAMES A MODE THAT CANNOT RUN ═══
         # Fifth report. C403-3 retired the MODE; the day's PHASES list still
@@ -1691,7 +1778,12 @@ class Config:
         # their own measured shortfall rather than merely capped.
         self.C416_MIN_E_R      = 0.10    # required expectancy, in units of risk
         self.C416_EDGE_CAP     = 0.10    # most edge over fair any claim may assert
-        self.C416_HARD_FLOOR_R = 0.60    # below this the spread dominates; never aim there
+        # C459-2: 2.00R = 4.0 ATR. Was 0.60R = 1.2 ATR, which sat in the
+        # WORST region of the measured surface: every grid config with a target
+        # at or below 3.0 ATR lost more than every config at or above 4.0 ATR,
+        # regardless of the stop. Small targets are not "safe"; they are the
+        # single most expensive setting in the file.
+        self.C416_HARD_FLOOR_R = 2.00    # 4.0 ATR — measured optimum, 2 corpora
 
         # ═══════════════════════════════════════════════════════════════════
         # C417: SEVEN DESKS, ONE WALLET, ONE TARGET
@@ -1822,7 +1914,7 @@ class Config:
         # same rule asks for ~$22. The number moves because the target moves.
         self.C419_SCALE_MARGIN   = True
         self.C419_MIN_DAY_SHARE  = 0.15   # a trade should be able to earn this much of the day
-        self.C415_MIN_TARGET_R  = 1.5    # fallback only, when p is unavailable
+        self.C415_MIN_TARGET_R  = 2.0    # C459-2: matches the measured optimum
         # No separate "good target" constant: the target is max(projection,
         # floor), so when the projection reaches 2R the bot already aims there.
         # The standing audit caught a C415_GOOD_TARGET_R here that nothing read
@@ -1963,7 +2055,36 @@ class Config:
         # $0.33 per-trade budget — 2.4x. Worse, while the bot restarts, sleeps
         # or drops network the position has NO protection at all, which is
         # precisely the restart-handover failure reported again and again.
-        self.C377_HARD_STOP_R = 1.5
+        # ═══ C459-2: THE EXIT GEOMETRY, AND IT IS THE LARGEST MEASURED ═══
+        # ═══ EFFECT IN THIS PROJECT'S HISTORY ═════════════════════════════
+        # R = 2 x ATR, so 1.5R was a 3.0 ATR stop against a target floor of
+        # 0.60R = 1.2 ATR. That is a 2.5:1 risk-to-reward INVERSION, and the
+        # bot's own 2,388-trade ledger printed the consequence: every exit
+        # built to TAKE PROFIT makes money (target achieved +$166.65, n=389,
+        # 84% win) and every exit built to LIMIT LOSS gives it back
+        # (REL_HARD_STOP -$132.56 alone = 177% of the total loss, avg -4.66%
+        # against a winning target of +2.12%).
+        # TWO INDEPENDENT CORPORA NOW AGREE, which is the separate-batch
+        # replication Standing Rule 9 demands and which NOTHING else in this
+        # project has ever had:
+        #   * the C356 replay harness, 638k bars Oct-2025 to Aug-2026, a BEAR
+        #     corpus (BTC -46%): moving the exit from 1.5-ATR-target/1.6-ATR-
+        #     stop to 4.0/1.5 halved the loss rate (-0.099 -> -0.050 %/trade)
+        #     and lifted payoff 0.85 -> 1.60. Recorded as "larger effect than
+        #     any entry rule tested" and then NEVER ACTED ON.
+        #   * this session, 35 pairs x 2,400 live 15m bars, a different window
+        #     and a different regime, 5,116 non-overlapping barrier trades:
+        #     T1.9/S3.0 -0.0926 (payoff 0.64) -> T4.0/S1.5 -0.0439 (payoff
+        #     1.90). Positive in 4/4 splits, paired t = +2.27, survives
+        #     dropping the three best PAIRS entirely (+0.0205).
+        # HONEST LIMIT, stated because this project has killed four findings
+        # for less: the gain is TAIL-DRIVEN. Dropping the best 100 of 5,116
+        # trades turns it negative. That is intrinsic to a let-winners-run
+        # payoff and is not a defect, but it means the equity curve will be
+        # lumpy and the win rate will FALL to roughly a third. A 33% win rate
+        # at payoff 1.9 is a better business than 58% at 0.64; the operator
+        # should expect the change to FEEL worse before it reads better.
+        self.C377_HARD_STOP_R = 0.75   # 0.75R = 1.5 ATR
         # ═══ C380: THE ONE NUMBER THAT SETS EVERY OTHER ═══════════════════
         # Maximum monthly drawdown the operator is willing to accept, in %% of
         # equity. Day cap, per-trade risk and the daily target are all DERIVED
@@ -15536,6 +15657,7 @@ class TradingBot:
         To record a new version, add one (version, summary) tuple to _CHANGELOG below."""
         import os
         _CHANGELOG = [
+            ('C459', "I SHIPPED AN EXIT RULE WITHOUT THE HARNESS AND IT WAS MEASURABLY HARMFUL. THE OPERATOR SUPPLIED THE ATLAS AND IT CONTAINS THE STANDING RULE I BROKE, IN WORDS: 'No entry/exit rule ships again without a four-way out-of-sample harness result. A rule that is not positive in at least 3 of 4 splits does not ship, however good its retro on the last log looks.' C458-16 -- the scale-out rung and breakeven migration -- shipped on ONE retro trade and on C441-2's observation that winners give their peaks back. I have now run the harness. BUILT: 35 Bitget pairs x 2,400 live 15m bars (83,000 bars, ~25 days), barrier simulation with the adverse extreme assumed first inside every bar, NON-OVERLAPPING entries (stride = horizon, per the Atlas's own overlap warning), both directions on every bar, fees at the bot's real 0.02%% maker in / 0.06%% taker out. Random entries are the honest null here because the Atlas already measured rho(score, win) = -0.022: THE ENTRY SCORE CARRIES NO INFORMATION, so an unbiased entry IS the bot's entry, statistically. THE RESULT, 5,116 trades per config at an 8h horizon: shipped T1.9/S3.0 -0.0926 %%/trade, win 58.0%%, payoff 0.64. MY C458-16 LADDER -0.1185 %%/trade, win 68.5%%, payoff 0.36 -- WORSE THAN WHAT IT REPLACED IN ALL FOUR SPLITS, at every horizon tested (2, 4, 8, 16, 32, 64 bars), and getting worse as the horizon lengthens. And the tell is the win rate: 58%% -> 68.5%%. The Atlas states the trap explicitly -- 'win rate and expectancy move in OPPOSITE directions; the highest win rate tested (55.7%%, tight target) had the WORST expectancy; best expectancy came at 36.5%%' -- and I built a machine for manufacturing the wrong variable and called it a profitability fix. THE ROOT ERROR IS THE ONE THIS PROJECT KEEPS PAYING FOR, and the Atlas has a rule for it too. STANDING RULE 4a: 'Never draw a conclusion from a one-sided excursion metric. Any X%% was left on the table claim must be reported beside the adverse excursion over the same window.' I reasoned from 'five of six peaked positive and gave it back' and never asked the mirror question: how often do WINNERS dip to the rung first? They do, constantly. The rung banks half of every winner at 1.0 ATR on the way to a 4 ATR move and the breakeven stop then scratches positions that were about to work. STOOD DOWN via switch, not deletion, per C403's convention -- functionally identical to never having shipped it, reversible in one line, and the measurement stays in the file. C459-2, AND THIS IS THE LARGEST MEASURED EFFECT IN THE PROJECT'S HISTORY: THE EXIT GEOMETRY WAS INVERTED AND THE ATLAS HAS KNOWN SINCE C356. Its own harness recorded, under 'WHAT THE HARNESS FOUND THAT DID SURVIVE (recorded, NOT yet acted on)': 'Exit geometry dominates every entry filter. Moving only the exit from 1.5-ATR-target/1.6-ATR-stop to 4.0/1.5 halves the loss rate (-0.099 -> -0.050 %%/trade) and lifts payoff 0.85 -> 1.60. Larger effect than any entry rule tested.' It was never acted on. Three versions later C416 set the target floor to 0.60R = 1.2 ATR and C377 set the stop to 1.5R = 3.0 ATR -- a 2.5:1 RISK-TO-REWARD INVERSION -- and the 2,388-trade ledger printed exactly what that produces: every exit built to TAKE PROFIT makes money (target achieved +$166.65, n=389, 84%% win; PEAK_REVERSAL +$48.40; profit capture +$53.88; TRAILING_TP +$21.40) and every exit built to LIMIT LOSS gives it back (REL_HARD_STOP -$132.56 ALONE = 177%% OF THE TOTAL LOSS, averaging -4.66%% against a winning target of +2.12%%, so the stop is 2.20x the target). MY INDEPENDENT BATCH REPLICATES IT ON A DIFFERENT CORPUS AND A DIFFERENT REGIME -- theirs was 638k bars of a BEAR corpus (BTC -46%%) from Oct 2025 to Aug 2026, mine is 25 live days in Sep 2026: T1.9/S3.0 -0.0926 (payoff 0.64) -> T4.0/S1.5 -0.0439 (payoff 1.90), positive in 4/4 splits, paired t = +2.27 on n=5,116, and it survives dropping the three best PAIRS entirely (+0.0205). THAT IS THE SEPARATE-BATCH REPLICATION STANDING RULE 9 DEMANDS AND THAT NOTHING ELSE IN THIS PROJECT HAS EVER HAD. A full grid settles the shape: every config with a target at or below 3.0 ATR lost more than every config at or above 4.0 ATR, REGARDLESS OF THE STOP. The target is the dominant variable and small targets are not 'safe' -- they are the single most expensive setting in the file. Stop 1.5R -> 0.75R (= 1.5 ATR); target floor 0.60R -> 2.00R (= 4.0 ATR); C415 fallback 1.5R -> 2.0R. C459-3, THE REALISED-PEAK CAP IS CIRCULAR AND I INHERITED IT. C441-2 caps the target at the 70th percentile of realised peaks -- 'a target the market has never given is not a target'. peak_pnl_pct is the maximum favourable excursion DURING THE HOLD, and the hold is ended by the very exit stack whose target this cap sets. Trades do not reach 4 ATR because they are CLOSED long before 4 ATR, and the cap reads that back as proof that 4 ATR is unreachable and pins the target at 1.3 ATR. Estimating the achievable target under the current policy and using it to constrain that policy is a fixed point, not a measurement, and its fixed point is the losing configuration. It is also fed by a ledger C458-9 has just shown to be CONTAMINATED -- ZEC recorded a 0.28R peak against a true 1.21R because peak_pnl_pct only updates on a tick. Disabled. And my own C458-16 rung read the SAME poisoned ledger for its rung height, which is a second reason it had to go. C459-4, THE TARGET AND THE HORIZON ARE ONE DECISION AND THIS CODE SET THEM IN TWO PLACES THAT NEVER MET. The same study, expectancy by holding horizon: at 8 bars (2h) T2.0/S3.0 -0.0726 beats T4.0/S1.5 -0.0956; at 32 bars (8h) T4.0/S1.5 -0.0439 beats T2.0/S3.0 -0.0836. A WIDE TARGET WITH A SHORT HORIZON IS THE WORST OF BOTH WORLDS -- the target is never reached, so the trade exits at the clock having paid two fees and worn a stop the whole way. expected_hold_min came from a predictor written for a 1.2 ATR target and returns 30-60 minutes; it is the single point every time-based exit reads (time_pressure at 4x and 8x it, the C373 capture release, C383, the stagnation clocks, the C404 sqrt(t) scaling), so a floor of 120 min moves all of them together and none can disagree. C459-5, THE EDGE MUST BE ANCHORED ON AN OUTCOME, NOT ON A PLAN. C458-3 anchored it at the median target the bot AIMED at, which correctly stopped the edge growing with an unreached target and is still wrong in a way C459-2 makes acute: the target is a PLAN and the payoff is an OUTCOME, so moving the target from 0.65R to 2.00R would leave an aim-anchored edge reading the ledger's OLD aims against the NEW win rate for the whole transition and shutting the book on an artefact of its own re-tuning. The break-even identity needs no fair-odds model at all: E > 0 <=> wr x payoff > (1-wr) <=> wr > 1/(1+payoff), so the edge over break-even IS wr - 1/(1+payoff). Policy-invariant by construction -- change the geometry and both terms move together. Every close now records pnlR so it is computable; the aim anchor remains as the fallback. C459-6, C457-2 DID NOT REPLICATE IN THE MIDDLE AND ITS TOP BUCKET HAS NO CEILING. Its band map is _lev = max(1, int(2.0/ATR)), so EVERY pair above 2.00%% ATR collapses into '1x' and inherits the 1.00-2.00%% band's 49.5%% win rate. On independent data that hidden tail is -0.2357 %%/trade -- TEN TIMES WORSE than any other band -- while the band it is hiding inside measures -0.0197. Separated, with a floor below the worst measured band. And the middle of the curve is a genuine conflict: C457-2 penalises 2x (0.67-1.00%%) and 1x (1.00-2.00%%) by 11-13%%, and on independent data those are the two BEST bands (-0.0157 and -0.0197) against the favoured 3x at -0.0234. The two studies measure DIFFERENT ESTIMANDS -- theirs conditioned on the bot's own entries and exits, mine unconditional -- so this is a conflict to resolve with data rather than a refutation to act on wholesale. Authority cut 18%% -> 8%% so the replicated tails still steer and the unreplicated middle cannot dominate a score. WHAT C458 GOT RIGHT AND IS KEPT: the gap replay (C458-9) is untouched and is now MORE important, because it is what un-poisons the peak ledger C459-3 just stopped trusting; the capture-floor ordering (C458-4) still guarantees a reached target is a bankable one; the expectancy support-sign fix (C458-1), the Brier units print (C458-10), the news consumer cap (C458-11), the stale regime ATR window (C458-12), the hardcoded coherence constant (C458-13), the gross cross-venue veto (C458-14), the capitulation short veto (C458-15), the scan's contradictory self-report (C458-18), the DRI directional artefact (C458-7), the parallel DRI fetch (C458-19) and the PEP 701 portability fix (C458-20) all stand. HONEST LIMITS, STATED BECAUSE THIS PROJECT HAS KILLED FOUR FINDINGS FOR LESS. The geometry gain is TAIL-DRIVEN: dropping the best 100 of 5,116 trades turns it negative. That is intrinsic to a let-winners-run payoff and is not a defect, but the equity curve will be lumpy and THE WIN RATE WILL FALL TO ROUGHLY A THIRD -- 33%% at payoff 1.9 is a better business than 58%% at 0.64, and the operator should expect this change to FEEL worse before it reads better. The corpus is 25 days and one regime; the tight-stop/wide-target structure is long volatility and will underperform in a genuinely choppy tape -- its defence is that the Atlas's own harness found the same thing on a bear corpus, which is a different regime, not that either window is representative. Per-pair the improvement is only 18 of 35 pairs; the aggregate comes from the tail. Nothing here touches the S3 probability model (44.2%% accurate at n=301 and still feeding Kelly through C303), the family Markov chain (~95%% Laplace prior), or the long/short asymmetry -- on which the Atlas's ledger says shorts cost 10x longs while this window says the opposite, i.e. it is REGIME-DEPENDENT and no permanent tilt is justified in either direction. VERIFICATION: compiles on 3.10 and 3.12; AST 370 unchanged (no new methods -- C459 is constants, one anchor rewrite and one switch); duplicates 0; C458+C459 constants defined 23, read 23, orphan 0; the barrier harness ships as a reproducible script; every replacement count-asserted. Chain C367-C459 intact."),
             ('C458', "THE REWARD GEOMETRY WAS INVERTED AND C457 SAID SO ITSELF: 'a 0.6R target against a 3-4 PRU stop needs a win rate the entry stack has never produced -- THIS IS THE NEXT VERSION'S WORK'. This is that version. Forensic pass over sessions 20260914_001339 (5.17h, 54 scans, ONE trade) and 20260914_110409 (3.56h, 3 trades), net -$1.60, equity $250.00 -> $248.40, with every traded symbol chart-verified against Bitget history-candles in IST. THE ACCOUNTING IS CLEAN -- all four trades reconcile to the cent against the real maker/taker schedule and settlement times -- so what follows is not bookkeeping. THREE ARITHMETIC INVERSIONS, each provable at the line without any market data. INVERSION 1, THE BANK THRESHOLD STOOD ABOVE THE AIM THRESHOLD. C416 sets the target floor at 0.65-0.73R, C372/C373 refuse any capture below 1.00R, C377 stops at 1.50R. On 2 of the 3 trades carrying a printed target the target sat BELOW the floor that permits banking it: ZEC target 2.10%% floor 2.21%% stop 3.31%%; POLYX#2 target 4.20%% floor 4.52%% stop 6.76%%. So the modal outcome of a CORRECT thesis is reach target, be refused, round-trip, stop at 1.5R -- and the PLANNED_TARGET exit, which C181 repaired and which fires at _pnl_in_pru > 0.5, was then being swallowed by the C372 wrapper on every trade whose target was under 1R. ZEC IS THE PROOF AND IT IS EXACT: short @1067.67 with target 1045.14, and the 05:45 IST candle printed a low of 1039.14 -- through the target, 1.21R, 43 minutes after entry. C441-2 saw this symptom ('FIVE OF SIX peaked positive and gave back 100%% or more') and moved the TARGET down to the 70th percentile of realised peaks, which drove T to 0.65R against a 1.5R stop: payoff 0.43, break-even 69.8%%, measured 47%%. It was the wrong half of the inequality. The capture floor is now min(C372_MIN_R, the target actually aimed at), bounded below by what still clears fees, in ONE definition (_c458_capture_floor_r) shared by the C372 wrapper and the C373 hold so they cannot drift apart -- and the 1.5xPRU capture trigger is capped at the target for the same reason. INVERSION 2, THE POSITION WAS SIZED FOR A 1.0R LOSS AND STOPPED AT 1.5R. _bf_stop_frac = 2.0*ATR*lev is 1.0R; C377_HARD_STOP_R is 1.5. Every stop-out cost 150%% of the risk the day budget authorised -- ZEC was fitted to a $0.76 stop and the 1.5R stop is $1.13 -- which makes C369's stated doctrine ('per_trade = cap/2, two full losses end the day') false as shipped: at 1.5R it takes 1.33, and the session ended the day on ONE. The sizing now reads the same constant the stop reads. INVERSION 3, A NEGATIVE EDGE MADE THE GATE PREFER THE WEAKEST FORECAST. E = edge * min(1,R/T) * (1+T) - f was reasoned about only for edge > 0. The edge goes NEGATIVE on the majority of scans, and multiplying a negative edge by support makes a STRONG projection score WORSE. The log prints both ends: 'edge -0.0238 x support 0.09 = -0.0022' against 'edge -0.0238 x support 0.87 = -0.0207'. Out of 66 candidates the gate was selecting the one whose own forecast supported its target LEAST, and thin_expectancy is 49-52%% of ALL rejections in both sessions (397 of 804 candidates). Support now discounts and may never reward; the zero-edge identity E = -f is preserved exactly. AND THE EDGE ITSELF CARRIED NO INFORMATION. e_real = base_rate - 1/(1+T) with base_rate a single scalar shared by every candidate is a PURE FUNCTION OF T -- the same n=20 ledger printed seven different 'realised' edges in one session, tracking nothing but T (0.65R -> -0.1546 ... 3.00R -> +0.2250). Worse, it RISES with T, so the bot believed it had the most edge exactly when demanding a target it has never reached: 0.475 was earned aiming at ~0.65R and was being asserted against the fair odds of 3.00R. Every closed trade now records the target it AIMED at (C458-2), the edge is anchored at the median aimed target, and the claim is shrunk by log-distance as the proposal leaves the evidence. At T = T_hist it is byte-identical to the old line. THE OPERATOR'S OWN WORKFLOW WAS POISONING THE LEDGER, and this is the finding neither of us saw first time. He stops and resumes the bot deliberately; ZEC spent 5h41m unwatched. Three losses stack in that gap and only the first is obvious: the stop did not fire (paper has no resting order, so C377 needs a tick) turning -$1.13 into -$1.69; the capture did not fire; AND THE PEAK WAS RECORDED AS +0.62%% INSTEAD OF +2.67%%, because peak_pnl_pct only updates on a tick. That understated peak goes straight into _c441_peaks_r, whose 70th percentile CAPS THE TARGET FLOOR -- a lower T drives e_real more negative, which drives the edge negative, which shuts the expectancy gate. Ordinary operation was quietly tightening the bot's entry criteria against itself, one resume at a time, and nothing in the log said so. C458-9 now persists when each position was last actually SEEN and replays the missed candles on resume: the peak is reconstructed from real highs and lows, a breached stop closes AT THE STOP rather than at the current price, a cleared-then-given-back capture floor banks AT THE FLOOR, chronology decides, and the adverse extreme is always assumed first so a reconstruction that books real money can only ever be worse than reality. THE ONE CHANGE AIMED AT PROFIT RATHER THAN AT A DEFECT, C458-16: A SCALE-OUT RUNG. Every previous attempt moved the TARGET (C415 out, C441-2 in, C416 solved from the win rate) and none touched the SHAPE, which is what is wrong -- one all-or-nothing decision at a level the tape reaches 30%% of the time with 1.5R behind it the whole way. Now: bank HALF at a rung READ FROM _c441_peaks_r (the median of this bot's own realised peaks, not a constant -- a constant would be the fourteenth instance of the absolute-where-relative disease), then move the stop to breakeven minus 0.25R, then let the remainder run to the unchanged planned target. The middle row of the payoff table is the whole point: a trade that peaks at +0.5R and returns to the stop is TODAY a full -1.50R and becomes +0.05R. On ZEC that is -$1.69 -> roughly +$0.19 with no change whatever to the entry decision. The breakeven migration lives inside C377 rather than in a new exit, because two stop authorities is the two-floors defect C367 already paid for. C458-17, THE EXPLORATION FLOOR C421 ARGUED FOR AND DID NOT BUILD. Its own docstring says 'a trader in this position does not stop; they trade SMALL to acquire the sample' and what ships is a hard E >= 0 floor on an edge that is a closed function of the target -- the author named the failure ('a controller whose output removes its own input cannot recover, and I built one'), fixed the p-collapse at C420-5, and left the structure intact. Five hours ten minutes and one trade is the measured cost. After 14 consecutive scans with no entry, ONE candidate is admitted at MIN_MARGIN -- and ONLY one refused by a MEASUREMENT gate (expectancy, score, projection). NEVER one refused by a RISK gate: crowding, flow veto, capitulation, cross-venue basis. Exploration is a reason to accept uncertainty, never danger. Capped at 2/day and tagged on the position so its outcomes can be separated from real decisions. C458-15, THE ONE MEASURED EDGE GETS A VETO ON ITS OWN LOSING SIDE. C398 is this project's only independently measured edge (+4.67pp, n=3,420, down-side only) and it is wired as an +8%% tilt on LONGS with no authority over a short at all. At 05:01:40 it declared PACK CAPITULATION at -2.85 ATR; at 05:01:50 breadth read -0.53 OVERSOLD-heavy; at 05:01:53 ZEC took a 10%% fresh-short brake and then passed the near-extreme gate via 'WITH trend -> breakout, not blocked'; at 05:01:55 C455-4 measured it at 1%% OF ITS OWN 24H RANGE for a 12%% penalty. Three correct readings, combined authority a 22%% haircut, trade taken. 43 minutes later the field bottomed and 14 of 16 sampled perps rallied; ZEC ran +10.6%% off that low. 'A down-side pack capitulation reverts' and 'a fresh short into one is the wrong side' are THE SAME MEASUREMENT read both ways. Now a veto -- down-side only (the up-side mirror failed out-of-sample and gets nothing), short only, only while the regime is live, and only in the bottom decile-and-a-half of the pair's own range; it runs AFTER the with-trend exemption and returns unconditionally, so the exemption cannot reach it. C458-18, THE SCAN HAS BEEN REPORTING ITSELF WRONG SINCE C429-2, AND THE ROOT CAUSE IS ONE TOKEN. Every scan printed two contradictory lines ('66 analyzed -> 1 viable' and '66 analyzed -> 0 passed') and filed the candidate it was about to TRADE as a 'Nearest miss ... reason=pending'. The 0-passed block sat as the `else` of the C429-2 drain's TRY, not of `if candidates`, so it fired whenever that drain succeeded and never fired when there were no futures to drain. The counters were right the whole time (they sum to 65 of 66); only the line an operator reads to judge the scan was lying, in both directions. ALSO FIXED, EACH ROOT-CAUSED: C458-10, the C421-1 Brier units bug is STILL LIVE in its own print -- _sk420 reads the raw accumulator while the next line of the same f-string divides by n, so the log printed 'skill -34787.6%% ... brier 0.290 vs baseline 0.250' when 1 - 0.290/0.250 = -16%%. Off by 2,175x, instance SIX, on the number the operator steers by. C458-11, C426-1 raised the news supply from 10 articles to 65 and left the consumer at _articles[:25], so 40 of every 65 fetched were discarded unread while 87-91%% of scored pairs came back 'no coin-specific articles' and fell through to a CONSTANT (+0.05 on every pair) that cannot discriminate between candidates at all. C458-12, the regime volatility normaliser read range(1,15) of a 100-bar ASCENDING array -- the OLDEST 14 candles, 21 to 24.7 hours stale -- so every consumer of _live_resultant has been dividing today's return by yesterday's volatility, wrong in a predictable direction exactly when the volatility regime changes. C458-13, _live_coh was pinned at 0.6 and is 25%% of _live_regime_score, which RegimeMarkov.classify then compares against a 0.35 threshold BEFORE it looks at direction; now computed as a path-efficiency ratio over the same settled window. C458-14, C393's cross-venue guard measured POLYX at a 1.51%% perp/spot gap -- TWICE its threshold, against a measured p90 basis of 0.389%% -- and abstained because it was a 'FIRST reading'; the fill printed one second later and POLYX fell through its stop to -8.3%% within 75 minutes. Marginal gaps keep the full C429-4 re-check; gross ones veto on sight. C458-19, the last sequential API walk, and it is in the hot path: DRICalculator._refresh_cache made up to EIGHT blocking round trips per position per DRI update -- forty inside a twenty-second budget at five positions -- behind the engine the whole exit stack reads. fetch_multi_timeframe had the same defect. Both now use the same 8-worker pool and the same fail-open behaviour. C458-20, TWO LINES MADE THIS FILE PYTHON 3.12-ONLY. Nested same-quote f-strings are PEP 701; the module docstring claims 'Pydroid 3, Python 3.9+' and on any older interpreter the whole file fails to PARSE, so the bot does not start and the error points at a log line rather than at a version. Now compiles on 3.10 and 3.12 alike. C458-7, THE DRI WAS MANUFACTURING CONVICTION OUT OF NOISE. _profitable_prob blended 0.70 of a weighted mean with 0.30 of `directional`, a SIGN-ONLY statistic carrying no magnitude, which put a hard +-0.30 floor under every component whose series merely shared a sign: a uniform -0.001 signal returned -0.3007, and a DEAD (all-zero) signal returned +0.3000 as EXIT pressure. ZEC closed with six components clustered in [-0.30,-0.45]; inverting the formula puts the Volume component's true underlying signal at -0.005. Six components agreeing was ONE ARTEFACT PRINTED SIX TIMES, and the bot logged 'thesis 139%% left' on a position about to lose 2.20R. It also CLOSED THE EXIT: the five projected components carry 0.515 of the renormalised weight, so pinned at -0.30 they contribute -0.1545 against a maximum of +0.4712 from everything else -- a ceiling of +0.317 against a threshold of +0.338, i.e. ARITHMETICALLY UNREACHABLE, which is what C399 observed ('unreachable by construction') without locating the cause. Consistency now SCALES the magnitude instead of being added to it: unanimous gives full magnitude, evenly split damps, zero gives zero. Re-proved after the change: the ceiling is +0.471 and the exit is reachable at the default PA weight. WHAT I CHECKED AND FOUND SOUND, recorded so it is not re-audited. All four trades' PnL, fees, funding and margin ledgers reconcile to the cent. EVERY DRI SIGN CONVENTION IS CORRECT for both sides -- OFI, funding, multi-TF, momentum, volume, technical, ML, wavefunction all traced, no inversion. C377's ordering ahead of every judgement exit. C378's live-mode arming, its boolean return and its re-arm on restore. C151's forming-candle drop and C250's settled-close returns. C454's tie-corrected midrank and the C454-2 dispersion guard. The Markov chain arithmetic -- Laplace smoothing, k-step propagation v <- vP, evidence saturation. And the WHOLE session/global-event layer: US DST computed from the rule, the NYSE (not federal) holiday table trading through Columbus Day and closing Good Friday on both 2026-04-03 and 2027-03-26, half-days present, IST conversions correct. AND ONE HYPOTHESIS I HELD AND DISPROVED, recorded because a wrong idea that survives into a fix is worse than no fix: I expected _project_forward's t*exp(-3t/n) shape to let fast timeframes dominate, since its amplitude scales with step count. Executed across all eight TFs with their real EMA alphas, the saturation thresholds land at 0.0146-0.0256 per candle -- near-IDENTICAL -- because each TF's alpha compensates for its step count, and realised weighting comes out 29%%/49%% fast/slow against a declared 28%%/50%%. THE WEIGHTING IS SOUND AND WAS NOT TOUCHED. LIMITS, STATED PLAINLY. Four trades is not a sample and nothing here was tuned on them; what makes these actionable is that the three inversions and the DRI ceiling are ARITHMETIC properties of the code, reproducible with no market data at all. The C458-16 rung reads _c441_peaks_r, and that ledger is CONTAMINATED by exactly the gap-understatement C458-9 fixes -- so the rung will read LOW at first and RISE as the ledger heals, which is the safe direction but must not be mistaken for a retune. C458-15's veto is the first time C398 has ever refused anything, and a veto that has never fired is a veto whose false-positive rate is unknown. C458-17 will produce losing trades ON PURPOSE; that is its function, and if the next log shows exploration firing more than twice a day the counter is broken, not the tape. Nothing here touches the S3 probability model (still 44%% accurate at 301 trades), the short-side deficit (-$0.0826/trade against long -$0.0084) or the family Markov chain (~95%% Laplace prior) -- all three remain C457's open list. VERIFICATION: compiles on 3.10 AND 3.12; AST 366 -> 370 (+_c458_capture_floor_r, +_c458_replay_gap, +_c458_rung_ladder, +_c458_explore_due, all four confirmed reachable); every replacement count-asserted; duplicate definitions 0; no orphan C458 constants -- every one defined is read; the DRI ceiling re-proved numerically before and after; the _profitable_prob floor demonstrated by execution at six signal levels; the timeframe-saturation hypothesis tested and REJECTED by execution. Chain C367-C458 intact."),
             ('C457', "THE BOT HAS A PROFITABLE CELL AND IT WALKED OUT OF IT -- AND MY OWN C455-2 FIX FIRED FOR THE FIRST TIME AND LOST MONEY. Session 20260913_161034: 7.36h, 78 scans, 4 trades (2 long / 2 short -- the long-only bias is gone), net -$1.14, win 1/4, equity $250.00 -> $248.86, fees $0.13. Market that session rose a MEDIAN +0.88%% with 62%% of pairs up, and all four trades lost or broke even. THE OPERATOR ALSO UPLOADED EVERY STATE FILE THIS TIME, WHICH CHANGES WHAT CAN BE KNOWN. trades_v60.csv holds 2,388 COMPLETED TRADES back to 2026-02-18 -- the sample this project has never had. Headline: total -$74.95, -$0.0314/trade, 52.1%% win, avg win $0.406 vs avg loss $0.506, PAYOFF 0.80, so breakeven needs 55.5%% and it has 52.1%%. Losing by 3.4 points of win rate, steadily, for seven months. C457-2, THE LARGEST MEASURED EDGE IN THE PROJECT'S HISTORY. Bucketed by the leverage C61 assigns -- and C61's leverage IS a volatility label, because it solves ATR x lev <= 2.0%%, so lev = floor(2.0/ATR) names an ATR band exactly: 1x (ATR 1.00-2.00%%) n=386 -$0.041/tr win 49.5%%; 2x (0.67-1.00%%) n=93 -$0.047 win 50.5%%; 3x (0.50-0.67%%) n=894 +$0.018 WIN 58.1%%; 4x (0.40-0.50%%) n=617 -$0.078 win 48.6%%; 5x (0.33-0.40%%) n=341 -$0.039 win 47.5%%; 6x (0.29-0.33%%) n=52 -$0.150 win 46.2%%. THE 3x BAND IS THE ONLY PROFITABLE BUCKET AND IT IS NOT MARGINAL: 3x alone would have made +$16.34 instead of -$74.95, and 3x-LONG alone +$36.91 on n=635 at 60.0%% win. OUT-OF-SAMPLE 4/4 -- time-early, time-late, pairs-A, pairs-B -- with per-trade gaps of +$0.046 to +$0.111. THE WIN RATE IS THE EVIDENCE THAT MATTERS, because a win rate is independent of position size, so this cannot be an artefact of leveraged positions being larger. AND THE BOT LEFT THE CELL: the share of trades taken in the 3x band ran 1.3%% -> 30.9%% -> 42.5%% -> 61.4%% -> 77.8%% from February to June, then COLLAPSED to 2.2%% in July and has sat near zero since, while the win rate fell 55.6%% (Jul) -> 42.8%% (Aug) -> 37.3%% (Sep). I am NOT claiming the drift caused the collapse -- corr(3x share, monthly $/trade) is only +0.357 over eight months and July breaks the pattern -- but the BAND is established at 4/4, and the drift is mechanical: STEP 1 RANKS BY 'LIVELINESS', WHICH IS RECENT MOVEMENT, WHICH IS HIGH ATR, so the funnel walks toward the 1x bucket by construction and away from the one that pays. Implemented as a bounded tilt weighted by each band's MEASURED win-rate shortfall below the best band's 58.1%%, scaled so the worst (46.2%%) takes the full 18%%. Larger than C455-4's 12%% because the effect is larger (9-12 points versus 7) and measured on THIS BOT'S OWN CLOSED TRADES rather than a market-wide proxy. Live-simulated on the real board: 18 of 144 vol-qualified pairs sit in the band right now, so the tilt is SELECTIVE (12.5%% untouched), not a blanket. The trade's leverage is now also written into the C444 grade record so this table can become SELF-MEASURING instead of carrying my numbers forever. C457-1, MY OWN FIX FIRED ONCE AND IT WAS WRONG. C455-2's first live firing, XTZ: entered long 22:05 @$0.2874; 22:19 C414 vetoed the same long (real CVD -0.60) and recorded a strike; 22:32 C455_FLOW_REFUSED closed it at +0.3%% = +0.21 PRU. BOTH grading horizons then called it wrong -- C444 at 30min: +2.50%% (+1.16R) FURTHER IN OUR FAVOUR; C456 at 60min: +1.74%% (+0.81R) -- and chart-verified on live candles XTZ ran to +3.62%% three hours later against the +0.80%% banked, with an MFE DURING THE HOLD of +2.05%%. THREE CALIBRATION ERRORS, ALL MINE. (1) 'not meaningfully in profit' was written as <= 0.25 PRU, WHICH ADMITS WINNERS; the entire justification for this exit was that it may only refuse to keep RISKING and never take a winner off the table, and the first thing it did was take a winner off the table. Now 0.0. (2) NO PEAK GUARD: XTZ had already printed +1.43 PRU of peak, i.e. price had ALREADY PROVEN the thesis, and a flow reading cannot un-prove a move that has happened; positions past 0.60 PRU of peak are now out of reach. (3) TTL WAS 900s AND THE VETO WAS 13 MINUTES OLD -- order flow decays in seconds to minutes, not a quarter hour. Now 420s. RETRO: all three guards independently prevent the XTZ cut, which is defence in depth rather than one re-tuned threshold. THE PRINCIPLE IS UNCHANGED AND I STILL HOLD IT -- if the entry stack refuses this exact trade and the position is not working, stop risking. What was wrong was my definition of 'not working'. C457-3, THE SAME DEFECT AS C456-2, ONE VERSION LATER, AND I WROTE BOTH. _c456_fast was an in-memory dict, so a fast grade settling in one session and its thesis twin in the next could never pair -- and the thesis horizon is by construction LATER, so that split is the NORMAL case near a session end, not an edge case. Moved into the persisted store. C456_MIN_PAIRED also cut 6 -> 4, because a 7-hour session produced only three pairs and the HORIZON AUDIT therefore never printed. WHAT C456 PROVED, AND IT IS NOT WHAT I EXPECTED. All FOUR C444 fast grades and all THREE C456 thesis grades in this session said 'HELD WOULD HAVE BEEN BETTER' -- not one 'protected capital', a complete reversal of session 20260911's 8-of-10. So the near-sighted grader was not merely flattering the exits; on this tape the exits are cutting winners on BOTH horizons. The HORIZON AUDIT line still did not print (only 3 pairs against a threshold of 6), which C457-3 fixes. THE ENTRY STACK IS STILL NEGATIVE AND THE BEST BAND HAS GONE NEGATIVE TOO: '(20 scored of 29 graded): low n=4 -0.33R | mid n=5 -0.52R | high n=11 -0.06R -- overall -0.23R/trade -> NOT monotone'. At C455 the high band was +0.02R; it is now -0.06R. No region of the entry score makes money. RECORDED, NOT FIXED, WITH THE EVIDENCE THAT WILL BE NEEDED. (1) THE EXIT TAXONOMY IS STARKLY BIMODAL and it is the clearest structure in 2,388 trades: every exit designed to TAKE PROFIT makes money -- target achieved +$166.65 (n=389, 84%% win), HP target +$63.84, PEAK_REVERSAL +$48.40 (n=233, 90%%), profit capture +$53.88 (n=85, 100%%), TRAILING_TP +$21.40 (n=182, 93%%) -- and every exit designed to LIMIT LOSS gives it all back: REL_HARD_STOP -$132.56 (n=164, 0%% win, avg -4.66%%), STAGNANT_LOSS -$62.27 (n=199), REL_DRAWDOWN -$43.51 (n=78), REL_ACCEL_LOSS -$38.73 (n=64). REL_HARD_STOP ALONE IS 177%% OF THE TOTAL LOSS. And the asymmetry is structural: the hard stop averages -4.66%% against a target-achieved average of +2.12%%, SO THE STOP IS 2.20x THE SIZE OF THE TARGET, because _max_loss_pru reaches 3.0 via C336 and up to C453_MAX_PRU=4.0 while the target floor is 0.60R. A 0.6R target against a 3-4 PRU stop needs a win rate the entry stack has never produced. THIS IS THE NEXT VERSION'S WORK. (2) THE S3 PROBABILITY MODEL IS WORSE THAN A COIN FLIP: s3_calib_v60.json reads n=301, brier=87.219, acc=133, i.e. 44.2%% ACCURACY against a Brier of 0.290 when 0.25 is what 'always say 50%%' scores. It prints P=0.714 and P=0.693 at entry and delivers 44%%. Systematic overconfidence of roughly 26 points, and it feeds sizing through Kelly. (3) SHORTS COST 10x WHAT LONGS DO: long n=1647 -$0.0084/tr (53.7%% win) versus short n=741 -$0.0826/tr (48.3%%). (4) family_markov_v60.json is ~95%% Laplace prior -- only one cell (state 2->2, 53 observations) carries data, every other cell is 1.0 or 2.0 -- so the family chain is contributing noise dressed as signal. (5) C455-4 fired on ETHFI at 6%% and then 1%% of its own range, correctly identifying a short at the very bottom of a completed -3.21%% move, and the trade was taken anyway and never went favourable ONCE (MFE -0.17%%); an 11%% shave cannot stop a candidate the rest of the stack wants. VERIFICATION: syntax; AST 366 functions UNCHANGED; duplicate defs 0; class-ownership sweep CLEAN across 31,437 lines with nested classes correctly excluded; no orphan C456/C457 constants; the XTZ retro asserts all three new guards; the penalty curve asserted bounded on [0, 0.18] and zero only inside the band; LIVE BITGET SIMULATION through all five steps (787 contracts, 144 vol-qualified, 144 candle series, 18 pairs in the profitable band, C61 sizing sanity re-derived). LIMITS. The band table is MY measurement embedded as a prior, not yet the bot's own running estimate -- the 'lev' field now recorded in each grade record is the first step toward making it self-measuring, and until then the numbers age. The 3x band is not stable every month (March -$0.142 and June -$0.057 were negative inside it) even though the aggregate and all four splits hold. C457-1's three guards are judgements and the fix has now been wrong once already, so treat it as unproven in both directions. Nothing here touches the stop, the target, the S3 model or the entry score itself, so if the next log is still losing, the cause is in that list and not in what changed. THE NEXT LOG'S THREE JOBS: does the C457-2 line appear and do trades start landing in the 0.50-0.67%% band; does C455_FLOW_REFUSED stay silent or fire only on genuinely dead positions; and does C456 HORIZON AUDIT finally print. Chain C367-C457 intact."),
             ('C456', "THE GRADER WAS NEAR-SIGHTED AND IT FLATTERED THE EXITS FOR ELEVEN VERSIONS. C455 ran three sessions -- 20260910_011211 (0.5h, 0 trades), 20260910_095131 (4.9h, 1 trade, -$0.10) and 20260911_175650, THE FIRST GENUINELY LONG RUN THIS PROJECT HAS HAD: 26.7 HOURS, 274 SCANS, 10 TRADES, net -$0.07. THE ONE SENTENCE THAT MATTERS: the market during that session rose a MEDIAN +3.08%% with 82%% OF PAIRS UP (107 of 130 vol-qualified crypto), the bot took TEN LONGS, and it still lost money. The direction was called perfectly and the result was nothing. WHY ONLY THE GRADER CHANGED. The operator chose grader-first and it is the right order: C444 is the ONLY instrument this project has for judging its exits, every conclusion about the exit stack rests on it, and it has been lying by omission. Fixing what it measures before changing what it measures is the difference between learning from the next session and guessing again. Nothing in this version touches the entry vector, the exit cascade, sizing or direction -- so the next log is directly comparable to 20260911_175650. C456-1, THE FIX. C444 grades an exit 30 minutes later. The trades' own entry lines say 'Proj: +2.6%% | Hold: ~60min'. GRADING A SIXTY-MINUTE THESIS ON A THIRTY-MINUTE WINDOW MEASURES NOISE, NOT THE MOVE THE ENTRY WAS PREDICTING. Chart-verified against live Bitget candles, three exits C444 certified as 'the exit protected capital' were badly wrong on their own timescale: USELESS 30min -1.90%% -> +3h +4.38%%; MARSCOIN 30min -0.81%% -> +3h +3.50%%; CHIP 30min -1.80%% -> +3h +4.71%%. So the instrument reported 8 of 10 exits good, and the project has spent eleven versions arguing about exits on the strength of readings like these. NOT A REPLACEMENT, A SECOND READING: the 30min grade still answers a real question ('did the exit avoid immediate damage') and still feeds the ledger and the C451 entry verdict COMPLETELY UNCHANGED, so the 26-record entry-score evidence stays continuous. A twin record now settles at the trade's OWN expected_hold_min, clamped to 45-240min so a short projection cannot just repeat the fast grade and a runaway one cannot stall grading forever. The two readings pair by key, and the DISAGREEMENT between them becomes a measured quantity -- 'C456 HORIZON AUDIT (n paired)' -- rather than something I have to catch by hand against candles. RETRO ON THE TEN REAL GRADED EXITS: mean forward drift -0.26R at 30min versus +0.25R at the thesis horizon, A SIGN FLIP; FOUR of the eight 'protected capital' verdicts turn FAVOURABLE; the horizons agree on only 5 of 10. The audit line would have printed 'THE FAST GRADE IS SYSTEMATICALLY FLATTERING THE EXITS'. C456-2, MY OWN BUG FROM C455, CAUGHT BY ITS FIRST LOG. C455-3a wrote the expectancy reference into learning.symbol_data and relied on SOMEONE ELSE to flush that dict to disk. LearningManager._save is reached through record_trade -- so a session that takes NO TRADES never saves. 20260910_011211 ran six scans, took zero trades, built a perfectly good reference, and the next session still opened with 'no expectancy reference yet this session'. The carry-over only worked 20260910_095131 -> 20260911_175650 because that session happened to take a trade. A persistence feature that only persists when something else decides to save is not persistence, it is luck, and it is the 'computed but never wired' family with my name on it. The reference now flushes itself, throttled to once per ten minutes so a phone is not thrashed. C456-3, A BLIND WINDOW IS NOT A NEUTRAL ONE. The session logged SIX 'SLEEP DETECTED' events, up to 6.0 minutes, and one (13:58, 4.2min) landed while USELESS was open. The monitor runs every 0.8s, so a four-minute gap means the peak that position carries HAS A HOLE IN IT -- and PEAK_REVERSAL, REL_GIVEBACK, TRAILING_TP and PEAK_FLOOR all judge against a peak while reporting it as though it were complete. Now recorded per position and warned, cumulative across gaps. RECORDED, NOT ACTED ON: changing an exit on the strength of a gap would alter trading behaviour in the one version whose entire purpose is to repair the measuring instrument. ALSO: the fast verdict line printed a hardcoded '30min later' beside a number taken from C444_SETTLE_MIN. It now reads the constant -- one state, two truths, and it was inside the grader. WHAT THE LOGS PROVED THAT IS NOT BEING FIXED YET, RECORDED IN FULL SO NOTHING IS LOST. (1) THE ENTRY STACK HAS NO EDGE, and the repaired C451 line is what finally said so: '(17 scored of 26 graded): low n=3 -0.23R | mid n=6 -0.43R | high n=8 +0.02R -- overall -0.19R/trade -> NOT monotone'. The BEST band is breakeven. Within session C alone, corr(entry score, outcome) = -0.003 over nine trades; the two HIGHEST-scoring trades (both 0.865) both lost; the best trade (BLUR +$0.91) scored 0.605, fifth of nine. The old C455 verdict logic would have printed 'the stack ranks' here, because high beats low -- C455-1 is earning its keep. (2) THE SCORE SATURATES. Six of eighteen candidates scored EXACTLY 0.865, the maximum; the cause is `_c288_score = tanh(_c288_core * 2.2)`, which flattens at the top, and the post-penalty score is a near-constant 0.60x the pre-penalty value (ratio 0.598-0.602 in eight of nine observations), so the flattening survives. C435-2 then drops candidates BY SCORE -- so ties at the ceiling are broken by list order, which is Step 1's LIVELINESS order, and the bias forty gates were built to remove re-enters at the final gate. (3) R IS INVERTED, NOW REPLICATED FOUR WAYS: C454's two sessions read R positive 30 of 30 while the market FELL; this session read R negative 83 and positive 37 while the market ROSE +3.08%% with 82%% of pairs up; my independent proxy measured corr(R, next hour) = -0.427; C420-7 measured -0.212. It flipped sign between tapes and was wrong both times. AND the gate disagrees with the print: counter-trend blocks ran 145 short / 60 long while the printed resultant was mostly NEGATIVE, which is the wrong way round -- unverified, and it needs tracing before anything is changed. (4) EVERY POSITION IS CUT BY 61%%. All eleven entries were budget-haircut ($68.75->$12.63, $46.54->$10.41, $68.71->$19.68, mean -61%%) because C403 wants 6 trades/day while C369 allocates $1.70/day of risk, which at ~$0.65 per trade funds about 2.6. Two governors, contradictory orders, silent reconciliation. The SIZING ITSELF IS CORRECT -- leverage is ATR-capped so notional x volatility stays constant, and I suspected it was backwards until the data disproved me: risk per trade really is equalised near 1R. (5) C455-4 FIRES AND CHANGES NOTHING. 77 fires, 75 long / 2 short, and yet ALL TEN entries sat at 80-99%% of their own 3h range, mean 88%%. A 12%% penalty cannot reorder a pool in which every candidate is extended; it needed to change WHICH pairs reach the shortlist, not shave scores at the end. (6) CAPTURE IS 20%%: MFE +2.05%% average, MAE -1.09%%, realised +0.41%%, with eight of ten trades going favourable at some point. (7) The bot's own detector flagged DIRECTIONAL_BIAS_LONG NINE TIMES and nothing consumes it. (8) C369 prints the daily budget twice at boot with different values ($50.00 then $249.90, ten seconds apart). OPERATIONAL HEALTH, WHICH IS GENUINELY GOOD: zero errors, zero tracebacks, zero exceptions across 66,861 log lines; two staleness mentions; the parallel warm-start fired on every scan; the C427 ledger reconciles (14 PnL events summing -$0.07 against equity $249.90 -> $249.84). The operator confirmed the $250 balance is real. VERIFICATION: syntax; AST 366 functions UNCHANGED (no new defs -- the fix is branches, not machinery); duplicate defs 0; class-ownership sweep CLEAN across 31,323 lines; all FIVE C456 constants confirmed read; the retro runs the real ten graded exits through the real band logic and asserts the four-flip result; the clamp asserted at four projections (35, 60, 600, 20 min). A FALSE POSITIVE IN MY OWN AUDIT WAS CAUGHT AND FIXED RATHER THAN IGNORED: the rebuilt sweep flagged RemoteControl calling Handler methods, which is a class NESTED inside a RemoteControl method that defines those methods itself -- the script was walking nested classes as though they belonged to the outer one. The tool was wrong, not the code, and the corrected sweep reports clean. LIMITS. C456-1 has never run live; the retro uses my chart-verified +3h prices as a stand-in for what the grader will fetch at 45-240min, so the FOUR-FLIP number is indicative, not a prediction. The 45-240min clamp is a judgement. C456-3 records a blind window but nothing consumes it yet, which is deliberate and also means it is unproven. C455-2 has STILL never fired -- C414 fired five times all session and its only held-symbol hit (BGB 18:33) was forty-five minutes BEFORE that position opened, so the wiring remains armed and untested. THE NEXT LOG'S ONE JOB: read 'C456 HORIZON AUDIT'. If it says the fast grade is flattering the exits, then eleven versions of exit conclusions were drawn on a broken instrument and the exit stack must be re-judged from scratch before another patch is written. Chain C367-C456 intact."),
@@ -15886,7 +16008,7 @@ class TradingBot:
     def run(self):
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
-        logger.info("🤖 OMEGA V60 — ORDERED-GEOMETRY ENGINE (C458)")
+        logger.info("🤖 OMEGA V60 — MEASURED-GEOMETRY ENGINE (C459)")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -18906,21 +19028,66 @@ class TradingBot:
                 # At T = T_hist this is IDENTICAL to the old line, so nothing
                 # changes in the regime where the evidence actually applies.
                 _base458 = self._c420_base_rate()
-                _Thist458 = 1.41
+                # ═══ C459-5: ANCHOR ON THE REALISED PAYOFF, NOT ON A TARGET ══
+                # C458-3 anchored the edge at the median target the bot AIMED
+                # at. That was right to stop the edge growing with an unreached
+                # target, and it is still wrong in one way that C459-2 makes
+                # acute: the target is a PLAN and the payoff is an OUTCOME. Now
+                # that the target moves from 0.65R to 2.00R, an aim-anchored
+                # edge reads the ledger's OLD aims against the NEW win rate for
+                # however long the transition takes, and shuts the book on an
+                # artefact of its own re-tuning.
+                # The realised payoff has no such lag, because it is the same
+                # kind of quantity as the win rate and is measured on the same
+                # trades. The break-even identity is exact and needs no
+                # fair-odds model at all:
+                #     E > 0   <=>   wr x payoff > (1 - wr)   <=>   wr > 1/(1+payoff)
+                # so the edge over break-even IS wr - 1/(1+payoff). Policy-
+                # invariant by construction: change the geometry and both terms
+                # move together, which is what they are supposed to do.
+                # C459-5 records pnlR on every close so this is computable; the
+                # aim anchor stays as the fallback until enough R-denominated
+                # outcomes exist.
+                _ref458 = None
+                _src458 = ''
                 try:
-                    _aims458 = sorted(
-                        float(r.get('aimT'))
-                        for r in (list((getattr(getattr(self, 'learning', None),
-                                                'symbol_data', {}) or {})
-                                       .get('_recent_trades', []) or []))
+                    _recs458 = [r for r in (list(
+                        (getattr(getattr(self, 'learning', None), 'symbol_data', {}) or {})
+                        .get('_recent_trades', []) or []))
                         if not r.get('admin', False)
-                        and isinstance(r.get('aimT'), (int, float))
-                        and float(r.get('aimT')) > 0)
-                    if len(_aims458) >= int(getattr(c, 'C458_MIN_AIM_N', 6)):
-                        _Thist458 = _aims458[len(_aims458) // 2]
+                        and isinstance(r.get('pnlR'), (int, float))]
+                    _w458 = [float(r['pnlR']) for r in _recs458 if float(r['pnlR']) > 0]
+                    _l458 = [-float(r['pnlR']) for r in _recs458 if float(r['pnlR']) < 0]
+                    _mn458 = int(getattr(c, 'C459_MIN_PAYOFF_N', 4))
+                    if len(_w458) >= _mn458 and len(_l458) >= _mn458:
+                        _aw458 = sum(_w458) / len(_w458)
+                        _al458 = sum(_l458) / len(_l458)
+                        if _al458 > 1e-6:
+                            _ref458 = max(0.20, min(6.0, _aw458 / _al458))
+                            _src458 = (f"realised payoff {_ref458:.2f} "
+                                       f"({len(_w458)}W/{len(_l458)}L in R)")
                 except Exception:
                     pass
-                _Thist458 = max(0.20, min(4.0, _Thist458))
+                if _ref458 is None:
+                    _aims458 = []
+                    try:
+                        _aims458 = sorted(
+                            float(r.get('aimT'))
+                            for r in (list((getattr(getattr(self, 'learning', None),
+                                                    'symbol_data', {}) or {})
+                                           .get('_recent_trades', []) or []))
+                            if not r.get('admin', False)
+                            and isinstance(r.get('aimT'), (int, float))
+                            and float(r.get('aimT')) > 0)
+                    except Exception:
+                        pass
+                    if len(_aims458) >= int(getattr(c, 'C458_MIN_AIM_N', 6)):
+                        _ref458 = _aims458[len(_aims458) // 2]
+                        _src458 = f"median aimed target {_ref458:.2f}R (no R-outcomes yet)"
+                    else:
+                        _ref458 = 1.41
+                        _src458 = 'cold default 1.41R'
+                _Thist458 = max(0.20, min(6.0, _ref458))
                 e_at_hist = _base458 - (1.0 / (1.0 + _Thist458))
                 try:
                     _dist458 = abs(math.log(max(_T, 1e-6) / _Thist458))
@@ -18929,9 +19096,11 @@ class TradingBot:
                 _shrink458 = 1.0 / (1.0 + float(
                     getattr(c, 'C458_T_EXTRAP_PENALTY', 1.50)) * _dist458)
                 e_real = e_at_hist * _shrink458
-                self._c458_edge_note = (f"anchored at T_hist {_Thist458:.2f}R "
-                                        f"(e {e_at_hist:+.4f}) x extrapolation "
-                                        f"shrink {_shrink458:.2f} to T {_T:.2f}R")
+                self._c458_edge_note = (f"anchored on {_src458} "
+                                        f"(break-even wr {1.0/(1.0+_Thist458):.3f} vs "
+                                        f"realised {_base458:.3f} = e {e_at_hist:+.4f}) "
+                                        f"x extrapolation shrink {_shrink458:.2f} "
+                                        f"to T {_T:.2f}R")
             if e_real is None:
                 edge = e_prior
                 note = f"prior {e_prior:+.4f} (C398 corpus, no live record)"
@@ -20223,6 +20392,7 @@ class TradingBot:
             # _c421_edge; both are free here and unobtainable later.
             _c458_aimT = None
             _c458_peakR = None
+            _c458_pnlR = None
             try:
                 _R458 = float(getattr(pos, '_c372_R_pct', 0.0) or 0.0)
                 _tg458 = float(getattr(pos, '_planned_target', 0.0) or 0.0)
@@ -20231,6 +20401,7 @@ class TradingBot:
                     if _tg458 > 0:
                         _c458_aimT = abs(_tg458 - _ep458) / _ep458 * 100.0 / _R458
                     _c458_peakR = max(0.0, float(getattr(pos, 'peak_pnl_pct', 0.0) or 0.0)) / _R458
+                    _c458_pnlR = float(pnl_pct) / _R458
             except Exception:
                 pass
             # C7: Record for meta-learning
@@ -20253,6 +20424,11 @@ class TradingBot:
                 # of a target the bot has never reached.
                 'aimT': round(float(_c458_aimT), 3) if _c458_aimT else None,
                 'peakR': round(float(_c458_peakR), 3) if _c458_peakR else None,
+                # C459-5: the OUTCOME in the same units. Without it the ledger
+                # can report a win rate but not a payoff, and a win rate alone
+                # cannot say whether the bot has edge -- which is the whole
+                # question _c421_edge exists to answer.
+                'pnlR': round(float(_c458_pnlR), 3) if _c458_pnlR is not None else None,
             }
             self.learning.symbol_data.setdefault('_recent_trades', []).append(_trade_rec)
             if len(self.learning.symbol_data.get('_recent_trades', [])) > 20:
@@ -27896,6 +28072,29 @@ class TradingBot:
                         # measured win rate by band; the gap to the best is the weight
                         _wr457 = {1: 49.5, 2: 50.5, 3: 58.1, 4: 48.6, 5: 47.5, 6: 46.2}
                         _w457 = _wr457.get(_lev457, 46.2)
+                        # ═══ C459-6: THE 1x BUCKET HAS NO CEILING ═══════════
+                        # _lev457 = max(1, int(2.0/ATR)), so EVERY pair above
+                        # 2.00% ATR collapses into "1x" and inherits the
+                        # 1.00-2.00% band's 49.5% win rate. The C457 table was
+                        # built from the bot's own trades, where 1x meant
+                        # 1.00-2.00% because C61 never assigned leverage above
+                        # that -- the label was never meant to carry a tail it
+                        # could not see.
+                        # MEASURED on an independent batch (35 pairs, 2,400 15m
+                        # bars, 5,116 non-overlapping barrier trades at the
+                        # C459-2 geometry), expectancy by true ATR band:
+                        #     <0.33%  -0.0654    0.50-0.67%  -0.0234
+                        #     0.33-0.40 -0.0895  0.67-1.00%  -0.0157
+                        #     0.40-0.50 -0.0804  1.00-2.00%  -0.0197
+                        #     >2.00%  -0.2357   <-- TEN TIMES WORSE than any
+                        #                            other band, and invisible
+                        #                            to the 1x label
+                        # A pair whose own ATR exceeds 2% cannot be given a
+                        # stop that is both wide enough to breathe and small
+                        # enough to pay, which is the same thing C61's PRU cap
+                        # says and the reason it pins such pairs at 1x.
+                        if _atr457 > float(getattr(self.cfg, 'C459_ATR_CEILING', 2.0)):
+                            _w457 = min(_w457, 40.0)   # below the worst measured band
                         _best457, _worst457 = 58.1, 46.2
                         _pen457 = (float(getattr(self.cfg, 'C457_ATR_MAX', 0.18))
                                    * max(0.0, _best457 - _w457) / (_best457 - _worst457))
@@ -30683,9 +30882,15 @@ class TradingBot:
                 pos.last_dsi = _entry_dsi
                 pos._dri_deviation_history.append(0.0)  # First reading = 0 deviation
                 pos._dsi_deviation_history.append(0.0)
-            pos.expected_hold_min = float(pred_hold)
+            # C459-4: the predictor's 30-60min hold was written for a 1.2 ATR
+            # target. The target is now 4 ATR and the horizon has to match it,
+            # or the clock closes the trade before the thesis can pay.
+            pos.expected_hold_min = max(float(pred_hold),
+                                        float(getattr(self.cfg, 'C459_MIN_HOLD_MIN', 120.0)))
             # C378: arm the exchange stop the moment the position exists, at the
-            # SAME 1.5R that C377 enforces in-process. One level, two enforcers:
+            # SAME C377_HARD_STOP_R level C377 enforces in-process (C459-2 moved
+            # it from 1.5R to 0.75R; this reads the constant, never a literal).
+            # One level, two enforcers:
             # C377 while the bot runs, the exchange while it does not.
             try:
                 _r378 = float(analysis.get('_c372_R_pct', 0.0) or 0.0)
