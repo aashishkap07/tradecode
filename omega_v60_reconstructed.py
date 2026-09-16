@@ -400,6 +400,43 @@ def _c462_bar(frac, width=20, full='█', empty='░'):
     return full * n + empty * (width - n)
 
 
+def _c462_width():
+    """How many columns the report may use.
+
+    THE OPERATOR RUNS THIS ON A NOTHING PHONE 2 IN PYDROID3. A phone terminal in
+    portrait shows roughly 44-50 monospace columns at a readable font size, and
+    a 74-column box does not truncate there -- it WRAPS, which puts half of
+    every row on the next line with no left border and turns a table back into
+    the wall of text C462-4 was written to replace. A box that wraps is worse
+    than no box.
+
+    Resolution order, most explicit first:
+      OMEGA_LOG_WIDTH  an env var, so the width can be changed without editing
+      COLUMNS          the shell's own answer where one exists
+      Android          46 columns, portrait-safe on a 1080px phone
+      otherwise        the real terminal size, clamped
+    Clamped to 34..100 either way: below 34 nothing readable fits, and above
+    100 the eye loses the row it is on.
+    """
+    import shutil
+    for var in ('OMEGA_LOG_WIDTH', 'COLUMNS'):
+        try:
+            v = int(os.environ.get(var, '') or 0)
+            if v:
+                return max(34, min(100, v))
+        except Exception:
+            pass
+    try:
+        if os.path.exists('/storage/emulated/0'):      # same test as IS_ANDROID
+            return 46
+    except Exception:
+        pass
+    try:
+        return max(34, min(100, shutil.get_terminal_size((72, 24)).columns))
+    except Exception:
+        return 72
+
+
 class _C462Report:
     """The dashboard. Fixed width, named rows, no surprises.
 
@@ -412,12 +449,16 @@ class _C462Report:
         profit exits maker and until now NOTHING reported whether either
         actually happened -- C462-1 found the exit path had never fired once.
     """
-    W = 74     # total block width. Wider than this wraps on the operator's
-               # phone terminal, and a box that wraps is worse than no box.
+    W = 46     # class default; the instance resolves the real one at boot.
     LW = 9     # label column, so every row's text starts at the same column
 
     def __init__(self, path):
         self.path = path
+        # C462-8: resolved ONCE, at construction, so every line in a session is
+        # the same width. Re-reading it per row would let the box change shape
+        # mid-block if anything ever touched COLUMNS.
+        self.W = _c462_width()
+        self.LW = 9 if self.W >= 56 else 0   # no label gutter on a phone
         self.t0 = time.time()
         self.trades = []          # closed-trade journal, this session
         self.opens = []           # open records, this session
@@ -466,17 +507,78 @@ class _C462Report:
             pass
 
     def _row(self, label, text):
-        """One named row. The label column is fixed so the eye runs down it.
-
-        Text is TRUNCATED, never wrapped: a wrapped row breaks the right
-        border, and a broken border is how a block stops reading as a table.
-        Every caller is written to fit; this is only the backstop.
-        """
+        """One named row. Truncated, never wrapped -- a wrapped row breaks the
+        right border, and a broken border is how a block stops reading as a
+        table. Prefer _pack, which FITS the content instead of cutting it."""
         budget = self.W - 3 - self.LW
         t = str(text)
         if len(t) > budget:
             t = t[:budget - 1] + '…'
-        self._emit(f"│ {str(label):<{self.LW}}{t:<{budget}}│")
+        if self.LW:
+            self._emit(f"│ {str(label):<{self.LW}}{t:<{budget}}│")
+        else:
+            body = (f"{label} " if label else '') + t
+            body = body[:budget]
+            self._emit(f"│ {body:<{budget}}│")
+
+    def _wrapped(self, prefix, parts, sep=' · '):
+        """C462-8: the same packing, for the un-boxed continuation lines under
+        a trade record. Kept separate from _pack because these carry a prefix
+        glyph rather than a label gutter, and the glyph is what lets the
+        readable-log filter recognise them."""
+        budget = self.W - len(prefix)
+        cur = ''
+        for part in [str(x) for x in parts if x not in (None, '')]:
+            trial = (cur + sep + part) if cur else part
+            if cur and len(trial) > budget:
+                self._emit(prefix + cur)
+                cur = part
+            else:
+                cur = trial
+        if cur:
+            self._emit(prefix + cur)
+
+    def _pack(self, label, parts, sep=' · '):
+        """C462-8: FIT THE CONTENT TO THE PHONE, DO NOT CUT IT OFF.
+
+        The operator runs this on a Nothing Phone 2 in Pydroid3, so the box is
+        46 columns in portrait and a row like
+            RECORD  2 closed | 2W 0L | win 100% | payoff n/a | avg +$0.26/tr
+        cannot be one line there. Truncating it would throw away the payoff and
+        the expectancy -- the two figures that took the longest to get right.
+
+        So a row is a LIST OF SHORT FACTS and this packs as many as fit per
+        line, continuing underneath with no repeated label. At 72+ columns the
+        whole row lands on one line, exactly as a desktop terminal showed it
+        before; at 46 it becomes two or three tidy lines. ONE layout, two
+        devices, no second code path to drift out of step.
+        """
+        parts = [str(x) for x in parts if x not in (None, '')]
+        if not parts:
+            return
+        inner = self.W - 3                      # space inside the two borders
+        # C462-8 FIX, found by rendering at 46: the first line must RESERVE the
+        # label before the parts are measured against it. Measuring first and
+        # prepending the label afterwards overflows by exactly len(label), and
+        # the row then truncates -- which at 46 columns cut "unreal $+0.28" to
+        # "unreal $+0." and "35% used" to "35% use". A packer that truncates is
+        # the thing it was written to replace.
+        if self.LW:
+            head, cont, pad = f"{label:<{self.LW}}", ' ' * self.LW, ''
+        else:
+            head, cont, pad = (f"{label} " if label else ''), '  ', ''
+        lines, cur, lead = [], '', head
+        for part in parts:
+            trial = (cur + sep + part) if cur else part
+            if cur and len(lead) + len(trial) > inner:
+                lines.append(lead + cur)
+                lead, cur = cont, part
+            else:
+                cur = trial
+        if cur:
+            lines.append(lead + cur)
+        for ln in lines:
+            self._emit(f"│ {ln[:inner]:<{inner}}│")
 
     def _raw(self, text):
         """Full-width row, no label column — the position and trade tables."""
@@ -496,6 +598,24 @@ class _C462Report:
         t = f" {title} " if title else ''
         fill = '─' * max(0, self.W - 3 - len(t))
         self._emit(f"┌─{t}{fill}┐")
+
+    def set_width(self, cols):
+        """C462-8: let Config override the resolved width.
+
+        The reporter is built at IMPORT time, before Config exists, so the
+        automatic answer is all it can have at construction. The operator edits
+        ONE number in Config -- no env var, no shell, which matters on a phone
+        where there is no convenient shell at all -- and startup applies it
+        here before the first block is drawn.
+        """
+        try:
+            c = int(cols or 0)
+            if c:
+                self.W = max(34, min(100, c))
+                self.LW = 9 if self.W >= 56 else 0
+        except Exception:
+            pass
+        return self.W
 
     def _uptime(self):
         s = int(time.time() - self.t0)
@@ -544,15 +664,27 @@ class _C462Report:
             self._emit('╭' + '─' * (self.W - 2) + '╮')
             t = f"OMEGA {version} · {mode} · Bitget perps"
             r = datetime.now().strftime('%Y-%m-%d %H:%M')
-            self._emit(f"│ {t}{' ' * max(1, self.W - 4 - len(t) - len(r))}{r} │")
-            self._emit('╰' + '─' * (self.W - 2) + '╯')
+            if len(t) + len(r) + 4 <= self.W:
+                self._emit(f"│ {t}{' ' * max(1, self.W - 4 - len(t) - len(r))}{r} │")
+            else:
+                # C462-8: a phone cannot hold the title and the stamp on one
+                # line, and squeezing them prints a title with no gap.
+                self._emit(f"│ {t:<{self.W - 3}}│")
+                self._emit(f"│ {r:<{self.W - 3}}│")
             self.note_equity(equity)
-            line = f"start equity {_c462_money(equity)}"
+            # C462-8: the start line lives INSIDE the box. Outside it, a line
+            # that wrapped would begin "· universe ..." on its second row, and
+            # "· " is C460-1's per-pair news DROP prefix -- the continuation
+            # would have been silently deleted from the readable log. Inside
+            # the box it carries the "│" the filter always passes, and it
+            # reads better as well.
+            parts = [f"start equity {_c462_money(equity)}"]
             if day_barrier:
-                line += f"  ·  day barrier ±{float(day_barrier):.2f}%"
+                parts.append(f"day barrier ±{float(day_barrier):.2f}%")
             if pairs:
-                line += f"  ·  universe {pairs} pairs"
-            self._emit('· ' + line)
+                parts.append(f"universe {pairs} pairs")
+            self._pack('', parts)
+            self._emit('╰' + '─' * (self.W - 2) + '╯')
             self._emit('')
         except Exception as e:
             try:
@@ -576,10 +708,15 @@ class _C462Report:
             # continuation says WHY and on what terms, in plain words. A single
             # 90-character line wraps on the operator's phone and the wrap is
             # what made the old log unreadable in the first place.
-            self._emit(f"▲ {datetime.now().strftime('%H:%M')} OPEN   "
-                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(price):<11}"
-                       f"×{lev}  margin {_c462_money(margin)}")
+            # C462-8: the head line carries WHAT happened and always fits; the
+            # numbers move down to the wrapped detail when the screen is narrow.
+            _head = f"▲ {datetime.now().strftime('%H:%M')} OPEN  {short[:9]} {str(side).upper()}"
             det = []
+            if self.W >= 62:
+                _head += f" @{_fmt_px(price)}  ×{lev} {_c462_money(margin)}"
+            else:
+                det += [f"@{_fmt_px(price)}", f"×{lev} {_c462_money(margin)}"]
+            self._emit(_head)
             if target_pct:
                 det.append(f"target {float(target_pct):+.1f}%")
             if stop_pct:
@@ -587,7 +724,7 @@ class _C462Report:
             if score is not None:
                 det.append(f"entry score {float(score):.2f}")
             det.append('maker' if maker else 'TAKER')
-            self._emit('  │ ' + ' · '.join(det))
+            self._wrapped('  │ ', det)
         except Exception as e:
             try:
                 logger.warning(f"⚠️ C462 report open failed: {type(e).__name__}: {e}")
@@ -634,17 +771,25 @@ class _C462Report:
                     cap = f"round trip from {_pk:+.2f}%"
             except Exception:
                 cap = ''
-            self._emit(f"▼ {datetime.now().strftime('%H:%M')} CLOSE  "
-                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(exit_px):<11}"
-                       f"{float(move_pct):+.2f}%  net {_c462_money(net, sign=True)}"
-                       f"  [{'WIN' if verdict == 'W' else 'LOSS'}]")
-            det = [f"held {hh}", rs[:24]]
+            _head = (f"▼ {datetime.now().strftime('%H:%M')} CLOSE {short[:9]} "
+                     f"{str(side).upper()}  [{'WIN' if verdict == 'W' else 'LOSS'}]")
+            det = []
+            if self.W >= 62:
+                _head = (f"▼ {datetime.now().strftime('%H:%M')} CLOSE {short[:9]} "
+                         f"{str(side).upper()} @{_fmt_px(exit_px)}  "
+                         f"{float(move_pct):+.2f}% {_c462_money(net, sign=True)}  "
+                         f"[{'WIN' if verdict == 'W' else 'LOSS'}]")
+            else:
+                det += [f"@{_fmt_px(exit_px)}",
+                        f"{float(move_pct):+.2f}% → {_c462_money(net, sign=True)}"]
+            self._emit(_head)
+            det += [f"held {hh}", rs[:24]]
             if cap:
                 det.append(cap)
             if r_mult is not None:
                 det.append(f"{float(r_mult):+.2f}R")
             det.append('maker' if maker else 'TAKER')
-            self._emit('  │ ' + ' · '.join(det))
+            self._wrapped('  │ ', det)
         except Exception as e:
             try:
                 logger.warning(f"⚠️ C462 report close failed: {type(e).__name__}: {e}")
@@ -664,13 +809,19 @@ class _C462Report:
             else:
                 self.n_taker += 1
                 self.fees_taker += float(fee or 0.0)
-            self._emit(f"▽ {datetime.now().strftime('%H:%M')} HALF   "
-                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(fill):<11}"
-                       f"{float(move_pct):+.2f}%  banked {_c462_money(net, sign=True)}")
-            det = [f"{kind} half", 'maker' if maker else 'TAKER']
+            _head = f"▽ {datetime.now().strftime('%H:%M')} HALF  {short[:9]} {str(side).upper()}"
+            det = []
+            if self.W >= 62:
+                _head += (f" @{_fmt_px(fill)}  {float(move_pct):+.2f}% "
+                          f"{_c462_money(net, sign=True)}")
+            else:
+                det += [f"@{_fmt_px(fill)}",
+                        f"{float(move_pct):+.2f}% → {_c462_money(net, sign=True)}"]
+            self._emit(_head)
+            det += [f"{kind} half banked", 'maker' if maker else 'TAKER']
             if remainder_margin is not None:
-                det.append(f"{_c462_money(remainder_margin)} rides on as a runner")
-            self._emit('  │ ' + ' · '.join(det))
+                det.append(f"{_c462_money(remainder_margin)} rides on")
+            self._wrapped('  │ ', det)
         except Exception:
             pass
 
@@ -717,13 +868,21 @@ class _C462Report:
                 _ss = float(getattr(pf, 'session_start_equity', 0.0) or 0.0)
                 _sp = float(st.get('live_equity', 0.0)) - _ss if _ss > 0 else 0.0
                 _ls = self.last_scan or {}
-                self._emit(f"\u25aa {datetime.now().strftime('%H:%M')} flat · "
-                           f"eq {_c462_money(st.get('live_equity', 0))} · session "
-                           f"{_c462_money(_sp, sign=True)} "
-                           f"{(_sp / _ss * 100.0) if _ss > 0 else 0.0:+.2f}% · "
-                           f"{_s0['w']}W {_s0['l']}L"
-                           + (f" {100.0 * _s0['wr']:.0f}%" if _s0['n'] else '')
-                           + f" · {_ls.get('analyzed', 0)} analysed")
+                # C462-8: ONE line, always. A heartbeat that wraps to three is
+                # not a heartbeat. Parts are added in order of importance and
+                # the first one that does not fit ends the line.
+                _hb = f"\u25aa {datetime.now().strftime('%H:%M')} flat"
+                _pct_hb = (f" {(_sp / _ss * 100.0) if _ss > 0 else 0.0:+.2f}%"
+                           if self.W >= 52 else '')
+                for _part in (f"{_c462_money(st.get('live_equity', 0))}",
+                              f"{_c462_money(_sp, sign=True)}{_pct_hb}",
+                              f"{_s0['w']}W {_s0['l']}L"
+                              + (f" {100.0 * _s0['wr']:.0f}%" if _s0['n'] else ''),
+                              f"{_ls.get('analyzed', 0)} analysed"):
+                    if len(_hb) + 3 + len(_part) > self.W:
+                        break
+                    _hb += ' · ' + _part
+                self._emit(_hb)
                 self.note_equity(st.get('live_equity', 0))
                 return
             self._last_sig = _sig
@@ -740,15 +899,17 @@ class _C462Report:
             locked = float(st.get('locked', 0.0) or 0.0)
 
             self._emit('')
-            self._rule(f"STATUS {datetime.now().strftime('%H:%M:%S')} · up "
-                       f"{self._uptime()} · scan #{self.n_scans}")
+            self._rule(f"{datetime.now().strftime('%H:%M')} · up {self._uptime()}"
+                       + (f" · scan #{self.n_scans}" if self.W >= 44 else ''))
 
             # --- money ---
-            self._row('EQUITY', f"{_c462_money(live)}  real {_c462_money(st.get('equity', 0))}"
-                                f"  unreal {_c462_money(st.get('unrealized', 0), sign=True)}")
-            self._row('SESSION', f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%  "
-                                 f"peak {_c462_money(self.peak_equity)}  dd {abs(dd):.2f}%")
-            spark = _c462_spark(self.equity_curve, 40)
+            self._pack('EQUITY', [_c462_money(live),
+                                  f"real {_c462_money(st.get('equity', 0))}",
+                                  f"unreal {_c462_money(st.get('unrealized', 0), sign=True)}"])
+            self._pack('SESSION', [f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%",
+                                   f"peak {_c462_money(self.peak_equity)}",
+                                   f"dd {abs(dd):.2f}%"])
+            spark = _c462_spark(self.equity_curve, self.W - 5 - self.LW)
             if spark:
                 self._row('CURVE', spark)
 
@@ -759,8 +920,9 @@ class _C462Report:
                 if day0 > 0 and cap > 0:
                     day_pct = (live - day0) / day0 * 100.0
                     used = abs(day_pct) / cap
-                    self._row('DAY', f"{day_pct:+.2f}% of ±{cap:.2f}%  "
-                                     f"[{_c462_bar(used, 16)}] {100.0 * used:.0f}% of budget")
+                    _bw = 16 if self.W >= 56 else 10
+                    self._pack('DAY', [f"{day_pct:+.2f}% of ±{cap:.2f}%",
+                                       f"[{_c462_bar(used, _bw)}] {100.0 * used:.0f}% used"])
                 else:
                     self._row('DAY', 'barrier not yet derived (no day anchor)')
             except Exception:
@@ -773,50 +935,56 @@ class _C462Report:
                 # as C460-3's invented anchor: a placeholder that reads as data.
                 payoff = 'n/a' if s['l'] == 0 else f"{s['payoff']:.2f}"
                 be = 'n/a' if s['l'] == 0 else f"{100.0 * s['breakeven_wr']:.0f}%"
-                self._row('RECORD', f"{s['n']} closed · {s['w']}W {s['l']}L · "
-                                    f"win {100.0 * s['wr']:.0f}% · payoff {payoff} · "
-                                    f"avg {_c462_money(s['expectancy'], sign=True)}/tr")
-                self._row('', f"best {_c462_money(max((t['net'] for t in self.trades), default=0), sign=True)} · "
-                              f"worst {_c462_money(min((t['net'] for t in self.trades), default=0), sign=True)} · "
-                              f"break-even {be}")
+                self._pack('RECORD', [
+                    f"{s['n']} closed", f"{s['w']}W {s['l']}L",
+                    f"win {100.0 * s['wr']:.0f}%", f"payoff {payoff}",
+                    f"avg {_c462_money(s['expectancy'], sign=True)}/tr",
+                    f"best {_c462_money(max((t['net'] for t in self.trades), default=0), sign=True)}",
+                    f"worst {_c462_money(min((t['net'] for t in self.trades), default=0), sign=True)}",
+                    f"break-even {be}"])
             else:
                 self._row('RECORD', 'no closed trades yet this run')
 
             lt = int(getattr(pf, 'lifetime_trades', 0) or 0)
             if lt > 0:
-                self._row('LIFETIME', f"{lt} closed · {int(getattr(pf, 'lifetime_wins', 0))}W "
-                                      f"{int(getattr(pf, 'lifetime_losses', 0))}L · "
-                                      f"win {float(st.get('win_rate', 0)):.0f}% · "
-                                      f"P&L {_c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)}")
+                self._pack('LIFETIME', [
+                    f"{lt} closed",
+                    f"{int(getattr(pf, 'lifetime_wins', 0))}W "
+                    f"{int(getattr(pf, 'lifetime_losses', 0))}L",
+                    f"win {float(st.get('win_rate', 0)):.0f}%",
+                    f"P&L {_c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)}"])
 
             # --- exposure ---
             if open_pos:
                 expo = 100.0 * locked / live if live > 0 else 0.0
-                self._row('OPEN', f"{len(open_pos)} pos · margin {_c462_money(locked)} "
-                                  f"({expo:.1f}%) · free {_c462_money(st.get('available', 0))}")
+                self._pack('OPEN', [f"{len(open_pos)} pos",
+                                    f"margin {_c462_money(locked)} ({expo:.1f}%)",
+                                    f"free {_c462_money(st.get('available', 0))}"])
             else:
-                self._row('OPEN', f"flat · free {_c462_money(st.get('available', 0))}")
+                self._pack('OPEN', ['flat',
+                                    f"free {_c462_money(st.get('available', 0))}"])
 
             # --- cost, which C461 made the headline number of this project ---
             tot_fee = self.fees_maker + self.fees_taker
             if (self.n_maker + self.n_taker) > 0:
-                self._row('FEES', f"{_c462_money(tot_fee)} · maker {self.n_maker} / "
-                                  f"taker {self.n_taker} fills · "
-                                  f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of equity")
+                self._pack('FEES', [_c462_money(tot_fee),
+                                    f"maker {self.n_maker} / taker {self.n_taker}",
+                                    f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of equity"])
             else:
                 self._row('FEES', 'no fills yet this run')
 
             # --- what the scanner is seeing ---
             if self.last_scan:
                 ls = self.last_scan
-                line = (f"{ls.get('seen') or '?'}→{ls.get('analyzed') or 0} analysed"
-                        f"→{ls.get('passed') or 0} passed")
+                _sp2 = [f"{ls.get('seen') or '?'}→{ls.get('analyzed') or 0}"
+                        f"→{ls.get('passed') or 0} passed"]
                 if ls.get('top'):
-                    line += (f" · top {str(ls['top']).split('/')[0]}"
-                             + (f" {float(ls['score']):.2f}" if ls.get('score') is not None else '')
-                             + (f" {str(ls['reason'])[:18]}" if ls.get('reason') else ''))
-                self._row('SCAN', line)
-                self._row('', f"{self.n_scans} scans · {self.n_analyses} analyses this run")
+                    _sp2.append("top " + str(ls['top']).split('/')[0]
+                                + (f" {float(ls['score']):.2f}" if ls.get('score') is not None else ''))
+                    if ls.get('reason'):
+                        _sp2.append(str(ls['reason'])[:22])
+                _sp2.append(f"{self.n_scans} scans · {self.n_analyses} analysed")
+                self._pack('SCAN', _sp2)
 
             # --- market backdrop, read from whatever the bot already computed ---
             try:
@@ -843,15 +1011,21 @@ class _C462Report:
                 if tk is not None:
                     bits.append(f"taker flow {float(tk):+.2f}")
                 if bits:
-                    self._row('MARKET', ' · '.join(bits))
+                    self._pack('MARKET', bits)
             except Exception:
                 pass
 
             # --- open-position table, one row each ---
             if open_pos:
                 self._rule(mid=True)
-                self._raw(f"{'PAIR':<9}{'SIDE':<6}{'ENTRY':>10}{'MARK':>10}"
-                          f"{'MOVE':>8}{'P&L':>8}{'AGE':>6}  THESIS")
+                # C462-8: a seven-column table needs ~66 characters. Below that
+                # it is not a table, it is seven columns of wrapped rubble — so
+                # a narrow screen gets a two-line STANZA per position instead,
+                # carrying exactly the same seven facts.
+                _wide = self.W >= 66
+                if _wide:
+                    self._raw(f"{'PAIR':<9}{'SIDE':<6}{'ENTRY':>10}{'MARK':>10}"
+                              f"{'MOVE':>8}{'P&L':>8}{'AGE':>6}  THESIS")
                 for sym, pos in list(open_pos.items()):
                     try:
                         px = bot.exchange.get_current_price(sym)
@@ -871,9 +1045,15 @@ class _C462Report:
                         except Exception:
                             th = '—'
                         mark = '▲' if net > 0 else ('▼' if net < 0 else '·')
-                        self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
-                                  f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
-                                  f"{mv:>+7.2f}%{net:>+8.2f}{ag:>6}  {mark} {th}")
+                        if _wide:
+                            self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
+                                      f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
+                                      f"{mv:>+7.2f}%{net:>+8.2f}{ag:>6}  {mark} {th}")
+                        else:
+                            self._raw(f"{mark} {short[:9]} {pos.side.upper()}  "
+                                      f"{mv:+.2f}%  {_c462_money(net, sign=True)}")
+                            self._raw(f"  {_fmt_px(pos.entry_price)}→{_fmt_px(px)}"
+                                      f" · {ag} · {th}")
                     except Exception:
                         continue
             self._rule(bottom=True)
@@ -898,8 +1078,9 @@ class _C462Report:
             s = self.stats()
             self._emit('')
             self._rule('SESSION SUMMARY')
-            self._row('RAN', f"{self._uptime()} · {self.n_scans} scans · "
-                             f"{self.n_analyses} pair-analyses · {s['n']} closed trades")
+            self._pack('RAN', [self._uptime(), f"{self.n_scans} scans",
+                               f"{self.n_analyses} pair-analyses",
+                               f"{s['n']} closed trades"])
             if self.equity_curve:
                 first, last = self.equity_curve[0], self.equity_curve[-1]
                 pct = (last - first) / first * 100.0 if first > 0 else 0.0
@@ -908,53 +1089,66 @@ class _C462Report:
                 for v in self.equity_curve:
                     pk = max(pk, v)
                     dd = min(dd, (v - pk) / pk * 100.0 if pk > 0 else 0.0)
-                self._row('P&L', f"{_c462_money(last - first, sign=True)} ({pct:+.2f}%) · "
-                                 f"{_c462_money(first)} → {_c462_money(last)} · "
-                                 f"maxDD {abs(dd):.2f}%")
-                sp = _c462_spark(self.equity_curve, 56)
+                self._pack('P&L', [f"{_c462_money(last - first, sign=True)} ({pct:+.2f}%)",
+                                   f"{_c462_money(first)} → {_c462_money(last)}",
+                                   f"maxDD {abs(dd):.2f}%"])
+                sp = _c462_spark(self.equity_curve, self.W - 5 - self.LW)
                 if sp:
                     self._row('CURVE', sp)
             if s['n'] > 0:
                 payoff = 'n/a' if s['l'] == 0 else f"{s['payoff']:.2f}"
                 pfv = 'n/a' if s['l'] == 0 else f"{s['pf']:.2f}"
                 be = 'n/a' if s['l'] == 0 else f"{100.0 * s['breakeven_wr']:.0f}%"
-                self._row('RECORD', f"{s['w']}W {s['l']}L · win {100.0 * s['wr']:.0f}% · "
-                                    f"payoff {payoff} · profit factor {pfv}")
-                self._row('', f"avg win {_c462_money(s['avg_w'], sign=True)} · avg loss "
-                              f"{('n/a' if s['l'] == 0 else _c462_money(-s['avg_l'], sign=True))} · "
-                              f"break-even {be}")
-                self._row('', f"expectancy {_c462_money(s['expectancy'], sign=True)} per trade · "
-                              f"gross {_c462_money(s['gross_win'])} won / "
-                              f"{_c462_money(s['gross_loss'])} lost")
+                self._pack('RECORD', [
+                    f"{s['w']}W {s['l']}L", f"win {100.0 * s['wr']:.0f}%",
+                    f"payoff {payoff}", f"profit factor {pfv}",
+                    f"avg win {_c462_money(s['avg_w'], sign=True)}",
+                    "avg loss " + ('n/a' if s['l'] == 0
+                                   else _c462_money(-s['avg_l'], sign=True)),
+                    f"break-even {be}",
+                    f"expectancy {_c462_money(s['expectancy'], sign=True)}/tr",
+                    f"gross {_c462_money(s['gross_win'])} won",
+                    f"{_c462_money(s['gross_loss'])} lost"])
                 held = [t['held'] for t in self.trades if t.get('held')]
                 if held:
-                    self._row('HOLD', f"median {sorted(held)[len(held) // 2]:.0f}m · "
-                                      f"range {min(held):.0f}–{max(held):.0f}m")
+                    self._pack('HOLD', [f"median {sorted(held)[len(held) // 2]:.0f}m",
+                                        f"range {min(held):.0f}–{max(held):.0f}m"])
             tot_fee = self.fees_maker + self.fees_taker
             gross = sum(t['net'] for t in self.trades) + tot_fee
-            self._row('COST', f"fees {_c462_money(tot_fee)} · maker {self.n_maker} / "
-                              f"taker {self.n_taker} fills"
-                              + (f" · {100.0 * tot_fee / abs(gross):.0f}% of gross"
-                                 if abs(gross) > 1e-9 else ''))
-            # C462-4: the one number C461 rests the whole project on, stated as
-            # a rate rather than a total, because a total on two trades tells
-            # the operator nothing about whether the maker change is paying.
+            _cost = [f"fees {_c462_money(tot_fee)}",
+                     f"maker {self.n_maker} / taker {self.n_taker} fills"]
+            if abs(gross) > 1e-9:
+                _cost.append(f"{100.0 * tot_fee / abs(gross):.0f}% of gross")
             if (self.n_maker + self.n_taker) > 0:
-                self._row('', f"{100.0 * self.n_maker / (self.n_maker + self.n_taker):.0f}% of "
-                              f"fills were maker · maker {_c462_money(self.fees_maker)} / "
-                              f"taker {_c462_money(self.fees_taker)}")
+                # C462-4: the one number C461 rests the whole project on, as a
+                # RATE rather than a total -- a total on two trades says nothing
+                # about whether the maker change is paying.
+                _cost += [f"{100.0 * self.n_maker / (self.n_maker + self.n_taker):.0f}%"
+                          f" of fills maker",
+                          f"maker {_c462_money(self.fees_maker)}",
+                          f"taker {_c462_money(self.fees_taker)}"]
+            self._pack('COST', _cost)
             if self.exit_reasons:
                 top = sorted(self.exit_reasons.items(), key=lambda kv: -kv[1])[:6]
-                self._row('EXITS', ' · '.join(f"{k[:20]} {v}" for k, v in top))
+                self._pack('EXITS', [f"{k[:20]} {v}" for k, v in top])
             if self.trades:
                 self._rule(mid=True)
-                self._raw(f"{'PAIR':<9}{'SIDE':<6}{'MOVE':>8}{'NET':>9}{'HELD':>7}  EXIT")
+                _wide2 = self.W >= 62
+                if _wide2:
+                    self._raw(f"{'PAIR':<9}{'SIDE':<6}{'MOVE':>8}{'NET':>9}{'HELD':>7}  EXIT")
                 for t in self.trades:
                     hh = (f"{int(t['held'] // 60)}h{int(t['held'] % 60):02d}m"
                           if t['held'] >= 60 else f"{int(t['held'])}m")
-                    self._raw(f"{t['sym'][:8]:<9}{t['side']:<6}{t['move']:>+7.2f}%"
-                              f"{_c462_money(t['net'], sign=True):>9}{hh:>7}  "
-                              f"{t['reason'][:20]} [{'W' if t['net'] > 0 else 'L'}]")
+                    v = 'W' if t['net'] > 0 else 'L'
+                    if _wide2:
+                        self._raw(f"{t['sym'][:8]:<9}{t['side']:<6}{t['move']:>+7.2f}%"
+                                  f"{_c462_money(t['net'], sign=True):>9}{hh:>7}  "
+                                  f"{t['reason'][:20]} [{v}]")
+                    else:
+                        self._raw(f"{'▲' if v == 'W' else '▼'} {t['sym'][:9]} "
+                                  f"{t['side']}  {t['move']:+.2f}%  "
+                                  f"{_c462_money(t['net'], sign=True)}")
+                        self._raw(f"  {hh} · {t['reason'][:26]}")
             self._rule(bottom=True)
             self._emit('')
         except Exception as e:
@@ -2888,6 +3082,18 @@ class Config:
         # screen instead of scrolling a thousand lines.
         self.C462_STATUS_BLOCK   = True      # fixed-width dashboard on the timer
         self.C462_MAKER_HALF     = True      # C338 winning half rests as maker
+        # ═══ C462-8: THE REPORT IS READ ON A PHONE ════════════════════════
+        # The operator runs this in Pydroid3 on a Nothing Phone 2. A phone
+        # terminal in portrait shows roughly 44-50 monospace columns, and a
+        # 74-column box does not truncate there, it WRAPS -- half of every row
+        # lands on the next line with no left border, and the table becomes
+        # the wall of text C462-4 was built to replace.
+        # 0 = work it out automatically (46 on Android, the terminal's own
+        # width elsewhere). Set a number here if the box is too wide or too
+        # narrow on your screen -- that is the only dial, and it is safe to
+        # change at any time; the layout re-packs itself around whatever it is
+        # given, from 34 columns to 100.
+        self.C462_LOG_WIDTH      = 0
         self.C376_WAIT_S = 8
         # ═══ C377: THE RISK BUDGET MUST BE REAL, NOT ASPIRATIONAL ═══════
         # Every stop in this bot has been VIRTUAL — evaluated only when the
@@ -33642,10 +33848,13 @@ def startup():
             except Exception as _e462s:
                 print(f"  \u26a0\ufe0f  session baseline failed: {type(_e462s).__name__}")
             try:   # C462-4: open the report with a header, not a wall of text
+                _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
                 _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                     bot.portfolio.equity,
                                     day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
-                print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)}")
+                print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
+                      f"({_c462_report.W} cols — set C462_LOG_WIDTH in Config, "
+                      f"or OMEGA_LOG_WIDTH, if the box is the wrong size)")
             except Exception as _e462h:
                 print(f"  \u26a0\ufe0f  report header failed: {type(_e462h).__name__}")
             # ═══ C458-9: REPLAY THE GAP BEFORE ANYTHING ELSE TOUCHES THESE ══
@@ -33705,6 +33914,7 @@ def startup():
             pass
         try:
             bot.portfolio._c462_mark_session_start()
+            _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
             _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                 bot.portfolio.equity,
                                 day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
