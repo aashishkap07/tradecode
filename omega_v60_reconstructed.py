@@ -195,6 +195,7 @@ class _C460ConsoleFilter(logging.Filter):
         'equity', 'pnl', 'PnL', 'P&L', 'Win Rate', 'win rate',
         'budget', 'margin', 'Margin:', 'EXPLORATION', 'C458-9', 'C459',
         'DRI:', 'PRU:', 'STEP ', 'Scanning', 'meet volume threshold',
+        'C462-7',   # the penalty-stack verdict is a DECISION line, not working
     )
 
     # C462-4: the dashboard always survives, and is checked FIRST so that no
@@ -28466,6 +28467,54 @@ class TradingBot:
                 if best_rejected and best_rejected.get('symbol') == symbol:
                     best_rejected['_reject_reason'] = f'score {analysis["score"]:.3f} < {_eff_min_score:.3f}'
                 logger.info(f"   ❌ {symbol.split('/')[0]}: {analysis.get('direction','?')} scr={analysis['score']:.2f} conf={analysis['confidence']:.2f} → low score (<{_eff_min_score:.2f})")
+                # ═══ C462-7: NAME THE PENALTY STACK THAT DID THE KILLING ════
+                # THE CASE, from the operator's 20260916 session. SYN was the
+                # best trade on the board: the bot's own C266 board-parity line
+                # tracked it +71% -> +117% -> +126% -> +156% across the session
+                # and it was refused on every scan. Its own C340 target logic
+                # had already written "target 6.6%->16.6% - regime TU
+                # persisting 0.88 on an earned ledger". Then THREE separate
+                # penalties, all measuring THE SAME THING (this pair is
+                # extended to the upside), compounded multiplicatively:
+                #     overbought/stretched brake   x0.84
+                #     bearish rejection candle     x0.85
+                #     wick rejection #1            x0.75
+                #     -------------------------------------
+                #     0.536 of the score it earned  ->  0.41 under a 0.58 bar
+                # Without the stack it clears comfortably. This is C443's
+                # finding about the exit timer -- "redundant with DSI and
+                # OUTRANKING it" -- in the ENTRY layer.
+                #
+                # AND THE MEASUREMENT SAYS THE TWO SIDES ARE NOT THE SAME.
+                # 331,400 bars, 32 pairs, 108 days, non-overlapping entries,
+                # adverse-extreme-first, the bot's own geometry (R = 2 x ATR,
+                # target 2.00R, stop 0.75R, maker both):
+                #   SHORT into RSI <= 30:  -0.4266 %/trade vs normal, t=-6.22,
+                #                          4 of 4 splits  -> THE BRAKE EARNS IT
+                #   LONG  into RSI >= 70:  -0.0135 %/trade vs normal, t=-1.23,
+                #                          2 of 4 splits  -> FAILS ITS OWN BAR
+                # The standing rule needs 3 of 4. The filter is ASYMMETRIC in
+                # the data and SYMMETRIC in the code.
+                #
+                # NOTHING IS CHANGED HERE, DELIBERATELY. After C458-16 no entry
+                # or exit rule ships without a harness result, and "2 of 4"
+                # is not one -- it is a reason to MEASURE, and a removal needs
+                # the same 3-of-4 that an addition does. So this logs what the
+                # stack cost and whether the pair would otherwise have passed,
+                # which is the record that can settle it. Throttled to the
+                # cases where it actually decided the outcome.
+                try:
+                    _pp462 = float(analysis.get('_pre_penalty_score',
+                                                analysis['score']) or 0.0)
+                    _sc462 = float(analysis['score'] or 0.0)
+                    if _pp462 > 0 and _sc462 < _eff_min_score <= _pp462:
+                        logger.info(
+                            f"      ⚖️ C462-7: penalties took "
+                            f"{symbol.split('/')[0]} from {_pp462:.2f} to {_sc462:.2f} "
+                            f"(x{_sc462 / _pp462:.2f}) and the bar was {_eff_min_score:.2f} "
+                            f"— THE STACK DECIDED THIS ONE, not the score")
+                except Exception:
+                    pass
                 continue
             # C52: WAVE-RELATIVE quality gate (replaces fixed MIN_ENTRY_QUALITY)
             # Higher ATR (bigger waves) = higher quality bar needed
