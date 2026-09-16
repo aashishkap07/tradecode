@@ -184,8 +184,46 @@ class _C460ConsoleFilter(logging.Filter):
         'Net PnL', 'ERROR', 'error', 'WARNING', 'Traceback', '\u26a0',
         'EDGE STATE', 'Step 3 result', 'Nearest miss', 'Market:', 'Regime:',
         'Day:', 'Session:', 'Equity:', 'target floor', 'Planned target',
+        # C462-4: FOUND BY TEST, AND IT IS A C460-1 DEFECT, NOT A C462 ONE.
+        # The keep-list is case-sensitive, so "Final equity: $249.87" and
+        # "Session end equity: $249.87" missed 'Equity:' by one letter, fell
+        # through to the per-pair heuristic ("<emoji> ...: ..."), and were
+        # SILENTLY DROPPED from the readable log -- two of the last money lines
+        # a session prints. A keep-list that fails on capitalisation is the
+        # same silent-omission family C460-1's own comment warns about, sitting
+        # inside C460-1 itself. Lower-case spellings added; both now survive.
+        'equity', 'pnl', 'PnL', 'P&L', 'Win Rate', 'win rate',
         'budget', 'margin', 'Margin:', 'EXPLORATION', 'C458-9', 'C459',
         'DRI:', 'PRU:', 'STEP ', 'Scanning', 'meet volume threshold',
+    )
+
+    # C462-4: the dashboard always survives, and is checked FIRST so that no
+    # future DROP prefix can bury it the way per-pair working once buried the
+    # decisions. Every _C462Report line begins with one of these glyphs.
+    _REPORT = ('\u2502', '\u250c', '\u2514', '\u251c', '\u2524', '\u256d',
+               '\u2570', '\u256e', '\u256f', '\u25b2 ', '\u25bc ', '\u25bd ',
+               '\u25aa ', '\u00b7 start ')
+    # NOTE: the continuation line of a trade record is "  \u2502 ...", which
+    # lstrip()s to a leading \u2502 and is therefore already covered above.
+    # C462-4: superseded by the dashboard. These are the OLD position-summary
+    # rows; every figure on them now appears in the STATUS block in a named
+    # row, so printing both would be the crowding the operator complained of.
+    # Checked BEFORE _KEEP because several of them contain keep-tokens
+    # ("Equity:", "Session:", "margin") that would otherwise pin them in place.
+    # They remain, in full, in the detail log.
+    # Each entry is a TUPLE and EVERY substring in it must be present. A single
+    # substring is too blunt here: '\U0001f4b0 Equity: $' alone also matches the
+    # day-anchor line and the startup config dump, which are not superseded by
+    # anything and must keep printing. Verified by grep: with the pairs below,
+    # each pattern matches exactly the ONE _display_summary call site it names.
+    _DROP_FIRST = (
+        ('POSITION SUMMARY (',),
+        ('\U0001f4b5 Available: $', 'Locked: $'),
+        ('\U0001f4c8 Session: $',),
+        ('\U0001f3af Win Rate: Overall',),
+        ('\U0001f4b0 Equity: $', 'Unrealized: $'),
+        ('\U0001f4b0 Margin: $', 'Lev: '),
+        ('\U0001f4ca Entry: $', '\u2192 Now: $'),
     )
 
     def filter(self, record):
@@ -193,6 +231,13 @@ class _C460ConsoleFilter(logging.Filter):
             if getattr(cfg_console_verbose, 'on', False):
                 return True
             m = str(record.getMessage())
+            _ls = m.lstrip()
+            for p in self._REPORT:
+                if _ls.startswith(p):
+                    return True
+            for grp in self._DROP_FIRST:
+                if all(p in m for p in grp):
+                    return False
             for p in self._KEEP:
                 if p in m:
                     return True
@@ -267,6 +312,661 @@ try:
 except: pass
 
 _c52_setup_logging()
+
+# ═══════════════════════════════════════════════════════════════════════════
+# C462-4: THE REPORT — ONE PAGE AN OPERATOR CAN ACTUALLY READ
+# ═══════════════════════════════════════════════════════════════════════════
+# THE OPERATOR'S WORDS: "the log is too cluttered and difficult to read and
+# important details like current win rate, current pnl, etc are not there ..
+# organise the log completely by yourself in a professional manner taking
+# examples from online bots .. neat, succinct and detailed at the same time but
+# not too detailed, not overly crowded."
+#
+# C460-1 SORTED THE LOG AND THAT WAS NOT THE SAME THING AS ORGANISING IT. It cut
+# 6,214 lines to 1,355 by moving per-pair working to a second file, which made
+# the log SHORTER. It did not make it a REPORT: the three numbers an operator
+# steers by -- what is the account worth, what is it up or down today, what
+# fraction of trades win -- were still scattered across a 60-character rule-off
+# block that printed every fifteen minutes, and the win rate that did print was
+# LIFETIME, which cannot move in a two-trade session.
+#
+# WHAT ESTABLISHED BOTS DO, and this borrows from all three:
+#   freqtrade   /status and /profit: a fixed table, one row per position, and a
+#               separate summary with win rate, profit factor and drawdown.
+#   Hummingbot  a periodic `status` block: assets, active orders, performance,
+#               each under a named heading at a fixed column width.
+#   Jesse       an end-of-run metrics table: total trades, win rate, payoff
+#               ratio, max drawdown, fees paid.
+# The common shape is a FIXED-WIDTH BLOCK WITH NAMED ROWS, printed on a timer,
+# plus ONE LINE PER EVENT in between. Nothing in it is computed for the report;
+# every figure already existed somewhere in this file and was simply never
+# gathered in one place.
+#
+# THREE FILES NOW, AND THE NAMES SAY WHAT THEY ARE FOR:
+#   omega_report_<ts>.log    THE DASHBOARD. Status blocks, one line per trade,
+#                            one line per scan, a session summary. Nothing else.
+#   omega_session_<ts>.log   DECISIONS, plus the same dashboard blocks inline.
+#   omega_detail_<ts>.log    EVERYTHING, unfiltered, for forensic analysis.
+#
+# THE REPORTER CANNOT BREAK A TRADE. Every public method is wrapped, every read
+# of position state is defensive, and a failure downgrades to a one-line warning
+# rather than propagating. A reporting layer that can throw is a liability, and
+# this file has an explicit standing rule that instrumentation must never sit in
+# the path of money.
+_C462_REPORT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 f'omega_report_{_C75_SESSION_TS}.log')
+
+
+def _c462_money(x, width=0, sign=False):
+    """Money, at cents, never rounded in the ledger — only here. (C371)"""
+    try:
+        v = float(x)
+    except Exception:
+        v = 0.0
+    s = f"${v:+,.2f}" if sign else f"${v:,.2f}"
+    return s.rjust(width) if width else s
+
+
+def _c462_spark(series, width=24):
+    """A one-line equity curve. Eight block heights, flat when the range is zero.
+
+    A sparkline is the only 'graph' that survives a log file, a phone terminal
+    and a copy-paste into a message, which is where this operator reads it.
+    """
+    try:
+        vals = [float(v) for v in series if v is not None]
+        if len(vals) < 2:
+            return ''
+        if len(vals) > width:
+            # even-spaced decimation, always keeping first and last
+            step = (len(vals) - 1) / float(width - 1)
+            vals = [vals[int(round(i * step))] for i in range(width)]
+        lo, hi = min(vals), max(vals)
+        blocks = '▁▂▃▄▅▆▇█'
+        if hi - lo < 1e-12:
+            return blocks[0] * len(vals)
+        return ''.join(blocks[min(7, int((v - lo) / (hi - lo) * 7.999))] for v in vals)
+    except Exception:
+        return ''
+
+
+def _c462_bar(frac, width=20, full='█', empty='░'):
+    try:
+        f = max(0.0, min(1.0, float(frac)))
+    except Exception:
+        f = 0.0
+    n = int(round(f * width))
+    return full * n + empty * (width - n)
+
+
+class _C462Report:
+    """The dashboard. Fixed width, named rows, no surprises.
+
+    STATE IT OWNS (nothing else in the file keeps these):
+      - a per-session TRADE JOURNAL, so win rate/payoff/expectancy are SESSION
+        figures rather than the lifetime ones that cannot move in a short run;
+      - an EQUITY CURVE sampled at every status tick and every close, which is
+        what the sparkline and the drawdown row read;
+      - a MAKER/TAKER FILL COUNT, because C461 made entries maker and C376 made
+        profit exits maker and until now NOTHING reported whether either
+        actually happened -- C462-1 found the exit path had never fired once.
+    """
+    W = 74     # total block width. Wider than this wraps on the operator's
+               # phone terminal, and a box that wraps is worse than no box.
+    LW = 9     # label column, so every row's text starts at the same column
+
+    def __init__(self, path):
+        self.path = path
+        self.t0 = time.time()
+        self.trades = []          # closed-trade journal, this session
+        self.opens = []           # open records, this session
+        self.equity_curve = []
+        self.peak_equity = 0.0
+        self.fees_maker = 0.0
+        self.fees_taker = 0.0
+        self.n_maker = 0
+        self.n_taker = 0
+        self.n_scans = 0
+        self.n_analyses = 0
+        self._last_full = 0.0     # C462-4: when the last FULL block printed
+        self._last_sig = None     # and what the book looked like then
+        self.last_scan = None
+        self.exit_reasons = {}
+        self._fh = None
+        self._lock = threading.Lock()
+        try:
+            self._fh = open(path, 'a', encoding='utf-8')
+        except Exception as e:
+            print(f"Report-log setup warning: {e}")
+
+    # ---------- plumbing ----------
+    def _emit(self, line):
+        """One line to the report file AND to the normal log chain.
+
+        Report lines start with a box-drawing or marker glyph, which is how
+        _C460ConsoleFilter recognises and always passes them (checked BEFORE
+        both its keep-list and its drop-list, so no future prefix can hide the
+        dashboard the way per-pair working once buried the decisions).
+        """
+        try:
+            with self._lock:
+                if self._fh:
+                    self._fh.write(line + '\n')
+                    self._fh.flush()
+        except Exception:
+            pass
+        if not line:
+            # blank separators are spacing for the report FILE; the log chain
+            # strips empty records anyway, so do not hand it noise
+            return
+        try:
+            logger.info(line)
+        except Exception:
+            pass
+
+    def _row(self, label, text):
+        """One named row. The label column is fixed so the eye runs down it.
+
+        Text is TRUNCATED, never wrapped: a wrapped row breaks the right
+        border, and a broken border is how a block stops reading as a table.
+        Every caller is written to fit; this is only the backstop.
+        """
+        budget = self.W - 3 - self.LW
+        t = str(text)
+        if len(t) > budget:
+            t = t[:budget - 1] + '…'
+        self._emit(f"│ {str(label):<{self.LW}}{t:<{budget}}│")
+
+    def _raw(self, text):
+        """Full-width row, no label column — the position and trade tables."""
+        budget = self.W - 3
+        t = str(text)
+        if len(t) > budget:
+            t = t[:budget - 1] + '…'
+        self._emit(f"│ {t:<{budget}}│")
+
+    def _rule(self, title='', bottom=False, mid=False):
+        if bottom:
+            self._emit('└' + '─' * (self.W - 2) + '┘')
+            return
+        if mid:
+            self._emit('├' + '─' * (self.W - 2) + '┤')
+            return
+        t = f" {title} " if title else ''
+        fill = '─' * max(0, self.W - 3 - len(t))
+        self._emit(f"┌─{t}{fill}┐")
+
+    def _uptime(self):
+        s = int(time.time() - self.t0)
+        return f"{s // 3600}h{(s % 3600) // 60:02d}m"
+
+    # ---------- session-journal statistics ----------
+    def stats(self):
+        """Win rate, payoff, expectancy and profit factor from THIS session's
+        closed trades. All four are the standard definitions; none of them
+        existed anywhere in this file before, which is why the operator could
+        not find them in the log."""
+        w = [t for t in self.trades if t['net'] > 0]
+        l = [t for t in self.trades if t['net'] <= 0]
+        n = len(self.trades)
+        gw = sum(t['net'] for t in w)
+        gl = abs(sum(t['net'] for t in l))
+        avg_w = gw / len(w) if w else 0.0
+        avg_l = gl / len(l) if l else 0.0
+        wr = len(w) / n if n else 0.0
+        return {
+            'n': n, 'w': len(w), 'l': len(l), 'wr': wr,
+            'avg_w': avg_w, 'avg_l': avg_l,
+            'payoff': (avg_w / avg_l) if avg_l > 0 else float('inf') if avg_w > 0 else 0.0,
+            'expectancy': (sum(t['net'] for t in self.trades) / n) if n else 0.0,
+            'pf': (gw / gl) if gl > 0 else float('inf') if gw > 0 else 0.0,
+            'gross_win': gw, 'gross_loss': gl,
+            'breakeven_wr': (avg_l / (avg_w + avg_l)) if (avg_w + avg_l) > 0 else 0.0,
+        }
+
+    def note_equity(self, eq):
+        try:
+            eq = float(eq)
+            if eq <= 0:
+                return
+            self.equity_curve.append(eq)
+            if len(self.equity_curve) > 4000:      # bounded: a long run must not grow memory
+                self.equity_curve = self.equity_curve[::2]
+            self.peak_equity = max(self.peak_equity, eq)
+        except Exception:
+            pass
+
+    # ---------- events ----------
+    def header(self, version, mode, equity, pairs=None, day_barrier=None):
+        try:
+            self._emit('')
+            self._emit('╭' + '─' * (self.W - 2) + '╮')
+            t = f"OMEGA {version} · {mode} · Bitget perps"
+            r = datetime.now().strftime('%Y-%m-%d %H:%M')
+            self._emit(f"│ {t}{' ' * max(1, self.W - 4 - len(t) - len(r))}{r} │")
+            self._emit('╰' + '─' * (self.W - 2) + '╯')
+            self.note_equity(equity)
+            line = f"start equity {_c462_money(equity)}"
+            if day_barrier:
+                line += f"  ·  day barrier ±{float(day_barrier):.2f}%"
+            if pairs:
+                line += f"  ·  universe {pairs} pairs"
+            self._emit('· ' + line)
+            self._emit('')
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C462 report header failed: {type(e).__name__}: {e}")
+            except Exception:
+                pass
+
+    def note_open(self, sym, side, price, size, margin, lev, target_pct,
+                  stop_pct=None, score=None, maker=True, fee=0.0):
+        try:
+            short = str(sym).split('/')[0].replace(':USDT', '')
+            if maker:
+                self.n_maker += 1
+                self.fees_maker += float(fee or 0.0)
+            else:
+                self.n_taker += 1
+                self.fees_taker += float(fee or 0.0)
+            self.opens.append({'sym': short, 't': time.time()})
+            # C462-4: TWO SHORT LINES, NOT ONE LONG ONE. The event line says
+            # WHAT happened in the same column width as the status block; the
+            # continuation says WHY and on what terms, in plain words. A single
+            # 90-character line wraps on the operator's phone and the wrap is
+            # what made the old log unreadable in the first place.
+            self._emit(f"▲ {datetime.now().strftime('%H:%M')} OPEN   "
+                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(price):<11}"
+                       f"×{lev}  margin {_c462_money(margin)}")
+            det = []
+            if target_pct:
+                det.append(f"target {float(target_pct):+.1f}%")
+            if stop_pct:
+                det.append(f"stop {-abs(float(stop_pct)):+.1f}%")
+            if score is not None:
+                det.append(f"entry score {float(score):.2f}")
+            det.append('maker' if maker else 'TAKER')
+            self._emit('  │ ' + ' · '.join(det))
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C462 report open failed: {type(e).__name__}: {e}")
+            except Exception:
+                pass
+
+    def note_close(self, sym, side, entry, exit_px, move_pct, net, reason,
+                   held_min, equity=None, maker=False, fee=0.0, r_mult=None,
+                   peak_pct=None):
+        try:
+            short = str(sym).split('/')[0].replace(':USDT', '')
+            net = float(net)
+            if maker:
+                self.n_maker += 1
+                self.fees_maker += float(fee or 0.0)
+            else:
+                self.n_taker += 1
+                self.fees_taker += float(fee or 0.0)
+            rs = str(reason)
+            self.exit_reasons[rs] = self.exit_reasons.get(rs, 0) + 1
+            self.trades.append({
+                'sym': short, 'side': str(side).upper(), 'entry': entry,
+                'exit': exit_px, 'move': float(move_pct), 'net': net,
+                'reason': rs, 'held': float(held_min or 0.0),
+                'r': r_mult, 'peak': peak_pct, 't': time.time(),
+            })
+            if equity is not None:
+                self.note_equity(equity)
+            verdict = 'W' if net > 0 else 'L'
+            hh = f"{int(held_min // 60)}h{int(held_min % 60):02d}m" if held_min and held_min >= 60 \
+                 else f"{int(held_min or 0)}m"
+            # C462-4: CAPTURE ONLY MEANS SOMETHING ON A WINNER. A trade that
+            # peaked +0.31% and closed -1.45% did not "keep -468% of its peak";
+            # it went favourable, gave it all back, and then some. Two different
+            # events need two different sentences, and printing a percentage
+            # where the concept does not apply is how a reader stops trusting
+            # the whole column.
+            cap = ''
+            try:
+                _pk = float(peak_pct or 0.0)
+                if _pk > 0.05 and float(move_pct) > 0:
+                    cap = f"kept {100.0 * float(move_pct) / _pk:.0f}% of a {_pk:+.2f}% peak"
+                elif _pk > 0.05:
+                    cap = f"round trip from {_pk:+.2f}%"
+            except Exception:
+                cap = ''
+            self._emit(f"▼ {datetime.now().strftime('%H:%M')} CLOSE  "
+                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(exit_px):<11}"
+                       f"{float(move_pct):+.2f}%  net {_c462_money(net, sign=True)}"
+                       f"  [{'WIN' if verdict == 'W' else 'LOSS'}]")
+            det = [f"held {hh}", rs[:24]]
+            if cap:
+                det.append(cap)
+            if r_mult is not None:
+                det.append(f"{float(r_mult):+.2f}R")
+            det.append('maker' if maker else 'TAKER')
+            self._emit('  │ ' + ' · '.join(det))
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C462 report close failed: {type(e).__name__}: {e}")
+            except Exception:
+                pass
+
+    def note_partial(self, sym, side, fill, move_pct, net, kind, maker, fee,
+                     remainder_margin=None):
+        """A half-close banks REAL money and books no trade (C397-4), so it
+        belongs on the tape but not in the win/loss journal. Counting it as a
+        trade is exactly the double-count C397-4 removed from the win rate."""
+        try:
+            short = str(sym).split('/')[0].replace(':USDT', '')
+            if maker:
+                self.n_maker += 1
+                self.fees_maker += float(fee or 0.0)
+            else:
+                self.n_taker += 1
+                self.fees_taker += float(fee or 0.0)
+            self._emit(f"▽ {datetime.now().strftime('%H:%M')} HALF   "
+                       f"{short[:8]:<9}{str(side).upper():<6}@{_fmt_px(fill):<11}"
+                       f"{float(move_pct):+.2f}%  banked {_c462_money(net, sign=True)}")
+            det = [f"{kind} half", 'maker' if maker else 'TAKER']
+            if remainder_margin is not None:
+                det.append(f"{_c462_money(remainder_margin)} rides on as a runner")
+            self._emit('  │ ' + ' · '.join(det))
+        except Exception:
+            pass
+
+    def note_scan(self, seen, analyzed, passed, top=None, top_score=None,
+                  top_reason=None):
+        try:
+            self.n_scans += 1
+            self.n_analyses += int(analyzed or 0)
+            self.last_scan = {
+                'seen': seen, 'analyzed': analyzed, 'passed': passed,
+                'top': top, 'score': top_score, 'reason': top_reason,
+                't': time.time(),
+            }
+        except Exception:
+            pass
+
+    # ---------- the dashboard ----------
+    def status(self, bot):
+        """The block the operator reads. Called on the summary timer.
+
+        Every row answers one question and no row is printed twice. Where a
+        figure is unavailable the row says so rather than printing a zero --
+        a zero that means 'unknown' is the defect C460-3 was written to remove.
+        """
+        try:
+            pf = bot.portfolio
+            cfg = bot.cfg
+            st = pf.get_stats(bot.exchange)
+            # ═══ C462-4: A FULL BLOCK ONLY WHEN THERE IS SOMETHING TO SAY ═══
+            # The summary timer is 8 minutes (C353). The operator now takes 1-3
+            # trades a day (C461-3), so a flat, unchanged book would print ~114
+            # identical fourteen-line blocks in a fifteen-hour session — 1,600
+            # lines saying nothing happened. That is the SAME defect the
+            # operator reported, rebuilt in a nicer typeface.
+            # A full block prints when the book is OPEN, when anything has
+            # CHANGED since the last one, or every 30 minutes regardless so the
+            # record never goes quiet for long. Otherwise: one heartbeat line
+            # carrying the three figures that were missing in the first place.
+            _sig = (pf.positions.count(), len(self.trades), self.n_maker + self.n_taker)
+            _quiet = (_sig == self._last_sig and _sig[0] == 0
+                      and (time.time() - self._last_full) < 1800.0)
+            if _quiet:
+                _s0 = self.stats()
+                _ss = float(getattr(pf, 'session_start_equity', 0.0) or 0.0)
+                _sp = float(st.get('live_equity', 0.0)) - _ss if _ss > 0 else 0.0
+                _ls = self.last_scan or {}
+                self._emit(f"\u25aa {datetime.now().strftime('%H:%M')} flat · "
+                           f"eq {_c462_money(st.get('live_equity', 0))} · session "
+                           f"{_c462_money(_sp, sign=True)} "
+                           f"{(_sp / _ss * 100.0) if _ss > 0 else 0.0:+.2f}% · "
+                           f"{_s0['w']}W {_s0['l']}L"
+                           + (f" {100.0 * _s0['wr']:.0f}%" if _s0['n'] else '')
+                           + f" · {_ls.get('analyzed', 0)} analysed")
+                self.note_equity(st.get('live_equity', 0))
+                return
+            self._last_sig = _sig
+            self._last_full = time.time()
+            live = float(st.get('live_equity', st.get('equity', 0.0)))
+            self.note_equity(live)
+            s = self.stats()
+            sess_start = float(getattr(pf, 'session_start_equity', 0.0) or 0.0)
+            sess_pnl = live - sess_start if sess_start > 0 else 0.0
+            sess_pct = (sess_pnl / sess_start * 100.0) if sess_start > 0 else 0.0
+            dd = ((live - self.peak_equity) / self.peak_equity * 100.0) \
+                 if self.peak_equity > 0 else 0.0
+            open_pos = pf.positions.get_all()
+            locked = float(st.get('locked', 0.0) or 0.0)
+
+            self._emit('')
+            self._rule(f"STATUS {datetime.now().strftime('%H:%M:%S')} · up "
+                       f"{self._uptime()} · scan #{self.n_scans}")
+
+            # --- money ---
+            self._row('EQUITY', f"{_c462_money(live)}  real {_c462_money(st.get('equity', 0))}"
+                                f"  unreal {_c462_money(st.get('unrealized', 0), sign=True)}")
+            self._row('SESSION', f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%  "
+                                 f"peak {_c462_money(self.peak_equity)}  dd {abs(dd):.2f}%")
+            spark = _c462_spark(self.equity_curve, 40)
+            if spark:
+                self._row('CURVE', spark)
+
+            # --- the day's risk budget, as a fraction spent ---
+            try:
+                day0 = float(getattr(bot.mode_mgr, '_day_start_equity', 0.0) or 0.0)
+                cap = float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0
+                if day0 > 0 and cap > 0:
+                    day_pct = (live - day0) / day0 * 100.0
+                    used = abs(day_pct) / cap
+                    self._row('DAY', f"{day_pct:+.2f}% of ±{cap:.2f}%  "
+                                     f"[{_c462_bar(used, 16)}] {100.0 * used:.0f}% of budget")
+                else:
+                    self._row('DAY', 'barrier not yet derived (no day anchor)')
+            except Exception:
+                self._row('DAY', 'barrier unavailable')
+
+            # --- performance, THIS session, which is the part that was missing ---
+            if s['n'] > 0:
+                # C462-4: "n/a" where a ratio has no denominator, never a number.
+                # A payoff of "inf" printed as a figure is the same defect class
+                # as C460-3's invented anchor: a placeholder that reads as data.
+                payoff = 'n/a' if s['l'] == 0 else f"{s['payoff']:.2f}"
+                be = 'n/a' if s['l'] == 0 else f"{100.0 * s['breakeven_wr']:.0f}%"
+                self._row('RECORD', f"{s['n']} closed · {s['w']}W {s['l']}L · "
+                                    f"win {100.0 * s['wr']:.0f}% · payoff {payoff} · "
+                                    f"avg {_c462_money(s['expectancy'], sign=True)}/tr")
+                self._row('', f"best {_c462_money(max((t['net'] for t in self.trades), default=0), sign=True)} · "
+                              f"worst {_c462_money(min((t['net'] for t in self.trades), default=0), sign=True)} · "
+                              f"break-even {be}")
+            else:
+                self._row('RECORD', 'no closed trades yet this run')
+
+            lt = int(getattr(pf, 'lifetime_trades', 0) or 0)
+            if lt > 0:
+                self._row('LIFETIME', f"{lt} closed · {int(getattr(pf, 'lifetime_wins', 0))}W "
+                                      f"{int(getattr(pf, 'lifetime_losses', 0))}L · "
+                                      f"win {float(st.get('win_rate', 0)):.0f}% · "
+                                      f"P&L {_c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)}")
+
+            # --- exposure ---
+            if open_pos:
+                expo = 100.0 * locked / live if live > 0 else 0.0
+                self._row('OPEN', f"{len(open_pos)} pos · margin {_c462_money(locked)} "
+                                  f"({expo:.1f}%) · free {_c462_money(st.get('available', 0))}")
+            else:
+                self._row('OPEN', f"flat · free {_c462_money(st.get('available', 0))}")
+
+            # --- cost, which C461 made the headline number of this project ---
+            tot_fee = self.fees_maker + self.fees_taker
+            if (self.n_maker + self.n_taker) > 0:
+                self._row('FEES', f"{_c462_money(tot_fee)} · maker {self.n_maker} / "
+                                  f"taker {self.n_taker} fills · "
+                                  f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of equity")
+            else:
+                self._row('FEES', 'no fills yet this run')
+
+            # --- what the scanner is seeing ---
+            if self.last_scan:
+                ls = self.last_scan
+                line = (f"{ls.get('seen') or '?'}→{ls.get('analyzed') or 0} analysed"
+                        f"→{ls.get('passed') or 0} passed")
+                if ls.get('top'):
+                    line += (f" · top {str(ls['top']).split('/')[0]}"
+                             + (f" {float(ls['score']):.2f}" if ls.get('score') is not None else '')
+                             + (f" {str(ls['reason'])[:18]}" if ls.get('reason') else ''))
+                self._row('SCAN', line)
+                self._row('', f"{self.n_scans} scans · {self.n_analyses} analyses this run")
+
+            # --- market backdrop, read from whatever the bot already computed ---
+            try:
+                # C462-4: READ THE NAMES THE BOT ACTUALLY WRITES. My first
+                # draft reached for _current_regime and market_regime; neither
+                # exists. That is the wrong-object family this project has
+                # logged seven times (C422-1, C433-1, C440-3), and it fails
+                # SILENTLY here because getattr has a default -- the row would
+                # simply have gone missing forever. Verified against the
+                # assignment sites: TradingBot writes _market_regime (C217),
+                # _market_bias (C217), _market_breadth (C224) and
+                # _market_taker_bias.
+                reg = getattr(bot, '_market_regime', None)
+                br = getattr(bot, '_market_breadth', None)
+                bias = getattr(bot, '_market_bias', None)
+                tk = getattr(bot, '_market_taker_bias', None)
+                bits = []
+                if reg:
+                    bits.append(str(getattr(reg, 'value', reg)).upper())
+                if bias is not None:
+                    bits.append(f"bias {float(bias):+.2f}")
+                if br is not None:
+                    bits.append(f"breadth {float(br):+.2f}")
+                if tk is not None:
+                    bits.append(f"taker flow {float(tk):+.2f}")
+                if bits:
+                    self._row('MARKET', ' · '.join(bits))
+            except Exception:
+                pass
+
+            # --- open-position table, one row each ---
+            if open_pos:
+                self._rule(mid=True)
+                self._raw(f"{'PAIR':<9}{'SIDE':<6}{'ENTRY':>10}{'MARK':>10}"
+                          f"{'MOVE':>8}{'P&L':>8}{'AGE':>6}  THESIS")
+                for sym, pos in list(open_pos.items()):
+                    try:
+                        px = bot.exchange.get_current_price(sym)
+                        if not px:
+                            continue
+                        short = sym.split('/')[0].replace(':USDT', '')
+                        mv = pos.get_price_move_pct(px)
+                        val = pos.size * pos.entry_price
+                        exit_fee = (pos.size * px) * (cfg.TAKER_FEE_PCT / 100.0)
+                        net = (mv / 100.0) * val - float(getattr(pos, 'entry_fee', 0.0) or 0.0) - exit_fee
+                        age = pos.get_age_seconds() / 60.0
+                        ag = f"{int(age // 60)}h{int(age % 60):02d}m" if age >= 60 else f"{int(age)}m"
+                        th = ''
+                        try:
+                            u, _ = pos._c443_uei(cfg)
+                            th = f"{100.0 * float(u):.0f}% left"
+                        except Exception:
+                            th = '—'
+                        mark = '▲' if net > 0 else ('▼' if net < 0 else '·')
+                        self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
+                                  f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
+                                  f"{mv:>+7.2f}%{net:>+8.2f}{ag:>6}  {mark} {th}")
+                    except Exception:
+                        continue
+            self._rule(bottom=True)
+            self._emit('')
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C462 status block failed: {type(e).__name__}: {e}")
+            except Exception:
+                pass
+
+    def session_summary(self, bot=None):
+        """Printed once, at shutdown. The Jesse-style end-of-run table.
+
+        Registered with atexit AND called from the Ctrl-C path, because a run
+        that ends by signal is the NORMAL way this bot stops on the operator's
+        phone — and the once-only guard is what lets both paths call it.
+        """
+        if getattr(self, '_summary_done', False):
+            return
+        self._summary_done = True
+        try:
+            s = self.stats()
+            self._emit('')
+            self._rule('SESSION SUMMARY')
+            self._row('RAN', f"{self._uptime()} · {self.n_scans} scans · "
+                             f"{self.n_analyses} pair-analyses · {s['n']} closed trades")
+            if self.equity_curve:
+                first, last = self.equity_curve[0], self.equity_curve[-1]
+                pct = (last - first) / first * 100.0 if first > 0 else 0.0
+                dd = 0.0
+                pk = first
+                for v in self.equity_curve:
+                    pk = max(pk, v)
+                    dd = min(dd, (v - pk) / pk * 100.0 if pk > 0 else 0.0)
+                self._row('P&L', f"{_c462_money(last - first, sign=True)} ({pct:+.2f}%) · "
+                                 f"{_c462_money(first)} → {_c462_money(last)} · "
+                                 f"maxDD {abs(dd):.2f}%")
+                sp = _c462_spark(self.equity_curve, 56)
+                if sp:
+                    self._row('CURVE', sp)
+            if s['n'] > 0:
+                payoff = 'n/a' if s['l'] == 0 else f"{s['payoff']:.2f}"
+                pfv = 'n/a' if s['l'] == 0 else f"{s['pf']:.2f}"
+                be = 'n/a' if s['l'] == 0 else f"{100.0 * s['breakeven_wr']:.0f}%"
+                self._row('RECORD', f"{s['w']}W {s['l']}L · win {100.0 * s['wr']:.0f}% · "
+                                    f"payoff {payoff} · profit factor {pfv}")
+                self._row('', f"avg win {_c462_money(s['avg_w'], sign=True)} · avg loss "
+                              f"{('n/a' if s['l'] == 0 else _c462_money(-s['avg_l'], sign=True))} · "
+                              f"break-even {be}")
+                self._row('', f"expectancy {_c462_money(s['expectancy'], sign=True)} per trade · "
+                              f"gross {_c462_money(s['gross_win'])} won / "
+                              f"{_c462_money(s['gross_loss'])} lost")
+                held = [t['held'] for t in self.trades if t.get('held')]
+                if held:
+                    self._row('HOLD', f"median {sorted(held)[len(held) // 2]:.0f}m · "
+                                      f"range {min(held):.0f}–{max(held):.0f}m")
+            tot_fee = self.fees_maker + self.fees_taker
+            gross = sum(t['net'] for t in self.trades) + tot_fee
+            self._row('COST', f"fees {_c462_money(tot_fee)} · maker {self.n_maker} / "
+                              f"taker {self.n_taker} fills"
+                              + (f" · {100.0 * tot_fee / abs(gross):.0f}% of gross"
+                                 if abs(gross) > 1e-9 else ''))
+            # C462-4: the one number C461 rests the whole project on, stated as
+            # a rate rather than a total, because a total on two trades tells
+            # the operator nothing about whether the maker change is paying.
+            if (self.n_maker + self.n_taker) > 0:
+                self._row('', f"{100.0 * self.n_maker / (self.n_maker + self.n_taker):.0f}% of "
+                              f"fills were maker · maker {_c462_money(self.fees_maker)} / "
+                              f"taker {_c462_money(self.fees_taker)}")
+            if self.exit_reasons:
+                top = sorted(self.exit_reasons.items(), key=lambda kv: -kv[1])[:6]
+                self._row('EXITS', ' · '.join(f"{k[:20]} {v}" for k, v in top))
+            if self.trades:
+                self._rule(mid=True)
+                self._raw(f"{'PAIR':<9}{'SIDE':<6}{'MOVE':>8}{'NET':>9}{'HELD':>7}  EXIT")
+                for t in self.trades:
+                    hh = (f"{int(t['held'] // 60)}h{int(t['held'] % 60):02d}m"
+                          if t['held'] >= 60 else f"{int(t['held'])}m")
+                    self._raw(f"{t['sym'][:8]:<9}{t['side']:<6}{t['move']:>+7.2f}%"
+                              f"{_c462_money(t['net'], sign=True):>9}{hh:>7}  "
+                              f"{t['reason'][:20]} [{'W' if t['net'] > 0 else 'L'}]")
+            self._rule(bottom=True)
+            self._emit('')
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C462 session summary failed: {type(e).__name__}: {e}")
+            except Exception:
+                pass
+
+
+_c462_report = _C462Report(_C462_REPORT_PATH)
+# atexit is LIFO, so registering AFTER _c52_flush makes the summary print
+# BEFORE the log is sealed — on Ctrl-C, on SIGTERM and on a clean return alike.
+atexit.register(lambda: _c462_report.session_summary())
 
 # ======================== ENUMS ========================
 class TradingMode(Enum):
@@ -2177,6 +2877,16 @@ class Config:
         self.C461_REST_AT_TOUCH    = True    # rest AT bid/ask, not 0.1% behind
         self.C461_DECAY_START_FRAC = 0.5     # thesis decay starts halfway
                                              # through the position's OWN horizon
+        # ═══ C462: THE LOG BECOMES A REPORT, AND TWO MORE TAKER FEES GO ═══
+        # The operator's request was plain: "the log is too cluttered and
+        # difficult to read and important details like current win rate,
+        # current pnl, etc are not there". C460-1 made the log SHORTER; it did
+        # not make it a REPORT. C462_STATUS_BLOCK prints the dashboard on the
+        # existing summary timer; C462_REPORT_FILE keeps a third file that
+        # contains nothing but the dashboard, so the operator can read one
+        # screen instead of scrolling a thousand lines.
+        self.C462_STATUS_BLOCK   = True      # fixed-width dashboard on the timer
+        self.C462_MAKER_HALF     = True      # C338 winning half rests as maker
         self.C376_WAIT_S = 8
         # ═══ C377: THE RISK BUDGET MUST BE REAL, NOT ASPIRATIONAL ═══════
         # Every stop in this bot has been VIRTUAL — evaluated only when the
@@ -5366,6 +6076,38 @@ class Portfolio:
 
         # Learning
         self.trades_since_learn = 0
+
+    def _c462_mark_session_start(self):
+        """
+        C462-2: THE LOG TOLD THE OPERATOR A WINNING SESSION LOST MONEY.
+
+        MEASURED, session 20260916_123947: two trades, BOTH WINS, realised
+        +$0.20 +$0.10 +$0.13 +$0.08 = +$0.51. The log printed, five times:
+            Equity: $249.87 | Session: $-0.13 (-0.1%)   Day: -0.1%
+        The EQUITY is right — $249.36 carried in from the night before plus
+        $0.51 is exactly $249.87. The SESSION figure is measured from a
+        session_start_equity of $250.00 that belongs to a run which ended
+        fourteen hours earlier, so it silently reported the PREVIOUS session's
+        -$0.64 as part of this one.
+
+        load_state resets session_start_equity only when the saved DATE differs,
+        and even then it reads self.equity at a point in the load sequence where
+        it may not yet hold the restored figure. Either way the concept is
+        wrong: a SESSION is one run of the program. That is what the operator
+        means by it, what every trading platform means by it, and the only
+        reading under which "session P&L" answers the question being asked.
+
+        The DAY figure is a separate ledger and is untouched — the day cap must
+        keep spanning restarts or it could be reset by relaunching.
+        """
+        self.session_start_equity = float(self.equity)
+        self.session_start_date = datetime.now().date()
+        self.session_trades = 0
+        self.session_wins = 0
+        self.session_losses = 0
+        self.session_pnl = 0.0
+        self._c462_session_t0 = time.time()
+        self._c462_equity_curve = [float(self.equity)]
 
     def set_session_start(self, equity: float):
         self.session_start_equity = equity
@@ -15811,6 +16553,7 @@ class TradingBot:
         To record a new version, add one (version, summary) tuple to _CHANGELOG below."""
         import os
         _CHANGELOG = [
+            ('C462', "THE OPERATOR ASKED FOR A LOG THEY COULD ACTUALLY READ, AND BUILDING IT FOUND TWO MORE TAKER FEES AND A BUG IN MY OWN C460 FILTER. The request: 'the log is too cluttered and difficult to read and important details like current win rate, current pnl, etc are not there .. organise the log completely by yourself in a professional manner taking examples from online bots .. neat, succinct and detailed at the same time but not too detailed, not overly crowded'. C460-1 MADE THE LOG SHORTER AND THAT IS NOT THE SAME THING AS ORGANISING IT. It cut 6,214 lines to 1,355 by moving per-pair working to a second file. It did not turn the remainder into a REPORT: the three figures an operator steers by -- what the account is worth, what it is up or down this run, what fraction of trades win -- were scattered across a 60-character rule-off block, and the win rate that did print was LIFETIME, which cannot move in a two-trade session. C462-4, THE REPORT. A fixed-width dashboard modelled on what established bots actually do -- freqtrade's /status and /profit tables, Hummingbot's periodic named-heading status block, Jesse's end-of-run metrics table. The common shape is A FIXED-WIDTH BLOCK WITH NAMED ROWS ON A TIMER, PLUS ONE LINE PER EVENT, and that is what this is. Rows: EQUITY (live, realised, unrealised), SESSION (P&L, %%, peak, drawdown), CURVE (an ASCII equity sparkline), DAY (spend against the +/- barrier with a progress bar), RECORD (closed, W/L, win rate, payoff, expectancy per trade, best, worst, break-even win rate), LIFETIME, OPEN (count, margin, exposure %%, free), FEES (paid, maker/taker fill split, %% of equity), SCAN (markets to analysed to passed, top candidate and why it was refused), MARKET (regime, bias, breadth, taker flow), and a per-position table with entry, mark, move, P&L, age and thesis retention. Every figure already existed somewhere in the file; NOT ONE OF THEM WAS EVER GATHERED IN ONE PLACE. Win rate, payoff, expectancy, profit factor and break-even win rate are computed on a NEW per-session trade journal, because a lifetime counter cannot answer 'how is this run going'. THREE FILES NOW: omega_report_<ts>.log is nothing but the dashboard; omega_session_<ts>.log is decisions plus the dashboard inline; omega_detail_<ts>.log stays everything, unfiltered. AND A FULL BLOCK ONLY WHEN THERE IS SOMETHING TO SAY. The summary timer is 8 minutes (C353) and C461-3 cut the pace to 1-3 trades a day, so a flat unchanged book would print ~114 identical fourteen-line blocks in a fifteen-hour session -- 1,600 lines saying nothing happened, WHICH IS THE OPERATOR'S ORIGINAL COMPLAINT REBUILT IN A NICER TYPEFACE. Full block when the book is open, when anything changed, or every 30 minutes; otherwise one heartbeat line carrying the three missing figures. Measured on the operator's own 20260915 session: 114 summary blocks become ~14 full blocks plus heartbeats. C462-1, THE MAKER EXIT HAD NEVER FIRED ONCE AND NOTHING SAID SO. Six trades across two sessions, zero C376 maker fills, zero misses -- the branch was SILENT, which by this file's own standing rule #5 means it was not a protection at all. It tested _last_pnl_pct, a field written by a different function on a different tick. The test is now computed inline from exit_price and pos.entry_price, and EVERY skip path logs: no book, raised, or not-a-profit-exit. Driven over seven states (long/short winners, long/short 'profit' exits that are actually down, a hard stop, an exactly-flat close, a missing entry price): 7/7 correct, and a stop still always crosses. C462-5, THE FEE THAT NEVER FOLLOWED THE ORDER. C257 fixed exactly this at the entry side -- 'the exit fee is charged at the EXIT order's type' -- and then hardcoded TAKER for every close, which was right while every close was a market order and stopped being right the moment C376 shipped a maker exit. A filled maker exit was billed 0.06%% instead of 0.02%%. It errs CONSERVATIVE, which is why it survived, but C461 rests the entire project on the maker/taker gap being larger than any edge this bot has measured -- and a ledger that cannot see that gap cannot show whether the claim is paying. The flag now follows the ORDER, not the intent. C462-6, AND THE HALF THAT BANKS THE PROFIT WAS STILL CROSSING. _c336_partial_close with kind='win' IS the C338 target hit: a planned, unhurried, profit-taking close of half the position, the exact case C376 was written for -- and it was a plain market order, left out of both C376 and C461. It now rests at the touch first and falls back to market if it does not fill. kind='loss' stays TAKER and always will: it is the protective patience-cap close and C376's own rule applies unchanged, a close that protects capital must always be able to cross. Worth 4bp of the half notional on every winner. C462-2, THE LOG TOLD THE OPERATOR A WINNING SESSION LOST MONEY. Session 20260916_123947: two trades, BOTH WINS, realised +$0.51, and the log printed 'Session: $-0.13' five times. The equity was right ($249.36 + $0.51 = $249.87); session_start_equity was $250.00, belonging to a run that had ended fourteen hours earlier. A SESSION IS ONE RUN OF THE PROGRAM -- that is what the operator means, what every platform means, and the only reading under which the figure answers the question. The DAY ledger is untouched and still spans restarts, or the day cap could be reset by relaunching. C462-3, THE FIRST NUMBER ON THE SCREEN WAS WRONG BY 5x. The boot banner printed 'DAILY BUDGET @ $50.00' on an account holding $249.36, because _c369_derive_budget runs inside __init__ before load_state, and every figure beneath it -- per-trade risk, day cap, projected month -- was wrong with it. C377 recorded this as 'merely confusing' and left it. The banner now says 'provisional -- recomputed after state load' until equity is real, and re-announces once it is. AND A DEFECT IN MY OWN C460-1, FOUND BY THE TEST RATHER THAN BY READING. The keep-list is case-sensitive, so 'Final equity: $249.87' and 'Session end equity: $249.87' missed 'Equity:' by one letter, fell through to the per-pair heuristic and were SILENTLY DROPPED from the readable log -- two of the last money lines a session prints. Lower-case spellings added. Also: my first draft of the MARKET row reached for bot._current_regime and bot.market_regime, NEITHER OF WHICH EXISTS -- the wrong-object family (C422-1, C433-1, C440-3), caught by a class-ownership sweep before it shipped, and it would have failed silently because getattr has a default. Now reads _market_regime, _market_bias, _market_breadth and _market_taker_bias, verified against their assignment sites. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 371 -> 391 (+_C462Report and its 13 methods, +_c462_mark_session_start, +_c462_boot_budget_note, +3 helpers); duplicate defs 0; class-ownership sweep over every attribute the reporter touches, clean; all 10 reporter call sites arity-checked against their signatures and scope-checked for unresolved names, 0 problems; C462 constants 2 defined, 2 read, 0 orphan; the C462-1 condition driven over 7 states, 7/7; the C462-5 and C462-6 fee expressions EXTRACTED FROM THE SHIPPED FILE and executed at both rates; the log filter run against BOTH real detail logs (46,431 and 7,912 lines) with a money/risk safety check -- every line it drops is the superseded position-summary row and nothing else; all 388 report lines confirmed to survive the filter. LIMITS, STATED. The dashboard is INSTRUMENTATION: it changes what the operator can see, not what the bot decides, and no gate, score, target or stop moved in this version. C462-5 and C462-6 are worth 4bp of exit notional EACH, which is real against a measured gross edge of 1.7bp -- but C462-6's maker half CAN MISS, and a missed half falls back to market, so the saving is earned only on fills and the next log's 'C462-6 maker half did not fill' count is the number to read. The session journal lives in memory and starts empty on every run by design; the lifetime counters remain the persisted record. Chain C367-C462 intact."),
             ('C461', "COST FIRST. THE OPERATOR MADE THREE DECISIONS AND THIS VERSION IMPLEMENTS THEM, ALL THREE RESTING ON ONE MEASUREMENT: across 213,200 bars, 22 pairs, 121 days, both directions, non-overlapping entries, the BEST exit geometry available earns +0.0171%% per trade GROSS against a maker round trip of 0.04%% and a taker round trip of 0.12%%. THE FEE IS BETWEEN TWO AND SEVEN TIMES THE ENTIRE EDGE. That single fact explains 461 versions of gate-tuning that did not work, and the Atlas reached it independently from its own data: 'The bot's only real edge is smaller than its current transaction cost and larger than its potential one. Cost reduction here is not an optimisation -- it is the difference between having an edge and not having one.' C461-1, NEVER PAY TAKER TO ENTER. C376 already made profit-taking exits maker and correctly left stops as taker -- a stop that cannot fill is how accounts die -- so 75%% of the remaining fee sat on the ENTRY, and the 20260915 session paid the worst tier available: a C297 crossing entry AND a market exit, $0.112 on $92.88 of notional = 12bp, on a trade whose entire thesis was worth a fraction of that. C297's case for crossing is ONE anecdote (LAB + NEAR unfilled in a 94%%-probability regime) and a hope -- '~0.04%% extra cost to catch moves that run 5-15%%' -- and nobody ever measured whether crossed entries caught more of those moves. Both C297 and C395 crossings now rest as maker instead. The fee branch forty lines below reads the same two flags, so clearing them keeps paper and live in agreement (C364). The cost is real and accepted: a resting bid can miss a move that runs. A missed trade costs nothing; a taken trade at negative expectancy costs 12bp every single time. C461-2, AND THE REASON ENTRIES MISSED IN THE FIRST PLACE. C279 rests a buy at min(last x 0.999, bid). When last sits near the bid -- most of the time -- the min() picks last x 0.999, so the order rests A TENTH OF A PERCENT BELOW THE BEST BID, several ticks deep in the queue. That is why entries miss, and missing is exactly the problem C297 was invented to solve by crossing. TWO MECHANISMS ATTACKING THE SAME PROBLEM FROM OPPOSITE ENDS, BOTH EXPENSIVE. Orders now rest AT the touch -- bid for a buy, ask for a sell -- still post-only so they can never cross or be billed taker, but first in the queue at the best price instead of behind a tenth of a percent of resting size. The 0.1%% basis intent survives as the fallback for an unreachable book. C461-3, THE PACE THE FEE BUDGET ACTUALLY AFFORDS. 6 trades/day was derived at C403 from a 3%%/month goal and an ASSUMED edge. The edge is now measured at 1.7bp gross. At 6/day x 22 days x ~$60 notional the fee bill alone is ~2.5%% of a $250 account PER MONTH -- MORE THAN THE TARGET IT WAS SIZED FOR. Fees scale with the NUMBER of trades; the edge does not. Operator's decision: 1-3/day held 4-8h. Target 6.0 -> 2.0, hard cap 12 -> 4, legacy day cap 8 -> 4. Combined with C461-1 the fee drag falls from ~$6.34/month to ~$1.06/month on a $250 book: from 2.5%% of the account to 0.42%%. THAT SAVING IS LARGER THAN ANY EDGE THIS PROJECT HAS EVER MEASURED. C461-5, AND THE CHANGE THE OTHER TWO FORCE. DSI_DECAY_START_MIN is a flat 30 minutes, sized when trades were held 30-60 min so decay began at the END of a hold. C459-4 floored the expected hold at 120 min and the operator has now chosen 4-8 HOUR holds, so a flat 30 minutes starts eating the thesis an EIGHTH of the way in -- and C399_CONVICTION_COLLAPSE then fires on what is mostly the clock. THE 20260915 SESSION IS THE PROOF: INJ closed at 35 minutes with 'only 14%% of the entry thesis left' while its own component dict in the SAME close report printed _dsi 0.216. Two values for one quantity, and the gap between them is this decay plus the PnL term. It fired at 62%% of the stop distance, so the C459 geometry never got to play out at all. A thesis does not age in wall-clock minutes; it ages relative to how long the trade was EXPECTED to take. Decay now begins halfway through the position's OWN horizon -- unchanged for a 35-minute hold (30 min is already 86%% of the way in), moved from 6%% to 50%% for an 8-hour one. This is the relativistic principle the rest of the engine runs on, and it is the one part of the original framework that has always been right. WHAT THIS VERSION DELIBERATELY DOES NOT DO. It does not touch C399's trigger logic, only the clock feeding it: after C458-16 no exit rule ships here without a harness, and C399 needs the C444 grader's forward record to settle. It does not add a directional signal; the project's own measurement is rho(score, win) = -0.022 and 461 versions of forecasting have not moved it. It does not raise the monthly target: at $250 with maker-both fees and the one measured edge (orderliness, +2-3pp of barrier win on a subset) the honest range is 1-2.5%%/month, and the boot banner's '+3.04%% @60%% WR' describes a win rate this bot has never had -- 52.1%% over 2,388 closed trades. EXPECTED FIRST-LOG SIGNATURE, so the next session can be read: FAR fewer trades (2-4/day against 6-12), a 'C461: X would have CROSSED -- resting as maker instead' line where urgency used to fire, entry fills at the touch rather than 0.1%% behind, more UNFILLED limits than before (that is the accepted cost), and C399 firing later in a position's life or not at all. If unfilled entries exceed roughly half of all attempts, C461-2 is the dial to revisit -- not C461-1. VERIFICATION: compiles on 3.10 and 3.12; AST 371 unchanged (constants, one guard and one clock, no new methods); duplicates 0; C458/C459/C461 constants all defined-and-read, 0 orphan; the decay change tabulated across four hold lengths confirming the 35-minute case is byte-identical. Chain C367-C461 intact."),
             ('C460', "I RE-RAN MY OWN C459 ON 4.8x MORE DATA AND IT DID NOT REPLICATE. AND THE MEASUREMENT THAT DOES SURVIVE SAYS THE PROJECT HAS BEEN SOLVING THE WRONG PROBLEM FOR 460 VERSIONS. Session 20260915_155720: 2h03m, 21 scans, 697 pair-analyses, ONE trade, -$0.52. THE C459 GEOMETRY DID APPLY AND WORKED AS DESIGNED -- the log shows 'target floor 2.00R = 2.73%%' and a stop at 0.75R -- so the change is live and correct; the question is whether it EARNS anything. C460-4, THE REPLICATION TEST, AND IT IS NEGATIVE. C459 shipped on 35 pairs x 2,400 15m bars (25 days): T4.0/S1.5 beat T1.9/S3.0 by +0.0487 %%/trade at t=+2.27, 4/4 splits. I rebuilt the corpus at 24 pairs x 9,000 bars (213,200 bars, 121 DAYS, same 15m timeframe, 2.6x the samples) and the paired difference collapses to +0.0080 %%/trade at t=+0.69. THE EFFECT SHRANK SIX-FOLD AND LOST SIGNIFICANCE. This is Standing Rule 9 doing exactly what it exists to do, to me, one version after I invoked it against my own ladder: within-window splits are NOT evidence of an edge, and my 4/4 was within-window. KEPT ANYWAY, and the reasoning matters: the direction is still positive on the larger sample, the PAYOFF improves decisively (0.61 -> 1.93 at an 8h hold) which is what survives a drawdown, and reverting a non-significant positive would be the same overfitting error running backwards. But the CLAIM is corrected: C459's geometry is worth roughly +0.008 %%/trade, not +0.049, and it is not statistically distinguishable from zero. C460-5, THE NUMBER THAT DECIDES THE PROJECT, and the Atlas already had it. Across 213,200 bars, 22 pairs, both directions, non-overlapping entries, EVERY exit geometry tested is NET NEGATIVE after fees, and the GROSS (pre-fee) edge of the best one is +0.0171 %%/trade against a fee of 0.0800 %%/trade. FEES ARE FIVE TIMES ANY GEOMETRY EDGE. No arrangement of targets and stops can cross that gap, which is why 460 versions of gate-tuning have not. The Atlas states the same conclusion from its own data and names the lever: 'The bot's only real edge is smaller than its current transaction cost and larger than its potential one. Cost reduction here is not an optimisation -- it is the difference between having an edge and not having one.' Its table: taker both (12bp) EV -0.040R; maker in / taker out (8bp) -0.013R; MAKER BOTH (4bp) +0.013R. AND THIS SESSION PAID TWELVE BASIS POINTS -- the worst tier, not the 8bp the Atlas assumed. 'CROSSING entry (C297 regime-urgent) -> taker' on the way in, a market order on the way out: 'Fees: Entry $0.056 + Exit $0.056' on $92.88 of notional. THE SINGLE HIGHEST-VALUE CHANGE AVAILABLE TO THIS BOT IS TO STOP PAYING TAKER, and it is worth 8bp/trade against a geometry edge of 1-2bp. Recorded here and NOT shipped in this version, because making exits maker-only changes fill behaviour materially and the operator must choose the trade-off (a maker exit can miss, and a missed profit-taking exit is a round trip). C460-1, TWO LOGS. The operator asked for a readable log. Measured composition of this session's 6,214 lines: 977 (15.7%%) per-pair conviction headers, 692 (11.1%%) separator bars, 449 (7.2%%) 'no coin-specific articles', 263 brakes, 237 parabola states, 224 ichimoku ledger, 186 per-pair rejections -- roughly 63%% is per-pair working printed for 68 pairs on every one of 21 scans. The four lines that mattered were buried under four thousand lines of arithmetic. Split by ONE filter rather than 700 edited call sites, because editing call sites is how a live reference breaks and this file has paid for that twice: omega_session_<ts>.log now carries DECISIONS and omega_detail_<ts>.log carries EVERYTHING, written first and never filtered so a crash cannot leave the complete record short. Measured on this log: 6,214 -> 1,355 lines (22%%), and a safety check confirms all 45 money/risk/error lines survive. The filter is a SUPPRESS list behind a KEEP-ALWAYS list, deliberately: a keep-list silently hides whatever a future version adds. C460-2, MY OWN HARDCODED LITERAL, ONE VERSION OLD. C458-22's boot diagnostic computed fair odds as 1/(1+0.65) with 0.65 written in, and C459-2 then moved the target floor to 2.00R -- so the banner announced 'fair odds for a 0.65R target' to an operator whose bot no longer aims there. Written by me in the same pass where I flagged this exact class of error elsewhere. Now reads C416_HARD_FLOOR_R. C460-3, AND THIS ONE COST A REAL CLAIM. C459-5's anchor chain is realised-payoff, then median-aimed-target, then a cold default of 1.41R. On the FIRST live run both real anchors were empty (they read fields C458/C459 had only just begun recording), so it fell to 1.41R and the bot announced 'blended edge +0.0420 ... EDGE IS POSITIVE -- the expectancy gate is open on merit'. IT WAS NOT ON MERIT. The 0.450 base rate was earned at the old 0.65R target and was being scored against an INVENTED reference -- the third copy of the error C458-3 and C459-5 were both written to remove, left sitting in my own fallback. With no measured anchor the honest answer is to claim no realised edge at all: the C398 corpus prior now stands alone and the realised term is withheld. Verified by execution: cold ledger returns exactly the prior (+0.0467) with 'no realised anchor yet'; with a real 5W/5L payoff ledger it anchors at the realised payoff and shrinks correctly as T extrapolates away from it. WHAT THE SESSION ITSELF SHOWED, chart-verified. The one trade, INJ short at 5.894, was taken after INJ had ALREADY fallen 1.7%% in 30 minutes, at RSI 31 (oversold), into a range that then held 5.888-5.927 for the entire hold -- a 0.66%% band. It never went favourable once (peak +0.00%%). It was closed by C399_CONVICTION_COLLAPSE at -0.44%% price, and THAT EXIT IS PARTLY A DISGUISED TIMER: update_dsi subtracts an age term and a PnL term before the reading is compared, so 'only 14%% of the entry thesis left' on a 35-minute position at -1.76%% is substantially the clock and the loss, not an independent read of the market. The close report prints _dsi 0.216 in its component dict and 0.046 in its exit reason -- two values for one quantity, which is how the decay shows itself. It fires at 62%% of the stop distance, so the C459 geometry never gets to play out. RECORDED, NOT FIXED: after C458-16 I do not ship an exit change without a harness, and this one needs the C444 grader's forward record to settle. AND THE BOT'S ENTIRE SHORTLIST WAS BAD, WHICH IS THE MORE IMPORTANT FINDING. I chart-verified all eight candidates it surfaced (CVC 0.819, API3 0.783, UNI 0.715, RAY 0.712, FIL 0.674, INJ 0.654, FLOCK 0.642, UB 0.604) under the C459 geometry over the following 8 hours: average -0.839 %%/trade, only 2 of 8 positive, and SIX OF EIGHT never reached either barrier -- the tape was chopping and no geometry helps in chop. Five of them, including the three highest-scoring, were blocked by mtf_disagree; that gate was right this time. I also tested conditioning entries on trendiness (efficiency ratio over the prior 20 bars, five buckets): every bucket negative, no monotone relationship, the most-trending bucket WORSE than the least. 'Only trade when trending' does not work measured this way, and it is exactly the kind of rule that sounds right and gets shipped. VERIFICATION: compiles on 3.10 and 3.12; AST 370 unchanged; duplicates 0; C458+C459 constants 23 defined, 23 read, 0 orphan; the log filter executed against the real 6,214-line session with a zero-loss safety check on all money, risk and error lines; the edge fallback executed at both ledger states. The 121-day corpus and the barrier harness ship with the repo so every number above is reproducible. Chain C367-C460 intact."),
             ('C459', "I SHIPPED AN EXIT RULE WITHOUT THE HARNESS AND IT WAS MEASURABLY HARMFUL. THE OPERATOR SUPPLIED THE ATLAS AND IT CONTAINS THE STANDING RULE I BROKE, IN WORDS: 'No entry/exit rule ships again without a four-way out-of-sample harness result. A rule that is not positive in at least 3 of 4 splits does not ship, however good its retro on the last log looks.' C458-16 -- the scale-out rung and breakeven migration -- shipped on ONE retro trade and on C441-2's observation that winners give their peaks back. I have now run the harness. BUILT: 35 Bitget pairs x 2,400 live 15m bars (83,000 bars, ~25 days), barrier simulation with the adverse extreme assumed first inside every bar, NON-OVERLAPPING entries (stride = horizon, per the Atlas's own overlap warning), both directions on every bar, fees at the bot's real 0.02%% maker in / 0.06%% taker out. Random entries are the honest null here because the Atlas already measured rho(score, win) = -0.022: THE ENTRY SCORE CARRIES NO INFORMATION, so an unbiased entry IS the bot's entry, statistically. THE RESULT, 5,116 trades per config at an 8h horizon: shipped T1.9/S3.0 -0.0926 %%/trade, win 58.0%%, payoff 0.64. MY C458-16 LADDER -0.1185 %%/trade, win 68.5%%, payoff 0.36 -- WORSE THAN WHAT IT REPLACED IN ALL FOUR SPLITS, at every horizon tested (2, 4, 8, 16, 32, 64 bars), and getting worse as the horizon lengthens. And the tell is the win rate: 58%% -> 68.5%%. The Atlas states the trap explicitly -- 'win rate and expectancy move in OPPOSITE directions; the highest win rate tested (55.7%%, tight target) had the WORST expectancy; best expectancy came at 36.5%%' -- and I built a machine for manufacturing the wrong variable and called it a profitability fix. THE ROOT ERROR IS THE ONE THIS PROJECT KEEPS PAYING FOR, and the Atlas has a rule for it too. STANDING RULE 4a: 'Never draw a conclusion from a one-sided excursion metric. Any X%% was left on the table claim must be reported beside the adverse excursion over the same window.' I reasoned from 'five of six peaked positive and gave it back' and never asked the mirror question: how often do WINNERS dip to the rung first? They do, constantly. The rung banks half of every winner at 1.0 ATR on the way to a 4 ATR move and the breakeven stop then scratches positions that were about to work. STOOD DOWN via switch, not deletion, per C403's convention -- functionally identical to never having shipped it, reversible in one line, and the measurement stays in the file. C459-2, AND THIS IS THE LARGEST MEASURED EFFECT IN THE PROJECT'S HISTORY: THE EXIT GEOMETRY WAS INVERTED AND THE ATLAS HAS KNOWN SINCE C356. Its own harness recorded, under 'WHAT THE HARNESS FOUND THAT DID SURVIVE (recorded, NOT yet acted on)': 'Exit geometry dominates every entry filter. Moving only the exit from 1.5-ATR-target/1.6-ATR-stop to 4.0/1.5 halves the loss rate (-0.099 -> -0.050 %%/trade) and lifts payoff 0.85 -> 1.60. Larger effect than any entry rule tested.' It was never acted on. Three versions later C416 set the target floor to 0.60R = 1.2 ATR and C377 set the stop to 1.5R = 3.0 ATR -- a 2.5:1 RISK-TO-REWARD INVERSION -- and the 2,388-trade ledger printed exactly what that produces: every exit built to TAKE PROFIT makes money (target achieved +$166.65, n=389, 84%% win; PEAK_REVERSAL +$48.40; profit capture +$53.88; TRAILING_TP +$21.40) and every exit built to LIMIT LOSS gives it back (REL_HARD_STOP -$132.56 ALONE = 177%% OF THE TOTAL LOSS, averaging -4.66%% against a winning target of +2.12%%, so the stop is 2.20x the target). MY INDEPENDENT BATCH REPLICATES IT ON A DIFFERENT CORPUS AND A DIFFERENT REGIME -- theirs was 638k bars of a BEAR corpus (BTC -46%%) from Oct 2025 to Aug 2026, mine is 25 live days in Sep 2026: T1.9/S3.0 -0.0926 (payoff 0.64) -> T4.0/S1.5 -0.0439 (payoff 1.90), positive in 4/4 splits, paired t = +2.27 on n=5,116, and it survives dropping the three best PAIRS entirely (+0.0205). THAT IS THE SEPARATE-BATCH REPLICATION STANDING RULE 9 DEMANDS AND THAT NOTHING ELSE IN THIS PROJECT HAS EVER HAD. A full grid settles the shape: every config with a target at or below 3.0 ATR lost more than every config at or above 4.0 ATR, REGARDLESS OF THE STOP. The target is the dominant variable and small targets are not 'safe' -- they are the single most expensive setting in the file. Stop 1.5R -> 0.75R (= 1.5 ATR); target floor 0.60R -> 2.00R (= 4.0 ATR); C415 fallback 1.5R -> 2.0R. C459-3, THE REALISED-PEAK CAP IS CIRCULAR AND I INHERITED IT. C441-2 caps the target at the 70th percentile of realised peaks -- 'a target the market has never given is not a target'. peak_pnl_pct is the maximum favourable excursion DURING THE HOLD, and the hold is ended by the very exit stack whose target this cap sets. Trades do not reach 4 ATR because they are CLOSED long before 4 ATR, and the cap reads that back as proof that 4 ATR is unreachable and pins the target at 1.3 ATR. Estimating the achievable target under the current policy and using it to constrain that policy is a fixed point, not a measurement, and its fixed point is the losing configuration. It is also fed by a ledger C458-9 has just shown to be CONTAMINATED -- ZEC recorded a 0.28R peak against a true 1.21R because peak_pnl_pct only updates on a tick. Disabled. And my own C458-16 rung read the SAME poisoned ledger for its rung height, which is a second reason it had to go. C459-4, THE TARGET AND THE HORIZON ARE ONE DECISION AND THIS CODE SET THEM IN TWO PLACES THAT NEVER MET. The same study, expectancy by holding horizon: at 8 bars (2h) T2.0/S3.0 -0.0726 beats T4.0/S1.5 -0.0956; at 32 bars (8h) T4.0/S1.5 -0.0439 beats T2.0/S3.0 -0.0836. A WIDE TARGET WITH A SHORT HORIZON IS THE WORST OF BOTH WORLDS -- the target is never reached, so the trade exits at the clock having paid two fees and worn a stop the whole way. expected_hold_min came from a predictor written for a 1.2 ATR target and returns 30-60 minutes; it is the single point every time-based exit reads (time_pressure at 4x and 8x it, the C373 capture release, C383, the stagnation clocks, the C404 sqrt(t) scaling), so a floor of 120 min moves all of them together and none can disagree. C459-5, THE EDGE MUST BE ANCHORED ON AN OUTCOME, NOT ON A PLAN. C458-3 anchored it at the median target the bot AIMED at, which correctly stopped the edge growing with an unreached target and is still wrong in a way C459-2 makes acute: the target is a PLAN and the payoff is an OUTCOME, so moving the target from 0.65R to 2.00R would leave an aim-anchored edge reading the ledger's OLD aims against the NEW win rate for the whole transition and shutting the book on an artefact of its own re-tuning. The break-even identity needs no fair-odds model at all: E > 0 <=> wr x payoff > (1-wr) <=> wr > 1/(1+payoff), so the edge over break-even IS wr - 1/(1+payoff). Policy-invariant by construction -- change the geometry and both terms move together. Every close now records pnlR so it is computable; the aim anchor remains as the fallback. C459-6, C457-2 DID NOT REPLICATE IN THE MIDDLE AND ITS TOP BUCKET HAS NO CEILING. Its band map is _lev = max(1, int(2.0/ATR)), so EVERY pair above 2.00%% ATR collapses into '1x' and inherits the 1.00-2.00%% band's 49.5%% win rate. On independent data that hidden tail is -0.2357 %%/trade -- TEN TIMES WORSE than any other band -- while the band it is hiding inside measures -0.0197. Separated, with a floor below the worst measured band. And the middle of the curve is a genuine conflict: C457-2 penalises 2x (0.67-1.00%%) and 1x (1.00-2.00%%) by 11-13%%, and on independent data those are the two BEST bands (-0.0157 and -0.0197) against the favoured 3x at -0.0234. The two studies measure DIFFERENT ESTIMANDS -- theirs conditioned on the bot's own entries and exits, mine unconditional -- so this is a conflict to resolve with data rather than a refutation to act on wholesale. Authority cut 18%% -> 8%% so the replicated tails still steer and the unreplicated middle cannot dominate a score. WHAT C458 GOT RIGHT AND IS KEPT: the gap replay (C458-9) is untouched and is now MORE important, because it is what un-poisons the peak ledger C459-3 just stopped trusting; the capture-floor ordering (C458-4) still guarantees a reached target is a bankable one; the expectancy support-sign fix (C458-1), the Brier units print (C458-10), the news consumer cap (C458-11), the stale regime ATR window (C458-12), the hardcoded coherence constant (C458-13), the gross cross-venue veto (C458-14), the capitulation short veto (C458-15), the scan's contradictory self-report (C458-18), the DRI directional artefact (C458-7), the parallel DRI fetch (C458-19) and the PEP 701 portability fix (C458-20) all stand. HONEST LIMITS, STATED BECAUSE THIS PROJECT HAS KILLED FOUR FINDINGS FOR LESS. The geometry gain is TAIL-DRIVEN: dropping the best 100 of 5,116 trades turns it negative. That is intrinsic to a let-winners-run payoff and is not a defect, but the equity curve will be lumpy and THE WIN RATE WILL FALL TO ROUGHLY A THIRD -- 33%% at payoff 1.9 is a better business than 58%% at 0.64, and the operator should expect this change to FEEL worse before it reads better. The corpus is 25 days and one regime; the tight-stop/wide-target structure is long volatility and will underperform in a genuinely choppy tape -- its defence is that the Atlas's own harness found the same thing on a bear corpus, which is a different regime, not that either window is representative. Per-pair the improvement is only 18 of 35 pairs; the aggregate comes from the tail. Nothing here touches the S3 probability model (44.2%% accurate at n=301 and still feeding Kelly through C303), the family Markov chain (~95%% Laplace prior), or the long/short asymmetry -- on which the Atlas's ledger says shorts cost 10x longs while this window says the opposite, i.e. it is REGIME-DEPENDENT and no permanent tilt is justified in either direction. VERIFICATION: compiles on 3.10 and 3.12; AST 370 unchanged (no new methods -- C459 is constants, one anchor rewrite and one switch); duplicates 0; C458+C459 constants defined 23, read 23, orphan 0; the barrier harness ships as a reproducible script; every replacement count-asserted. Chain C367-C459 intact."),
@@ -16164,7 +16907,7 @@ class TradingBot:
     def run(self):
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
-        logger.info("🤖 OMEGA V60 — COST-FIRST ENGINE (C461)")
+        logger.info("🤖 OMEGA V60 — COST-FIRST ENGINE (C462)")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -16600,6 +17343,11 @@ class TradingBot:
                     logger.info("🛑 Stopping...")
                     self._monitor_running = False  # C37: stop monitoring thread
                     self.portfolio.save_state()
+                    try:   # C462-4: the last thing the operator sees is the scoreboard
+                        _c462_report.note_equity(self.portfolio.get_live_equity(self.exchange))
+                        _c462_report.session_summary(self)
+                    except Exception:
+                        pass
                     break
                 except Exception as e:
                     logger.error(f"Loop error: {e}")
@@ -20289,7 +21037,55 @@ class TradingBot:
             symbol = pos.symbol
             _half = pos.size / 2.0
             close_side = 'buy' if pos.side == 'short' else 'sell'
-            _ord = self.exchange.place_order(symbol, close_side, _half, pos.leverage, reduce_only=True)
+            # ═══ C462-6: THE HALF THAT BANKS THE PROFIT WAS STILL PAYING TAKER ══
+            # C376 made profit-taking exits maker and C461 rests the whole
+            # project on that saving being larger than any edge this bot has
+            # ever measured. THIS function was left out of both, and it is
+            # where HALF of every winner is actually banked: kind='win' is the
+            # C338 target hit, a planned, unhurried, profit-taking close with
+            # no urgency whatsoever — the exact case C376 was written for.
+            # Measured: 0.04% of the exit notional, every winning trade.
+            # kind='loss' stays TAKER and always will. It is the patience-cap
+            # close, it is protective, and C376's own rule applies unchanged:
+            # a close that protects capital must always be able to cross.
+            _ord = None
+            _maker462 = False
+            if (kind == 'win'
+                    and bool(getattr(self.cfg, 'C462_MAKER_HALF', True))
+                    and bool(getattr(self.cfg, 'C376_MAKER_EXITS', True))):
+                try:
+                    _b462, _a462, _src462 = self.exchange.get_bid_ask(symbol)
+                    if not (_b462 and _a462):
+                        logger.info(f"   \u21aa\ufe0f C462-6 maker half SKIPPED "
+                                    f"{symbol.split('/')[0]} — no book (src={_src462}); "
+                                    f"crossing as taker")
+                    else:
+                        _lim462 = _a462 if close_side == 'sell' else _b462
+                        _ord = self.exchange.place_order(
+                            symbol, close_side, _half, pos.leverage,
+                            order_type='limit', price=_lim462, reduce_only=True)
+                        if _ord and float(_ord.get('filled', 0) or 0) > 0:
+                            _maker462 = True
+                            self._c462_half_makers = getattr(self, '_c462_half_makers', 0) + 1
+                            logger.info(f"   \U0001f3af C462-6 MAKER half filled "
+                                        f"{symbol.split('/')[0]} @${_fmt_px(_lim462)} — saved "
+                                        f"~{(self.cfg.TAKER_FEE_PCT - self.cfg.MAKER_FEE_PCT):.2f}% "
+                                        f"of the half notional "
+                                        f"({self._c462_half_makers} this session)")
+                        else:
+                            _ord = None
+                            self._c462_half_misses = getattr(self, '_c462_half_misses', 0) + 1
+                            logger.info(f"   \u21aa\ufe0f C462-6 maker half did not fill "
+                                        f"{symbol.split('/')[0]} — crossing as taker "
+                                        f"({self._c462_half_misses} misses this session)")
+                except Exception as _e462p:
+                    _ord = None
+                    logger.warning(f"   \u26a0\ufe0f C462-6 maker half raised for "
+                                   f"{symbol.split('/')[0]}: {type(_e462p).__name__}: "
+                                   f"{_e462p} — crossing as taker")
+            if _ord is None:
+                _ord = self.exchange.place_order(symbol, close_side, _half,
+                                                 pos.leverage, reduce_only=True)
             _fill = price
             try:
                 _fp = float(_ord.get('price') or 0) if _ord else 0
@@ -20300,7 +21096,9 @@ class TradingBot:
             _move = pos.get_price_move_pct(_fill)
             _pnl_pct = _move * pos.leverage
             _gross = (_move / 100.0) * (_half * pos.entry_price)
-            _exit_fee = (_half * _fill) * (self.cfg.TAKER_FEE_PCT / 100.0)
+            # C462-6 / C462-5: the fee follows the ORDER, not the intent.
+            _exit_fee = (_half * _fill) * (
+                (self.cfg.MAKER_FEE_PCT if _maker462 else self.cfg.TAKER_FEE_PCT) / 100.0)
             _entry_fee_half = float(getattr(pos, 'entry_fee', 0.0) or 0.0) / 2.0
             _fees = _entry_fee_half + _exit_fee
             _net = _gross - _fees
@@ -20356,6 +21154,12 @@ class TradingBot:
             else:
                 logger.info(f"   💰 Half Net PnL: ${_net:+.2f} (fees ${_fees:.3f}) | remainder "
                            f"${pos.initial_margin:.2f} rides — timer-exempt, widened stop LIVE [C336/C338]")
+            try:   # C462-4: the half shows on the tape, but books no trade
+                _c462_report.note_partial(symbol, pos.side, _fill, _move, _net,
+                                          kind, _maker462, _exit_fee,
+                                          pos.initial_margin)
+            except Exception:
+                pass
             logger.info("=" * 60)
         except Exception as _e336:
             logger.warning(f"⚠️ C336/C338 partial-close: {_e336}")
@@ -20421,17 +21225,70 @@ class TradingBot:
             # If the maker exit does not fill within C376_WAIT_S the position is
             # closed taker anyway, so the worst case is today's behaviour plus a
             # few seconds, never a position left hanging.
+            # ═══ C462-1: IT NEVER FIRED ONCE, AND IT FAILED SILENTLY ════════
+            # MEASURED across both 20260915/16 sessions: SIX closes, THREE of
+            # them wins exiting on TRAILING_TP — a token that is right here in
+            # _C376_PROFIT_TOKENS — and the maker path logged NOTHING. Not one
+            # "MAKER exit filled", not one "did not fill". Every exit paid the
+            # taker fee: "Entry $0.003 + Exit $0.008" is 2bp in and 6bp out.
+            # TWO DEFECTS, and the second is why the first survived.
+            # (1) THE CONDITION READ A FIELD WRITTEN 17,000 LINES AWAY.
+            #     `pos._last_pnl_pct` is set ONLY inside _should_exit_dri_raw,
+            #     past ten early returns, and TRAILING_TP fires at line ~17512
+            #     in _monitor_positions — 116 lines BEFORE should_exit_dri is
+            #     even called, then `continue`s. So on the tick that closes the
+            #     trade the field holds whatever a previous pass happened to
+            #     leave, and on several paths it is still the dataclass default
+            #     of 0.0. Reading a value whose writer lives in another function
+            #     to decide how to spend money is the "computed but never wired"
+            #     family this project has paid for five times.
+            #     THE PnL AT THIS INSTANT IS RIGHT HERE. exit_price and
+            #     pos.entry_price are both in scope; the move is one line of
+            #     arithmetic and cannot be stale.
+            # (2) EVERY SKIP WAS SILENT. If the profit test failed, or the book
+            #     was unreachable, the code fell through to the taker path with
+            #     no log line at all — so an operator reading the log could not
+            #     tell the difference between "maker tried and missed" and
+            #     "maker never ran". Standing rule #5: a protection that fails
+            #     quietly is not a protection. Now every outcome prints.
             _c376_profit = False
+            _why376 = ''
             try:
                 _rs376 = str(reason)
-                _c376_profit = (any(_t in _rs376 for _t in self._C376_PROFIT_TOKENS)
-                                and float(getattr(pos, '_last_pnl_pct', 0.0) or 0.0) > 0)
-            except Exception:
+                _tok376 = any(_t in _rs376 for _t in self._C376_PROFIT_TOKENS)
+                _sg376 = 1.0 if getattr(pos, 'side', 'long') == 'long' else -1.0
+                _ep376 = float(getattr(pos, 'entry_price', 0.0) or 0.0)
+                _mv376 = (((float(exit_price) / _ep376) - 1.0) * 100.0 * _sg376
+                          if _ep376 > 0 else 0.0)
+                _c376_profit = bool(_tok376 and _mv376 > 0)
+                if not _tok376:
+                    _why376 = 'not a profit-taking exit — a stop must always be able to cross'
+                elif _mv376 <= 0:
+                    _why376 = f'profit token but the move is {_mv376:+.2f}%'
+            except Exception as _e376c:
                 _c376_profit = False
+                _why376 = f'profit test raised {type(_e376c).__name__}'
             _close_order = None
+            # ═══ C462-5: THE FEE THAT NEVER FOLLOWED THE ORDER TYPE ═════════
+            # C257 fixed exactly this defect at the ENTRY side ("the exit fee is
+            # charged at the EXIT order's type") and then hardcoded TAKER for
+            # every close — which was correct while every close was a market
+            # order, and stopped being correct the moment C376 shipped a maker
+            # exit. A C376 fill is billed 0.06% instead of 0.02%, so the bot
+            # UNDER-reports its own equity by 4bp of notional on every
+            # profit-taking exit that works. It errs conservative, which is why
+            # it survived, but C461 rests the entire project on the claim that
+            # the maker/taker difference is larger than any edge here — and a
+            # ledger that cannot see that difference cannot show whether the
+            # claim is paying. The flag follows the ORDER, not the intent.
+            _c462_maker_exit = False
             if _c376_profit and getattr(self.cfg, 'C376_MAKER_EXITS', True):
                 try:
                     _bid376, _ask376, _src376 = self.exchange.get_bid_ask(symbol)
+                    if not (_bid376 and _ask376):
+                        logger.info(f"   \u21aa\ufe0f C376 maker exit SKIPPED "
+                                    f"{symbol.split('/')[0]} — no book "
+                                    f"(src={_src376}); crossing as taker")
                     if _bid376 and _ask376:
                         # rest INSIDE the book on the passive side so it cannot cross
                         _lim376 = _ask376 if close_side == 'sell' else _bid376
@@ -20439,6 +21296,7 @@ class TradingBot:
                             symbol, close_side, pos.size, pos.leverage,
                             order_type='limit', price=_lim376, reduce_only=True)
                         if _close_order and float(_close_order.get('filled', 0) or 0) > 0:
+                            _c462_maker_exit = True          # C462-5
                             self._c376_maker_fills = getattr(self, '_c376_maker_fills', 0) + 1
                             logger.info(f"   \U0001f3af C376 MAKER exit filled {symbol.split('/')[0]} "
                                         f"@${_fmt_px(_lim376)} — saved ~{(self.cfg.TAKER_FEE_PCT - self.cfg.MAKER_FEE_PCT):.2f}%% "
@@ -20451,6 +21309,16 @@ class TradingBot:
                                         f"({self._c376_maker_misses} misses this session)")
                 except Exception as _e376:
                     _close_order = None
+                    logger.warning(f"   \u26a0\ufe0f C376 maker exit raised for "
+                                   f"{symbol.split('/')[0]}: {type(_e376).__name__}: "
+                                   f"{_e376} — crossing as taker")
+            elif getattr(self.cfg, 'C376_MAKER_EXITS', True) and _why376:
+                # C462-1: never silent again. One line per taker exit, throttled
+                # so a run of stops cannot flood the log.
+                if time.time() - getattr(self, '_c376_skip_log', 0.0) > 300:
+                    self._c376_skip_log = time.time()
+                    logger.info(f"   \U0001f4b8 C376 taker exit {symbol.split('/')[0]}: "
+                                f"{_why376} [throttled 5min]")
             if _close_order is None:
                 _close_order = self.exchange.place_order(symbol, close_side, pos.size, pos.leverage, reduce_only=True)  # C180-F3
             try:
@@ -20481,7 +21349,12 @@ class TradingBot:
             # TAKER. The old line read pos.is_limit_order — the ENTRY's type — so
             # every monitor/sweep exit after a limit entry was billed at maker
             # 0.02% instead of taker 0.06%: fees understated 3× on most exits.
-            exit_fee = position_value * (self.cfg.TAKER_FEE_PCT / 100)
+            # C462-5: the rate the order ACTUALLY earned. Taker unless a C376
+            # maker limit is confirmed filled above — a miss falls through to
+            # the market order below and pays taker, exactly as it does live.
+            _exit_rate462 = (self.cfg.MAKER_FEE_PCT if _c462_maker_exit
+                             else self.cfg.TAKER_FEE_PCT)
+            exit_fee = position_value * (_exit_rate462 / 100)
             # ═══ C364: FUNDING — the cost paper has NEVER paid ═══════════════
             # A perpetual charges a holding fee at 00:00 / 08:00 / 16:00 UTC.
             # Longs pay shorts when funding is positive and vice-versa. The bot
@@ -20945,6 +21818,19 @@ class TradingBot:
                     pass
             logger.info(f"   📈 Price Move: {price_move_pct:+.2f}% | PnL%: {pnl_pct:+.2f}%")
             logger.info(f"   💰 Net PnL: ${net_pnl:+.2f}")
+            try:   # C462-4: one dashboard line per exit
+                _held462 = pos.get_age_seconds() / 60.0
+                _R462 = float(getattr(pos, '_c372_R_pct', 0.0) or 0.0)
+                _c462_report.note_close(
+                    symbol, pos.side, pos.entry_price, exit_price,
+                    price_move_pct, net_pnl, reason, _held462,
+                    equity=self.portfolio.equity,
+                    maker=_c462_maker_exit, fee=exit_fee,
+                    r_mult=(price_move_pct / _R462) if _R462 > 0 else None,
+                    peak_pct=float(getattr(pos, 'peak_pnl_pct', 0.0) or 0.0)
+                    / max(1.0, float(getattr(pos, 'leverage', 1) or 1)))
+            except Exception as _e462c:
+                logger.warning(f"⚠️ C462 close record failed: {type(_e462c).__name__}")
             # C136: PER-TRADE COMPONENT LOGGING AT EXIT — win/loss attribution
             # Shows which frameworks CONTRIBUTED to this trade's entry decision
             _entry_comps = getattr(pos, '_entry_components', {})
@@ -21139,6 +22025,15 @@ class TradingBot:
                 self._last_log_flush = time.time()
         except: pass
 
+    def _c462_boot_budget_note(self) -> str:
+        """C462-3: the boot banner printed 'DAILY BUDGET @ $50.00' while the
+        account held $249.36, because _c369_derive_budget runs before
+        load_state. C377 recorded this as 'merely confusing' and left it. It is
+        not merely confusing: it is the first number an operator reads, it is
+        wrong by 5x, and every derived figure printed beneath it (per-trade
+        risk, day cap, projected month) is wrong with it."""
+        return "provisional — recomputed after state load"
+
     def _c369_derive_budget(self, equity: float) -> dict:
         """
         C369: derive the whole daily budget from EQUITY, because every number in
@@ -21274,7 +22169,15 @@ class TradingBot:
             if getattr(self, '_c406_budget_key', None) == _key406:
                 return
             self._c406_budget_key = _key406
-            logger.info(f"\U0001f4d0 C369 DAILY BUDGET @ ${p['equity']:.2f}")
+            # C462-3: the FIRST time this runs we are inside __init__, before
+            # load_state has read the saved equity off disk, so p['equity'] is
+            # the constructor default. It printed "@ $50.00" on an account
+            # holding $249.36 and every figure beneath it was wrong by the same
+            # 5x. Say so on the line itself rather than leaving the operator to
+            # discover it four screens later.
+            _boot462 = not bool(getattr(self, '_c462_state_settled', False))
+            logger.info(f"\U0001f4d0 C369 DAILY BUDGET @ ${p['equity']:.2f}"
+                        + (f"  [{self._c462_boot_budget_note()}]" if _boot462 else ""))
             logger.info(f"   smallest orderable trade risks {p['min_orderable_pct']:.3f}% of equity"
                         f"{'  <-- BINDING, day is one-trade' if p['binding'] else ''}")
             # C406: the HP half of this sentence describes a phase ladder C403-3
@@ -28794,6 +29697,13 @@ class TradingBot:
                 logger.info(f"📊 Step 3 result: {analyzed} analyzed"
                            f"{f' (+{_cached_reuse} cached)' if _cached_reuse else ''}"
                            f" → {len(candidates)} viable → Step 4 DRI/DSI")
+                try:   # C462-4
+                    _top462 = max(candidates, key=lambda a: float(a.get('score', 0) or 0))
+                    _c462_report.note_scan(len(getattr(self.exchange, 'markets', {}) or {}),
+                                           analyzed, len(candidates),
+                                           _top462.get('symbol'), _top462.get('score'), 'viable')
+                except Exception:
+                    pass
             else:
                 self._c458_dry_scans = int(getattr(self, '_c458_dry_scans', 0) or 0) + 1
         # ═══ C429-2: STEP 3 HAS REPORTED — DRAIN THE BACKGROUND ENTRIES ══════
@@ -28871,6 +29781,15 @@ class TradingBot:
                 logger.info(f"📊 Step 3 result: {analyzed} analyzed"
                            f"{f' (+{_cached_reuse} cached this 15m candle)' if _cached_reuse else ''}"
                            f" → 0 passed | {', '.join(reasons)}")
+                try:   # C462-4
+                    _b462 = _best_rejected_pp if _best_rejected_pp else best_rejected
+                    _c462_report.note_scan(len(getattr(self.exchange, 'markets', {}) or {}),
+                                           analyzed, 0,
+                                           (_b462 or {}).get('symbol'),
+                                           (_b462 or {}).get('score'),
+                                           (_b462 or {}).get('_reject_reason'))
+                except Exception:
+                    pass
                 # C150: Prefer post-penalty (honest) nearest-miss; show pre-penalty too
                 _br = _best_rejected_pp if _best_rejected_pp else best_rejected
                 if _br and _br.get('score', 0) > 0:
@@ -31349,6 +32268,15 @@ class TradingBot:
             # Clean open display (Document7 format)
             logger.info("─" * 40)
             logger.info(f"📊 OPEN: {short_name} {direction.upper()} @${price:.8g}")
+            try:   # C462-4: one dashboard line per entry
+                _stop462 = float(getattr(pos, '_c372_R_pct', 0.0) or 0.0) * \
+                    float(getattr(self.cfg, 'C377_HARD_STOP_R', 0.75))
+                _c462_report.note_open(
+                    symbol, direction, price, size, margin, leverage,
+                    _target_pct, _stop462 or None,
+                    analysis.get('score'), maker=(not _cross402), fee=fee)
+            except Exception as _e462o:
+                logger.warning(f"⚠️ C462 open record failed: {type(_e462o).__name__}")
             # C403-1: register the entry with the fee-budget servo. This is the
             # ONLY place a position is actually born, so it is the only honest
             # place to count one.
@@ -31539,6 +32467,18 @@ class TradingBot:
             logger.info(f"{status} | Eq: ${stats['equity']:.2f} | Session: ${session_pnl:+.2f} ({session_pct:+.1f}%){remaining}")
             return
 
+        # ═══ C462-4: THE DASHBOARD GOES FIRST ══════════════════════════════
+        # Everything the operator steers by, in one fixed-width block: equity,
+        # session P&L, win rate, payoff, day-budget usage, exposure, fees and
+        # the open book. The Document7-era rows below are SUPERSEDED by it and
+        # are filtered out of the readable log (_DROP_FIRST); they remain in
+        # full in the detail log because the DRI/DSI working beneath them is
+        # the forensic record every exit post-mortem is built from.
+        try:
+            if bool(getattr(self.cfg, 'C462_STATUS_BLOCK', True)):
+                _c462_report.status(self)
+        except Exception as _e462d:
+            logger.warning(f"\u26a0\ufe0f C462 dashboard failed: {type(_e462d).__name__}: {_e462d}")
         logger.info("")
         logger.info("=" * 60)
         logger.info(f"📊 POSITION SUMMARY ({self.cfg.SUMMARY_INTERVAL//60}-MIN UPDATE)")
@@ -32637,9 +33577,28 @@ def startup():
             except Exception:
                 pass
             try:
+                # C462-3: equity is real from here on — drop the provisional tag.
+                bot._c462_state_settled = True
+                bot._c406_budget_key = None
                 bot._c369_apply_budget(float(bot.portfolio.equity))
             except Exception:
                 pass
+            # C462-2: the run that is starting NOW is the session. Called after
+            # load_state has settled equity and before the first status block,
+            # so "Session P&L" means this run and nothing else.
+            try:
+                bot.portfolio._c462_mark_session_start()
+                print(f"  \U0001f4d0 session baseline ${bot.portfolio.session_start_equity:.2f} "
+                      f"(day ledger untouched)")
+            except Exception as _e462s:
+                print(f"  \u26a0\ufe0f  session baseline failed: {type(_e462s).__name__}")
+            try:   # C462-4: open the report with a header, not a wall of text
+                _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+                                    bot.portfolio.equity,
+                                    day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
+                print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)}")
+            except Exception as _e462h:
+                print(f"  \u26a0\ufe0f  report header failed: {type(_e462h).__name__}")
             # ═══ C458-9: REPLAY THE GAP BEFORE ANYTHING ELSE TOUCHES THESE ══
             # Runs FIRST, ahead of the stop re-arm, because a position whose
             # stop was breached while the bot was down must be closed at THAT
@@ -32687,7 +33646,20 @@ def startup():
         # starting equity, so the budget derived during __init__ was computed on
         # the default and must be recomputed on the figure actually chosen.
         try:
+            # C462-3: a fresh start's capital is the operator's own figure, so
+            # it is real too — and C462-2 needs a session baseline on this path
+            # exactly as much as on the restore path.
+            bot._c462_state_settled = True
+            bot._c406_budget_key = None
             bot._c369_apply_budget(float(cfg.INITIAL_CAPITAL))
+        except Exception:
+            pass
+        try:
+            bot.portfolio._c462_mark_session_start()
+            _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+                                bot.portfolio.equity,
+                                day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
+            print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)}")
         except Exception:
             pass
         # C205: a Fresh Start MUST begin at Cycle 1 with clean targets. C200 made
