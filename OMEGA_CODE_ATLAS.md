@@ -1,6 +1,80 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🎨 2026-09-17d — C466: COLOUR, APPLIED AFTER THE LAYOUT, CONSOLE ONLY
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C466.** Branch `claude/trading-system-analysis-tsvzj4`.
+Display config: `C462_LOG_WIDTH=0` (auto→44 on Android) · `C465_GLYPHS='ascii'`
+· `C466_COLOR='auto'` · `C466_PALETTE='classic'`.
+
+---
+
+## 🎨 THE THREE COLOUR RULES
+
+**1. Colour comes LAST.** An ANSI code is **zero cells wide on screen and 4–5
+characters to `len()`**. Painting during layout would have broken every width
+calculation C465 fixed. The dashboard is built plain, measured plain, and
+painted at the formatter boundary by one function.
+*Proven: visible length byte-identical before/after; 18 width×palette
+combinations render with zero over-width rows.*
+
+**2. The files never see it.** `omega_report` / `omega_session` /
+`omega_detail` stay plain — a log full of `\x1b[32m` cannot be grepped or
+diffed, and these files are the forensic record. Only the **console**
+formatter holds a palette; file formatters hold `None` for the process
+lifetime. *Proven by counting escapes at each sink: 0 / 0 / 40.*
+
+**3. Colour is never the only carrier.** ~1 man in 12 has red-green CVD.
+Every painted value already states its meaning in text (the sign, and the
+words WIN / LOSS / maker / TAKER). `C466_PALETTE='cvd'` → blue/magenta;
+`'mono'` → bold only.
+
+**The palette is semantic and small (6 classes):** labels neutral-cyan (identity,
+never status) · rules dim (recessive) · green/red **reserved** for polarity ·
+amber for warning. The day gauge is the one place hue adds something the text
+does not: green under half the budget, amber past half, red past 80%.
+
+---
+
+## 🐞 WHAT THE FIRST RENDER CAUGHT (look at the output, don't trust the code)
+
+| defect | why it mattered |
+|---|---|
+| `day +/-0.68%` painted red | a **symmetric barrier** is not a loss — the header announced one that did not exist |
+| `taker flow +0.02` painted red | an order-flow **reading**, not a cost — a status colour on a non-status thing, the exact anti-pattern the palette exists to avoid |
+| gauge arms painted twice | rule-dim then gauge-colour; the **inner reset cancelled the outer colour** and the gauge lost its hue — nested escapes are how hand-rolled colour normally fails |
+
+**NEW Rule 21 — `ast.parse()` does not execute.** The painter compiles its
+token regex at *import* time and `re` was never imported at module level in
+this file (only far below, as `_re426`). Parse was happy; import would have
+raised `NameError`. **Any module-level block must be EXECUTED in the battery,
+not merely parsed.**
+
+**NEW Rule 22 — when documentation cannot settle a device question, auto-detect,
+announce, and ship a self-test.** Whether Pydroid 3's console honours ANSI is
+not documented. So: `C466_COLOR='auto'` paints only when `stdout.isatty()`,
+`NO_COLOR` is honoured, the boot line states the decision and why, and
+`omega_color_test.py` answers it on the device in five seconds. Worst case is a
+monochrome console and one config line — because the files were never coloured.
+
+---
+
+## 🛠 BATTERY ADDITIONS
+
+```
+python3 omega_color_test.py          # on the phone: does ANSI render here?
+```
+Plus, in the automated battery: **execute** the module-level colour block;
+count escapes at all three sinks; assert visible width is unchanged by
+painting; render 6 widths × 3 palettes and assert zero over-width / non-ASCII.
+
+---
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 📐 2026-09-17c — C465: THE DASHBOARD, LAID OUT SO NO FONT CAN BREAK IT
 # ═══════════════════════════════════════════════════════════════════════════
 

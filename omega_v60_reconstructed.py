@@ -47,6 +47,9 @@ import signal
 import hashlib
 import statistics
 import traceback
+import re            # C466: the colour painter compiles its
+                     # token pattern at import time; `re` was only imported
+                     # far below, as _re426, inside a later block.
 import requests
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
@@ -300,6 +303,149 @@ class _C460Verbose:
 cfg_console_verbose = _C460Verbose()
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# C466: COLOUR — APPLIED AFTER THE LAYOUT, TO THE CONSOLE ONLY
+# ═══════════════════════════════════════════════════════════════════════════
+# THREE RULES, and each one is a defect avoided rather than a preference.
+#
+# 1. COLOUR COMES LAST. An ANSI code is zero cells wide on screen and four to
+#    five characters to len(). If colour were added while the rows were being
+#    built, every width calculation in C465 would be wrong again -- the exact
+#    problem that took a whole version to fix. So the dashboard is laid out in
+#    PLAIN TEXT, measured in plain text, and painted afterwards, here.
+#
+# 2. THE FILES NEVER SEE IT. omega_report / omega_session / omega_detail stay
+#    plain, because a log full of \x1b[32m is a log you cannot grep, diff or
+#    read six months later. Only the console formatter paints.
+#
+# 3. COLOUR IS NEVER THE ONLY CARRIER. Every painted value already states its
+#    meaning in text -- the sign on a number, the words WIN / LOSS / maker /
+#    TAKER. Roughly one man in twelve has red-green colour blindness; for them
+#    the dashboard must lose nothing, and a 'cvd' palette is provided besides.
+#
+# The palette is SEMANTIC and small (six classes; more than about seven stops
+# meaning anything). Labels wear a neutral identity colour, never a status one;
+# rules and separators are recessive; green and red are reserved for polarity
+# and are never used for anything that is not a gain or a loss.
+_C466_PALETTES = {
+    'classic': {'dim': '\033[2m',  'lbl': '\033[36m', 'gain': '\033[32m',
+                'loss': '\033[31m', 'warn': '\033[33m', 'head': '\033[1;37m'},
+    # For red-green colour blindness: blue and magenta separate cleanly for
+    # every common CVD type, and still read as opposite poles.
+    'cvd':     {'dim': '\033[2m',  'lbl': '\033[36m', 'gain': '\033[94m',
+                'loss': '\033[95m', 'warn': '\033[33m', 'head': '\033[1;37m'},
+    'mono':    {'dim': '\033[2m',  'lbl': '\033[1m',  'gain': '\033[1m',
+                'loss': '\033[1m',  'warn': '\033[1m', 'head': '\033[1m'},
+}
+_C466_RESET = '\033[0m'
+_C466_STRIP = re.compile(r'\x1b\[[0-9;]*m')
+
+# One alternation, one pass: a token can never be painted twice, and no
+# replacement can land inside an escape sequence already inserted.
+_C466_TOKENS = re.compile(
+    # C466 FIX #2: a rule is a RULE, not the inside of the day gauge. The
+    # gauge's arms are runs of the same character between [ | and ], and the
+    # first version painted them dim, then painted the gauge over the top --
+    # nested escapes whose inner reset cancelled the outer colour, so the
+    # gauge lost its status hue entirely.
+    r'(?P<rule>(?<![-=\[])[-=]{6,}(?![-=|\]]))'
+    # C466 FIX, caught in the first render: "day +/-0.68%" is a SYMMETRIC
+    # barrier, not a loss, and the pct branch was painting its "-0.68%" red.
+    # A two-sided figure is neutral by definition -- it must be matched first
+    # and left unpainted, or the header announces a loss that is not there.
+    r'|(?P<pm>[+]/[-]\d+(?:\.\d+)?%?)'
+    r'|(?P<money>\$[+-][\d,]+\.\d{2})'
+    r'|(?P<pct>(?<![\w./])[+-]\d+\.\d+%)'
+    r'|(?P<rmult>(?<![\w.])[+-]\d+\.\d+R\b)'
+    r'|(?P<good>\bWIN\b|\bmaker\b|\bMAKER\b|\bmk\d+\b)'
+    # C466 FIX #1: 'taker flow' is an order-flow READING, not a cost, and the
+    # first version painted it red on every MARKET row. A status colour used
+    # for something that is not a status is the anti-pattern this palette is
+    # supposed to avoid -- so the cost sense must be matched explicitly.
+    r'|(?P<bad>\bLOSS\b|\bTAKER\b|\btaker exit\b|\btk\d+\b)'
+    r'|(?P<warnw>\bERROR\b|\bFAILED\b|\bfailed\b|\braised\b|\bHARD STOP\b)'
+    r'|(?P<marker>^\s*(?:>>|<<|->|\.\.)(?=\s))'
+)
+
+
+def _c466_paint(line, pal, day_used=0.0):
+    """Paint a finished line. Never called before the layout is measured."""
+    try:
+        if not line or not pal:
+            return line
+        def _sub(m):
+            k = m.lastgroup
+            t = m.group()
+            if k == 'rule':
+                return pal['dim'] + t + _C466_RESET
+            if k == 'pm':
+                return t                      # symmetric: no polarity to show
+            if k in ('money', 'pct', 'rmult'):
+                c = pal['gain'] if t.lstrip('$')[0] == '+' else pal['loss']
+                return c + t + _C466_RESET
+            if k == 'good':
+                return pal['gain'] + t + _C466_RESET
+            if k == 'bad':
+                return pal['loss'] + t + _C466_RESET
+            if k == 'warnw':
+                return pal['warn'] + t + _C466_RESET
+            if k == 'marker':
+                return pal['dim'] + t + _C466_RESET
+            return t
+        out = _C466_TOKENS.sub(_sub, line)
+        # the label column of a dashboard row: identity, not status
+        m = re.match(r'^(  )([A-Z][A-Z&/ ]{1,9}?)(  +)', out)
+        if m:
+            out = (m.group(1) + pal['lbl'] + m.group(2) + _C466_RESET
+                   + m.group(3) + out[m.end():])
+        # the day gauge: how close the day is to ending, in either direction
+        if '[' in out and '|' in out and ('#' in out or '█' in out):
+            try:
+                u = abs(float(day_used))
+                c = pal['loss'] if u >= 0.8 else (pal['warn'] if u >= 0.5
+                                                 else pal['gain'])
+                out = re.sub(r'(\[)([^\]]*)(\])',
+                             lambda g: g.group(1) + c + g.group(2)
+                             + _C466_RESET + g.group(3), out, count=1)
+            except Exception:
+                pass
+        return out
+    except Exception:
+        return line
+
+
+def _c466_resolve(mode, palette):
+    """Decide whether to paint, and say why. C466: 'auto' means paint when the
+    stream is a real terminal and not when output is piped to a file -- which
+    is also the right answer on Android, where Pydroid's terminal emulator is
+    a tty and its non-interactive output window is not. NO_COLOR is honoured
+    because it is the cross-tool standard."""
+    try:
+        if os.environ.get('NO_COLOR'):
+            return None, 'off (NO_COLOR is set)'
+        m = str(mode or 'auto').strip().lower()
+        if m in ('off', 'none', 'no', '0', 'false'):
+            return None, 'off (C466_COLOR)'
+        want = str(palette or 'classic').strip().lower()
+        pal = _C466_PALETTES.get(want)
+        if pal is None:
+            # C466: name the palette actually in use. Echoing the requested
+            # name while quietly using another is a small lie that costs an
+            # hour the first time someone wonders why 'cvd' looks classic.
+            want, pal = 'classic', _C466_PALETTES['classic']
+        if m in ('on', 'yes', '1', 'true', 'force'):
+            return pal, f"on ({want})"
+        try:
+            tty = bool(sys.stdout.isatty())
+        except Exception:
+            tty = False
+        if tty:
+            return pal, f"on ({want}, terminal detected)"
+        return None, "off (not a terminal - set C466_COLOR='on' to force)"
+    except Exception:
+        return None, 'off (detection failed)'
+
+
 class _C463Formatter(logging.Formatter):
     """C463-4: THE TIMESTAMP WAS EATING A QUARTER OF THE PHONE'S SCREEN.
 
@@ -315,19 +461,23 @@ class _C463Formatter(logging.Formatter):
     print bare, and the whole declared width becomes usable width. Ordinary
     log lines keep their stamp, because for those the time is the point.
     """
-    def __init__(self, *a, wrap=False, **kw):
+    def __init__(self, *a, wrap=False, palette=None, **kw):
         super().__init__(*a, **kw)
         self.wrap = bool(wrap)
+        self.palette = palette          # C466: None = never paint (files)
 
     def format(self, record):
         try:
             if _c465_flagged(record) or _c463_is_report(record.getMessage()):
-                return record.getMessage()   # already laid out; never restamp
+                # already laid out to the exact width; never restamp, and
+                # paint only at the very end so the measuring was plain
+                return _c466_paint(record.getMessage(), self.palette,
+                                   getattr(_c462_report, '_day_used', 0.0))
         except Exception:
             pass
         out = super().format(record)
         if not self.wrap:
-            return out
+            return _c466_paint(out, self.palette)
         # ═══ C463-5: WRAP ONCE, HERE, NOT IN SEVEN HUNDRED CALL SITES ═══════
         # The boot banner's risk line is 188 characters. C435-2's selection
         # line is 300. On a phone those become four and seven ragged rows with
@@ -344,9 +494,33 @@ class _C463Formatter(logging.Formatter):
         if len(out) <= w:
             return out
         import textwrap
-        return '\n'.join(textwrap.wrap(
-            out, width=w, subsequent_indent='    ', break_long_words=False,
-            break_on_hyphens=False)) or out
+        # C466: wrap on the PLAIN text, paint each finished row afterwards.
+        rows = textwrap.wrap(out, width=w, subsequent_indent='    ',
+                             break_long_words=False, break_on_hyphens=False)
+        if not rows:
+            return _c466_paint(out, self.palette)
+        return '\n'.join(_c466_paint(r, self.palette) for r in rows)
+
+def _c466_apply(mode, palette):
+    """Give the palette to the CONSOLE formatter and to nothing else.
+
+    The file handlers keep palette=None for the life of the process, so a
+    colour escape can never reach omega_report / omega_session / omega_detail.
+    That is deliberate: a log full of \x1b[32m cannot be grepped or diffed,
+    and these files are the forensic record.
+    """
+    pal, why = _c466_resolve(mode, palette)
+    try:
+        for h in logger.logger.handlers:
+            if isinstance(h, logging.FileHandler):
+                continue
+            f = getattr(h, 'formatter', None)
+            if isinstance(f, _C463Formatter):
+                f.palette = pal
+    except Exception:
+        pass
+    return why
+
 
 def _c52_setup_logging():
     global _c52_file_handler, _c460_detail_handler
@@ -625,6 +799,7 @@ class _C462Report:
         self.n_analyses = 0
         self._last_full = 0.0     # C462-4: when the last FULL block printed
         self._last_sig = None     # and what the book looked like then
+        self._day_used = 0.0      # C466: how much of the day budget is spent
         self.movers = None        # C463-7: board parity, one row
         self.news = None          # C463-3: the news layer, one row
         self.info = None          # C464-7: the information overlay, one row
@@ -1215,6 +1390,7 @@ class _C462Report:
                     _bw = min(self.W - self.LW - 4, 26)
                     self._pack('DAY', [f"{day_pct:+.2f}% of {self.g['pm']}{cap:.2f}%",
                                        f"{100.0 * used:.0f}% used"])
+                    self._day_used = used     # C466: the gauge's colour level
                     self._row('', _c465_gauge(
                         (day_pct / cap) if cap else 0.0, _bw,
                         self.g['bar_on'], self.g['rule']))
@@ -3518,6 +3694,24 @@ class Config:
         #           known to render box drawing and blocks at one cell.
         # The LAYOUT is identical either way; only the characters change.
         self.C465_GLYPHS         = 'ascii'
+        # ═══ C466: COLOUR ═══
+        # 'auto' paints when stdout is a real terminal and not when output is
+        #        redirected — which is also the right answer on Android, where
+        #        Pydroid's terminal emulator is a tty and its non-interactive
+        #        output window is not. NO_COLOR is honoured.
+        # 'on'   force it. Use this if the dashboard looks grey in a terminal
+        #        that does support colour.
+        # 'off'  never paint.
+        # THE LOG FILES ARE NEVER PAINTED, whatever this says — colour goes to
+        # the console alone, because a log full of escape codes cannot be
+        # grepped, diffed or read six months later.
+        self.C466_COLOR          = 'auto'
+        # 'classic' green gain / red loss — the trading convention.
+        # 'cvd'     blue gain / magenta loss, for red-green colour blindness
+        #           (about one man in twelve). Nothing is lost either way:
+        #           every painted value also states its meaning in text.
+        # 'mono'    bold only, no hue.
+        self.C466_PALETTE        = 'classic'
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -17384,6 +17578,7 @@ class TradingBot:
         To record a new version, add one (version, summary) tuple to _CHANGELOG below."""
         import os
         _CHANGELOG = [
+            ('C466', "COLOUR, AND THREE RULES THAT MADE IT SAFE RATHER THAN PRETTY. C466-1, COLOUR COMES LAST. An ANSI code is ZERO CELLS WIDE on screen and four to five characters to len(). Had colour been added while the rows were being built, every width calculation C465 just fixed would have been wrong again -- the ambiguous-width problem rebuilt in a new form. So the dashboard is laid out in PLAIN TEXT, measured in plain text, and painted afterwards by one function at the formatter boundary. PROVEN BY EXECUTION: every sample line's visible length is byte-identical before and after painting, and the full report renders at 36/40/44/52/72/100 columns in three palettes -- EIGHTEEN COMBINATIONS, ZERO over-width rows, ZERO non-ASCII. C466-2, THE FILES NEVER SEE IT. omega_report, omega_session and omega_detail stay plain, because a log full of escape codes cannot be grepped, diffed or read six months later -- and these files are the forensic record every post-mortem in this project has been built from. Only the CONSOLE formatter carries a palette; the file formatters hold None for the life of the process. Verified by counting escapes at each sink: report file 0, session/detail 0, console 40. C466-3, COLOUR IS NEVER THE ONLY CARRIER. Roughly one man in twelve has red-green colour blindness, and a trading dashboard that encodes gain and loss in hue ALONE is the classic failure. Every painted value already states its meaning in text -- the sign on the number, the words WIN, LOSS, maker, TAKER -- so the palette is reinforcement, never information. C466_PALETTE='cvd' swaps green/red for blue/magenta, which separates cleanly for every common type; 'mono' drops hue entirely. THE PALETTE IS SEMANTIC AND SMALL -- six classes, because more than about seven stops meaning anything. Labels wear a neutral identity colour and never a status one. Rules and separators are recessive. Green and red are RESERVED for polarity and are used for nothing that is not a gain or a loss. The day gauge takes its colour from how much of the budget is spent: green under half, amber past half, red past 80%% -- the one place where hue carries something the text does not. AND THE FIRST RENDER FOUND THREE DEFECTS IN MY OWN PAINTER, all caught before shipping because I looked at the output instead of trusting the code. (1) 'day +/-0.68%%' is a SYMMETRIC barrier and the percent rule painted its '-0.68%%' red -- the header announced a loss that did not exist. A two-sided figure is neutral by definition and is now matched first and left alone. (2) 'taker flow +0.02' is an order-flow READING, not a cost, and every MARKET row was painting it red -- a status colour used for something that is not a status, which is the exact anti-pattern this palette exists to avoid. The cost sense is now matched explicitly. (3) The day gauge's arms are runs of the rule character, so the rule branch painted them dim and the gauge painted over the top; the inner reset cancelled the outer colour and the gauge lost its hue entirely. Nested escapes are the ordinary way hand-rolled colour goes wrong. AND A BUG THAT PARSE COULD NOT CATCH: the painter compiles its token pattern at IMPORT time, and `re` was not imported at module level in this file -- only far below, as _re426. ast.parse() is happy with a NameError; only executing the block finds it. The C466 battery therefore EXECUTES the module-level colour block rather than merely parsing it. WHETHER IT WILL WORK ON THE OPERATOR'S PHONE IS NOT SETTLED BY DOCUMENTATION and I am not going to claim otherwise: Pydroid 3 ships a terminal emulator, and terminal emulators support ANSI, but its non-interactive output window may not. So C466_COLOR defaults to 'auto', which paints when stdout is a real terminal and not when output is redirected -- the right answer on both, and NO_COLOR is honoured because it is the cross-tool standard. omega_color_test.py ships so the operator can see the answer on their own device in five seconds, and the boot line now states which decision was made and why. The worst case is a monochrome console and a config line, because the files were never coloured. VERIFICATION: compiles on 3.10 and 3.12; AST 410 -> 414; duplicate defs 0; 0 orphan constants across C462-C466; the wrong-object sweep clean against its baseline; the module-level colour block EXECUTED, not just parsed; escapes counted at all three sinks; visible width proven unchanged by painting; 18 width x palette combinations rendered clean. LIMITS: the ANSI decision cannot be verified from here, which is why it is auto-detected, announced at boot, overridable in one line, and shipped with a self-test. Chain C367-C466 intact."),
             ('C465', "THE OPERATOR PHOTOGRAPHED THEIR PHONE AND THE UNICODE STANDARD EXPLAINS THE WHOLE THING. Every box row in their report file is EXACTLY 46 CHARACTERS -- I checked all 347 of them -- and on the screen the right border lands in a different column on almost every row. The cause is East Asian Width. Box drawing, the block elements, the arrow, the triangles, the em dash, the plus-minus sign, and the MIDDLE DOT I used as a separator roughly eight times per block are all classified AMBIGUOUS, which means a font may render them at ONE CELL OR TWO. TWELVE of the characters the dashboard drew with are in that class, and the middle dot alone explains the pattern: rows carrying more separators overflowed further. The Unicode guidance for terminals is explicit -- avoid ambiguous-width glyphs wherever exact alignment is required, and provide ASCII fallbacks -- and the modern CLI design literature says the same thing from the other direction: prefer a left rail and a label column over box drawing. C465-2, SO NOTHING DEPENDS ON A CHARACTER LANDING IN A COLUMN ANY MORE. The right border is gone. The layout is two spaces, a ten-character ASCII label column, then the text -- the only alignment the design needs, and one no font can break. Rules are drawn to width-4 so that even a 1.5-cell rule character still reads as a rule instead of wrapping a stray glyph. Every separator, marker, bar and sparkline is ASCII by default. C465_GLYPHS = 'unicode' restores the prettier set for a terminal with a known-good font, and THE LAYOUT IS IDENTICAL EITHER WAY -- only the characters change, so there is no second code path to drift. Verified by rendering at 36, 40, 44, 52, 72 and 100 columns: ZERO rows over width and ZERO non-ASCII characters at every one. C465-1, AND THE REASON THE OLD GLYPHS COULD NOT SIMPLY BE SWAPPED. A line was recognised as part of the dashboard by looking at its FIRST CHARACTER, so the layout was forced to keep using the very glyphs that were breaking it. The report now has its own logging channel and the flag sits on the RECORD, not in the text. That frees the layout completely and removes a whole class of 'a future prefix hides the dashboard' bug at the same time. Verified end to end through the real CustomLogger and the real filter: 20 report lines written, 20 reach the screen, 3 blank separators correctly skipped, and a per-pair working line still correctly refused. C465-3, THE DYNAMIC PART, because a phone has about thirty rows and the old block spent them badly. An undefined figure is now OMITTED rather than printed as 'n/a' three times. LIFETIME is suppressed when it is the same record as this run -- on a fresh ledger it was saying the same thing twice. The unrealised line appears only when a position is open; the peak and drawdown only when they differ from now. The channel list collapsed from three rows of 'flow 127 / fund 127 / news 127' to one. MOVERS drops '[Live=0.25<cut]' for 'cut' and caps at four. The curve waits for six samples, because two points are not a curve. Net effect on the status block: 21 rows down to the high teens, and every row that remains is carrying something. AND THE SPARKLINE WAS LYING. The operator's screenshot renders the whole equity curve as one solid white bar. The lower-eighth block characters are both ambiguous-width AND commonly missing from a phone font, so a rising-then-flat session drew as a featureless rectangle. ASCII density reads correctly in every font. The DAY bar is also replaced by a SIGNED GAUGE: the day barrier is two-sided -- it ends the day at +0.68%% and at -0.68%% alike -- so the graphic that matters is which way the day is running, and the old one-sided bar drew +0.33%% and -0.33%% identically. WHAT THE SESSION ITSELF SHOWED, and it is the best news in this project for some time: C463-1's repair WORKS. The log carries 'C462-6 MAKER half filled UNI' and 'C376 MAKER exit filled UNI' -- the maker exit path, dead for 87 versions, fired twice in its first session, and the trade closed maker on both legs. UNI: entered 22:18 at 7.4210, half banked maker at 7.6390, closed maker at 7.7180 for +4.00%%, +$0.48, +1.03R, 81%% of a +4.92%% peak, held 18 minutes. Session +$0.82 on three maker fills and zero taker fills, total fees $0.01. ONE trade in fifteen scans and 1,220 pair-analyses, which is the pace C461-3 was aiming for. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 406 -> 410; duplicate defs 0; 0 orphan constants across C462-C465; the wrong-object sweep clean against its baseline and still proven to fail on a broken copy; the C464 overlay still correct over its five adversarial cases; the report rendered at six widths with zero over-width and zero non-ASCII; the flagged channel verified through the real logger with a per-line accounting of what reached the screen. LIMITS: ASCII is a deliberate trade of prettiness for certainty, and the operator can take the prettier set back with one config line the moment they are on a font that renders box drawing at one cell. Chain C367-C465 intact."),
             ('C464', "THE OPERATOR ASKED ME TO INTEGRATE THE INFORMATION CHANNELS PROPERLY, AND FIRST I HAD TO CORRECT MYSELF: I SAID THEY COULD NOT BE BACKTESTED. FUNDING CAN BE, AND I DID. Bitget publishes 90 days of funding history. 9,383 settlements across 32 pairs, entries one bar after each settlement, three geometries, four-way splits: fade the top decile -0.0837 %%/trade, follow it -0.0619, fade both tails -0.0692, the null -0.0682. EVERY CELL NEGATIVE AND NONE DISTINGUISHABLE FROM THE NULL. Funding does not predict direction at this horizon. Binance, OKX and Bybit were all tried for historical open interest and taker flow: Binance and Bybit are geo-blocked from this environment and OKX retains six hours. So flow and OI remain un-backtestable HERE, which is a limitation of the workbench, not a licence to guess. C464-4, AND THE MEASUREMENT IMMEDIATELY PAID FOR ITSELF. C212's funding term is clip(-funding x 130, +/-0.4) -- an ABSOLUTE scale with a magic constant, on a quantity whose board dispersion collapses to 0.01 percentage points on an ordinary day. Funding is POSITIVE about 76%% of the time, so that expression is a PERSISTENT ANTI-LONG TILT applying a signal that is not there. Same family as C454's tie bias, in the absolute term instead of the ranked one. Switched off, switchable back, and funding is retained as CROWDING magnitude: extreme funding either way argues for a smaller position, never for a side. Verified by execution -- the same pair scores identically long and short. C464-1, THE OVERLAY. The four channels were each scored PER PAIR AGAINST A FIXED NUMBER, which is exactly what this project's founding principle forbids and what C451-2 had already fixed for funding alone, for display only. Every channel is now a MIDRANK PERCENTILE AGAINST THE BOARD THIS SCAN, mapped to [-1,+1], signed by the candidate's own direction, combined into one info score. Midrank because C454 measured what the naive rank costs: 303 of 780 pairs sat on the same funding value, so the most ordinary instrument on the venue scored 0.783 instead of 0.500 and received a full fade against every long. C454's dispersion gate is generalised to all four channels -- a rank is scale-free, which is its virtue when dispersion is real and its defect when it is not, so a channel whose board spans nothing stays SILENT rather than inventing a signal. Verified: a flat board tilts zero candidates and reports which channels could speak. WHAT IT MAY DO AND WHAT IT MAY NOT. It multiplies CONVICTION, bounded at +/-15%%, which moves ranking and size. IT CANNOT FLIP A DIRECTION AND IT CANNOT VETO A TRADE. An unmeasured signal does not get to say no. Verified by execution across a 42-pair board: conviction stays inside 0.5100-0.6900 from a 0.6000 base, no direction changes, no candidate is dropped. The C464-2 agreement gate -- require N channels to agree -- exists and is DEFAULT OFF for the same reason, even though cutting the trade count is the one thing measured to help, because it is a veto. C464-5, OPEN INTEREST THAT IS ACTUALLY AVAILABLE. get_oi_divergence needs 60 in-process readings on a separate two-minute path, so the channel was SILENT for most of a session's early scans -- and a channel that is silent when the decisions are made is not wired at all. C232 already captures notional OI for EVERY pair, free, from the positioning ticker the scan makes anyway, so consecutive scans give an OI CHANGE, which is the quantity the signal actually wants, live from the SECOND scan. Signed so positive always means the move is backed by new money in its own direction: price up with OI up is new money, price up with OI down is short covering and hollow. C464-6, WRONG OBJECT, INSTANCE NINE, CAUGHT BEFORE IT SHIPPED. My board collection runs inside TechnicalAnalysis; the overlay runs inside TradingBot. `self._c464_board` in those two places is TWO DIFFERENT DICTIONARIES, so the overlay would have seen an empty board on every scan and done NOTHING, silently, forever -- the exact shape of C463-1's maker exit, which was dead for 87 versions. My first draft also read self._funding_cache where the existing code four hundred lines above correctly reads self._bot_ref._funding_cache. SO I BUILT THE SWEEP THAT FINDS THIS FAMILY, and testing it against a deliberately broken copy found THREE defects in the sweep itself. (1) It only inspected `self.name`, while this codebase reads almost everything through getattr(self,'name',default) -- which is PRECISELY why these bugs are silent, because the default turns a wrong-object read into a plausible value instead of an AttributeError. (2) Its module-level scan called ast.walk on each top-level node, which for a ClassDef means the whole class, so every local-variable assignment inside any method was recorded as legitimate injection. (3) It only reported an attribute if some OTHER class assigned it via self, missing the case where NOBODY owns it -- which is this bug exactly. A verification tool that cannot fail its own test is not a tool. It now runs as a DIFF against a checked-in baseline of 99 known-legitimate decorations (pos._x = ... from _open_position is the dominant idiom here and is fine); with the bug reintroduced the count goes 99 -> 100 and the new line names it. C464-3/7, AND THE ONLY THING THAT CAN EVER SETTLE THIS. The full per-channel breakdown travels with the trade into the close report and the C444 grade, and the dashboard carries an INFO row plus a LIVE A/B: trades where the channels agreed with the direction against trades where they did not, with the gap in dollars per trade. Split at zero rather than at a median, because zero is where agreement becomes disagreement, and it reports NOTHING until both sides have trades -- a one-sided split is not a comparison and printing it as one is the C460-3 defect. This is the same instrument C451 applies to the entry score, which is how this project learned rho(score,win) = -0.022 and stopped trusting it. After roughly fifty closes the ledger, not I, answers whether the overlay earns its keep. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 402 -> 404; duplicate defs 0; the class-attribute sweep clean AND the new cross-class sweep clean against its baseline, with both proven to fail on a broken copy; C464 constants all defined-and-read, 0 orphan; the overlay driven over five adversarial cases (heavy ties, a flat board, a dispersed board, the conviction bounds, and funding's crowding-only sign); the funding measurement reproducible from the shipped omega_funding_test.py and omega_fetch_funding.py. LIMITS, STATED: every weight in the overlay is a JUDGEMENT, not a measurement, because flow and OI cannot be backtested from the data reachable here -- they are ordered by how directly each channel observes committed money, and the ledger is what will price them. The overlay is the least proven thing in this bot, which is why it is bounded, cannot veto, and reports itself. Chain C367-C464 intact."),
             ('C463', "THE OPERATOR SENT A PHOTOGRAPH OF THEIR PHONE, SAID THE NEWS WAS MISSING, AND BOTH COMPLAINTS LED TO BUGS THAT MATTER MORE THAN THE DISPLAY. C463-1, THE MAKER EXIT HAS NEVER RUN. NOT ONCE, IN EIGHTY-SEVEN VERSIONS. The 20260917 log printed exactly one line about it, and only because C462-1 added the line one version ago: 'C376 taker exit ARB: profit test raised AttributeError'. _C376_PROFIT_TOKENS is a class attribute of POSITION; the code reading it lives in TradingBot._close_position_inner where `self` is the BOT. So `self._C376_PROFIT_TOKENS` has raised on EVERY close since C376 shipped, the maker-exit branch has always fallen through to taker, and C462-6's maker half rests on the same idea. C461 rebuilt this entire project around the claim that the maker/taker gap is larger than any edge it has -- and the lever was bolted to nothing the whole time. AND I DIAGNOSED IT WRONG ONE VERSION AGO: the C462 changelog says the exit 'read a stale field'. That was my reading, it was incorrect, and C461 carries the identical line. What C462-1 actually did was make the failure LOUD, and one log line then named a bug eight versions of reading had missed. Standing rule #5, demonstrated on me. Wrong-object family, instance EIGHT. C463-2/4/5, THE SCREEN. The photograph shows the C462 dashboard rendering correctly and then, directly under its bottom border, sixteen rows of per-position working -- Move, DRI, the eleven-component dump, FLOW, Limit Order Entry -- every number of which is ALREADY inside the box three lines above. Fifteen more rows precede each entry and thirteen follow each close. C460-1's SUPPRESS list could not fix this and the reason is worth keeping: it chose a drop-list over a keep-list so 'a keep-list cannot silently hide what a future version adds'. That was right when the session log was the only readable record. It stopped being right at C462-4, when the detail log began carrying every line unfiltered -- after which the cost of a drop-list is that every new diagnostic a version adds lands on the operator's screen BY DEFAULT, and sixty versions of that is the photograph. THE DEFAULT IS NOW OFF. Three things reach the screen: the report, anything wrong, and a named decision. MEASURED on the real session: 1,557 detail lines -> 185 rendered rows, 12%%, against 482 before. Two further defects found by replaying rather than by reading: the stop-sign emoji was on the ALERT list for 'STOPPING' and is also the prefix of every per-pair veto, which let forty lines of working back in (match the WORD, never the decoration); and per-pair working has a SHAPE, '<glyph> SYM: ...', which no allow-list can enumerate and a regex can. C463-4, THE TIMESTAMP WAS EATING A QUARTER OF THE PHONE. Every line carries an eleven-character '10:48:17 | ' stamp, charged to every row of a 46-column box, so the box needs 57 columns of screen and 24%% of the width re-prints a time the block header already states. A report line is a BLOCK, not an event: report lines now print bare. C463-5, and long lines wrap ONCE, at the formatter, not in seven hundred call sites -- the boot banner's risk line is 188 characters and C435-2's selection line was 300. C463-3, THE NEWS WAS NEVER MISSING. The operator said news analysis was gone. It ran: 65 articles fetched, 50 of 60 screened pairs resolved to a coin name, every one scored, 173 news lines in the detail log. C460-1 deleted ALL of it from the readable log through five separate DROP entries, leaving one 'News=+0.48' buried inside a ranking line. A signal that is computed, used in the score, and never shown is indistinguishable from one that is broken. It is now a row on the dashboard: article count, market tone, and the three pairs the layer has the strongest opinion about. C463-6/7/8 add the RISK FRAME block (eight rows replacing eleven of wrapped boot prose), a MOVERS row carrying C266's board-parity -- the single best answer to 'did it miss anything?' -- a win/loss TAPE, and a thesis bar per open position. C463-10, ANOTHER HARDCODED LITERAL, TWO LINES BELOW A COMMENT WARNING AGAINST THEM. C460-2's banner comment reads 'a number that describes a setting must READ the setting'; directly beneath it the banner printed 'at the measured 0.78 payoff' with 0.78 written in twice. It was measured once, over the 0.65R geometry C459-2 replaced. Now reads the ledger, and says so plainly when no R-denominated payoff exists yet. Hardcoded-literal family, instance THREE. And my OWN first draft of the risk-frame call reached for bot._c420_payoff and bot._c458_blended_edge, NEITHER OF WHICH EXISTS -- caught by the sweep before it shipped, and it would have failed silently because getattr has a default. C463-12, THE BOT IS TRADING TEN-MINUTE NOISE AND THE OPERATOR ASKED FOR FOUR-TO-EIGHT-HOUR HOLDS. ARB was opened with a +7.3%% target (2.00R) and a -2.1%% stop (0.75R), ran +0.94%% in eight minutes, handed it back, and PEAK_REVERSAL closed it at TEN MINUTES for -0.06%% -- 0.02R of a 2.00R plan, on a peak two thirds the size of one average candle. RIVER: peak +0.25%%, closed at 18 minutes. C440-2 ALREADY decided that 'a peak that never had time to form is not a reversal' and enforces it by zeroing _peak_in_pru; PEAK_FLOOR reads that field and is protected, PEAK_REVERSAL reads self.peak_pnl_pct directly and is not. One guard, two branches, honoured in one. MEASURED AND NOT CLAIMED AS AN EDGE: adding a minimum age to the giveback exit is worth +0.0073 %%/trade at t=+1.11 and 2 of 4 splits, which does NOT clear the standing 3-of-4 rule. It ships because it makes an existing documented guard consistent, never measured negative, and makes the bot do what the operator asked -- and that reasoning is stated so it can be overruled on evidence rather than taste. MIN_POSITION_AGE, which was declared, printed in the config banner as 'Min age 15min' and READ NOWHERE ELSE IN THE FILE, is now the floor. AND THE MEASUREMENT THAT MATTERS MORE THAN ALL OF IT. 662,800 bars, 32 pairs, TWO SEPARATE ~105-day windows (Feb-Jun and Jun-Sep, non-overlapping), non-overlapping entries, adverse extreme first, both directions, maker-both fees at 0.04%%. (1) THIRTY target/stop pairs from 0.5R to 3.0R against 0.5R to 2.0R: ZERO are net positive. The least-bad loses 0.0233 %%/trade; the SHIPPED 2.00R/0.75R loses 0.0555. (2) Every entry condition derivable from price -- orderliness in five buckets (the Atlas's one surviving edge: does NOT replicate here, no monotone relationship), 4h and 24h momentum with and against, strong-mover continuation, three volatility bands: not one is significantly positive. (3) The peak-giveback exit the bot fires on is worth +0.0019 %%/trade, t=+0.20 -- it is neither the problem nor a solution. (4) CROSS-SECTIONAL MOMENTUM, the one thing a per-pair scorer structurally cannot see, looked like the first real find in this project's history: 24h ranking, long the top 6 and short the bottom 6 of 32, at 0.50R/2.00R, +0.0364 %%/trade with FOUR OF FOUR SPLITS POSITIVE. I then did what C459 did not, and ran it on the SEPARATE older window: -0.0149 %%/trade, 1 of 4 splits. POOLED +0.0114 over 7,428 trades with the two halves DISAGREEING IN SIGN, and the cell that wins in one window loses in the other. STANDING RULE 9 CAUGHT IT. NOTHING SHIPPED. WHAT THAT MEANS, STATED PLAINLY BECAUSE THE OPERATOR ASKED FOR THE HIGHEST REALISTIC TARGET: on price data alone, after fees, this strategy family is worth approximately zero minus a small drag, and no arrangement of entries or exits inside it changes that. The remaining candidates are the channels that are NOT in the price series, and this bot already collects three of them and wires them to nothing. The same session shows it: RIVER was opened long on 'taker delta -0.094', the monitor printed 'ENTERED AGAINST FLOW' twice, and the trade lost. C402's changelog records the same thing happening earlier and concludes 'the channel was right'. C463-13 therefore stamps entry flow alignment, signed by the trade's own direction, onto the position and into the C444 grade -- NOT wired to any gate, because order flow cannot be backtested from OHLCV and a rule that cannot be tested must not become a veto on a hunch. After roughly fifty closes it becomes a measurable question instead of an anecdote. That, and the fee, are the only two levers left. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 395 -> 402; duplicate defs 0; class-attribute wrong-object sweep CLEAN (it is what found C463-1); C462/C463 constants all defined-and-read, 0 orphan, and MIN_POSITION_AGE now has a real read for the first time; the new filter replayed against the real 1,557-line detail log; the report rendered at 40/46/52/60/72/100 columns with zero over-width rows and zero truncations; the C463-12 guard driven over the two real session cases plus six controls; five harnesses ship with the repo (geometry grid, entry edge, cross-sectional, exit test, and the old-corpus fetcher) so every number above is reproducible. LIMITS: the replication failure is the finding, not a footnote -- do not let a future session re-discover cross-sectional momentum on one window and ship it. Chain C367-C463 intact."),
@@ -17741,7 +17936,7 @@ class TradingBot:
     def run(self):
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
-        logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C465)")
+        logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C466)")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -34826,12 +35021,15 @@ def startup():
             try:   # C462-4: open the report with a header, not a wall of text
                 _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
                 _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
-                _c462_report.header('C465', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+                _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
+                                      getattr(cfg, 'C466_PALETTE', 'classic'))
+                _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                     bot.portfolio.equity,
                                     day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
                 print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
-                      f"({_c462_report.W} cols — set C462_LOG_WIDTH in Config, "
-                      f"or OMEGA_LOG_WIDTH, if the box is the wrong size)")
+                      f"({_c462_report.W} cols, colour {_why466})")
+                print(f"     width: C462_LOG_WIDTH in Config (or OMEGA_LOG_WIDTH) "
+                      f"· glyphs: C465_GLYPHS · colour: C466_COLOR")
             except Exception as _e462h:
                 print(f"  \u26a0\ufe0f  report header failed: {type(_e462h).__name__}")
                 # ═══ C463-6: THE RISK FRAME, AS A BLOCK ═══════════════════
@@ -34924,10 +35122,13 @@ def startup():
             bot.portfolio._c462_mark_session_start()
             _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
             _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
-            _c462_report.header('C465', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+            _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
+                                  getattr(cfg, 'C466_PALETTE', 'classic'))
+            _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                 bot.portfolio.equity,
                                 day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
-            print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)}")
+            print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
+                  f"({_c462_report.W} cols, colour {_why466})")
         except Exception:
             pass
         # ═══ C463-6: THE RISK FRAME, AS A BLOCK ═══════════════════
