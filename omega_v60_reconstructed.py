@@ -95,6 +95,26 @@ class CustomLogger:
         self._last_balance_log = 0
 
     def info(self, msg): self.logger.info(msg)
+
+    def report(self, msg):
+        """C465-1: the dashboard's own channel.
+
+        Until now a line was recognised as part of the report by looking at its
+        FIRST CHARACTER -- a box-drawing glyph or a marker. That worked, and it
+        forced the layout to keep using those glyphs, which is precisely what
+        broke the alignment: twelve of them are East Asian Width AMBIGUOUS, so
+        a font may render them one cell or two, and the operator's photograph
+        shows the right border landing in a different column on almost every
+        row. Every box row in that file is EXACTLY 46 characters.
+
+        Flagging the RECORD instead of sniffing the TEXT frees the layout to be
+        whatever renders best, and removes a whole class of "a future prefix
+        hides the dashboard" bug at the same time.
+        """
+        try:
+            self.logger.info(msg, extra={'c465_report': True})
+        except Exception:
+            self.logger.info(msg)
     def warning(self, msg): self.logger.warning(msg)
     def error(self, msg): self.logger.error(msg)
     def debug(self, msg): self.logger.debug(msg)
@@ -142,6 +162,14 @@ _c52_file_handler = None
 _C460_DETAIL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  f'omega_detail_{_C75_SESSION_TS}.log')
 _c460_detail_handler = None
+
+def _c465_flagged(record):
+    """C465-1: is this record part of the dashboard? Ask the record."""
+    try:
+        return bool(getattr(record, 'c465_report', False))
+    except Exception:
+        return False
+
 
 def _c463_is_report(m):
     """Is this line part of the C462 dashboard?
@@ -249,6 +277,8 @@ class _C460ConsoleFilter(logging.Filter):
         try:
             if getattr(cfg_console_verbose, 'on', False):
                 return True
+            if _c465_flagged(record):
+                return True
             m = str(record.getMessage())
             s = m.lstrip()
             if _c463_is_report(m):
@@ -291,9 +321,8 @@ class _C463Formatter(logging.Formatter):
 
     def format(self, record):
         try:
-            m = record.getMessage()
-            if _c463_is_report(m):
-                return m            # already laid out to the exact width
+            if _c465_flagged(record) or _c463_is_report(record.getMessage()):
+                return record.getMessage()   # already laid out; never restamp
         except Exception:
             pass
         out = super().format(record)
@@ -426,7 +455,7 @@ def _c462_money(x, width=0, sign=False):
     return s.rjust(width) if width else s
 
 
-def _c462_spark(series, width=24):
+def _c462_spark(series, width=24, blocks=None):
     """A one-line equity curve. Eight block heights, flat when the range is zero.
 
     A sparkline is the only 'graph' that survives a log file, a phone terminal
@@ -441,15 +470,46 @@ def _c462_spark(series, width=24):
             step = (len(vals) - 1) / float(width - 1)
             vals = [vals[int(round(i * step))] for i in range(width)]
         lo, hi = min(vals), max(vals)
-        blocks = '▁▂▃▄▅▆▇█'
+        # C465-2: the block set is passed in, because the lower-eighth blocks
+        # are ambiguous-width AND frequently missing from a phone font -- the
+        # operator's screenshot renders the whole sparkline as one solid bar,
+        # which carries no information at all. ASCII density reads correctly
+        # in every font.
+        blocks = blocks or '._-=+*#@'
+        n = len(blocks) - 1
         if hi - lo < 1e-12:
             return blocks[0] * len(vals)
-        return ''.join(blocks[min(7, int((v - lo) / (hi - lo) * 7.999))] for v in vals)
+        return ''.join(blocks[min(n, int((v - lo) / (hi - lo) * (n + 0.999)))]
+                       for v in vals)
     except Exception:
         return ''
 
 
-def _c462_bar(frac, width=20, full='█', empty='░'):
+def _c465_gauge(signed_frac, width=24, full='#', empty='-', mid='|'):
+    """C465-3: a gauge that shows WHICH SIDE of zero the day is on.
+
+    The old bar filled left-to-right from zero, so +0.33% and -0.33% of the
+    same barrier drew the identical picture. The day barrier is TWO-SIDED --
+    it ends the day at +0.68% and at -0.68% alike -- so the one graphic that
+    matters is which way the day is running and how close it is to stopping.
+    Centre-marked, fills outward from the middle.
+    """
+    try:
+        f = max(-1.0, min(1.0, float(signed_frac)))
+    except Exception:
+        f = 0.0
+    half = max(3, (width - 1) // 2)
+    k = int(round(abs(f) * half))
+    if f >= 0:
+        left = empty * half
+        right = full * k + empty * (half - k)
+    else:
+        left = empty * (half - k) + full * k
+        right = empty * half
+    return f"[{left}{mid}{right}]"
+
+
+def _c462_bar(frac, width=20, full='#', empty='.'):
     try:
         f = max(0.0, min(1.0, float(frac)))
     except Exception:
@@ -507,8 +567,39 @@ class _C462Report:
         profit exits maker and until now NOTHING reported whether either
         actually happened -- C462-1 found the exit path had never fired once.
     """
-    W = 46     # class default; the instance resolves the real one at boot.
+    W = 44     # class default; the instance resolves the real one at boot.
     LW = 9     # label column, so every row's text starts at the same column
+
+    # ═══ C465-2: EVERY GLYPH THAT MUST ALIGN IS ASCII ═══
+    # THE OPERATOR PHOTOGRAPHED THE PROBLEM AND UNICODE EXPLAINS IT. Every box
+    # row in their report file is EXACTLY 46 characters, and on the phone the
+    # right border lands in a different column on almost every row. The reason
+    # is East Asian Width: box drawing, blocks, arrows, triangles, the em dash,
+    # the plus-minus sign -- and the MIDDLE DOT used as a separator roughly
+    # eight times per block -- are all classified AMBIGUOUS, which a font may
+    # render as one cell or as two. TWELVE of the characters this dashboard
+    # used are in that class, and the middle dot alone explains why rows with
+    # more separators overflowed further.
+    #
+    # The Unicode guidance for terminals is explicit: avoid ambiguous-width
+    # glyphs wherever exact alignment is required, and provide ASCII fallbacks.
+    # So the default set is ASCII, guaranteed one cell in every font, and the
+    # prettier set stays available for a terminal with a known-good one. The
+    # LAYOUT is identical either way -- only the characters change.
+    _GLYPHS = {
+        'ascii': {'sep': '  ', 'rule': '-', 'head': '=', 'arrow': '>',
+                  'up': '+', 'dn': '-', 'flat': '.', 'pm': '+/-',
+                  'bar_on': '#', 'bar_off': '.', 'approx': '~',
+                  'spark': '._-=+*#@', 'open': '>>', 'close': '<<',
+                  'half': '->', 'beat': '..'},
+        'unicode': {'sep': ' · ', 'rule': '─', 'head': '═',
+                    'arrow': '→', 'up': '▲', 'dn': '▼',
+                    'flat': '·', 'pm': '±',
+                    'bar_on': '█', 'bar_off': '░', 'approx': '≈',
+                    'spark': '▁▂▃▄▅▆▇█',
+                    'open': '▲', 'close': '▼',
+                    'half': '▽', 'beat': '▪'},
+    }
 
     def __init__(self, path):
         self.path = path
@@ -516,7 +607,11 @@ class _C462Report:
         # the same width. Re-reading it per row would let the box change shape
         # mid-block if anything ever touched COLUMNS.
         self.W = _c462_width()
-        self.LW = 9 if self.W >= 56 else 0   # no label gutter on a phone
+        # C465-2: the label column now costs nothing structural -- there is no
+        # right border for it to push off the screen -- so it is kept at every
+        # width. A column the eye can run down is the whole point of the layout.
+        self.LW = 10 if self.W >= 40 else 8
+        self.g = dict(self._GLYPHS['ascii'])
         self.t0 = time.time()
         self.trades = []          # closed-trade journal, this session
         self.opens = []           # open records, this session
@@ -563,43 +658,45 @@ class _C462Report:
             # strips empty records anyway, so do not hand it noise
             return
         try:
-            logger.info(line)
+            logger.report(line)          # C465-1: flagged, not sniffed
         except Exception:
-            pass
+            try:
+                logger.info(line)
+            except Exception:
+                pass
 
     def _row(self, label, text):
-        """One named row. Truncated, never wrapped -- a wrapped row breaks the
-        right border, and a broken border is how a block stops reading as a
-        table. Prefer _pack, which FITS the content instead of cutting it."""
-        budget = self.W - 3 - self.LW
+        """One named row: two spaces, a label column, then the text.
+
+        C465-2: NO RIGHT BORDER. Nothing in this layout depends on a character
+        landing in an exact column, so no font can break it. The left label
+        column is pure ASCII and is the only alignment the design needs.
+        """
+        budget = self.W - 2 - self.LW
         t = str(text)
         if len(t) > budget:
-            t = t[:budget - 1] + '…'
-        if self.LW:
-            self._emit(f"│ {str(label):<{self.LW}}{t:<{budget}}│")
-        else:
-            body = (f"{label} " if label else '') + t
-            body = body[:budget]
-            self._emit(f"│ {body:<{budget}}│")
+            t = t[:budget - 1] + '.'
+        self._emit(f"  {str(label):<{self.LW}}{t}".rstrip())
 
-    def _wrapped(self, prefix, parts, sep=' · '):
+    def _wrapped(self, prefix, parts, sep=None):
         """C462-8: the same packing, for the un-boxed continuation lines under
         a trade record. Kept separate from _pack because these carry a prefix
         glyph rather than a label gutter, and the glyph is what lets the
         readable-log filter recognise them."""
+        sep = sep or self.g['sep']
         budget = self.W - len(prefix)
         cur = ''
         for part in [str(x) for x in parts if x not in (None, '')]:
             trial = (cur + sep + part) if cur else part
             if cur and len(trial) > budget:
-                self._emit(prefix + cur)
+                self._emit((prefix + cur).rstrip())
                 cur = part
             else:
                 cur = trial
         if cur:
-            self._emit(prefix + cur)
+            self._emit((prefix + cur).rstrip())
 
-    def _pack(self, label, parts, sep=' · '):
+    def _pack(self, label, parts, sep=None):
         """C462-8: FIT THE CONTENT TO THE PHONE, DO NOT CUT IT OFF.
 
         The operator runs this on a Nothing Phone 2 in Pydroid3, so the box is
@@ -617,17 +714,15 @@ class _C462Report:
         parts = [str(x) for x in parts if x not in (None, '')]
         if not parts:
             return
-        inner = self.W - 3                      # space inside the two borders
+        sep = sep or self.g['sep']
+        inner = self.W - 2                      # C465-2: no right border
         # C462-8 FIX, found by rendering at 46: the first line must RESERVE the
         # label before the parts are measured against it. Measuring first and
         # prepending the label afterwards overflows by exactly len(label), and
         # the row then truncates -- which at 46 columns cut "unreal $+0.28" to
         # "unreal $+0." and "35% used" to "35% use". A packer that truncates is
         # the thing it was written to replace.
-        if self.LW:
-            head, cont, pad = f"{label:<{self.LW}}", ' ' * self.LW, ''
-        else:
-            head, cont, pad = (f"{label} " if label else ''), '  ', ''
+        head, cont = f"{label:<{self.LW}}", ' ' * self.LW
         lines, cur, lead = [], '', head
         for part in parts:
             trial = (cur + sep + part) if cur else part
@@ -639,26 +734,40 @@ class _C462Report:
         if cur:
             lines.append(lead + cur)
         for ln in lines:
-            self._emit(f"│ {ln[:inner]:<{inner}}│")
+            self._emit(('  ' + ln[:inner]).rstrip())
 
     def _raw(self, text):
-        """Full-width row, no label column — the position and trade tables."""
-        budget = self.W - 3
+        """A row with no label column -- the position and trade lists."""
+        budget = self.W - 2
         t = str(text)
         if len(t) > budget:
-            t = t[:budget - 1] + '…'
-        self._emit(f"│ {t:<{budget}}│")
+            t = t[:budget - 1] + '.'
+        self._emit(f"  {t}".rstrip())
 
-    def _rule(self, title='', bottom=False, mid=False):
-        if bottom:
-            self._emit('└' + '─' * (self.W - 2) + '┘')
+    def _rule(self, title='', bottom=False, mid=False, head=False):
+        """A section rule. C465-2: drawn to W-4 so that even if a font renders
+        the rule character at 1.5 cells the line still reads as a rule instead
+        of wrapping a stray character onto the next row."""
+        ch = self.g['head'] if head else self.g['rule']
+        if bottom or mid:
+            self._emit('  ' + ch * (self.W - 4))
             return
-        if mid:
-            self._emit('├' + '─' * (self.W - 2) + '┤')
-            return
-        t = f" {title} " if title else ''
-        fill = '─' * max(0, self.W - 3 - len(t))
-        self._emit(f"┌─{t}{fill}┐")
+        if title:
+            t = f"{title} "
+            self._emit(f"  {t}{ch * max(3, self.W - 4 - len(t))}")
+        else:
+            self._emit('  ' + ch * (self.W - 4))
+
+    def set_glyphs(self, name):
+        """C465-2: choose the character set. Unknown names fall back to ascii,
+        because a wrong name must not silently produce an unreadable block."""
+        try:
+            key = str(name or 'ascii').strip().lower()
+            self.g = dict(self._GLYPHS.get(key, self._GLYPHS['ascii']))
+            return key if key in self._GLYPHS else 'ascii'
+        except Exception:
+            self.g = dict(self._GLYPHS['ascii'])
+            return 'ascii'
 
     def set_width(self, cols):
         """C462-8: let Config override the resolved width.
@@ -673,7 +782,7 @@ class _C462Report:
             c = int(cols or 0)
             if c:
                 self.W = max(34, min(100, c))
-                self.LW = 9 if self.W >= 56 else 0
+                self.LW = 10 if self.W >= 40 else 8
         except Exception:
             pass
         return self.W
@@ -722,16 +831,10 @@ class _C462Report:
     def header(self, version, mode, equity, pairs=None, day_barrier=None):
         try:
             self._emit('')
-            self._emit('╭' + '─' * (self.W - 2) + '╮')
-            t = f"OMEGA {version} · {mode} · Bitget perps"
-            r = datetime.now().strftime('%Y-%m-%d %H:%M')
-            if len(t) + len(r) + 4 <= self.W:
-                self._emit(f"│ {t}{' ' * max(1, self.W - 4 - len(t) - len(r))}{r} │")
-            else:
-                # C462-8: a phone cannot hold the title and the stamp on one
-                # line, and squeezing them prints a title with no gap.
-                self._emit(f"│ {t:<{self.W - 3}}│")
-                self._emit(f"│ {r:<{self.W - 3}}│")
+            self._rule(head=True)
+            self._raw(f"OMEGA {version}{self.g['sep']}{mode}"
+                      f"{self.g['sep']}Bitget perps")
+            self._raw(datetime.now().strftime('%d %b %Y   %H:%M'))
             self.note_equity(equity)
             # C462-8: the start line lives INSIDE the box. Outside it, a line
             # that wrapped would begin "· universe ..." on its second row, and
@@ -739,13 +842,13 @@ class _C462Report:
             # would have been silently deleted from the readable log. Inside
             # the box it carries the "│" the filter always passes, and it
             # reads better as well.
-            parts = [f"start equity {_c462_money(equity)}"]
+            parts = [f"start {_c462_money(equity)}"]
             if day_barrier:
-                parts.append(f"day barrier ±{float(day_barrier):.2f}%")
+                parts.append(f"day {self.g['pm']}{float(day_barrier):.2f}%")
             if pairs:
-                parts.append(f"universe {pairs} pairs")
-            self._pack('', parts)
-            self._emit('╰' + '─' * (self.W - 2) + '╯')
+                parts.append(f"{pairs} pairs")
+            self._raw(self.g['sep'].join(parts))
+            self._rule(head=True)
             self._emit('')
         except Exception as e:
             try:
@@ -771,12 +874,13 @@ class _C462Report:
             # what made the old log unreadable in the first place.
             # C462-8: the head line carries WHAT happened and always fits; the
             # numbers move down to the wrapped detail when the screen is narrow.
-            _head = f"▲ {datetime.now().strftime('%H:%M')} OPEN  {short[:9]} {str(side).upper()}"
+            _head = (f"  {self.g['open']} {datetime.now().strftime('%H:%M')}  OPEN   "
+                     f"{short[:9]} {str(side).upper()}")
             det = []
             if self.W >= 62:
-                _head += f" @{_fmt_px(price)}  ×{lev} {_c462_money(margin)}"
+                _head += f" @{_fmt_px(price)}  x{lev} {_c462_money(margin)}"
             else:
-                det += [f"@{_fmt_px(price)}", f"×{lev} {_c462_money(margin)}"]
+                det += [f"@{_fmt_px(price)}", f"x{lev} {_c462_money(margin)}"]
             self._emit(_head)
             if target_pct:
                 det.append(f"target {float(target_pct):+.1f}%")
@@ -785,7 +889,7 @@ class _C462Report:
             if score is not None:
                 det.append(f"entry score {float(score):.2f}")
             det.append('maker' if maker else 'TAKER')
-            self._wrapped('  │ ', det)
+            self._wrapped('       ', det)
         except Exception as e:
             try:
                 logger.warning(f"⚠️ C462 report open failed: {type(e).__name__}: {e}")
@@ -833,17 +937,18 @@ class _C462Report:
                     cap = f"round trip from {_pk:+.2f}%"
             except Exception:
                 cap = ''
-            _head = (f"▼ {datetime.now().strftime('%H:%M')} CLOSE {short[:9]} "
-                     f"{str(side).upper()}  [{'WIN' if verdict == 'W' else 'LOSS'}]")
+            _head = (f"  {self.g['close']} {datetime.now().strftime('%H:%M')}  CLOSE  "
+                     f"{short[:9]} {str(side).upper()}   "
+                     f"{'WIN' if verdict == 'W' else 'LOSS'}")
             det = []
             if self.W >= 62:
-                _head = (f"▼ {datetime.now().strftime('%H:%M')} CLOSE {short[:9]} "
-                         f"{str(side).upper()} @{_fmt_px(exit_px)}  "
+                _head = (f"  {self.g['close']} {datetime.now().strftime('%H:%M')}  CLOSE  "
+                         f"{short[:9]} {str(side).upper()} @{_fmt_px(exit_px)}  "
                          f"{float(move_pct):+.2f}% {_c462_money(net, sign=True)}  "
-                         f"[{'WIN' if verdict == 'W' else 'LOSS'}]")
+                         f"{'WIN' if verdict == 'W' else 'LOSS'}")
             else:
                 det += [f"@{_fmt_px(exit_px)}",
-                        f"{float(move_pct):+.2f}% → {_c462_money(net, sign=True)}"]
+                        f"{float(move_pct):+.2f}% {self.g['arrow']} {_c462_money(net, sign=True)}"]
             self._emit(_head)
             det += [f"held {hh}", rs[:24]]
             if cap:
@@ -851,7 +956,7 @@ class _C462Report:
             if r_mult is not None:
                 det.append(f"{float(r_mult):+.2f}R")
             det.append('maker' if maker else 'TAKER')
-            self._wrapped('  │ ', det)
+            self._wrapped('       ', det)
         except Exception as e:
             try:
                 logger.warning(f"⚠️ C462 report close failed: {type(e).__name__}: {e}")
@@ -875,19 +980,18 @@ class _C462Report:
                        + ([f"{markets} markets"] if markets else []))
             cap = float((plan or {}).get('cap_pct', 0.0) or 0.0)
             dd = float((plan or {}).get('dd_pct', 0.0) or 0.0)
-            self._pack('DAY', [f"\u00b1{cap:.2f}% barrier",
-                               f"= {_c462_money(eq * cap / 100.0)}"]
-                       + ([f"{dd:.0f}% monthly DD / 22"] if dd else []))
-            self._pack('RISK', [f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}%/trade",
-                                f"= {_c462_money(eq * float((plan or {}).get('per_trade_pct', 0.0) or 0.0) / 100.0)}",
-                                f"{int((plan or {}).get('max_trades', 4) or 4)} trades/day max"])
+            self._pack('DAY', [f"{self.g['pm']}{cap:.2f}% = {_c462_money(eq * cap / 100.0)}"]
+                       + ([f"({dd:.0f}% DD / 22)"] if dd else []))
+            self._pack('RISK', [
+                f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}% = "
+                f"{_c462_money(eq * float((plan or {}).get('per_trade_pct', 0.0) or 0.0) / 100.0)}/trade",
+                f"max {int((plan or {}).get('max_trades', 4) or 4)}/day"])
             if edge is not None:
                 self._pack('EDGE', [f"{float(edge):+.4f} blended"]
                            + ([f"{wr}" ] if wr else []))
             if payoff:
                 _be = 1.0 / (1.0 + float(payoff)) * 100.0
-                self._pack('NEED', [f"{_be:.0f}% win rate",
-                                    f"at the measured {float(payoff):.2f} payoff"])
+                self._pack('NEED', [f"{_be:.0f}% win at {float(payoff):.2f} payoff"])
             self._rule(bottom=True)
             self._emit('')
         except Exception as e:
@@ -987,19 +1091,20 @@ class _C462Report:
             else:
                 self.n_taker += 1
                 self.fees_taker += float(fee or 0.0)
-            _head = f"▽ {datetime.now().strftime('%H:%M')} HALF  {short[:9]} {str(side).upper()}"
+            _head = (f"  {self.g['half']} {datetime.now().strftime('%H:%M')}  HALF   "
+                     f"{short[:9]} {str(side).upper()}")
             det = []
             if self.W >= 62:
                 _head += (f" @{_fmt_px(fill)}  {float(move_pct):+.2f}% "
                           f"{_c462_money(net, sign=True)}")
             else:
                 det += [f"@{_fmt_px(fill)}",
-                        f"{float(move_pct):+.2f}% → {_c462_money(net, sign=True)}"]
+                        f"{float(move_pct):+.2f}% {self.g['arrow']} {_c462_money(net, sign=True)}"]
             self._emit(_head)
             det += [f"{kind} half banked", 'maker' if maker else 'TAKER']
             if remainder_margin is not None:
                 det.append(f"{_c462_money(remainder_margin)} rides on")
-            self._wrapped('  │ ', det)
+            self._wrapped('       ', det)
         except Exception:
             pass
 
@@ -1049,7 +1154,8 @@ class _C462Report:
                 # C462-8: ONE line, always. A heartbeat that wraps to three is
                 # not a heartbeat. Parts are added in order of importance and
                 # the first one that does not fit ends the line.
-                _hb = f"\u25aa {datetime.now().strftime('%H:%M')} flat"
+                _hb = (f"  {self.g['beat']} {datetime.now().strftime('%H:%M')}"
+                       f"  flat")
                 _pct_hb = (f" {(_sp / _ss * 100.0) if _ss > 0 else 0.0:+.2f}%"
                            if self.W >= 52 else '')
                 for _part in (f"{_c462_money(st.get('live_equity', 0))}",
@@ -1057,9 +1163,9 @@ class _C462Report:
                               f"{_s0['w']}W {_s0['l']}L"
                               + (f" {100.0 * _s0['wr']:.0f}%" if _s0['n'] else ''),
                               f"{_ls.get('analyzed', 0)} analysed"):
-                    if len(_hb) + 3 + len(_part) > self.W:
+                    if len(_hb) + len(self.g['sep']) + len(_part) > self.W:
                         break
-                    _hb += ' · ' + _part
+                    _hb += self.g['sep'] + _part
                 self._emit(_hb)
                 self.note_equity(st.get('live_equity', 0))
                 return
@@ -1077,17 +1183,25 @@ class _C462Report:
             locked = float(st.get('locked', 0.0) or 0.0)
 
             self._emit('')
-            self._rule(f"{datetime.now().strftime('%H:%M')} · up {self._uptime()}"
-                       + (f" · scan #{self.n_scans}" if self.W >= 44 else ''))
+            self._emit('')
+            self._rule(f"{datetime.now().strftime('%H:%M')}"
+                       f"{self.g['sep']}up {self._uptime()}"
+                       f"{self.g['sep']}scan {self.n_scans}")
 
             # --- money ---
-            self._pack('EQUITY', [_c462_money(live),
-                                  f"real {_c462_money(st.get('equity', 0))}",
-                                  f"unreal {_c462_money(st.get('unrealized', 0), sign=True)}"])
-            self._pack('SESSION', [f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%",
-                                   f"peak {_c462_money(self.peak_equity)}",
-                                   f"dd {abs(dd):.2f}%"])
-            spark = _c462_spark(self.equity_curve, self.W - 5 - self.LW)
+            # C465-3: the unrealised line is only news when there IS an open
+            # position; on a flat book it is always $0.00 and costs a row.
+            _un = float(st.get('unrealized', 0) or 0.0)
+            self._pack('EQUITY', [_c462_money(live)]
+                       + ([f"unreal {_c462_money(_un, sign=True)}"] if abs(_un) >= 0.005 else []))
+            self._pack('SESSION', [f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%"]
+                       + ([f"peak {_c462_money(self.peak_equity)}"]
+                          if self.peak_equity > live + 0.005 else [])
+                       + ([f"dd {abs(dd):.2f}%"] if abs(dd) >= 0.005 else []))
+            # C465-3: two samples is not a curve. Wait until it can show one.
+            spark = (_c462_spark(self.equity_curve, self.W - 4 - self.LW,
+                                 self.g['spark'])
+                     if len(self.equity_curve) >= 6 else '')
             if spark:
                 self._row('CURVE', spark)
 
@@ -1098,9 +1212,12 @@ class _C462Report:
                 if day0 > 0 and cap > 0:
                     day_pct = (live - day0) / day0 * 100.0
                     used = abs(day_pct) / cap
-                    _bw = 16 if self.W >= 56 else 10
-                    self._pack('DAY', [f"{day_pct:+.2f}% of ±{cap:.2f}%",
-                                       f"[{_c462_bar(used, _bw)}] {100.0 * used:.0f}% used"])
+                    _bw = min(self.W - self.LW - 4, 26)
+                    self._pack('DAY', [f"{day_pct:+.2f}% of {self.g['pm']}{cap:.2f}%",
+                                       f"{100.0 * used:.0f}% used"])
+                    self._row('', _c465_gauge(
+                        (day_pct / cap) if cap else 0.0, _bw,
+                        self.g['bar_on'], self.g['rule']))
                 else:
                     self._row('DAY', 'barrier not yet derived (no day anchor)')
             except Exception:
@@ -1118,30 +1235,41 @@ class _C462Report:
                 _und = (s['l'] == 0 or s['w'] == 0)
                 payoff = 'n/a' if _und else f"{s['payoff']:.2f}"
                 be = 'n/a' if _und else f"{100.0 * s['breakeven_wr']:.0f}%"
-                self._pack('RECORD', [
-                    f"{s['n']} closed", f"{s['w']}W {s['l']}L",
-                    f"win {100.0 * s['wr']:.0f}%", f"payoff {payoff}",
-                    f"avg {_c462_money(s['expectancy'], sign=True)}/tr",
-                    f"best {_c462_money(max((t['net'] for t in self.trades), default=0), sign=True)}",
-                    f"worst {_c462_money(min((t['net'] for t in self.trades), default=0), sign=True)}",
-                    f"break-even {be}"])
+                # C465-3: a row that says "n/a" three times is three lines of
+                # nothing. Undefined figures are OMITTED; the row shrinks to
+                # what is actually known and grows as the record does.
+                _rp = [f"{s['n']} closed", f"{s['w']}W {s['l']}L",
+                       f"win {100.0 * s['wr']:.0f}%"]
+                if payoff != 'n/a':
+                    _rp.append(f"payoff {payoff}")
+                _rp.append(f"avg {_c462_money(s['expectancy'], sign=True)}/tr")
+                if s['n'] > 1:
+                    _rp += [f"best {_c462_money(max((t['net'] for t in self.trades), default=0), sign=True)}",
+                            f"worst {_c462_money(min((t['net'] for t in self.trades), default=0), sign=True)}"]
+                if be != 'n/a':
+                    _rp.append(f"break-even {be}")
+                self._pack('RECORD', _rp)
             else:
                 self._row('RECORD', 'no closed trades yet this run')
 
             lt = int(getattr(pf, 'lifetime_trades', 0) or 0)
+            # C465-3: when the lifetime record IS this run's record -- a fresh
+            # account, or the first session on a new ledger -- printing both
+            # says the same thing twice and costs two of a phone's ~30 rows.
+            if lt > 0 and lt == s['n'] and s['n'] > 0:
+                lt = 0
             if lt > 0:
                 self._pack('LIFETIME', [
-                    f"{lt} closed",
-                    f"{int(getattr(pf, 'lifetime_wins', 0))}W "
-                    f"{int(getattr(pf, 'lifetime_losses', 0))}L",
-                    f"win {float(st.get('win_rate', 0)):.0f}%",
-                    f"P&L {_c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)}"])
+                    f"{lt}tr {int(getattr(pf, 'lifetime_wins', 0))}W "
+                    f"{int(getattr(pf, 'lifetime_losses', 0))}L "
+                    f"{float(st.get('win_rate', 0)):.0f}%",
+                    _c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)])
 
             # --- exposure ---
             if open_pos:
                 expo = 100.0 * locked / live if live > 0 else 0.0
-                self._pack('OPEN', [f"{len(open_pos)} pos",
-                                    f"margin {_c462_money(locked)} ({expo:.1f}%)",
+                self._pack('OPEN', [f"{len(open_pos)} pos "
+                                    f"{_c462_money(locked)} ({expo:.0f}%)",
                                     f"free {_c462_money(st.get('available', 0))}"])
             else:
                 self._pack('OPEN', ['flat',
@@ -1151,22 +1279,26 @@ class _C462Report:
             tot_fee = self.fees_maker + self.fees_taker
             if (self.n_maker + self.n_taker) > 0:
                 self._pack('FEES', [_c462_money(tot_fee),
-                                    f"maker {self.n_maker} / taker {self.n_taker}",
-                                    f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of equity"])
+                                    f"mk{self.n_maker}/tk{self.n_taker}",
+                                    f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of eq"])
             else:
                 self._row('FEES', 'no fills yet this run')
 
             # --- what the scanner is seeing ---
             if self.last_scan:
                 ls = self.last_scan
-                _sp2 = [f"{ls.get('seen') or '?'}→{ls.get('analyzed') or 0}"
-                        f"→{ls.get('passed') or 0} passed"]
+                _a465 = self.g['arrow']
+                _sp2 = [f"{ls.get('seen') or '?'} {_a465} {ls.get('analyzed') or 0}"
+                        f" {_a465} {ls.get('passed') or 0} passed"]
                 if ls.get('top'):
-                    _sp2.append("top " + str(ls['top']).split('/')[0]
-                                + (f" {float(ls['score']):.2f}" if ls.get('score') is not None else ''))
+                    _t465 = ("top " + str(ls['top']).split('/')[0]
+                             + (f" {float(ls['score']):.2f}"
+                                if ls.get('score') is not None else ''))
                     if ls.get('reason'):
-                        _sp2.append(str(ls['reason'])[:22])
-                _sp2.append(f"{self.n_scans} scans · {self.n_analyses} analysed")
+                        _t465 += f" ({str(ls['reason'])[:18]})"
+                    _sp2.append(_t465)
+                _sp2.append(f"{self.n_scans} scan{'' if self.n_scans == 1 else 's'}, "
+                            f"{self.n_analyses} analysed")
                 self._pack('SCAN', _sp2)
 
             # --- market backdrop, read from whatever the bot already computed ---
@@ -1204,8 +1336,8 @@ class _C462Report:
                     _sv = float(self.news.get('sent', 0.0))
                     # C463-3: not '\u00b7' — that is the separator, and a
                     # neutral tone then rendered as "articles · · tone".
-                    _face = ('\u25b2' if _sv > 0.05 else
-                             '\u25bc' if _sv < -0.05 else '\u2248')
+                    _face = (self.g['up'] if _sv > 0.05 else
+                             self.g['dn'] if _sv < -0.05 else self.g['approx'])
                     _np = [f"{self.news['n']} articles",
                            f"{_face} tone {_sv:+.2f}"]
                     for _t in self.news.get('top', []):
@@ -1217,12 +1349,17 @@ class _C462Report:
             # C464-7: the information overlay, and its live A/B once it has one.
             try:
                 if self.info:
-                    _ip = [f"{k} {v}" for k, v in
-                           sorted((self.info.get('chan') or {}).items())]
-                    if _ip:
-                        self._pack('INFO', [f"{self.info.get('applied', 0)} tilted"] + _ip)
+                    # C465-3: the channel list was "flow 127 / fund 127 /
+                    # news 127" on three lines, every block, saying one thing:
+                    # all channels are live on a 127-pair board.
+                    _ch = self.info.get('chan') or {}
+                    if _ch:
+                        _nb = max(_ch.values())
+                        _names = '/'.join(sorted(_ch))
+                        self._pack('INFO', [f"{self.info.get('applied', 0)} tilted",
+                                            f"{_names} on {_nb}"])
                     else:
-                        self._pack('INFO', ['silent — board too flat to rank'])
+                        self._pack('INFO', ['silent, board too flat to rank'])
                 _lg = self.info_ledger()
                 if _lg:
                     self._pack('', [f"info>0 {_lg['hi_n']}tr "
@@ -1237,8 +1374,18 @@ class _C462Report:
             # C463-7: what moved that the screen did not take.
             try:
                 if self.movers:
-                    self._pack('MOVERS', [x.strip() for x in
-                                          str(self.movers).split('|') if x.strip()])
+                    # C465-3: "[Live=0.25<cut]" is working, not information --
+                    # the operator wants to know WHAT MOVED and whether the
+                    # screen saw it, which "cut" says in three characters.
+                    _mv = []
+                    for _x in str(self.movers).split('|'):
+                        _x = _x.strip()
+                        if not _x:
+                            continue
+                        if '[Live=' in _x:
+                            _x = _x.split('[Live=')[0].strip() + ' cut'
+                        _mv.append(_x.replace('[', ' ').replace(']', '').strip())
+                    self._pack('MOVERS', _mv[:4])
             except Exception:
                 pass
 
@@ -1249,8 +1396,8 @@ class _C462Report:
             # cannot show that at all.
             try:
                 if self.trades:
-                    _tape = ''.join('\u25b2' if t['net'] > 0 else '\u25bc'
-                                    for t in self.trades[-(self.W - 8):])
+                    _tape = ' '.join(self.g['up'] if t['net'] > 0 else self.g['dn']
+                                     for t in self.trades[-((self.W - self.LW - 4) // 2):])
                     self._row('TAPE', _tape)
             except Exception:
                 pass
@@ -1284,7 +1431,8 @@ class _C462Report:
                             th = f"{100.0 * float(u):.0f}% left"
                         except Exception:
                             th = '—'
-                        mark = '▲' if net > 0 else ('▼' if net < 0 else '·')
+                        mark = (self.g['up'] if net > 0 else
+                                (self.g['dn'] if net < 0 else self.g['flat']))
                         if _wide:
                             self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
                                       f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
@@ -1299,11 +1447,14 @@ class _C462Report:
                             _tb = ''
                             try:
                                 _tv, _ = pos._c443_uei(cfg)
-                                _tb = ' ' + _c462_bar(float(_tv), 8)
+                                _tb = '  ' + _c462_bar(float(_tv), 8,
+                                                       self.g['bar_on'],
+                                                       self.g['bar_off'])
                             except Exception:
                                 _tb = ''
-                            self._raw(f"  {_fmt_px(pos.entry_price)}→{_fmt_px(px)}"
-                                      f" · {ag} · {th}{_tb}")
+                            self._raw(f"   {_fmt_px(pos.entry_price)} {self.g['arrow']} "
+                                      f"{_fmt_px(px)}{self.g['sep']}{ag}"
+                                      f"{self.g['sep']}{th}{_tb}")
                     except Exception:
                         continue
             self._rule(bottom=True)
@@ -1340,9 +1491,10 @@ class _C462Report:
                     pk = max(pk, v)
                     dd = min(dd, (v - pk) / pk * 100.0 if pk > 0 else 0.0)
                 self._pack('P&L', [f"{_c462_money(last - first, sign=True)} ({pct:+.2f}%)",
-                                   f"{_c462_money(first)} → {_c462_money(last)}",
+                                   f"{_c462_money(first)} {self.g['arrow']} {_c462_money(last)}",
                                    f"maxDD {abs(dd):.2f}%"])
-                sp = _c462_spark(self.equity_curve, self.W - 5 - self.LW)
+                sp = _c462_spark(self.equity_curve, self.W - 4 - self.LW,
+                                 self.g['spark'])
                 if sp:
                     self._row('CURVE', sp)
             if s['n'] > 0:
@@ -1364,7 +1516,7 @@ class _C462Report:
                 held = [t['held'] for t in self.trades if t.get('held')]
                 if held:
                     self._pack('HOLD', [f"median {sorted(held)[len(held) // 2]:.0f}m",
-                                        f"range {min(held):.0f}–{max(held):.0f}m"])
+                                        f"range {min(held):.0f}-{max(held):.0f}m"])
             tot_fee = self.fees_maker + self.fees_taker
             gross = sum(t['net'] for t in self.trades) + tot_fee
             _cost = [f"fees {_c462_money(tot_fee)}",
@@ -1405,10 +1557,10 @@ class _C462Report:
                                   f"{_c462_money(t['net'], sign=True):>9}{hh:>7}  "
                                   f"{t['reason'][:20]} [{v}]")
                     else:
-                        self._raw(f"{'▲' if v == 'W' else '▼'} {t['sym'][:9]} "
-                                  f"{t['side']}  {t['move']:+.2f}%  "
+                        self._raw(f"{self.g['up'] if v == 'W' else self.g['dn']} "
+                                  f"{t['sym'][:9]} {t['side']}  {t['move']:+.2f}%  "
                                   f"{_c462_money(t['net'], sign=True)}")
-                        self._raw(f"  {hh} · {t['reason'][:26]}")
+                        self._raw(f"  {hh}  {t['reason'][:26]}")
             self._rule(bottom=True)
             self._emit('')
         except Exception as e:
@@ -3354,6 +3506,18 @@ class Config:
         # change at any time; the layout re-packs itself around whatever it is
         # given, from 34 columns to 100.
         self.C462_LOG_WIDTH      = 0
+        # ═══ C465: WHICH CHARACTERS THE DASHBOARD DRAWS WITH ═══
+        # 'ascii'   every glyph is guaranteed ONE CELL in every font. This is
+        #           the default because twelve of the characters the old
+        #           layout used are East Asian Width AMBIGUOUS -- a font may
+        #           render them one cell or two, which is exactly why the
+        #           operator's box borders landed in a different column on
+        #           almost every row while the file held rows of identical
+        #           length.
+        # 'unicode' the prettier set. Use it only on a terminal whose font is
+        #           known to render box drawing and blocks at one cell.
+        # The LAYOUT is identical either way; only the characters change.
+        self.C465_GLYPHS         = 'ascii'
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -17220,6 +17384,7 @@ class TradingBot:
         To record a new version, add one (version, summary) tuple to _CHANGELOG below."""
         import os
         _CHANGELOG = [
+            ('C465', "THE OPERATOR PHOTOGRAPHED THEIR PHONE AND THE UNICODE STANDARD EXPLAINS THE WHOLE THING. Every box row in their report file is EXACTLY 46 CHARACTERS -- I checked all 347 of them -- and on the screen the right border lands in a different column on almost every row. The cause is East Asian Width. Box drawing, the block elements, the arrow, the triangles, the em dash, the plus-minus sign, and the MIDDLE DOT I used as a separator roughly eight times per block are all classified AMBIGUOUS, which means a font may render them at ONE CELL OR TWO. TWELVE of the characters the dashboard drew with are in that class, and the middle dot alone explains the pattern: rows carrying more separators overflowed further. The Unicode guidance for terminals is explicit -- avoid ambiguous-width glyphs wherever exact alignment is required, and provide ASCII fallbacks -- and the modern CLI design literature says the same thing from the other direction: prefer a left rail and a label column over box drawing. C465-2, SO NOTHING DEPENDS ON A CHARACTER LANDING IN A COLUMN ANY MORE. The right border is gone. The layout is two spaces, a ten-character ASCII label column, then the text -- the only alignment the design needs, and one no font can break. Rules are drawn to width-4 so that even a 1.5-cell rule character still reads as a rule instead of wrapping a stray glyph. Every separator, marker, bar and sparkline is ASCII by default. C465_GLYPHS = 'unicode' restores the prettier set for a terminal with a known-good font, and THE LAYOUT IS IDENTICAL EITHER WAY -- only the characters change, so there is no second code path to drift. Verified by rendering at 36, 40, 44, 52, 72 and 100 columns: ZERO rows over width and ZERO non-ASCII characters at every one. C465-1, AND THE REASON THE OLD GLYPHS COULD NOT SIMPLY BE SWAPPED. A line was recognised as part of the dashboard by looking at its FIRST CHARACTER, so the layout was forced to keep using the very glyphs that were breaking it. The report now has its own logging channel and the flag sits on the RECORD, not in the text. That frees the layout completely and removes a whole class of 'a future prefix hides the dashboard' bug at the same time. Verified end to end through the real CustomLogger and the real filter: 20 report lines written, 20 reach the screen, 3 blank separators correctly skipped, and a per-pair working line still correctly refused. C465-3, THE DYNAMIC PART, because a phone has about thirty rows and the old block spent them badly. An undefined figure is now OMITTED rather than printed as 'n/a' three times. LIFETIME is suppressed when it is the same record as this run -- on a fresh ledger it was saying the same thing twice. The unrealised line appears only when a position is open; the peak and drawdown only when they differ from now. The channel list collapsed from three rows of 'flow 127 / fund 127 / news 127' to one. MOVERS drops '[Live=0.25<cut]' for 'cut' and caps at four. The curve waits for six samples, because two points are not a curve. Net effect on the status block: 21 rows down to the high teens, and every row that remains is carrying something. AND THE SPARKLINE WAS LYING. The operator's screenshot renders the whole equity curve as one solid white bar. The lower-eighth block characters are both ambiguous-width AND commonly missing from a phone font, so a rising-then-flat session drew as a featureless rectangle. ASCII density reads correctly in every font. The DAY bar is also replaced by a SIGNED GAUGE: the day barrier is two-sided -- it ends the day at +0.68%% and at -0.68%% alike -- so the graphic that matters is which way the day is running, and the old one-sided bar drew +0.33%% and -0.33%% identically. WHAT THE SESSION ITSELF SHOWED, and it is the best news in this project for some time: C463-1's repair WORKS. The log carries 'C462-6 MAKER half filled UNI' and 'C376 MAKER exit filled UNI' -- the maker exit path, dead for 87 versions, fired twice in its first session, and the trade closed maker on both legs. UNI: entered 22:18 at 7.4210, half banked maker at 7.6390, closed maker at 7.7180 for +4.00%%, +$0.48, +1.03R, 81%% of a +4.92%% peak, held 18 minutes. Session +$0.82 on three maker fills and zero taker fills, total fees $0.01. ONE trade in fifteen scans and 1,220 pair-analyses, which is the pace C461-3 was aiming for. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 406 -> 410; duplicate defs 0; 0 orphan constants across C462-C465; the wrong-object sweep clean against its baseline and still proven to fail on a broken copy; the C464 overlay still correct over its five adversarial cases; the report rendered at six widths with zero over-width and zero non-ASCII; the flagged channel verified through the real logger with a per-line accounting of what reached the screen. LIMITS: ASCII is a deliberate trade of prettiness for certainty, and the operator can take the prettier set back with one config line the moment they are on a font that renders box drawing at one cell. Chain C367-C465 intact."),
             ('C464', "THE OPERATOR ASKED ME TO INTEGRATE THE INFORMATION CHANNELS PROPERLY, AND FIRST I HAD TO CORRECT MYSELF: I SAID THEY COULD NOT BE BACKTESTED. FUNDING CAN BE, AND I DID. Bitget publishes 90 days of funding history. 9,383 settlements across 32 pairs, entries one bar after each settlement, three geometries, four-way splits: fade the top decile -0.0837 %%/trade, follow it -0.0619, fade both tails -0.0692, the null -0.0682. EVERY CELL NEGATIVE AND NONE DISTINGUISHABLE FROM THE NULL. Funding does not predict direction at this horizon. Binance, OKX and Bybit were all tried for historical open interest and taker flow: Binance and Bybit are geo-blocked from this environment and OKX retains six hours. So flow and OI remain un-backtestable HERE, which is a limitation of the workbench, not a licence to guess. C464-4, AND THE MEASUREMENT IMMEDIATELY PAID FOR ITSELF. C212's funding term is clip(-funding x 130, +/-0.4) -- an ABSOLUTE scale with a magic constant, on a quantity whose board dispersion collapses to 0.01 percentage points on an ordinary day. Funding is POSITIVE about 76%% of the time, so that expression is a PERSISTENT ANTI-LONG TILT applying a signal that is not there. Same family as C454's tie bias, in the absolute term instead of the ranked one. Switched off, switchable back, and funding is retained as CROWDING magnitude: extreme funding either way argues for a smaller position, never for a side. Verified by execution -- the same pair scores identically long and short. C464-1, THE OVERLAY. The four channels were each scored PER PAIR AGAINST A FIXED NUMBER, which is exactly what this project's founding principle forbids and what C451-2 had already fixed for funding alone, for display only. Every channel is now a MIDRANK PERCENTILE AGAINST THE BOARD THIS SCAN, mapped to [-1,+1], signed by the candidate's own direction, combined into one info score. Midrank because C454 measured what the naive rank costs: 303 of 780 pairs sat on the same funding value, so the most ordinary instrument on the venue scored 0.783 instead of 0.500 and received a full fade against every long. C454's dispersion gate is generalised to all four channels -- a rank is scale-free, which is its virtue when dispersion is real and its defect when it is not, so a channel whose board spans nothing stays SILENT rather than inventing a signal. Verified: a flat board tilts zero candidates and reports which channels could speak. WHAT IT MAY DO AND WHAT IT MAY NOT. It multiplies CONVICTION, bounded at +/-15%%, which moves ranking and size. IT CANNOT FLIP A DIRECTION AND IT CANNOT VETO A TRADE. An unmeasured signal does not get to say no. Verified by execution across a 42-pair board: conviction stays inside 0.5100-0.6900 from a 0.6000 base, no direction changes, no candidate is dropped. The C464-2 agreement gate -- require N channels to agree -- exists and is DEFAULT OFF for the same reason, even though cutting the trade count is the one thing measured to help, because it is a veto. C464-5, OPEN INTEREST THAT IS ACTUALLY AVAILABLE. get_oi_divergence needs 60 in-process readings on a separate two-minute path, so the channel was SILENT for most of a session's early scans -- and a channel that is silent when the decisions are made is not wired at all. C232 already captures notional OI for EVERY pair, free, from the positioning ticker the scan makes anyway, so consecutive scans give an OI CHANGE, which is the quantity the signal actually wants, live from the SECOND scan. Signed so positive always means the move is backed by new money in its own direction: price up with OI up is new money, price up with OI down is short covering and hollow. C464-6, WRONG OBJECT, INSTANCE NINE, CAUGHT BEFORE IT SHIPPED. My board collection runs inside TechnicalAnalysis; the overlay runs inside TradingBot. `self._c464_board` in those two places is TWO DIFFERENT DICTIONARIES, so the overlay would have seen an empty board on every scan and done NOTHING, silently, forever -- the exact shape of C463-1's maker exit, which was dead for 87 versions. My first draft also read self._funding_cache where the existing code four hundred lines above correctly reads self._bot_ref._funding_cache. SO I BUILT THE SWEEP THAT FINDS THIS FAMILY, and testing it against a deliberately broken copy found THREE defects in the sweep itself. (1) It only inspected `self.name`, while this codebase reads almost everything through getattr(self,'name',default) -- which is PRECISELY why these bugs are silent, because the default turns a wrong-object read into a plausible value instead of an AttributeError. (2) Its module-level scan called ast.walk on each top-level node, which for a ClassDef means the whole class, so every local-variable assignment inside any method was recorded as legitimate injection. (3) It only reported an attribute if some OTHER class assigned it via self, missing the case where NOBODY owns it -- which is this bug exactly. A verification tool that cannot fail its own test is not a tool. It now runs as a DIFF against a checked-in baseline of 99 known-legitimate decorations (pos._x = ... from _open_position is the dominant idiom here and is fine); with the bug reintroduced the count goes 99 -> 100 and the new line names it. C464-3/7, AND THE ONLY THING THAT CAN EVER SETTLE THIS. The full per-channel breakdown travels with the trade into the close report and the C444 grade, and the dashboard carries an INFO row plus a LIVE A/B: trades where the channels agreed with the direction against trades where they did not, with the gap in dollars per trade. Split at zero rather than at a median, because zero is where agreement becomes disagreement, and it reports NOTHING until both sides have trades -- a one-sided split is not a comparison and printing it as one is the C460-3 defect. This is the same instrument C451 applies to the entry score, which is how this project learned rho(score,win) = -0.022 and stopped trusting it. After roughly fifty closes the ledger, not I, answers whether the overlay earns its keep. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 402 -> 404; duplicate defs 0; the class-attribute sweep clean AND the new cross-class sweep clean against its baseline, with both proven to fail on a broken copy; C464 constants all defined-and-read, 0 orphan; the overlay driven over five adversarial cases (heavy ties, a flat board, a dispersed board, the conviction bounds, and funding's crowding-only sign); the funding measurement reproducible from the shipped omega_funding_test.py and omega_fetch_funding.py. LIMITS, STATED: every weight in the overlay is a JUDGEMENT, not a measurement, because flow and OI cannot be backtested from the data reachable here -- they are ordered by how directly each channel observes committed money, and the ledger is what will price them. The overlay is the least proven thing in this bot, which is why it is bounded, cannot veto, and reports itself. Chain C367-C464 intact."),
             ('C463', "THE OPERATOR SENT A PHOTOGRAPH OF THEIR PHONE, SAID THE NEWS WAS MISSING, AND BOTH COMPLAINTS LED TO BUGS THAT MATTER MORE THAN THE DISPLAY. C463-1, THE MAKER EXIT HAS NEVER RUN. NOT ONCE, IN EIGHTY-SEVEN VERSIONS. The 20260917 log printed exactly one line about it, and only because C462-1 added the line one version ago: 'C376 taker exit ARB: profit test raised AttributeError'. _C376_PROFIT_TOKENS is a class attribute of POSITION; the code reading it lives in TradingBot._close_position_inner where `self` is the BOT. So `self._C376_PROFIT_TOKENS` has raised on EVERY close since C376 shipped, the maker-exit branch has always fallen through to taker, and C462-6's maker half rests on the same idea. C461 rebuilt this entire project around the claim that the maker/taker gap is larger than any edge it has -- and the lever was bolted to nothing the whole time. AND I DIAGNOSED IT WRONG ONE VERSION AGO: the C462 changelog says the exit 'read a stale field'. That was my reading, it was incorrect, and C461 carries the identical line. What C462-1 actually did was make the failure LOUD, and one log line then named a bug eight versions of reading had missed. Standing rule #5, demonstrated on me. Wrong-object family, instance EIGHT. C463-2/4/5, THE SCREEN. The photograph shows the C462 dashboard rendering correctly and then, directly under its bottom border, sixteen rows of per-position working -- Move, DRI, the eleven-component dump, FLOW, Limit Order Entry -- every number of which is ALREADY inside the box three lines above. Fifteen more rows precede each entry and thirteen follow each close. C460-1's SUPPRESS list could not fix this and the reason is worth keeping: it chose a drop-list over a keep-list so 'a keep-list cannot silently hide what a future version adds'. That was right when the session log was the only readable record. It stopped being right at C462-4, when the detail log began carrying every line unfiltered -- after which the cost of a drop-list is that every new diagnostic a version adds lands on the operator's screen BY DEFAULT, and sixty versions of that is the photograph. THE DEFAULT IS NOW OFF. Three things reach the screen: the report, anything wrong, and a named decision. MEASURED on the real session: 1,557 detail lines -> 185 rendered rows, 12%%, against 482 before. Two further defects found by replaying rather than by reading: the stop-sign emoji was on the ALERT list for 'STOPPING' and is also the prefix of every per-pair veto, which let forty lines of working back in (match the WORD, never the decoration); and per-pair working has a SHAPE, '<glyph> SYM: ...', which no allow-list can enumerate and a regex can. C463-4, THE TIMESTAMP WAS EATING A QUARTER OF THE PHONE. Every line carries an eleven-character '10:48:17 | ' stamp, charged to every row of a 46-column box, so the box needs 57 columns of screen and 24%% of the width re-prints a time the block header already states. A report line is a BLOCK, not an event: report lines now print bare. C463-5, and long lines wrap ONCE, at the formatter, not in seven hundred call sites -- the boot banner's risk line is 188 characters and C435-2's selection line was 300. C463-3, THE NEWS WAS NEVER MISSING. The operator said news analysis was gone. It ran: 65 articles fetched, 50 of 60 screened pairs resolved to a coin name, every one scored, 173 news lines in the detail log. C460-1 deleted ALL of it from the readable log through five separate DROP entries, leaving one 'News=+0.48' buried inside a ranking line. A signal that is computed, used in the score, and never shown is indistinguishable from one that is broken. It is now a row on the dashboard: article count, market tone, and the three pairs the layer has the strongest opinion about. C463-6/7/8 add the RISK FRAME block (eight rows replacing eleven of wrapped boot prose), a MOVERS row carrying C266's board-parity -- the single best answer to 'did it miss anything?' -- a win/loss TAPE, and a thesis bar per open position. C463-10, ANOTHER HARDCODED LITERAL, TWO LINES BELOW A COMMENT WARNING AGAINST THEM. C460-2's banner comment reads 'a number that describes a setting must READ the setting'; directly beneath it the banner printed 'at the measured 0.78 payoff' with 0.78 written in twice. It was measured once, over the 0.65R geometry C459-2 replaced. Now reads the ledger, and says so plainly when no R-denominated payoff exists yet. Hardcoded-literal family, instance THREE. And my OWN first draft of the risk-frame call reached for bot._c420_payoff and bot._c458_blended_edge, NEITHER OF WHICH EXISTS -- caught by the sweep before it shipped, and it would have failed silently because getattr has a default. C463-12, THE BOT IS TRADING TEN-MINUTE NOISE AND THE OPERATOR ASKED FOR FOUR-TO-EIGHT-HOUR HOLDS. ARB was opened with a +7.3%% target (2.00R) and a -2.1%% stop (0.75R), ran +0.94%% in eight minutes, handed it back, and PEAK_REVERSAL closed it at TEN MINUTES for -0.06%% -- 0.02R of a 2.00R plan, on a peak two thirds the size of one average candle. RIVER: peak +0.25%%, closed at 18 minutes. C440-2 ALREADY decided that 'a peak that never had time to form is not a reversal' and enforces it by zeroing _peak_in_pru; PEAK_FLOOR reads that field and is protected, PEAK_REVERSAL reads self.peak_pnl_pct directly and is not. One guard, two branches, honoured in one. MEASURED AND NOT CLAIMED AS AN EDGE: adding a minimum age to the giveback exit is worth +0.0073 %%/trade at t=+1.11 and 2 of 4 splits, which does NOT clear the standing 3-of-4 rule. It ships because it makes an existing documented guard consistent, never measured negative, and makes the bot do what the operator asked -- and that reasoning is stated so it can be overruled on evidence rather than taste. MIN_POSITION_AGE, which was declared, printed in the config banner as 'Min age 15min' and READ NOWHERE ELSE IN THE FILE, is now the floor. AND THE MEASUREMENT THAT MATTERS MORE THAN ALL OF IT. 662,800 bars, 32 pairs, TWO SEPARATE ~105-day windows (Feb-Jun and Jun-Sep, non-overlapping), non-overlapping entries, adverse extreme first, both directions, maker-both fees at 0.04%%. (1) THIRTY target/stop pairs from 0.5R to 3.0R against 0.5R to 2.0R: ZERO are net positive. The least-bad loses 0.0233 %%/trade; the SHIPPED 2.00R/0.75R loses 0.0555. (2) Every entry condition derivable from price -- orderliness in five buckets (the Atlas's one surviving edge: does NOT replicate here, no monotone relationship), 4h and 24h momentum with and against, strong-mover continuation, three volatility bands: not one is significantly positive. (3) The peak-giveback exit the bot fires on is worth +0.0019 %%/trade, t=+0.20 -- it is neither the problem nor a solution. (4) CROSS-SECTIONAL MOMENTUM, the one thing a per-pair scorer structurally cannot see, looked like the first real find in this project's history: 24h ranking, long the top 6 and short the bottom 6 of 32, at 0.50R/2.00R, +0.0364 %%/trade with FOUR OF FOUR SPLITS POSITIVE. I then did what C459 did not, and ran it on the SEPARATE older window: -0.0149 %%/trade, 1 of 4 splits. POOLED +0.0114 over 7,428 trades with the two halves DISAGREEING IN SIGN, and the cell that wins in one window loses in the other. STANDING RULE 9 CAUGHT IT. NOTHING SHIPPED. WHAT THAT MEANS, STATED PLAINLY BECAUSE THE OPERATOR ASKED FOR THE HIGHEST REALISTIC TARGET: on price data alone, after fees, this strategy family is worth approximately zero minus a small drag, and no arrangement of entries or exits inside it changes that. The remaining candidates are the channels that are NOT in the price series, and this bot already collects three of them and wires them to nothing. The same session shows it: RIVER was opened long on 'taker delta -0.094', the monitor printed 'ENTERED AGAINST FLOW' twice, and the trade lost. C402's changelog records the same thing happening earlier and concludes 'the channel was right'. C463-13 therefore stamps entry flow alignment, signed by the trade's own direction, onto the position and into the C444 grade -- NOT wired to any gate, because order flow cannot be backtested from OHLCV and a rule that cannot be tested must not become a veto on a hunch. After roughly fifty closes it becomes a measurable question instead of an anecdote. That, and the fee, are the only two levers left. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 395 -> 402; duplicate defs 0; class-attribute wrong-object sweep CLEAN (it is what found C463-1); C462/C463 constants all defined-and-read, 0 orphan, and MIN_POSITION_AGE now has a real read for the first time; the new filter replayed against the real 1,557-line detail log; the report rendered at 40/46/52/60/72/100 columns with zero over-width rows and zero truncations; the C463-12 guard driven over the two real session cases plus six controls; five harnesses ship with the repo (geometry grid, entry edge, cross-sectional, exit test, and the old-corpus fetcher) so every number above is reproducible. LIMITS: the replication failure is the finding, not a footnote -- do not let a future session re-discover cross-sectional momentum on one window and ship it. Chain C367-C463 intact."),
             ('C462', "THE OPERATOR ASKED FOR A LOG THEY COULD ACTUALLY READ, AND BUILDING IT FOUND TWO MORE TAKER FEES AND A BUG IN MY OWN C460 FILTER. The request: 'the log is too cluttered and difficult to read and important details like current win rate, current pnl, etc are not there .. organise the log completely by yourself in a professional manner taking examples from online bots .. neat, succinct and detailed at the same time but not too detailed, not overly crowded'. C460-1 MADE THE LOG SHORTER AND THAT IS NOT THE SAME THING AS ORGANISING IT. It cut 6,214 lines to 1,355 by moving per-pair working to a second file. It did not turn the remainder into a REPORT: the three figures an operator steers by -- what the account is worth, what it is up or down this run, what fraction of trades win -- were scattered across a 60-character rule-off block, and the win rate that did print was LIFETIME, which cannot move in a two-trade session. C462-4, THE REPORT. A fixed-width dashboard modelled on what established bots actually do -- freqtrade's /status and /profit tables, Hummingbot's periodic named-heading status block, Jesse's end-of-run metrics table. The common shape is A FIXED-WIDTH BLOCK WITH NAMED ROWS ON A TIMER, PLUS ONE LINE PER EVENT, and that is what this is. Rows: EQUITY (live, realised, unrealised), SESSION (P&L, %%, peak, drawdown), CURVE (an ASCII equity sparkline), DAY (spend against the +/- barrier with a progress bar), RECORD (closed, W/L, win rate, payoff, expectancy per trade, best, worst, break-even win rate), LIFETIME, OPEN (count, margin, exposure %%, free), FEES (paid, maker/taker fill split, %% of equity), SCAN (markets to analysed to passed, top candidate and why it was refused), MARKET (regime, bias, breadth, taker flow), and a per-position table with entry, mark, move, P&L, age and thesis retention. Every figure already existed somewhere in the file; NOT ONE OF THEM WAS EVER GATHERED IN ONE PLACE. Win rate, payoff, expectancy, profit factor and break-even win rate are computed on a NEW per-session trade journal, because a lifetime counter cannot answer 'how is this run going'. THREE FILES NOW: omega_report_<ts>.log is nothing but the dashboard; omega_session_<ts>.log is decisions plus the dashboard inline; omega_detail_<ts>.log stays everything, unfiltered. AND A FULL BLOCK ONLY WHEN THERE IS SOMETHING TO SAY. The summary timer is 8 minutes (C353) and C461-3 cut the pace to 1-3 trades a day, so a flat unchanged book would print ~114 identical fourteen-line blocks in a fifteen-hour session -- 1,600 lines saying nothing happened, WHICH IS THE OPERATOR'S ORIGINAL COMPLAINT REBUILT IN A NICER TYPEFACE. Full block when the book is open, when anything changed, or every 30 minutes; otherwise one heartbeat line carrying the three missing figures. Measured on the operator's own 20260915 session: 114 summary blocks become ~14 full blocks plus heartbeats. C462-1, THE MAKER EXIT HAD NEVER FIRED ONCE AND NOTHING SAID SO. Six trades across two sessions, zero C376 maker fills, zero misses -- the branch was SILENT, which by this file's own standing rule #5 means it was not a protection at all. It tested _last_pnl_pct, a field written by a different function on a different tick. The test is now computed inline from exit_price and pos.entry_price, and EVERY skip path logs: no book, raised, or not-a-profit-exit. Driven over seven states (long/short winners, long/short 'profit' exits that are actually down, a hard stop, an exactly-flat close, a missing entry price): 7/7 correct, and a stop still always crosses. C462-5, THE FEE THAT NEVER FOLLOWED THE ORDER. C257 fixed exactly this at the entry side -- 'the exit fee is charged at the EXIT order's type' -- and then hardcoded TAKER for every close, which was right while every close was a market order and stopped being right the moment C376 shipped a maker exit. A filled maker exit was billed 0.06%% instead of 0.02%%. It errs CONSERVATIVE, which is why it survived, but C461 rests the entire project on the maker/taker gap being larger than any edge this bot has measured -- and a ledger that cannot see that gap cannot show whether the claim is paying. The flag now follows the ORDER, not the intent. C462-6, AND THE HALF THAT BANKS THE PROFIT WAS STILL CROSSING. _c336_partial_close with kind='win' IS the C338 target hit: a planned, unhurried, profit-taking close of half the position, the exact case C376 was written for -- and it was a plain market order, left out of both C376 and C461. It now rests at the touch first and falls back to market if it does not fill. kind='loss' stays TAKER and always will: it is the protective patience-cap close and C376's own rule applies unchanged, a close that protects capital must always be able to cross. Worth 4bp of the half notional on every winner. C462-2, THE LOG TOLD THE OPERATOR A WINNING SESSION LOST MONEY. Session 20260916_123947: two trades, BOTH WINS, realised +$0.51, and the log printed 'Session: $-0.13' five times. The equity was right ($249.36 + $0.51 = $249.87); session_start_equity was $250.00, belonging to a run that had ended fourteen hours earlier. A SESSION IS ONE RUN OF THE PROGRAM -- that is what the operator means, what every platform means, and the only reading under which the figure answers the question. The DAY ledger is untouched and still spans restarts, or the day cap could be reset by relaunching. C462-3, THE FIRST NUMBER ON THE SCREEN WAS WRONG BY 5x. The boot banner printed 'DAILY BUDGET @ $50.00' on an account holding $249.36, because _c369_derive_budget runs inside __init__ before load_state, and every figure beneath it -- per-trade risk, day cap, projected month -- was wrong with it. C377 recorded this as 'merely confusing' and left it. The banner now says 'provisional -- recomputed after state load' until equity is real, and re-announces once it is. AND A DEFECT IN MY OWN C460-1, FOUND BY THE TEST RATHER THAN BY READING. The keep-list is case-sensitive, so 'Final equity: $249.87' and 'Session end equity: $249.87' missed 'Equity:' by one letter, fell through to the per-pair heuristic and were SILENTLY DROPPED from the readable log -- two of the last money lines a session prints. Lower-case spellings added. Also: my first draft of the MARKET row reached for bot._current_regime and bot.market_regime, NEITHER OF WHICH EXISTS -- the wrong-object family (C422-1, C433-1, C440-3), caught by a class-ownership sweep before it shipped, and it would have failed silently because getattr has a default. Now reads _market_regime, _market_bias, _market_breadth and _market_taker_bias, verified against their assignment sites. C462-8, AND THE REPORT IS READ ON A PHONE. The operator runs this in Pydroid3 on a Nothing Phone 2. A phone terminal in portrait shows roughly 44-50 monospace columns, and my 74-column box does not TRUNCATE there -- it WRAPS. Half of every row lands on the next line with no left border, which is not a narrower table, it is the wall of text C462-4 was built to replace with extra punctuation. THE FIX IS NOT A SECOND LAYOUT. A row is now declared as a LIST OF SHORT FACTS and a packer fits as many as the screen holds per line, continuing underneath with no repeated label: at 72 columns the whole row lands on one line, exactly as a desktop showed it before; at 46 it becomes two or three tidy lines. The seven-column position table needs ~66 characters, so below that each position becomes a two-line STANZA carrying the same seven facts, and the same for the closed-trade table at 62. The sparkline, the day-budget bar, the trade records and the header all scale with the width. ONE layout, every screen, no second code path to drift out of step. WIDTH IS RESOLVED ONCE, at boot: C462_LOG_WIDTH in Config if set (one number to edit, which matters on a phone where there is no convenient shell), else OMEGA_LOG_WIDTH or COLUMNS, else 46 on Android, else the real terminal size -- clamped 34..100 because below 34 nothing readable fits and above 100 the eye loses the row it is on. AND RENDERING AT 46 FOUND TWO BUGS OF MY OWN. The packer measured the parts against the budget and prepended the label AFTERWARDS, overflowing by exactly the label length, so the row then truncated: 'unreal $+0.28' became 'unreal $+0.' and '35%% used' became '35%% use' -- a packer that truncates is the thing it was written to replace. The label is now reserved BEFORE the parts are measured. And the start line sat OUTSIDE the box, so a wrapped continuation would have begun with C460-1's per-pair news DROP prefix and been silently deleted from the readable log; it now lives inside the box and carries the border glyph the filter always passes. VERIFIED BY RENDERING at 40, 46, 52, 60, 72 and 100 columns: ZERO lines over width and ZERO truncations at every one, all 457 report lines across the six widths survive the filter, and set_width was driven over eight inputs including a string, None, garbage and both clamps. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 371 -> 395 (+_C462Report and its 16 methods, +_c462_mark_session_start, +_c462_boot_budget_note, +3 helpers); duplicate defs 0; class-ownership sweep over every attribute the reporter touches, clean; all 10 reporter call sites arity-checked against their signatures and scope-checked for unresolved names, 0 problems; C462 constants 2 defined, 2 read, 0 orphan; the C462-1 condition driven over 7 states, 7/7; the C462-5 and C462-6 fee expressions EXTRACTED FROM THE SHIPPED FILE and executed at both rates; the log filter run against BOTH real detail logs (46,431 and 7,912 lines) with a money/risk safety check -- every line it drops is the superseded position-summary row and nothing else; all 388 report lines confirmed to survive the filter. LIMITS, STATED. The dashboard is INSTRUMENTATION: it changes what the operator can see, not what the bot decides, and no gate, score, target or stop moved in this version. C462-5 and C462-6 are worth 4bp of exit notional EACH, which is real against a measured gross edge of 1.7bp -- but C462-6's maker half CAN MISS, and a missed half falls back to market, so the saving is earned only on fills and the next log's 'C462-6 maker half did not fill' count is the number to read. The session journal lives in memory and starts empty on every run by design; the lifetime counters remain the persisted record. Chain C367-C462 intact."),
@@ -17576,7 +17741,7 @@ class TradingBot:
     def run(self):
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
-        logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C464)")
+        logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C465)")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -34660,7 +34825,8 @@ def startup():
                 print(f"  \u26a0\ufe0f  session baseline failed: {type(_e462s).__name__}")
             try:   # C462-4: open the report with a header, not a wall of text
                 _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
-                _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+                _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
+                _c462_report.header('C465', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                     bot.portfolio.equity,
                                     day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
                 print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
@@ -34757,7 +34923,8 @@ def startup():
         try:
             bot.portfolio._c462_mark_session_start()
             _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
-            _c462_report.header('C462', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+            _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
+            _c462_report.header('C465', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                 bot.portfolio.equity,
                                 day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
             print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)}")

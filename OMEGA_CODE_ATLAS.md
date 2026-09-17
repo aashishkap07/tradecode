@@ -1,6 +1,106 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 📐 2026-09-17c — C465: THE DASHBOARD, LAID OUT SO NO FONT CAN BREAK IT
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C465.** Branch `claude/trading-system-analysis-tsvzj4`.
+Pydroid3 / Nothing Phone 2, paper, $250, Bitget **basic tier**, maker both ways.
+Display: `C462_LOG_WIDTH = 0` (auto → 44 on Android), `C465_GLYPHS = 'ascii'`.
+
+### 🟢 THE MAKER EXIT IS ALIVE
+Session 20260917_221311 carries **`C462-6 MAKER half filled UNI`** and
+**`C376 MAKER exit filled UNI`**. The path C463-1 found dead for **87 versions**
+fired twice in its first session. UNI +4.00%, +$0.48, **+1.03R**, 81% of a
++4.92% peak, 18 min — **three maker fills, zero taker, $0.01 total fees.**
+One trade in 15 scans / 1,220 analyses, which is the C461-3 pace.
+
+---
+
+## 📏 THE DISPLAY RULE (learned the expensive way)
+
+> **Every box row in the operator's report file was EXACTLY 46 characters, and
+> the right border still landed in a different column on almost every row.**
+
+**Cause: East Asian Width = AMBIGUOUS.** A font may render these at one cell or two:
+
+| used in the old layout | EAW |
+|---|---|
+| `│ ─ ┌ ┐ └ ┘ ├ ┤` box drawing | **A** |
+| `·` middle dot — *~8× per block* | **A** |
+| `█ ▁ ▂ ▃ ▄ ▅ ▆ ▇` blocks | **A** |
+| `→ ▲ ▼ ▽ ± × – ≈` | **A** |
+
+Rows with more separators overflowed further — that is the whole pattern.
+
+**NEW Rule 18 — nothing in a terminal layout may depend on a character landing
+in an exact column.** No right borders. ASCII for every glyph that must align.
+A left label column is the only alignment a text dashboard needs.
+
+**NEW Rule 19 — never identify a log line by its first character.** Doing so
+welds the layout to whatever glyph the filter was taught, which is why the
+ambiguous-width glyphs could not simply be swapped out. Flag the *record*
+(`logger.report()` → `extra={'c465_report': True}`), not the text.
+
+**NEW Rule 20 — a graphic that cannot render is worse than no graphic.** The
+equity sparkline drew as one solid white bar on the phone: the lower-eighth
+blocks are ambiguous-width *and* commonly absent from a phone font. ASCII
+density (`._-=+*#@`) reads correctly everywhere.
+
+---
+
+## 🎛 THE LAYOUT CONTRACT
+
+```
+  ========================================     <- head rule, width-4
+  OMEGA C465  PAPER  Bitget perps
+  17 Sep 2026   19:06
+  start $250.00  day +/-0.68%
+  ========================================
+
+  19:06  up 0h09m  scan 1 ----------------     <- section rule carries the title
+  EQUITY    $250.38  unreal $+0.38             <- 2 spaces, 10-char label, text
+  SESSION   $+0.38 +0.15%
+  DAY       +0.15% of +/-0.68%  22% used
+            [------------|##----------]        <- SIGNED gauge, fills from zero
+  ...
+  ----------------------------------------
+  + UNI LONG  +1.68%  $+0.38                   <- open position, 2 rows
+     7.4210 > 7.5460  4m  61% left  ######..
+  ----------------------------------------
+
+  >> 22:18  OPEN   UNI LONG                    <- the tape: >> open  << close
+       @7.4210  x1 $24.00                         -> half  .. heartbeat
+       target +9.9%  stop -2.9%  maker
+```
+
+`C465_GLYPHS = 'unicode'` swaps the characters and **keeps the layout identical** —
+one code path, two character sets.
+
+**Dynamic rules now in force:** omit an undefined figure rather than print `n/a`;
+suppress LIFETIME when it equals this run's record; show unrealised only when a
+position is open; show peak/drawdown only when they differ from now; collapse the
+channel list to one line; cap MOVERS at four and drop `[Live=…<cut]` for `cut`;
+withhold the curve until it has six samples.
+
+---
+
+## 🛠 VERIFICATION BATTERY (unchanged additions)
+
+```
+python3 omega_wrong_object_sweep.py --diff     # must report no NEW findings
+python3 omega_overlay_test.py                  # C464 overlay, 5 adversarial cases
+```
+Plus: render the report at 36/40/44/52/72/100 and assert **zero rows over width
+and zero non-ASCII in ascii mode**; and drive a report line through the real
+`CustomLogger` + filter to prove the flagged channel still reaches the screen.
+
+---
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🧠 2026-09-17b — C464: THE INFORMATION CHANNELS, BUILT PROPERLY
 # ═══════════════════════════════════════════════════════════════════════════
 
