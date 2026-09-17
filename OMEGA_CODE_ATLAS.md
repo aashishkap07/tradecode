@@ -1,6 +1,108 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🧠 2026-09-17b — C464: THE INFORMATION CHANNELS, BUILT PROPERLY
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE — READ THIS FIRST
+
+**Shipped: C464.** Branch `claude/trading-system-analysis-tsvzj4`.
+Pydroid3 / Nothing Phone 2, paper, $250, Bitget **basic tier** (no fee discount),
+maker both ways, 1–3 trades/day, 4–8h intended holds.
+
+### What C463 established (unchanged, and it governs everything)
+> 662,800 bars, 32 pairs, **two separate non-overlapping ~105-day windows**:
+> **nothing derivable from price is net positive after fees.** 30 of 30
+> geometries negative. Orderliness, momentum, volatility: null. Cross-sectional
+> momentum was +0.0364 %/trade at **4/4 splits** and **failed out of sample**
+> (−0.0149, 1/4). Rule 9 caught it.
+
+### What C464 adds
+**Funding is now measured too, and it is also null.** 9,383 Bitget settlements,
+88 days, 32 pairs, entries one bar after each settlement:
+
+| rule | mean %/trade |
+|---|---|
+| fade top-decile funding | −0.0837 |
+| follow top-decile funding | −0.0619 |
+| fade both tails | −0.0692 |
+| **the null** | **−0.0682** |
+
+**Funding does not predict direction.** It is retained as *crowding magnitude*
+only. C212's `clip(-funding × 130, ±0.4)` is **off** — funding is positive ~76%
+of the time, so that term was a persistent anti-long tilt applying an absent signal.
+
+### Data availability, measured not assumed
+| channel | historical source | verdict |
+|---|---|---|
+| funding | Bitget `history-fund-rate`, 90 days | **backtested — null** |
+| price/geometry | Bitget candles, 2 × 105 days | **backtested — null** |
+| taker flow (CVD) | Binance geo-blocked · OKX 6h · Bybit geo-blocked | **not backtestable here** |
+| open interest | same | **not backtestable here** |
+| news | no historical corpus | **not backtestable** |
+
+**That is a limitation of the workbench, not a licence to guess.** Hence the overlay
+is bounded, cannot veto, and reports itself.
+
+---
+
+## 🧭 THE C464 OVERLAY — WHAT IT IS ALLOWED TO DO
+
+Every channel → **midrank percentile against the board this scan** → [−1,+1] →
+signed by the candidate's direction → one info score → **conviction × (1 ± 0.15)**.
+
+- **No absolute constant appears anywhere in it.**
+- **Cannot flip a direction. Cannot veto a trade.** An unmeasured signal does not get to say no.
+- Midrank, not naive rank — C454 measured the tie bias at 303 of 780 pairs sharing one funding value.
+- Dispersion gate on every channel — a flat board stays **silent**, not zero.
+- Weights (flow .40, OI .25, news .25, funding .10) are **judgements, not measurements**,
+  ordered by how directly each channel observes committed money.
+- The **agreement gate** (require N channels to agree) exists and is **OFF** — it is a veto.
+
+**The live A/B is the point.** Every trade records its full breakdown; the dashboard
+reports trades where the channels agreed vs disagreed, with the gap per trade.
+After ~50 closes the ledger answers this, not me.
+
+---
+
+## 🔴 STANDING RULES — additions at C464
+
+**NEW Rule 16 — a verification tool that cannot fail its own test is not a tool.**
+The C464-6 sweep was written to catch the wrong-object family and, tested against a
+deliberately broken copy, was found to have **three** defects of its own: it ignored
+`getattr(self,'x',default)` (the dominant read idiom here, and the reason these bugs
+are silent); its module-level scan recursed into classes so every local assignment
+looked like legitimate injection; and it only reported an attribute if some *other*
+class owned it, missing the case where **nobody** owns it — which was the bug.
+**Always test a checker against a known-bad input before trusting a clean report.**
+
+**NEW Rule 17 — "cannot be backtested" must name the source that was tried.**
+I told the operator flow/OI/funding could not be backtested. Funding could be, and
+it took one API call to find out. Check the venue's history endpoints before
+declaring a channel unmeasurable.
+
+**Rule 9 now has three scalps:** C459/C460 (geometry), C463 (cross-sectional
+momentum), and the standing warning against re-discovering either.
+
+---
+
+## 🛠 THE VERIFICATION BATTERY (run all of it every version)
+
+```
+python3 -c "import ast;ast.parse(open('omega_v60_reconstructed.py').read())"   # 3.10 AND 3.12
+python3 omega_wrong_object_sweep.py --diff      # must report no NEW findings
+python3 omega_overlay_test.py                   # the overlay over 5 adversarial cases
+python3 omega_funding_test.py                   # needs corpusL/ + corpusF/
+python3 omega_geometry_grid.py                  # needs corpusL/
+python3 omega_xsectional.py                     # run on BOTH corpusL/ and corpusO/
+```
+Fetchers: `omega_fetch_corpus_32.py` (recent), `omega_fetch_corpus_old.py` (separate
+older batch — **Rule 9 needs this one**), `omega_fetch_funding.py`.
+
+---
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🧭 2026-09-17 — C463: THE MEASUREMENT THAT DECIDES WHAT THIS BOT CAN BE
 # ═══════════════════════════════════════════════════════════════════════════
 

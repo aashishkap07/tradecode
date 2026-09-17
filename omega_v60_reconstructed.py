@@ -532,6 +532,7 @@ class _C462Report:
         self._last_sig = None     # and what the book looked like then
         self.movers = None        # C463-7: board parity, one row
         self.news = None          # C463-3: the news layer, one row
+        self.info = None          # C464-7: the information overlay, one row
         self.last_scan = None
         self.exit_reasons = {}
         self._fh = None
@@ -793,7 +794,7 @@ class _C462Report:
 
     def note_close(self, sym, side, entry, exit_px, move_pct, net, reason,
                    held_min, equity=None, maker=False, fee=0.0, r_mult=None,
-                   peak_pct=None):
+                   peak_pct=None, info=None):
         try:
             short = str(sym).split('/')[0].replace(':USDT', '')
             net = float(net)
@@ -810,6 +811,7 @@ class _C462Report:
                 'exit': exit_px, 'move': float(move_pct), 'net': net,
                 'reason': rs, 'held': float(held_min or 0.0),
                 'r': r_mult, 'peak': peak_pct, 't': time.time(),
+                'info': (float(info) if info is not None else None),   # C464-7
             })
             if equity is not None:
                 self.note_equity(equity)
@@ -893,6 +895,49 @@ class _C462Report:
                 logger.warning(f"\u26a0\ufe0f C463 risk frame failed: {type(e).__name__}: {e}")
             except Exception:
                 pass
+
+    def note_info(self, state):
+        """C464-7: the information overlay's live reading, on the dashboard.
+
+        C463 established Rule 13 the hard way -- a signal that is computed and
+        never displayed WILL be reported as broken, because from outside it is
+        indistinguishable from one. The overlay is the newest and least proven
+        thing in the bot, so it is the one that most needs to be visible: which
+        channels had enough board dispersion to speak, how many candidates were
+        tilted, and by how much.
+        """
+        try:
+            self.info = dict(state or {})
+        except Exception:
+            pass
+
+    def info_ledger(self):
+        """C464-7: the live A/B. Does a high info score actually trade better?
+
+        This is the ONLY thing that can turn the overlay from a judgement into
+        a measurement. Order flow cannot be backtested from OHLCV, so the
+        question has to be settled forward, on real closes -- exactly the
+        instrument C451 already applies to the entry score, which is how this
+        project learned that rho(score, win) = -0.022 and stopped trusting it.
+
+        Split at zero rather than at a median, because zero is the point where
+        the channels stop agreeing with the trade and start disagreeing with
+        it. Reports nothing until both sides have trades: a one-sided split is
+        not a comparison, and printing it as one is the C460-3 defect.
+        """
+        try:
+            hi = [t['net'] for t in self.trades
+                  if t.get('info') is not None and float(t['info']) > 0]
+            lo = [t['net'] for t in self.trades
+                  if t.get('info') is not None and float(t['info']) <= 0]
+            if not hi or not lo:
+                return None
+            return {'hi_n': len(hi), 'lo_n': len(lo),
+                    'hi_avg': sum(hi) / len(hi), 'lo_avg': sum(lo) / len(lo),
+                    'hi_wr': 100.0 * sum(1 for x in hi if x > 0) / len(hi),
+                    'lo_wr': 100.0 * sum(1 for x in lo if x > 0) / len(lo)}
+        except Exception:
+            return None
 
     def note_movers(self, text):
         """C463-7: what moved that the screen did not take.
@@ -1169,6 +1214,26 @@ class _C462Report:
             except Exception:
                 pass
 
+            # C464-7: the information overlay, and its live A/B once it has one.
+            try:
+                if self.info:
+                    _ip = [f"{k} {v}" for k, v in
+                           sorted((self.info.get('chan') or {}).items())]
+                    if _ip:
+                        self._pack('INFO', [f"{self.info.get('applied', 0)} tilted"] + _ip)
+                    else:
+                        self._pack('INFO', ['silent — board too flat to rank'])
+                _lg = self.info_ledger()
+                if _lg:
+                    self._pack('', [f"info>0 {_lg['hi_n']}tr "
+                                    f"{_c462_money(_lg['hi_avg'], sign=True)} "
+                                    f"win {_lg['hi_wr']:.0f}%",
+                                    f"info≤0 {_lg['lo_n']}tr "
+                                    f"{_c462_money(_lg['lo_avg'], sign=True)} "
+                                    f"win {_lg['lo_wr']:.0f}%"])
+            except Exception:
+                pass
+
             # C463-7: what moved that the screen did not take.
             try:
                 if self.movers:
@@ -1315,6 +1380,14 @@ class _C462Report:
                           f"maker {_c462_money(self.fees_maker)}",
                           f"taker {_c462_money(self.fees_taker)}"]
             self._pack('COST', _cost)
+            _lg2 = self.info_ledger()
+            if _lg2:
+                self._pack('INFO A/B', [
+                    f"agreed {_lg2['hi_n']}tr {_c462_money(_lg2['hi_avg'], sign=True)}/tr "
+                    f"win {_lg2['hi_wr']:.0f}%",
+                    f"disagreed {_lg2['lo_n']}tr {_c462_money(_lg2['lo_avg'], sign=True)}/tr "
+                    f"win {_lg2['lo_wr']:.0f}%",
+                    f"gap {_c462_money(_lg2['hi_avg'] - _lg2['lo_avg'], sign=True)}/tr"])
             if self.exit_reasons:
                 top = sorted(self.exit_reasons.items(), key=lambda kv: -kv[1])[:6]
                 self._pack('EXITS', [f"{k[:20]} {v}" for k, v in top])
@@ -3281,6 +3354,39 @@ class Config:
         # change at any time; the layout re-packs itself around whatever it is
         # given, from 34 columns to 100.
         self.C462_LOG_WIDTH      = 0
+        # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
+        # After C463 measured that nothing derivable from PRICE is net positive
+        # after fees -- 30 of 30 geometries, every entry condition, and funding
+        # itself over 9,383 settlements -- the only candidates left are the
+        # channels that are not in the price series. The bot already collects
+        # four of them. These dials govern how they are combined.
+        #
+        # Every weight below is a JUDGEMENT, not a measurement, and is stated
+        # as such: order flow cannot be backtested from OHLCV, so there is no
+        # harness that could price them. The ordering reflects how directly
+        # each channel observes actual committed money: taker flow is money
+        # that has already crossed the spread; open interest is money that has
+        # stayed; news moves money; funding is a PRICE, not a flow, and C464's
+        # own measurement says it carries no direction, so it is weighted
+        # least and votes only on crowding.
+        self.C464_INFO_OVERLAY   = True    # master switch
+        self.C464_W_FLOW         = 0.40    # taker flow (committed money)
+        self.C464_W_OI           = 0.25    # open interest (money that stayed)
+        self.C464_W_NEWS         = 0.25    # news
+        self.C464_W_FUND         = 0.10    # funding -- crowding only, no direction
+        self.C464_MAX_TILT       = 0.15    # bounded: +/-15%% of conviction
+        self.C464_MIN_SPREAD     = 1e-4    # C454's dispersion gate, generalised
+        # C464-2: an AGREEMENT gate is available and DEFAULT OFF. Requiring N
+        # channels to agree would cut the trade count hard, which is the one
+        # thing measured to help (fees scale with count, the edge does not) --
+        # but it is a VETO, and an unmeasured signal does not get to say no.
+        # Switch it on deliberately, after the ledger below has an opinion.
+        self.C464_AGREE_GATE     = False
+        self.C464_AGREE_MIN      = 2       # channels that must agree, if gated
+        # C464-4: the old absolute contrarian funding lean. OFF -- measured at
+        # 9,383 settlements and indistinguishable from the null, while carrying
+        # a persistent anti-long sign. Set True to restore pre-C464 behaviour.
+        self.C464_FUNDING_DIRECTION = False
         self.C376_WAIT_S = 8
         # ═══ C377: THE RISK BUDGET MUST BE REAL, NOT ASPIRATIONAL ═══════
         # Every stop in this bot has been VIRTUAL — evaluated only when the
@@ -11009,8 +11115,35 @@ class TechnicalAnalysis:
                     if _fr is None:
                         _fr = self._fetch_funding_raw(_bsym_f)
                     if _fr is not None:
-                        # C212 fallback: graduated contrarian lean from current funding
-                        _fund_score = float(np.clip(-_fr * 130.0, -0.4, 0.4))
+                        # ═══ C464-4: MEASURED, AND THE SIGNAL IS NOT THERE ═══
+                        # C212's contrarian lean is clip(-funding x 130, +/-0.4)
+                        # -- an ABSOLUTE scale with a magic constant, on a
+                        # quantity whose board dispersion collapses to 0.01
+                        # percentage points on an ordinary day.
+                        #
+                        # MEASURED DIRECTLY: 9,383 funding settlements, 32 pairs,
+                        # 88 days, entries one bar after each settlement, three
+                        # geometries, four-way splits. Fade the top decile:
+                        # -0.0837 %/trade. Follow it: -0.0619. Fade both tails:
+                        # -0.0692. The null: -0.0682. EVERY CELL NEGATIVE AND
+                        # NONE DISTINGUISHABLE FROM THE NULL. Funding does not
+                        # predict direction at this horizon.
+                        #
+                        # And it is not neutral to leave in: funding is POSITIVE
+                        # roughly 76% of the time, so -funding x 130 is a
+                        # PERSISTENT ANTI-LONG TILT applying a signal that is
+                        # not there. Same family as C454's tie bias, in the
+                        # absolute term rather than the ranked one.
+                        #
+                        # Funding is NOT discarded -- C464 carries it as a
+                        # CROWDING magnitude, where extreme funding either way
+                        # argues for a smaller position rather than a side.
+                        # The switch restores the old behaviour exactly.
+                        if bool(getattr(self._bot_ref.cfg if getattr(self, '_bot_ref', None)
+                                        else None, 'C464_FUNDING_DIRECTION', False)):
+                            _fund_score = float(np.clip(-_fr * 130.0, -0.4, 0.4))
+                        else:
+                            _fund_score = 0.0
             except Exception:
                 pass
             result['components']['oi_funding'] = _fund_score
@@ -11694,6 +11827,102 @@ class TechnicalAnalysis:
                         # a proof, and this project has killed four candidate
                         # edges for less. +/-10% at |flow|=1.0 lets the evidence
                         # count without letting it rule.
+                        # ═══ C464-1: RECORD THE BOARD ══════════════════════
+                        # Each channel's RAW reading, stashed per symbol as the
+                        # scan runs. The overlay needs the whole board before it
+                        # can rank anything, and a second pass over 60 pairs is
+                        # not affordable -- so collect here, rank once at the
+                        # end of Step 3. None means "no reading", which the
+                        # overlay treats as no opinion rather than as zero.
+                        try:
+                            # ═══ C464-6: WRITE IT ON THE OBJECT THAT READS IT ══
+                            # WRONG-OBJECT FAMILY, INSTANCE NINE, caught by the
+                            # sweep before it shipped. This code runs inside
+                            # TechnicalAnalysis; _c464_info_overlay runs inside
+                            # TradingBot. `self._c464_board` in the two places
+                            # is TWO DIFFERENT DICTIONARIES, so the overlay
+                            # would have seen an empty board on every scan and
+                            # done NOTHING, silently, forever -- the exact
+                            # shape of C376's dead maker exit. The board belongs
+                            # to the bot, which is also where _funding_cache
+                            # already lives (the existing C212 code four hundred
+                            # lines above reads self._bot_ref._funding_cache;
+                            # my first draft read self._funding_cache).
+                            _bot464 = getattr(self, '_bot_ref', None)
+                            if _bot464 is None:
+                                raise RuntimeError('no bot ref for the C464 board')
+                            _bd464 = getattr(_bot464, '_c464_board', None)
+                            if _bd464 is None:
+                                _bd464 = {}
+                                _bot464._c464_board = _bd464
+                            _fnd464 = None
+                            try:
+                                _fc464 = getattr(_bot464, '_funding_cache', {}).get(
+                                    str(symbol).split('/')[0].replace(':USDT', '') + 'USDT')
+                                if _fc464 is not None:
+                                    _fnd464 = float(_fc464[0])
+                            except Exception:
+                                _fnd464 = None
+                            # ═══ C464-5: OI THAT IS ACTUALLY AVAILABLE ══════
+                            # get_oi_divergence needs 60 in-process readings on
+                            # a separate 2-minute path, so the channel is SILENT
+                            # for most of a session's early scans -- and a
+                            # channel that is silent when the decisions are made
+                            # is not wired at all.
+                            # C232 already captures notional OI for EVERY pair,
+                            # FREE, from the positioning ticker the scan makes
+                            # anyway. Consecutive scans therefore give an OI
+                            # CHANGE, which is the quantity the signal actually
+                            # wants, live from the SECOND scan.
+                            # The classic reading, and the only one with a
+                            # mechanism behind it:
+                            #   price up + OI up   = new money, trend real
+                            #   price up + OI down = short covering, hollow
+                            #   price dn + OI up   = new shorts, trend real
+                            #   price dn + OI down = longs unwinding, hollow
+                            # Signed so POSITIVE always means "the move is
+                            # backed by new money in the direction of travel".
+                            _oi464 = result.get('_oi_level', None)
+                            _oidiv464 = None
+                            try:
+                                _prev464 = (_bd464 or {}).get(symbol)
+                                _poi464 = (_prev464 or {}).get('oi_level')
+                                _ppx464 = (_prev464 or {}).get('px')
+                                _npx464 = float(result.get('price', 0) or 0)
+                                if (_poi464 and _oi464 and _ppx464 and _npx464 > 0
+                                        and float(_poi464) > 0 and float(_ppx464) > 0):
+                                    _doi = float(_oi464) / float(_poi464) - 1.0
+                                    _dpx = _npx464 / float(_ppx464) - 1.0
+                                    if abs(_dpx) > 1e-6:
+                                        # +1 when OI grows with the move, -1 when
+                                        # it drains out of it; bounded, unitless.
+                                        _oidiv464 = max(-1.0, min(1.0,
+                                            (1.0 if _dpx > 0 else -1.0)
+                                            * (_doi / max(abs(_dpx), 1e-4)) * 0.5))
+                            except Exception:
+                                _oidiv464 = None
+                            _bd464[symbol] = {
+                                'flow': (float(result['_real_cvd_delta'])
+                                         if result.get('_real_cvd_delta') is not None else None),
+                                # C464-5: prefer the scan-to-scan reading, which
+                                # exists; fall back to the deep-path one, which
+                                # usually does not.
+                                'oi': (_oidiv464 if _oidiv464 is not None else
+                                       (float(result['components'].get('oi_div'))
+                                        if result.get('components', {}).get('oi_div') is not None
+                                        else None)),
+                                'fund': _fnd464,
+                                'news': (float(result.get('_news_score'))
+                                         if result.get('_news_score') is not None else None),
+                                'oi_level': (float(_oi464) if _oi464 is not None else None),
+                                'px': float(result.get('price', 0) or 0) or None,
+                                'ts': time.time()}
+                            if len(_bd464) > 400:
+                                _cut464 = time.time() - 900
+                                _bot464._c464_board = {k: v for k, v in _bd464.items()
+                                                       if float(v.get('ts', 0)) > _cut464}
+                        except Exception:
+                            pass
                         try:
                             if getattr(self.cfg, 'C403_FLOW_TERM', False):
                                 _fd403 = result.get('direction') or result.get('_proposed_dir')
@@ -16991,6 +17220,7 @@ class TradingBot:
         To record a new version, add one (version, summary) tuple to _CHANGELOG below."""
         import os
         _CHANGELOG = [
+            ('C464', "THE OPERATOR ASKED ME TO INTEGRATE THE INFORMATION CHANNELS PROPERLY, AND FIRST I HAD TO CORRECT MYSELF: I SAID THEY COULD NOT BE BACKTESTED. FUNDING CAN BE, AND I DID. Bitget publishes 90 days of funding history. 9,383 settlements across 32 pairs, entries one bar after each settlement, three geometries, four-way splits: fade the top decile -0.0837 %%/trade, follow it -0.0619, fade both tails -0.0692, the null -0.0682. EVERY CELL NEGATIVE AND NONE DISTINGUISHABLE FROM THE NULL. Funding does not predict direction at this horizon. Binance, OKX and Bybit were all tried for historical open interest and taker flow: Binance and Bybit are geo-blocked from this environment and OKX retains six hours. So flow and OI remain un-backtestable HERE, which is a limitation of the workbench, not a licence to guess. C464-4, AND THE MEASUREMENT IMMEDIATELY PAID FOR ITSELF. C212's funding term is clip(-funding x 130, +/-0.4) -- an ABSOLUTE scale with a magic constant, on a quantity whose board dispersion collapses to 0.01 percentage points on an ordinary day. Funding is POSITIVE about 76%% of the time, so that expression is a PERSISTENT ANTI-LONG TILT applying a signal that is not there. Same family as C454's tie bias, in the absolute term instead of the ranked one. Switched off, switchable back, and funding is retained as CROWDING magnitude: extreme funding either way argues for a smaller position, never for a side. Verified by execution -- the same pair scores identically long and short. C464-1, THE OVERLAY. The four channels were each scored PER PAIR AGAINST A FIXED NUMBER, which is exactly what this project's founding principle forbids and what C451-2 had already fixed for funding alone, for display only. Every channel is now a MIDRANK PERCENTILE AGAINST THE BOARD THIS SCAN, mapped to [-1,+1], signed by the candidate's own direction, combined into one info score. Midrank because C454 measured what the naive rank costs: 303 of 780 pairs sat on the same funding value, so the most ordinary instrument on the venue scored 0.783 instead of 0.500 and received a full fade against every long. C454's dispersion gate is generalised to all four channels -- a rank is scale-free, which is its virtue when dispersion is real and its defect when it is not, so a channel whose board spans nothing stays SILENT rather than inventing a signal. Verified: a flat board tilts zero candidates and reports which channels could speak. WHAT IT MAY DO AND WHAT IT MAY NOT. It multiplies CONVICTION, bounded at +/-15%%, which moves ranking and size. IT CANNOT FLIP A DIRECTION AND IT CANNOT VETO A TRADE. An unmeasured signal does not get to say no. Verified by execution across a 42-pair board: conviction stays inside 0.5100-0.6900 from a 0.6000 base, no direction changes, no candidate is dropped. The C464-2 agreement gate -- require N channels to agree -- exists and is DEFAULT OFF for the same reason, even though cutting the trade count is the one thing measured to help, because it is a veto. C464-5, OPEN INTEREST THAT IS ACTUALLY AVAILABLE. get_oi_divergence needs 60 in-process readings on a separate two-minute path, so the channel was SILENT for most of a session's early scans -- and a channel that is silent when the decisions are made is not wired at all. C232 already captures notional OI for EVERY pair, free, from the positioning ticker the scan makes anyway, so consecutive scans give an OI CHANGE, which is the quantity the signal actually wants, live from the SECOND scan. Signed so positive always means the move is backed by new money in its own direction: price up with OI up is new money, price up with OI down is short covering and hollow. C464-6, WRONG OBJECT, INSTANCE NINE, CAUGHT BEFORE IT SHIPPED. My board collection runs inside TechnicalAnalysis; the overlay runs inside TradingBot. `self._c464_board` in those two places is TWO DIFFERENT DICTIONARIES, so the overlay would have seen an empty board on every scan and done NOTHING, silently, forever -- the exact shape of C463-1's maker exit, which was dead for 87 versions. My first draft also read self._funding_cache where the existing code four hundred lines above correctly reads self._bot_ref._funding_cache. SO I BUILT THE SWEEP THAT FINDS THIS FAMILY, and testing it against a deliberately broken copy found THREE defects in the sweep itself. (1) It only inspected `self.name`, while this codebase reads almost everything through getattr(self,'name',default) -- which is PRECISELY why these bugs are silent, because the default turns a wrong-object read into a plausible value instead of an AttributeError. (2) Its module-level scan called ast.walk on each top-level node, which for a ClassDef means the whole class, so every local-variable assignment inside any method was recorded as legitimate injection. (3) It only reported an attribute if some OTHER class assigned it via self, missing the case where NOBODY owns it -- which is this bug exactly. A verification tool that cannot fail its own test is not a tool. It now runs as a DIFF against a checked-in baseline of 99 known-legitimate decorations (pos._x = ... from _open_position is the dominant idiom here and is fine); with the bug reintroduced the count goes 99 -> 100 and the new line names it. C464-3/7, AND THE ONLY THING THAT CAN EVER SETTLE THIS. The full per-channel breakdown travels with the trade into the close report and the C444 grade, and the dashboard carries an INFO row plus a LIVE A/B: trades where the channels agreed with the direction against trades where they did not, with the gap in dollars per trade. Split at zero rather than at a median, because zero is where agreement becomes disagreement, and it reports NOTHING until both sides have trades -- a one-sided split is not a comparison and printing it as one is the C460-3 defect. This is the same instrument C451 applies to the entry score, which is how this project learned rho(score,win) = -0.022 and stopped trusting it. After roughly fifty closes the ledger, not I, answers whether the overlay earns its keep. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 402 -> 404; duplicate defs 0; the class-attribute sweep clean AND the new cross-class sweep clean against its baseline, with both proven to fail on a broken copy; C464 constants all defined-and-read, 0 orphan; the overlay driven over five adversarial cases (heavy ties, a flat board, a dispersed board, the conviction bounds, and funding's crowding-only sign); the funding measurement reproducible from the shipped omega_funding_test.py and omega_fetch_funding.py. LIMITS, STATED: every weight in the overlay is a JUDGEMENT, not a measurement, because flow and OI cannot be backtested from the data reachable here -- they are ordered by how directly each channel observes committed money, and the ledger is what will price them. The overlay is the least proven thing in this bot, which is why it is bounded, cannot veto, and reports itself. Chain C367-C464 intact."),
             ('C463', "THE OPERATOR SENT A PHOTOGRAPH OF THEIR PHONE, SAID THE NEWS WAS MISSING, AND BOTH COMPLAINTS LED TO BUGS THAT MATTER MORE THAN THE DISPLAY. C463-1, THE MAKER EXIT HAS NEVER RUN. NOT ONCE, IN EIGHTY-SEVEN VERSIONS. The 20260917 log printed exactly one line about it, and only because C462-1 added the line one version ago: 'C376 taker exit ARB: profit test raised AttributeError'. _C376_PROFIT_TOKENS is a class attribute of POSITION; the code reading it lives in TradingBot._close_position_inner where `self` is the BOT. So `self._C376_PROFIT_TOKENS` has raised on EVERY close since C376 shipped, the maker-exit branch has always fallen through to taker, and C462-6's maker half rests on the same idea. C461 rebuilt this entire project around the claim that the maker/taker gap is larger than any edge it has -- and the lever was bolted to nothing the whole time. AND I DIAGNOSED IT WRONG ONE VERSION AGO: the C462 changelog says the exit 'read a stale field'. That was my reading, it was incorrect, and C461 carries the identical line. What C462-1 actually did was make the failure LOUD, and one log line then named a bug eight versions of reading had missed. Standing rule #5, demonstrated on me. Wrong-object family, instance EIGHT. C463-2/4/5, THE SCREEN. The photograph shows the C462 dashboard rendering correctly and then, directly under its bottom border, sixteen rows of per-position working -- Move, DRI, the eleven-component dump, FLOW, Limit Order Entry -- every number of which is ALREADY inside the box three lines above. Fifteen more rows precede each entry and thirteen follow each close. C460-1's SUPPRESS list could not fix this and the reason is worth keeping: it chose a drop-list over a keep-list so 'a keep-list cannot silently hide what a future version adds'. That was right when the session log was the only readable record. It stopped being right at C462-4, when the detail log began carrying every line unfiltered -- after which the cost of a drop-list is that every new diagnostic a version adds lands on the operator's screen BY DEFAULT, and sixty versions of that is the photograph. THE DEFAULT IS NOW OFF. Three things reach the screen: the report, anything wrong, and a named decision. MEASURED on the real session: 1,557 detail lines -> 185 rendered rows, 12%%, against 482 before. Two further defects found by replaying rather than by reading: the stop-sign emoji was on the ALERT list for 'STOPPING' and is also the prefix of every per-pair veto, which let forty lines of working back in (match the WORD, never the decoration); and per-pair working has a SHAPE, '<glyph> SYM: ...', which no allow-list can enumerate and a regex can. C463-4, THE TIMESTAMP WAS EATING A QUARTER OF THE PHONE. Every line carries an eleven-character '10:48:17 | ' stamp, charged to every row of a 46-column box, so the box needs 57 columns of screen and 24%% of the width re-prints a time the block header already states. A report line is a BLOCK, not an event: report lines now print bare. C463-5, and long lines wrap ONCE, at the formatter, not in seven hundred call sites -- the boot banner's risk line is 188 characters and C435-2's selection line was 300. C463-3, THE NEWS WAS NEVER MISSING. The operator said news analysis was gone. It ran: 65 articles fetched, 50 of 60 screened pairs resolved to a coin name, every one scored, 173 news lines in the detail log. C460-1 deleted ALL of it from the readable log through five separate DROP entries, leaving one 'News=+0.48' buried inside a ranking line. A signal that is computed, used in the score, and never shown is indistinguishable from one that is broken. It is now a row on the dashboard: article count, market tone, and the three pairs the layer has the strongest opinion about. C463-6/7/8 add the RISK FRAME block (eight rows replacing eleven of wrapped boot prose), a MOVERS row carrying C266's board-parity -- the single best answer to 'did it miss anything?' -- a win/loss TAPE, and a thesis bar per open position. C463-10, ANOTHER HARDCODED LITERAL, TWO LINES BELOW A COMMENT WARNING AGAINST THEM. C460-2's banner comment reads 'a number that describes a setting must READ the setting'; directly beneath it the banner printed 'at the measured 0.78 payoff' with 0.78 written in twice. It was measured once, over the 0.65R geometry C459-2 replaced. Now reads the ledger, and says so plainly when no R-denominated payoff exists yet. Hardcoded-literal family, instance THREE. And my OWN first draft of the risk-frame call reached for bot._c420_payoff and bot._c458_blended_edge, NEITHER OF WHICH EXISTS -- caught by the sweep before it shipped, and it would have failed silently because getattr has a default. C463-12, THE BOT IS TRADING TEN-MINUTE NOISE AND THE OPERATOR ASKED FOR FOUR-TO-EIGHT-HOUR HOLDS. ARB was opened with a +7.3%% target (2.00R) and a -2.1%% stop (0.75R), ran +0.94%% in eight minutes, handed it back, and PEAK_REVERSAL closed it at TEN MINUTES for -0.06%% -- 0.02R of a 2.00R plan, on a peak two thirds the size of one average candle. RIVER: peak +0.25%%, closed at 18 minutes. C440-2 ALREADY decided that 'a peak that never had time to form is not a reversal' and enforces it by zeroing _peak_in_pru; PEAK_FLOOR reads that field and is protected, PEAK_REVERSAL reads self.peak_pnl_pct directly and is not. One guard, two branches, honoured in one. MEASURED AND NOT CLAIMED AS AN EDGE: adding a minimum age to the giveback exit is worth +0.0073 %%/trade at t=+1.11 and 2 of 4 splits, which does NOT clear the standing 3-of-4 rule. It ships because it makes an existing documented guard consistent, never measured negative, and makes the bot do what the operator asked -- and that reasoning is stated so it can be overruled on evidence rather than taste. MIN_POSITION_AGE, which was declared, printed in the config banner as 'Min age 15min' and READ NOWHERE ELSE IN THE FILE, is now the floor. AND THE MEASUREMENT THAT MATTERS MORE THAN ALL OF IT. 662,800 bars, 32 pairs, TWO SEPARATE ~105-day windows (Feb-Jun and Jun-Sep, non-overlapping), non-overlapping entries, adverse extreme first, both directions, maker-both fees at 0.04%%. (1) THIRTY target/stop pairs from 0.5R to 3.0R against 0.5R to 2.0R: ZERO are net positive. The least-bad loses 0.0233 %%/trade; the SHIPPED 2.00R/0.75R loses 0.0555. (2) Every entry condition derivable from price -- orderliness in five buckets (the Atlas's one surviving edge: does NOT replicate here, no monotone relationship), 4h and 24h momentum with and against, strong-mover continuation, three volatility bands: not one is significantly positive. (3) The peak-giveback exit the bot fires on is worth +0.0019 %%/trade, t=+0.20 -- it is neither the problem nor a solution. (4) CROSS-SECTIONAL MOMENTUM, the one thing a per-pair scorer structurally cannot see, looked like the first real find in this project's history: 24h ranking, long the top 6 and short the bottom 6 of 32, at 0.50R/2.00R, +0.0364 %%/trade with FOUR OF FOUR SPLITS POSITIVE. I then did what C459 did not, and ran it on the SEPARATE older window: -0.0149 %%/trade, 1 of 4 splits. POOLED +0.0114 over 7,428 trades with the two halves DISAGREEING IN SIGN, and the cell that wins in one window loses in the other. STANDING RULE 9 CAUGHT IT. NOTHING SHIPPED. WHAT THAT MEANS, STATED PLAINLY BECAUSE THE OPERATOR ASKED FOR THE HIGHEST REALISTIC TARGET: on price data alone, after fees, this strategy family is worth approximately zero minus a small drag, and no arrangement of entries or exits inside it changes that. The remaining candidates are the channels that are NOT in the price series, and this bot already collects three of them and wires them to nothing. The same session shows it: RIVER was opened long on 'taker delta -0.094', the monitor printed 'ENTERED AGAINST FLOW' twice, and the trade lost. C402's changelog records the same thing happening earlier and concludes 'the channel was right'. C463-13 therefore stamps entry flow alignment, signed by the trade's own direction, onto the position and into the C444 grade -- NOT wired to any gate, because order flow cannot be backtested from OHLCV and a rule that cannot be tested must not become a veto on a hunch. After roughly fifty closes it becomes a measurable question instead of an anecdote. That, and the fee, are the only two levers left. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 395 -> 402; duplicate defs 0; class-attribute wrong-object sweep CLEAN (it is what found C463-1); C462/C463 constants all defined-and-read, 0 orphan, and MIN_POSITION_AGE now has a real read for the first time; the new filter replayed against the real 1,557-line detail log; the report rendered at 40/46/52/60/72/100 columns with zero over-width rows and zero truncations; the C463-12 guard driven over the two real session cases plus six controls; five harnesses ship with the repo (geometry grid, entry edge, cross-sectional, exit test, and the old-corpus fetcher) so every number above is reproducible. LIMITS: the replication failure is the finding, not a footnote -- do not let a future session re-discover cross-sectional momentum on one window and ship it. Chain C367-C463 intact."),
             ('C462', "THE OPERATOR ASKED FOR A LOG THEY COULD ACTUALLY READ, AND BUILDING IT FOUND TWO MORE TAKER FEES AND A BUG IN MY OWN C460 FILTER. The request: 'the log is too cluttered and difficult to read and important details like current win rate, current pnl, etc are not there .. organise the log completely by yourself in a professional manner taking examples from online bots .. neat, succinct and detailed at the same time but not too detailed, not overly crowded'. C460-1 MADE THE LOG SHORTER AND THAT IS NOT THE SAME THING AS ORGANISING IT. It cut 6,214 lines to 1,355 by moving per-pair working to a second file. It did not turn the remainder into a REPORT: the three figures an operator steers by -- what the account is worth, what it is up or down this run, what fraction of trades win -- were scattered across a 60-character rule-off block, and the win rate that did print was LIFETIME, which cannot move in a two-trade session. C462-4, THE REPORT. A fixed-width dashboard modelled on what established bots actually do -- freqtrade's /status and /profit tables, Hummingbot's periodic named-heading status block, Jesse's end-of-run metrics table. The common shape is A FIXED-WIDTH BLOCK WITH NAMED ROWS ON A TIMER, PLUS ONE LINE PER EVENT, and that is what this is. Rows: EQUITY (live, realised, unrealised), SESSION (P&L, %%, peak, drawdown), CURVE (an ASCII equity sparkline), DAY (spend against the +/- barrier with a progress bar), RECORD (closed, W/L, win rate, payoff, expectancy per trade, best, worst, break-even win rate), LIFETIME, OPEN (count, margin, exposure %%, free), FEES (paid, maker/taker fill split, %% of equity), SCAN (markets to analysed to passed, top candidate and why it was refused), MARKET (regime, bias, breadth, taker flow), and a per-position table with entry, mark, move, P&L, age and thesis retention. Every figure already existed somewhere in the file; NOT ONE OF THEM WAS EVER GATHERED IN ONE PLACE. Win rate, payoff, expectancy, profit factor and break-even win rate are computed on a NEW per-session trade journal, because a lifetime counter cannot answer 'how is this run going'. THREE FILES NOW: omega_report_<ts>.log is nothing but the dashboard; omega_session_<ts>.log is decisions plus the dashboard inline; omega_detail_<ts>.log stays everything, unfiltered. AND A FULL BLOCK ONLY WHEN THERE IS SOMETHING TO SAY. The summary timer is 8 minutes (C353) and C461-3 cut the pace to 1-3 trades a day, so a flat unchanged book would print ~114 identical fourteen-line blocks in a fifteen-hour session -- 1,600 lines saying nothing happened, WHICH IS THE OPERATOR'S ORIGINAL COMPLAINT REBUILT IN A NICER TYPEFACE. Full block when the book is open, when anything changed, or every 30 minutes; otherwise one heartbeat line carrying the three missing figures. Measured on the operator's own 20260915 session: 114 summary blocks become ~14 full blocks plus heartbeats. C462-1, THE MAKER EXIT HAD NEVER FIRED ONCE AND NOTHING SAID SO. Six trades across two sessions, zero C376 maker fills, zero misses -- the branch was SILENT, which by this file's own standing rule #5 means it was not a protection at all. It tested _last_pnl_pct, a field written by a different function on a different tick. The test is now computed inline from exit_price and pos.entry_price, and EVERY skip path logs: no book, raised, or not-a-profit-exit. Driven over seven states (long/short winners, long/short 'profit' exits that are actually down, a hard stop, an exactly-flat close, a missing entry price): 7/7 correct, and a stop still always crosses. C462-5, THE FEE THAT NEVER FOLLOWED THE ORDER. C257 fixed exactly this at the entry side -- 'the exit fee is charged at the EXIT order's type' -- and then hardcoded TAKER for every close, which was right while every close was a market order and stopped being right the moment C376 shipped a maker exit. A filled maker exit was billed 0.06%% instead of 0.02%%. It errs CONSERVATIVE, which is why it survived, but C461 rests the entire project on the maker/taker gap being larger than any edge this bot has measured -- and a ledger that cannot see that gap cannot show whether the claim is paying. The flag now follows the ORDER, not the intent. C462-6, AND THE HALF THAT BANKS THE PROFIT WAS STILL CROSSING. _c336_partial_close with kind='win' IS the C338 target hit: a planned, unhurried, profit-taking close of half the position, the exact case C376 was written for -- and it was a plain market order, left out of both C376 and C461. It now rests at the touch first and falls back to market if it does not fill. kind='loss' stays TAKER and always will: it is the protective patience-cap close and C376's own rule applies unchanged, a close that protects capital must always be able to cross. Worth 4bp of the half notional on every winner. C462-2, THE LOG TOLD THE OPERATOR A WINNING SESSION LOST MONEY. Session 20260916_123947: two trades, BOTH WINS, realised +$0.51, and the log printed 'Session: $-0.13' five times. The equity was right ($249.36 + $0.51 = $249.87); session_start_equity was $250.00, belonging to a run that had ended fourteen hours earlier. A SESSION IS ONE RUN OF THE PROGRAM -- that is what the operator means, what every platform means, and the only reading under which the figure answers the question. The DAY ledger is untouched and still spans restarts, or the day cap could be reset by relaunching. C462-3, THE FIRST NUMBER ON THE SCREEN WAS WRONG BY 5x. The boot banner printed 'DAILY BUDGET @ $50.00' on an account holding $249.36, because _c369_derive_budget runs inside __init__ before load_state, and every figure beneath it -- per-trade risk, day cap, projected month -- was wrong with it. C377 recorded this as 'merely confusing' and left it. The banner now says 'provisional -- recomputed after state load' until equity is real, and re-announces once it is. AND A DEFECT IN MY OWN C460-1, FOUND BY THE TEST RATHER THAN BY READING. The keep-list is case-sensitive, so 'Final equity: $249.87' and 'Session end equity: $249.87' missed 'Equity:' by one letter, fell through to the per-pair heuristic and were SILENTLY DROPPED from the readable log -- two of the last money lines a session prints. Lower-case spellings added. Also: my first draft of the MARKET row reached for bot._current_regime and bot.market_regime, NEITHER OF WHICH EXISTS -- the wrong-object family (C422-1, C433-1, C440-3), caught by a class-ownership sweep before it shipped, and it would have failed silently because getattr has a default. Now reads _market_regime, _market_bias, _market_breadth and _market_taker_bias, verified against their assignment sites. C462-8, AND THE REPORT IS READ ON A PHONE. The operator runs this in Pydroid3 on a Nothing Phone 2. A phone terminal in portrait shows roughly 44-50 monospace columns, and my 74-column box does not TRUNCATE there -- it WRAPS. Half of every row lands on the next line with no left border, which is not a narrower table, it is the wall of text C462-4 was built to replace with extra punctuation. THE FIX IS NOT A SECOND LAYOUT. A row is now declared as a LIST OF SHORT FACTS and a packer fits as many as the screen holds per line, continuing underneath with no repeated label: at 72 columns the whole row lands on one line, exactly as a desktop showed it before; at 46 it becomes two or three tidy lines. The seven-column position table needs ~66 characters, so below that each position becomes a two-line STANZA carrying the same seven facts, and the same for the closed-trade table at 62. The sparkline, the day-budget bar, the trade records and the header all scale with the width. ONE layout, every screen, no second code path to drift out of step. WIDTH IS RESOLVED ONCE, at boot: C462_LOG_WIDTH in Config if set (one number to edit, which matters on a phone where there is no convenient shell), else OMEGA_LOG_WIDTH or COLUMNS, else 46 on Android, else the real terminal size -- clamped 34..100 because below 34 nothing readable fits and above 100 the eye loses the row it is on. AND RENDERING AT 46 FOUND TWO BUGS OF MY OWN. The packer measured the parts against the budget and prepended the label AFTERWARDS, overflowing by exactly the label length, so the row then truncated: 'unreal $+0.28' became 'unreal $+0.' and '35%% used' became '35%% use' -- a packer that truncates is the thing it was written to replace. The label is now reserved BEFORE the parts are measured. And the start line sat OUTSIDE the box, so a wrapped continuation would have begun with C460-1's per-pair news DROP prefix and been silently deleted from the readable log; it now lives inside the box and carries the border glyph the filter always passes. VERIFIED BY RENDERING at 40, 46, 52, 60, 72 and 100 columns: ZERO lines over width and ZERO truncations at every one, all 457 report lines across the six widths survive the filter, and set_width was driven over eight inputs including a string, None, garbage and both clamps. VERIFICATION, ALL BY EXECUTION: compiles on 3.10 and 3.12; AST 371 -> 395 (+_C462Report and its 16 methods, +_c462_mark_session_start, +_c462_boot_budget_note, +3 helpers); duplicate defs 0; class-ownership sweep over every attribute the reporter touches, clean; all 10 reporter call sites arity-checked against their signatures and scope-checked for unresolved names, 0 problems; C462 constants 2 defined, 2 read, 0 orphan; the C462-1 condition driven over 7 states, 7/7; the C462-5 and C462-6 fee expressions EXTRACTED FROM THE SHIPPED FILE and executed at both rates; the log filter run against BOTH real detail logs (46,431 and 7,912 lines) with a money/risk safety check -- every line it drops is the superseded position-summary row and nothing else; all 388 report lines confirmed to survive the filter. LIMITS, STATED. The dashboard is INSTRUMENTATION: it changes what the operator can see, not what the bot decides, and no gate, score, target or stop moved in this version. C462-5 and C462-6 are worth 4bp of exit notional EACH, which is real against a measured gross edge of 1.7bp -- but C462-6's maker half CAN MISS, and a missed half falls back to market, so the saving is earned only on fills and the next log's 'C462-6 maker half did not fill' count is the number to read. The session journal lives in memory and starts empty on every run by design; the lifetime counters remain the persisted record. Chain C367-C462 intact."),
             ('C461', "COST FIRST. THE OPERATOR MADE THREE DECISIONS AND THIS VERSION IMPLEMENTS THEM, ALL THREE RESTING ON ONE MEASUREMENT: across 213,200 bars, 22 pairs, 121 days, both directions, non-overlapping entries, the BEST exit geometry available earns +0.0171%% per trade GROSS against a maker round trip of 0.04%% and a taker round trip of 0.12%%. THE FEE IS BETWEEN TWO AND SEVEN TIMES THE ENTIRE EDGE. That single fact explains 461 versions of gate-tuning that did not work, and the Atlas reached it independently from its own data: 'The bot's only real edge is smaller than its current transaction cost and larger than its potential one. Cost reduction here is not an optimisation -- it is the difference between having an edge and not having one.' C461-1, NEVER PAY TAKER TO ENTER. C376 already made profit-taking exits maker and correctly left stops as taker -- a stop that cannot fill is how accounts die -- so 75%% of the remaining fee sat on the ENTRY, and the 20260915 session paid the worst tier available: a C297 crossing entry AND a market exit, $0.112 on $92.88 of notional = 12bp, on a trade whose entire thesis was worth a fraction of that. C297's case for crossing is ONE anecdote (LAB + NEAR unfilled in a 94%%-probability regime) and a hope -- '~0.04%% extra cost to catch moves that run 5-15%%' -- and nobody ever measured whether crossed entries caught more of those moves. Both C297 and C395 crossings now rest as maker instead. The fee branch forty lines below reads the same two flags, so clearing them keeps paper and live in agreement (C364). The cost is real and accepted: a resting bid can miss a move that runs. A missed trade costs nothing; a taken trade at negative expectancy costs 12bp every single time. C461-2, AND THE REASON ENTRIES MISSED IN THE FIRST PLACE. C279 rests a buy at min(last x 0.999, bid). When last sits near the bid -- most of the time -- the min() picks last x 0.999, so the order rests A TENTH OF A PERCENT BELOW THE BEST BID, several ticks deep in the queue. That is why entries miss, and missing is exactly the problem C297 was invented to solve by crossing. TWO MECHANISMS ATTACKING THE SAME PROBLEM FROM OPPOSITE ENDS, BOTH EXPENSIVE. Orders now rest AT the touch -- bid for a buy, ask for a sell -- still post-only so they can never cross or be billed taker, but first in the queue at the best price instead of behind a tenth of a percent of resting size. The 0.1%% basis intent survives as the fallback for an unreachable book. C461-3, THE PACE THE FEE BUDGET ACTUALLY AFFORDS. 6 trades/day was derived at C403 from a 3%%/month goal and an ASSUMED edge. The edge is now measured at 1.7bp gross. At 6/day x 22 days x ~$60 notional the fee bill alone is ~2.5%% of a $250 account PER MONTH -- MORE THAN THE TARGET IT WAS SIZED FOR. Fees scale with the NUMBER of trades; the edge does not. Operator's decision: 1-3/day held 4-8h. Target 6.0 -> 2.0, hard cap 12 -> 4, legacy day cap 8 -> 4. Combined with C461-1 the fee drag falls from ~$6.34/month to ~$1.06/month on a $250 book: from 2.5%% of the account to 0.42%%. THAT SAVING IS LARGER THAN ANY EDGE THIS PROJECT HAS EVER MEASURED. C461-5, AND THE CHANGE THE OTHER TWO FORCE. DSI_DECAY_START_MIN is a flat 30 minutes, sized when trades were held 30-60 min so decay began at the END of a hold. C459-4 floored the expected hold at 120 min and the operator has now chosen 4-8 HOUR holds, so a flat 30 minutes starts eating the thesis an EIGHTH of the way in -- and C399_CONVICTION_COLLAPSE then fires on what is mostly the clock. THE 20260915 SESSION IS THE PROOF: INJ closed at 35 minutes with 'only 14%% of the entry thesis left' while its own component dict in the SAME close report printed _dsi 0.216. Two values for one quantity, and the gap between them is this decay plus the PnL term. It fired at 62%% of the stop distance, so the C459 geometry never got to play out at all. A thesis does not age in wall-clock minutes; it ages relative to how long the trade was EXPECTED to take. Decay now begins halfway through the position's OWN horizon -- unchanged for a 35-minute hold (30 min is already 86%% of the way in), moved from 6%% to 50%% for an 8-hour one. This is the relativistic principle the rest of the engine runs on, and it is the one part of the original framework that has always been right. WHAT THIS VERSION DELIBERATELY DOES NOT DO. It does not touch C399's trigger logic, only the clock feeding it: after C458-16 no exit rule ships here without a harness, and C399 needs the C444 grader's forward record to settle. It does not add a directional signal; the project's own measurement is rho(score, win) = -0.022 and 461 versions of forecasting have not moved it. It does not raise the monthly target: at $250 with maker-both fees and the one measured edge (orderliness, +2-3pp of barrier win on a subset) the honest range is 1-2.5%%/month, and the boot banner's '+3.04%% @60%% WR' describes a win rate this bot has never had -- 52.1%% over 2,388 closed trades. EXPECTED FIRST-LOG SIGNATURE, so the next session can be read: FAR fewer trades (2-4/day against 6-12), a 'C461: X would have CROSSED -- resting as maker instead' line where urgency used to fire, entry fills at the touch rather than 0.1%% behind, more UNFILLED limits than before (that is the accepted cost), and C399 firing later in a position's life or not at all. If unfilled entries exceed roughly half of all attempts, C461-2 is the dial to revisit -- not C461-1. VERIFICATION: compiles on 3.10 and 3.12; AST 371 unchanged (constants, one guard and one clock, no new methods); duplicates 0; C458/C459/C461 constants all defined-and-read, 0 orphan; the decay change tabulated across four hold lengths confirming the 35-minute case is byte-identical. Chain C367-C461 intact."),
@@ -17346,7 +17576,7 @@ class TradingBot:
     def run(self):
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
-        logger.info("🤖 OMEGA V60 — COST-FIRST ENGINE (C463)")
+        logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C464)")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -20937,6 +21167,165 @@ class TradingBot:
         except Exception:
             return 0.50
 
+
+    def _c464_midrank(self, values, x):
+        """Cross-sectional percentile with TIES SHARING THE AVERAGE POSITION.
+
+        C454 found the naive form -- sum(1 for v in values if v <= x)/n -- and
+        what it costs: 303 of 780 pairs sat on the SAME funding value, so the
+        most ordinary instrument on the venue scored 0.783 instead of 0.500 and
+        received a full fade against every long. Ties are the normal case on a
+        crypto board, not an edge case. Returns 0.5 when the sample is too thin
+        to rank, which means "no opinion", never "middling".
+        """
+        try:
+            srt = sorted(values)
+            n = len(srt)
+            if n < 8:
+                return 0.5
+            import bisect
+            lo = bisect.bisect_left(srt, x)
+            hi = bisect.bisect_right(srt, x)
+            return ((lo + hi) / 2.0) / n
+        except Exception:
+            return 0.5
+
+    def _c464_info_overlay(self, candidates):
+        """C464: THE FOUR INFORMATION CHANNELS, BUILT PROPERLY AND MADE MEASURABLE.
+
+        ═══ WHY THIS EXISTS ═══════════════════════════════════════════════════
+        C463 measured, across 662,800 bars and two separate ~105-day windows,
+        that NOTHING derivable from price is net positive after fees: 30 of 30
+        target/stop pairs negative, orderliness/momentum/volatility all null,
+        and cross-sectional price momentum positive in one window (4/4 splits)
+        and negative in the other. Funding was then measured directly -- 9,383
+        settlements over 88 days -- and does not predict direction either.
+
+        So the only candidates left are the channels that are NOT in the price
+        series. This bot already collects four of them and uses each one badly:
+
+          TAKER FLOW  signed correctly (C402) but compared against NOTHING --
+                      a raw CVD delta means nothing without knowing whether it
+                      is large FOR TODAY'S BOARD.
+          OPEN INT.   needs 60 in-process readings before it says anything, so
+                      it is silent for most of a session's early scans.
+          FUNDING     clip(-funding x 130, +/-0.4). An absolute scale with a
+                      magic constant, on a quantity whose dispersion collapses
+                      to 0.01pp on a flat board -- and funding is POSITIVE 76%
+                      of the time, so this is a persistent anti-long tilt
+                      applying a signal C464's own measurement says is absent.
+          NEWS        wired, and invisible until C463 put it on the dashboard.
+
+        THE COMMON FAULT IS ONE FAULT: every channel is scored PER PAIR AGAINST
+        A FIXED NUMBER. That is precisely what this project's founding
+        principle forbids, and C451-2 already built the correct answer -- a
+        cross-sectional rank -- for funding alone, and only for display.
+
+        ═══ WHAT THIS DOES ════════════════════════════════════════════════════
+        Every channel becomes a MIDRANK PERCENTILE AGAINST THE BOARD THIS SCAN,
+        mapped to [-1, +1], signed by the candidate's own proposed direction,
+        and combined into ONE info score. No absolute constant appears anywhere
+        in it. A channel with no data contributes exactly zero, never a guess.
+
+        ═══ WHAT IT IS ALLOWED TO DO, AND WHAT IT IS NOT ══════════════════════
+        It multiplies CONVICTION, bounded by C464_MAX_TILT. That moves ranking
+        and size. IT CANNOT FLIP A DIRECTION AND IT CANNOT VETO A TRADE -- an
+        unmeasured signal does not get to say no. After C458-16 no rule ships
+        here on a hunch, and order flow cannot be backtested from OHLCV, so
+        there is no harness that could clear the 3-of-4 rule for it.
+
+        WHAT MAKES IT HONEST IS THAT IT RECORDS ITSELF. Every candidate carries
+        its full per-channel breakdown into the trade, the close report and the
+        C444 grade, so after ~50 closes the question "does the info score have
+        ranking power" is answered by the ledger instead of by me. That is the
+        same instrument C451 already applies to the entry score, which is how
+        this project learned that rho(score, win) = -0.022.
+        """
+        out = {'n': 0, 'chan': {}, 'applied': 0}
+        try:
+            if not candidates or not bool(getattr(self.cfg, 'C464_INFO_OVERLAY', True)):
+                return out
+            board = getattr(self, '_c464_board', None) or {}
+            # ── assemble the board for each channel from THIS scan's readings
+            cols = {'flow': [], 'oi': [], 'fund': [], 'news': []}
+            for _sym, d in board.items():
+                for k in cols:
+                    v = d.get(k)
+                    if v is not None:
+                        cols[k].append(float(v))
+            # ── C454's dispersion gate, generalised. A rank is scale-free,
+            #    which is its virtue when dispersion is real and its defect when
+            #    it is not: ranking a board that spans nothing does not recover
+            #    a signal, it INVENTS one. Each channel must earn its voice.
+            live = {}
+            for k, v in cols.items():
+                if len(v) < 8:
+                    continue
+                sv = sorted(v)
+                spread = sv[int(len(sv) * 0.9)] - sv[int(len(sv) * 0.1)]
+                scale = max(abs(sv[len(sv) // 2]), 1e-9)
+                if spread > max(float(getattr(self.cfg, 'C464_MIN_SPREAD', 1e-4)),
+                                0.05 * scale):
+                    live[k] = v
+            out['chan'] = {k: len(v) for k, v in live.items()}
+            if not live:
+                return out
+            w = {'flow': float(getattr(self.cfg, 'C464_W_FLOW', 0.40)),
+                 'oi':   float(getattr(self.cfg, 'C464_W_OI',   0.25)),
+                 'fund': float(getattr(self.cfg, 'C464_W_FUND', 0.10)),
+                 'news': float(getattr(self.cfg, 'C464_W_NEWS', 0.25))}
+            tilt_max = float(getattr(self.cfg, 'C464_MAX_TILT', 0.15))
+            for a in candidates:
+                try:
+                    sym = a.get('symbol')
+                    d = board.get(sym)
+                    if not d:
+                        continue
+                    sg = 1.0 if a.get('direction') == 'long' else (
+                        -1.0 if a.get('direction') == 'short' else 0.0)
+                    if sg == 0.0:
+                        continue
+                    parts, wsum = {}, 0.0
+                    for k, vals in live.items():
+                        raw = d.get(k)
+                        if raw is None:
+                            continue
+                        # midrank -> [-1, +1]; then signed by THIS trade's side
+                        lean = (self._c464_midrank(vals, float(raw)) - 0.5) * 2.0
+                        # FUNDING IS THE ONE CHANNEL WITH A MEASURED SIGN, and
+                        # the measurement says it has none. 9,383 settlements:
+                        # fade the top decile -0.0837 %/trade, follow it -0.0619,
+                        # the null -0.0682 -- indistinguishable. So funding does
+                        # NOT vote on direction here. It is carried as CROWDING
+                        # only: extreme funding either way means a crowded book,
+                        # which is a reason to size smaller, not to pick a side.
+                        if k == 'fund':
+                            parts[k] = -abs(lean)       # magnitude, no direction
+                        else:
+                            parts[k] = lean * sg
+                        wsum += w[k]
+                    if not parts or wsum <= 0:
+                        continue
+                    info = sum(parts[k] * w[k] for k in parts) / wsum
+                    info = max(-1.0, min(1.0, info))
+                    mult = 1.0 + tilt_max * info
+                    a['_c464_info'] = round(info, 3)
+                    a['_c464_parts'] = {k: round(v, 3) for k, v in parts.items()}
+                    a['_c464_mult'] = round(mult, 4)
+                    a['confidence'] = round(
+                        max(0.0, min(1.0, float(a.get('confidence', 0.5)) * mult)), 4)
+                    out['applied'] += 1
+                except Exception:
+                    continue
+            out['n'] = len(candidates)
+        except Exception as e:
+            try:
+                logger.warning(f"⚠️ C464 info overlay failed: "
+                               f"{type(e).__name__}: {e}")
+            except Exception:
+                pass
+        return out
+
     def _c463_realised_payoff(self) -> tuple:
         """C463-10: THE MEASURED PAYOFF, MEASURED — not written in by hand.
 
@@ -22219,6 +22608,11 @@ class TradingBot:
                                         round(float(getattr(pos, '_c463_flow_align', 0.0) or 0.0), 4)
                                         if getattr(pos, '_c463_flow_align', None) is not None
                                         else None),
+                                    # C464-3: the composite and its parts
+                                    'info': (round(float(getattr(pos, '_c464_info', 0.0) or 0.0), 3)
+                                             if getattr(pos, '_c464_info', None) is not None
+                                             else None),
+                                    'info_parts': dict(getattr(pos, '_c464_parts', {}) or {}),
                                     'key': f"{pos.symbol}|{int(_now456)}"}
                                 _q444.append(_rec444)
                                 # ═══ C456-1: THE SECOND HORIZON ════════════
@@ -22331,7 +22725,8 @@ class TradingBot:
                     maker=_c462_maker_exit, fee=exit_fee,
                     r_mult=(price_move_pct / _R462) if _R462 > 0 else None,
                     peak_pct=float(getattr(pos, 'peak_pnl_pct', 0.0) or 0.0)
-                    / max(1.0, float(getattr(pos, 'leverage', 1) or 1)))
+                    / max(1.0, float(getattr(pos, 'leverage', 1) or 1)),
+                    info=getattr(pos, '_c464_info', None))    # C464-7
             except Exception as _e462c:
                 logger.warning(f"⚠️ C462 close record failed: {type(_e462c).__name__}")
             # C136: PER-TRADE COMPONENT LOGGING AT EXIT — win/loss attribution
@@ -30459,6 +30854,50 @@ class TradingBot:
         # C14: Skip full_analysis — quick_scan + DRI/DSI estimator is sufficient
         # C13 ran full_analysis on viable candidates (60-90s each) causing timeouts
         # The DRI/DSI pre-entry estimator in Phase 3 provides the deep validation
+        # ═══ C464-1: THE INFORMATION OVERLAY, APPLIED ONCE, HERE ════════════
+        # After every pair is scored and before anything is ranked: this is the
+        # only moment the whole board exists, and a cross-sectional rank needs
+        # the whole board. Conviction only -- it cannot flip a direction and it
+        # cannot veto.
+        try:
+            _ov464 = self._c464_info_overlay(candidates)
+            try:
+                _c462_report.note_info(_ov464)
+            except Exception:
+                pass
+            if _ov464.get('applied'):
+                _ch464 = ', '.join(f"{k} {v}" for k, v in sorted(_ov464['chan'].items()))
+                _best464 = max(candidates, key=lambda a: abs(float(a.get('_c464_info', 0) or 0)))
+                logger.info(
+                    f"   🧿 C464 info overlay: {_ov464['applied']} candidate(s) "
+                    f"tilted on [{_ch464}] — strongest "
+                    f"{str(_best464.get('symbol','?')).split('/')[0]} "
+                    f"{float(_best464.get('_c464_info',0)):+.2f} "
+                    f"×{float(_best464.get('_c464_mult',1)):.3f} "
+                    f"{_best464.get('_c464_parts', {})}")
+            elif _ov464.get('n'):
+                logger.info("   🧿 C464 info overlay: no channel had enough "
+                            "board dispersion to speak — silent, not zero")
+        except Exception as _e464:
+            logger.warning(f"   ⚠️ C464 overlay failed: {type(_e464).__name__}: {_e464}")
+        # C464-2: the agreement gate. OFF by default -- see the config comment.
+        try:
+            if bool(getattr(self.cfg, 'C464_AGREE_GATE', False)) and candidates:
+                _need464 = int(getattr(self.cfg, 'C464_AGREE_MIN', 2))
+                _keep464 = []
+                for _a464 in candidates:
+                    _p464 = _a464.get('_c464_parts') or {}
+                    _agree = sum(1 for k, v in _p464.items()
+                                 if k != 'fund' and float(v) > 0.10)
+                    if _agree >= _need464 or not _p464:
+                        _keep464.append(_a464)
+                if len(_keep464) < len(candidates):
+                    logger.info(f"   🚦 C464-2 agreement gate: "
+                                f"{len(candidates) - len(_keep464)} candidate(s) dropped "
+                                f"— fewer than {_need464} channels agreed")
+                    candidates = _keep464
+        except Exception:
+            pass
         logger.info("━" * 50)
         logger.info(f"📋 STEP 4: DRI/DSI RANKING — {len(candidates)} candidates")
         logger.info("━" * 50)
@@ -32654,6 +33093,13 @@ class TradingBot:
                     pos._c463_flow_align = (
                         float(pos._c401_cvd_base) * _sg463
                         if pos._c401_cvd_base is not None else None)
+                    # C464-3: the whole information reading travels WITH the
+                    # trade, so the close report and the C444 grade can price
+                    # each channel separately. Recording it is the only thing
+                    # that can ever turn these four channels from a judgement
+                    # into a measurement.
+                    pos._c464_info = analysis.get('_c464_info', None)
+                    pos._c464_parts = dict(analysis.get('_c464_parts', {}) or {})
                     if pos._c401_cvd_base is not None or pos._c401_oi_base is not None:
                         logger.info(
                             f"   \U0001fae7 {symbol.split('/')[0]} FLOW baseline [C401]: "
