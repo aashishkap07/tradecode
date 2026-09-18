@@ -36,20 +36,59 @@ Nothing about how the bot works changes. It writes the same four files
    resources never charge. Choose a home region near you (Mumbai or
    Hyderabad if you are in India).
 3. When you are in: **Menu → Compute → Instances → Create instance**.
-4. Change three things and leave the rest alone:
+4. Change these and leave everything else alone:
    - **Image:** Canonical Ubuntu 24.04
    - **Shape:** click *Change shape* → **Ampere** → `VM.Standard.A1.Flex`
-     → set **1 OCPU** and **6 GB memory**. (This is inside the free
-     allowance. The bot needs far less, but the headroom is free.)
-   - **SSH keys:** choose *Generate a key pair for me* and **download
-     the private key**. You cannot download it again later.
-5. Click **Create**. After a minute you get a **Public IP address**. Write
-   it down.
+     → set **1 OCPU** and **6 GB memory**. Check it says
+     *Always Free-eligible*. (The bot needs far less, but the headroom
+     is free.)
 
-> **If it says "Out of capacity"** — this happens on free ARM shapes. Either
-> try a different availability domain from the same page, or try again in a
-> few hours. If it keeps failing, Hetzner's CX22 is €4/month and takes two
-> minutes: **hetzner.com/cloud** → new project → Ubuntu 24.04 → CX22.
+5. **NETWORKING — this is where a new account gets stuck.** A brand-new
+   Oracle tenancy has **no network at all**, so the *Virtual cloud network*
+   dropdown is empty and the *Subnet* box shows a red **Required**. You are
+   being asked to choose from a list of zero things. Do not try to fill
+   those dropdowns — switch both radio buttons instead:
+
+   | Section | Change it to | Then |
+   |---|---|---|
+   | **Primary network** | **Create new virtual cloud network** | name it `omega-vcn`, leave the CIDR at `10.0.0.0/16` |
+   | **Subnet** | **Create new public subnet** | name it `omega-subnet`, leave the CIDR at `10.0.0.0/24` |
+
+   The word **public** in "Create new public subnet" is load-bearing. A
+   private subnet cannot have a public IP, and without a public IP you can
+   never log in.
+
+   - **Private IPv4 address:** leave it on *Automatically assign*.
+   - **Public IPv4 address:** ⚠️ **turn the toggle ON.** Until you have
+     created the public subnet above, this toggle is greyed out and warns
+     *"You must select a public subnet to assign a public IPv4 address."*
+     Once the subnet is set, the warning clears and the toggle works.
+     **If you leave this off, the server has no address on the internet
+     and is unreachable. You would have to delete it and start again.**
+   - **IPv6:** leave off.
+
+6. **SSH keys:** choose *Generate a key pair for me*, then **Download
+   private key** AND **Download public key**.
+
+   > Do not leave this page until both are saved. Oracle will not show
+   > them again, and the private key is the only way into the machine.
+
+7. Click **Create**. After a minute or two you get a **Public IP address**.
+   Write it down.
+
+> **If it says "Out of capacity"** — common on the free ARM shape, and not
+> your mistake. In order: (a) go **Previous** to the shape step and pick a
+> different **Availability Domain** (AD-1 / AD-2 / AD-3); (b) try again in a
+> few hours; (c) give up on free and use Hetzner — CX22 is €4/month, takes
+> two minutes, and has none of this networking:
+> **hetzner.com/cloud** → new project → Ubuntu 24.04 → CX22.
+
+> **Prefer to set the network up separately?** It is fewer controls per
+> screen, which helps on a phone. Cancel out, go to
+> **Menu → Networking → Virtual Cloud Networks → Start VCN Wizard →
+> "Create VCN with Internet Connectivity"**, accept every default, then
+> start the instance again and pick that VCN from the dropdown — it will
+> no longer be empty.
 
 ---
 
@@ -62,8 +101,13 @@ chmod 600 ~/Downloads/ssh-key-*.key
 ssh -i ~/Downloads/ssh-key-*.key ubuntu@<YOUR-PUBLIC-IP>
 ```
 
-From an Android phone, install **Termius** (free) and add the server with
-that key.
+**From an Android phone** (no computer needed): install **Termius** from the
+Play Store, then *New Host* → **Hostname** = your public IP → **Username** =
+`ubuntu` → **Keys** → *import* the private key file you downloaded from
+Oracle. Connect.
+
+Note the username is `ubuntu` for an Ubuntu image. It is `opc` if you chose
+Oracle Linux instead.
 
 You should see a `ubuntu@...:~$` prompt. You are on the server.
 
@@ -71,8 +115,26 @@ You should see a `ubuntu@...:~$` prompt. You are on the server.
 
 ## Step 3 — Install everything (5 minutes)
 
-Copy the bot and this `deploy` folder up to the server first. From your
-computer:
+### The easy way: clone it from GitHub (works fine from a phone)
+
+On the server:
+
+```bash
+sudo mkdir -p /home/omega
+sudo git clone -b claude/trading-system-analysis-tsvzj4 \
+     https://github.com/aashishkap07/tradecode.git /home/omega/omega
+sudo bash /home/omega/omega/deploy/setup.sh
+```
+
+If the repository is private, git asks for a username and password. The
+username is your GitHub username. The password is **not** your GitHub
+password — it is a **Personal Access Token**:
+github.com → *Settings* → *Developer settings* → *Personal access tokens* →
+*Tokens (classic)* → *Generate new token* → tick **repo** → copy it.
+
+Updating later is then one command: `cd /home/omega/omega && sudo git pull`.
+
+### The other way: copy the files up from a computer
 
 ```bash
 scp -i ~/Downloads/ssh-key-*.key -r omega_v60_reconstructed.py deploy \
@@ -248,3 +310,5 @@ bigger reason to move than the 24×7 uptime is.
 | "no space left on device" | `df -h`, then `sudo logrotate -f /etc/logrotate.d/omega` |
 | bot runs but never trades | normal — see the report log; most scans find nothing |
 | lost the token | `sudo cat /etc/omega.token` |
+| cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you forgot the toggle in Step 1.5. It cannot be fixed from the instance page — terminate it and create a new one |
+| `Permission denied (publickey)` | wrong username (`ubuntu`, not `root`), or the key file needs `chmod 600` |
