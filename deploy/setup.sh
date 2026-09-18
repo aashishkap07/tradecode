@@ -55,8 +55,38 @@ if [ ! -x "$OMEGA_HOME/venv/bin/python" ]; then
     sudo -u "$OMEGA_USER" python3 -m venv "$OMEGA_HOME/venv"
 fi
 sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/pip" install -q --upgrade pip
-sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/pip" install -q ccxt requests numpy
-echo "    ccxt, requests, numpy installed"
+# C468: PANDAS WAS MISSING HERE, AND IT IS A HARD IMPORT.
+# The bot does `import pandas as pd` at module level, so without it the process
+# dies at import, systemd restarts it, and it dies again -- and the only symptom
+# the operator sees is "connection refused" on port 8138 from a tunnel that is
+# working perfectly. Install from requirements.txt so there is ONE list, next to
+# the code, instead of a second one buried in a shell script that drifts.
+if [ -f "$OMEGA_HOME/requirements.txt" ]; then
+    sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/pip" install -q \
+        -r "$OMEGA_HOME/requirements.txt" || \
+        warn "some packages failed - check with: $OMEGA_HOME/venv/bin/pip check"
+else
+    warn "requirements.txt not found - installing the four hard dependencies directly"
+    sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/pip" install -q ccxt pandas numpy requests
+fi
+
+# Prove it. A dependency list that has never been imported is a guess.
+say "4b/8  Checking the bot can actually import"
+if sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/python" -c \
+     "import ccxt, pandas, numpy, requests" 2>/dev/null; then
+    echo "    ccxt, pandas, numpy, requests all import cleanly"
+else
+    die "a hard dependency is still missing - run: $OMEGA_HOME/venv/bin/pip install -r $OMEGA_HOME/requirements.txt"
+fi
+if sudo -u "$OMEGA_USER" "$OMEGA_HOME/venv/bin/python" -c "import sklearn" 2>/dev/null; then
+    echo "    scikit-learn present (ML features enabled)"
+else
+    warn "scikit-learn missing - the bot will run with ML features DISABLED"
+fi
+
+# The state directory, owned by the bot's user and inside ReadWritePaths.
+sudo -u "$OMEGA_USER" mkdir -p "$OMEGA_HOME/data/data"
+echo "    state directory: $OMEGA_HOME/data"
 
 say "5/8  Timezone (so log timestamps match your clock)"
 TZWANT="${OMEGA_TZ:-Asia/Kolkata}"
@@ -86,6 +116,16 @@ if [ -f "$SRC_UNIT" ]; then
     echo "    installed /etc/systemd/system/omega.service"
 else
     warn "omega.service not found next to this script — skipping"
+fi
+
+SRC_TUN="$(dirname "$0")/cloudflared-quick.service"
+[ -f "$SRC_TUN" ] || SRC_TUN="$OMEGA_HOME/deploy/cloudflared-quick.service"
+if [ -f "$SRC_TUN" ]; then
+    sed -e "s|^User=omega|User=${OMEGA_USER}|" \
+        -e "s|^Group=omega|Group=${OMEGA_USER}|" \
+        "$SRC_TUN" > /etc/systemd/system/cloudflared-quick.service
+    systemctl daemon-reload
+    echo "    installed /etc/systemd/system/cloudflared-quick.service"
 fi
 
 SRC_ROT="$(dirname "$0")/omega-logrotate.conf"
@@ -119,16 +159,23 @@ cat <<EOF
         sudo journalctl -u omega -f          # watch it live
 
  2. OPEN IT TO THE INTERNET (free, no ports opened)
+
+    No domain name? Start here. Runs as a service, so it survives
+    you closing the SSH session:
+        sudo systemctl enable --now cloudflared-quick
+        sudo journalctl -u cloudflared-quick | \
+             grep -o 'https://.*trycloudflare.com' | tail -1
+
+    That prints your address. It CHANGES every time the tunnel
+    restarts, which is the price of having no account.
+
+    Have a domain? Then the address is permanent:
         cloudflared tunnel login             # opens a link; log in
         cloudflared tunnel create omega
         cloudflared tunnel route dns omega omega.<your-domain>
-        # then run it as a service:
         sudo cloudflared service install
         sudo systemctl enable --now cloudflared
-
-    No domain? Use a quick tunnel to test — it gives you a random
-    https address and needs no account at all:
-        cloudflared tunnel --url http://localhost:8138
+        sudo systemctl disable --now cloudflared-quick
 
  YOUR CONTROL-PANEL ADDRESS will be:
         https://<your tunnel address>/?t=${TOKEN}

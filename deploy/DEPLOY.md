@@ -210,25 +210,65 @@ seconds. If the server reboots, it comes back on its own.
 
 ---
 
+## Step 4b — If the panel does not answer
+
+The single most likely failure, and it looks alarming but usually is not:
+
+```
+dial tcp 127.0.0.1:8138: connect: connection refused
+```
+…and the browser shows **Bad gateway 502**, with Cloudflare ticked green and
+your host marked with a red X.
+
+**Read that literally.** Cloudflare reached your server perfectly. There is
+simply nothing listening on port 8138 — so the tunnel is fine and the *bot* is
+the problem. Check it:
+
+```bash
+sudo systemctl status omega          # active? or failed?
+sudo journalctl -u omega -n 60       # the real error is in here
+```
+
+| What the journal says | What it means |
+|---|---|
+| `ModuleNotFoundError: No module named 'pandas'` | a dependency is missing — `sudo /home/omega/omega/venv/bin/pip install -r /home/omega/omega/requirements.txt` |
+| `EOFError` around `input()` | the bot is asking a startup question and nothing can answer. `OMEGA_NONINTERACTIVE=1` is missing from the unit |
+| `OMEGA CANNOT WRITE ITS STATE DIRECTORY` | `OMEGA_BASE_PATH` is outside `ReadWritePaths` — the message names the fix |
+| `active (running)` and nothing obviously wrong | give it 30 seconds; it fetches the market list before opening the port. Then `curl -fsS "http://127.0.0.1:8138/api/health?t=$(sudo cat /etc/omega.token)"` |
+
+The quickest single check that the bot itself is healthy, from the server:
+
+```bash
+curl -fsS "http://127.0.0.1:8138/api/health?t=$(sudo cat /etc/omega.token)"
+```
+
+If that answers, the bot is fine and the problem is the tunnel. If it does not,
+the tunnel is fine and the problem is the bot.
+
+---
+
 ## Step 5 — Reach it from your phone
 
 ### The quick way (no domain, no account, good for testing)
 
-On the server:
+**Run it as a service, not by typing it at the prompt.** A tunnel started by
+hand dies the moment you close the SSH session — the bot keeps running and the
+way in vanishes, which looks exactly like a broken bot.
 
 ```bash
-cloudflared tunnel --url http://localhost:8138
+sudo systemctl enable --now cloudflared-quick
+sudo journalctl -u cloudflared-quick | grep -o 'https://.*trycloudflare.com' | tail -1
 ```
 
-It prints a random address like `https://wide-mango-1234.trycloudflare.com`.
-Open this on your phone:
+That last command prints your address. Open on your phone:
 
 ```
-https://wide-mango-1234.trycloudflare.com/?t=YOUR_TOKEN
+https://<that-address>/?t=YOUR_TOKEN
 ```
 
-The catch: the address changes every time you restart the tunnel, and it
-stops when you close the SSH session.
+Two catches, both the price of having no Cloudflare account: the address
+**changes every time the tunnel restarts**, and Cloudflare states quick tunnels
+carry no uptime guarantee. Fine for getting going; not where you want to stay.
 
 ### The permanent way (needs a domain name, about £8/year)
 
@@ -238,6 +278,7 @@ cloudflared tunnel create omega
 cloudflared tunnel route dns omega omega.yourdomain.com
 sudo cloudflared service install
 sudo systemctl enable --now cloudflared
+sudo systemctl disable --now cloudflared-quick    # stop the random-address one
 ```
 
 Now `https://omega.yourdomain.com/?t=YOUR_TOKEN` works forever, from
@@ -348,6 +389,10 @@ bigger reason to move than the 24×7 uptime is.
 | panel does not load at all | `sudo systemctl status cloudflared`; the tunnel is down |
 | "no space left on device" | `df -h`, then `sudo logrotate -f /etc/logrotate.d/omega` |
 | bot runs but never trades | normal — see the report log; most scans find nothing |
+| 502 Bad gateway / "connection refused" on 8138 | the tunnel is fine, the bot is down. See Step 4b |
+| panel worked, then stopped after you closed SSH | you started the tunnel by hand. `sudo systemctl enable --now cloudflared-quick` |
+| the tunnel address stopped working | a quick tunnel gets a new address on every restart. `sudo journalctl -u cloudflared-quick \| grep -o 'https://.*trycloudflare.com' \| tail -1` |
+| equity reset to its starting value after a restart | the bot resumed before it had ever saved state. Only happens before the first closed trade, and knowledge files survive it |
 | lost the token | `sudo cat /etc/omega.token` |
 | cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you missed the toggle in Step 1.5. Terminate it and create a new one — it cannot be added afterwards |
 | "Automatically assign public IPv4 address" is greyed out | you are on the instance wizard's inline network builder, which can never enable it. Build the VCN separately first — Step 1.5 |

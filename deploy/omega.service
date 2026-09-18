@@ -1,25 +1,32 @@
-# OMEGA V60 — systemd service unit  [C467-D]
+# OMEGA V60 — systemd service unit  [C467-D, repaired at C468]
 #
 # What this does, in plain English:
 #   - starts the bot when the machine boots
 #   - restarts it within 10 seconds if it ever stops or crashes
-#   - sends everything the bot prints to the system journal as well as
-#     to its own log files, so nothing is lost if a file is deleted
+#   - answers the bot's five startup questions from the Environment lines
+#     below, because a service has no keyboard
 #
 # Install:  sudo cp omega.service /etc/systemd/system/
+#           sudo chmod 600 /etc/systemd/system/omega.service
 #           sudo systemctl daemon-reload
 #           sudo systemctl enable --now omega
 #
 # Look at it:   sudo systemctl status omega
 # Live log:     sudo journalctl -u omega -f
-# Stop it:      sudo systemctl stop omega
-# Start again:  sudo systemctl start omega
+# Stop / start: sudo systemctl stop omega   /   sudo systemctl start omega
 # Restart:      sudo systemctl restart omega
 
 [Unit]
 Description=OMEGA V60 crypto perpetual futures bot
 After=network-online.target
 Wants=network-online.target
+# C468: these two belong in [Unit]. Written under [Service] they are SILENTLY
+# IGNORED -- systemd-analyze says so, and nothing else does. The crash-loop
+# backoff was therefore doing nothing at all, which matters precisely when the
+# bot is failing at startup, which is exactly the situation C468 exists to fix.
+# Give up after 10 starts in 5 minutes rather than hammering the exchange.
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Service]
 Type=simple
@@ -27,16 +34,39 @@ User=omega
 Group=omega
 WorkingDirectory=/home/omega/omega
 
-# The control-panel token. Keep it in this file, which is root-owned and
-# mode 0644 by default — tighten it: sudo chmod 600 /etc/systemd/system/omega.service
-# NEVER put the token in the Python file; that file goes to git.
+# ─────────────────────────────────────────────────────────────────────────
+# C468: THE BOT ASKS FIVE QUESTIONS BEFORE IT OPENS ITS PORT.
+# On a phone a human answers them. Here there is no stdin at all, so input()
+# raises EOFError, the process dies, systemd restarts it, and it dies again --
+# forever, with no port 8138 and no clue why. These five lines are the answers.
+# Every one of them is echoed into the journal as it is used, so the log always
+# records what was decided on your behalf.
+# ─────────────────────────────────────────────────────────────────────────
+Environment=OMEGA_NONINTERACTIVE=1
+# paper | live | test.  LIVE ALSO NEEDS api_keys.json — this alone will not
+# spend real money, but do not leave it on "live" casually.
+Environment=OMEGA_MODE=paper
+# Only read on a FRESH start. Ignored once there is saved state to resume.
+Environment=OMEGA_CAPITAL=250
+# The single dial that sets day cap, per-trade risk and daily target.
+Environment=OMEGA_MAX_DD=15
+
+# Where equity, learning state and pair profiles are written. MUST be inside
+# ReadWritePaths below. C468: the default (~/OmegaBot60) sits outside it, and
+# the bot calls os.makedirs on it at IMPORT time, so it died before startup()
+# ran a single line.
+Environment=OMEGA_BASE_PATH=/home/omega/omega/data
+
+# The control-panel token. This file is root-only (chmod 600) — that is why the
+# secret may live here and must NEVER live in the Python file, which goes to git.
 Environment=OMEGA_CTRL_TOKEN=CHANGE_ME_TO_A_LONG_RANDOM_STRING
+
 Environment=PYTHONUNBUFFERED=1
-# The bot measures the terminal, and a service has none. 100 is a good width
-# for reading the log through the browser panel.
+# The bot measures the terminal, and a service has none. 100 reads well in the
+# browser log viewer.
 Environment=OMEGA_LOG_WIDTH=100
-# Exchange keys go here too when you eventually go live. Until then the bot is
-# in paper mode and needs none.
+
+# Exchange keys for when you eventually go live. Paper mode needs none.
 # Environment=BITGET_API_KEY=...
 # Environment=BITGET_API_SECRET=...
 # Environment=BITGET_API_PASSWORD=...
@@ -45,20 +75,20 @@ ExecStart=/home/omega/omega/venv/bin/python /home/omega/omega/omega_v60_reconstr
 
 Restart=always
 RestartSec=10
-# If it crashes in a tight loop, back off rather than hammering the exchange.
-StartLimitIntervalSec=300
-StartLimitBurst=10
 
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=omega
 
-# Modest hardening. The bot only needs its own directory and the network.
+# Modest hardening. The bot needs its own directory and the network, nothing else.
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
+# BOTH of these. The first holds the code and the log files; the second is
+# OMEGA_BASE_PATH above. Leaving the state directory out is what broke C467-D.
 ReadWritePaths=/home/omega/omega
+ReadWritePaths=/home/omega/omega/data
 
 [Install]
 WantedBy=multi-user.target

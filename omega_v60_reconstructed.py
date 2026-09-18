@@ -1174,7 +1174,7 @@ class _C462Report:
             # reads better as well.
             parts = [f"start {_c462_money(equity)}"]
             if day_barrier:
-                parts.append(f"day {self.g['pm']}{float(day_barrier):.2f}%")
+                parts.append(f"day -{float(day_barrier):.2f}% loss")   # C468
             if pairs:
                 parts.append(f"{pairs} pairs")
             self._raw(self.g['sep'].join(parts))
@@ -1310,7 +1310,11 @@ class _C462Report:
                        + ([f"{markets} markets"] if markets else []))
             cap = float((plan or {}).get('cap_pct', 0.0) or 0.0)
             dd = float((plan or {}).get('dd_pct', 0.0) or 0.0)
-            self._pack('DAY', [f"{self.g['pm']}{cap:.2f}% = {_c462_money(eq * cap / 100.0)}"]
+            # C468: the boot banner still said "+/-0.68%" after C467-B made the
+            # barrier LOSS-SIDE ONLY. A banner is the only description of the
+            # system the operator ever reads; when it is stale it is not
+            # decoration, it is misinformation (C405's rule, on C405's own row).
+            self._pack('DAY', [f"-{cap:.2f}% = {_c462_money(eq * cap / 100.0)} loss room"]
                        + ([f"({dd:.0f}% DD / 22)"] if dd else []))
             self._pack('RISK', [
                 f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}% = "
@@ -1953,8 +1957,38 @@ class VolatilityRegime(Enum):
 
 # ======================== PLATFORM DETECTION ========================
 IS_ANDROID = os.path.exists('/storage/emulated/0')
-BASE_PATH = '/storage/emulated/0/OmegaBotV60' if IS_ANDROID else os.path.expanduser('~/OmegaBot60')
-os.makedirs(os.path.join(BASE_PATH, 'data'), exist_ok=True)
+# ═══ C468-1: WHERE THE STATE LIVES MUST BE SETTABLE ══════════════
+# This line ran os.makedirs at IMPORT time into ~/OmegaBot60 and had no
+# fallback. Under the systemd unit shipped at C467-D -- ProtectHome=read-only
+# with ReadWritePaths naming only the code directory -- that raises
+# PermissionError before a single line of startup() executes. The bot died at
+# import, systemd restarted it, and it died again, forever. The operator saw
+# only "connection refused" on port 8138, because the port was never opened.
+# TWO REPAIRS. The location is now settable by environment, so a service can
+# put it somewhere writable without editing code; and the failure is CAUGHT and
+# EXPLAINED instead of being a bare traceback in a journal nobody has read yet
+# (standing rule 5: a failure that cannot be understood is barely better than
+# a silent one).
+BASE_PATH = (os.environ.get('OMEGA_BASE_PATH', '').strip()
+             or ('/storage/emulated/0/OmegaBotV60' if IS_ANDROID
+                 else os.path.expanduser('~/OmegaBot60')))
+try:
+    os.makedirs(os.path.join(BASE_PATH, 'data'), exist_ok=True)
+except Exception as _e468:
+    _msg468 = (
+        f"\n\nOMEGA CANNOT WRITE ITS STATE DIRECTORY [C468-1]\n"
+        f"  wanted: {os.path.join(BASE_PATH, 'data')}\n"
+        f"  reason: {type(_e468).__name__}: {_e468}\n\n"
+        f"  This is where equity, learning state and pair profiles are kept.\n"
+        f"  Running under systemd? Either point OMEGA_BASE_PATH at a directory\n"
+        f"  inside ReadWritePaths, or add this one to ReadWritePaths:\n"
+        f"      Environment=OMEGA_BASE_PATH=/home/omega/omega/data\n"
+        f"  Then: sudo systemctl daemon-reload && sudo systemctl restart omega\n")
+    try:
+        sys.stderr.write(_msg468)
+    except Exception:
+        print(_msg468)
+    raise SystemExit(_msg468)
 
 class RegimeMarkov:
     """C294 — STAGE 1 of the Relative-Probabilistic-Predictive framework.
@@ -35449,6 +35483,62 @@ class TelegramBot:
 #                      STARTUP WIZARD
 #   Per Basic Principles: Fresh/Load + Paper/Live choice
 # ================================================================
+# ═══ C468-2: THIS PROGRAM ASKS FIVE QUESTIONS BEFORE IT OPENS A PORT ══
+# startup() calls input() five times -- trading mode, fresh-or-load, starting
+# equity, max drawdown, and the drawdown carry-forward -- and every one of them
+# sits ABOVE the line that starts the control panel. That is exactly right on a
+# phone, where a human is watching. Under a service manager there is no stdin at
+# all: input() raises EOFError immediately, the process dies, systemd restarts
+# it, and it dies again. Port 8138 never opens and the only symptom the operator
+# ever sees is "connection refused" from a tunnel that is working perfectly.
+# I shipped a systemd unit for a program that requires a keyboard.
+# The repair keeps the questions exactly as they are when a keyboard exists, and
+# answers them from the environment when one does not. Each answer is PRINTED as
+# it is chosen, so the journal records what was assumed on the bot's behalf --
+# an assumption nobody can see is how a paper bot quietly becomes a live one.
+_C468_ASKED = {}
+
+
+def _c468_headless():
+    """Is there a human at a keyboard? Settable, because 'is stdin a tty' is
+    not always the same question as 'should this prompt'."""
+    _v = str(os.environ.get('OMEGA_NONINTERACTIVE', '') or '').strip().lower()
+    if _v in ('1', 'true', 'yes', 'on'):
+        return True
+    if _v in ('0', 'false', 'no', 'off'):
+        return False
+    try:
+        return not sys.stdin.isatty()
+    except Exception:
+        return True
+
+
+def _c468_input(prompt, env=None, default='', mapping=None):
+    """input() where there is a keyboard; the environment where there is not.
+
+    THE LOOP HAZARD, handled deliberately: every caller wraps its prompt in
+    `while True:` and breaks on an empty answer. If this returned the same bad
+    environment value forever the bot would spin at 100% CPU instead of
+    starting -- a worse failure than the one being fixed. So a headless prompt
+    is answered ONCE; every repeat returns '' and the caller takes its default.
+    """
+    if not _c468_headless():
+        try:
+            return input(prompt)
+        except (EOFError, KeyboardInterrupt):
+            print(f"{prompt}<no input available — taking the default>")
+            return str(default or '')
+    _n = _C468_ASKED.get(prompt, 0)
+    _C468_ASKED[prompt] = _n + 1
+    if _n:
+        return ''                      # asked already: accept the default
+    _raw = str(os.environ.get(env, '') or '').strip() if env else ''
+    _src = f"${env}" if _raw else 'built-in default'
+    _val = (mapping or {}).get(_raw.lower(), _raw) if _raw else str(default or '')
+    print(f"{prompt}{_val or '(default)'}    <- no keyboard; {_src} [C468]")
+    return _val
+
+
 def startup():
     """Interactive startup matching basic principles."""
     print()
@@ -35465,7 +35555,11 @@ def startup():
     print("  2. 💰 Live Trading (real money)")
     print("  3. 🧪 Test Mode (offline — no internet needed)")
     print()
-    choice = input("Select (1/2/3) [1]: ").strip()
+    # C468: paper is the default and stays the default. Going LIVE without a
+    # keyboard must take a deliberate, explicit OMEGA_MODE=live.
+    choice = _c468_input("Select (1/2/3) [1]: ", env='OMEGA_MODE', default='1',
+                         mapping={'paper': '1', 'live': '2', 'test': '3',
+                                  '1': '1', '2': '2', '3': '3'}).strip()
     if choice == '3':
         cfg.PAPER_MODE = True
         cfg.TEST_MODE = True
@@ -35497,7 +35591,27 @@ def startup():
     print(f"  1. \U0001f195 Fresh Start (choose starting equity)")
     print("  2. \U0001f4c2 Load Previous State")
     print()
-    choice = input("Select (1/2) [1]: ").strip()
+    # ═══ C468-3: A RESTART MUST NOT WIPE THE ACCOUNT ═════════════
+    # The default here is "Fresh Start", which is right on a phone the operator
+    # starts by hand. It is CATASTROPHIC under Restart=always: every crash, every
+    # reboot, every `systemctl restart` would reset equity to its opening value
+    # and discard the learning state and the trade ledger. The bot would run
+    # 24x7 and remember nothing, which is the exact opposite of why it is there.
+    # Headless, the default flips: LOAD if a state file exists, FRESH only if
+    # this machine has genuinely never run before.
+    _has_state468 = False
+    try:
+        _has_state468 = os.path.exists(os.path.join(BASE_PATH, 'state_v60.json'))
+    except Exception:
+        _has_state468 = False
+    choice = _c468_input("Select (1/2) [1]: ", env='OMEGA_STATE',
+                         default=('2' if _has_state468 else '1'),
+                         mapping={'fresh': '1', 'new': '1',
+                                  'load': '2', 'resume': '2',
+                                  '1': '1', '2': '2'}).strip()
+    if _c468_headless():
+        print(f"     state file {'found' if _has_state468 else 'not found'} at "
+              f"{BASE_PATH} → {'RESUMING' if choice == '2' else 'starting FRESH'} [C468]")
     fresh = (choice != '2')
     if fresh:
         # ═══ C371: OPERATOR-CHOSEN STARTING EQUITY ══════════════════════════
@@ -35509,7 +35623,8 @@ def startup():
         # the break-even win rate is forced from 36%% up to 46%%. Starting at the
         # wrong number silently selects a different, worse risk structure.
         while True:
-            _raw = input(f"  Starting equity in USDT [{cfg.INITIAL_CAPITAL:.0f}]: ").strip()
+            _raw = _c468_input(f"  Starting equity in USDT [{cfg.INITIAL_CAPITAL:.0f}]: ",
+                               env='OMEGA_CAPITAL').strip()
             if not _raw:
                 break
             try:
@@ -35530,8 +35645,9 @@ def startup():
         # nobody had ever been asked. Professional quant crypto funds run a
         # MEDIAN max drawdown of -20.7%% (Crypto Fund Research, 117 funds).
         while True:
-            _dd_raw = input(f"  Max monthly drawdown you accept, %% "
-                            f"[{cfg.C380_MAX_MONTHLY_DD_PCT:.0f}]: ").strip()
+            _dd_raw = _c468_input(f"  Max monthly drawdown you accept, %% "
+                                  f"[{cfg.C380_MAX_MONTHLY_DD_PCT:.0f}]: ",
+                                  env='OMEGA_MAX_DD').strip()
             if not _dd_raw:
                 break
             try:
@@ -35625,7 +35741,9 @@ def startup():
                 print(f"     that sets day cap {max(_ddnow397/22.0, 0.0):.2f}%, "
                       f"per-trade risk {_ddnow397/44.0:.3f}%, target {_ddnow397/22.0:.2f}%/day")
                 while True:
-                    _r397 = input(f"  Keep it? Enter to keep, or a new % [{_ddnow397:.0f}]: ").strip()
+                    _r397 = _c468_input(f"  Keep it? Enter to keep, or a new % "
+                                        f"[{_ddnow397:.0f}]: ",
+                                        env='OMEGA_MAX_DD').strip()
                     if not _r397:
                         break
                     try:
