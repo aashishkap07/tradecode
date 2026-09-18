@@ -43,28 +43,67 @@ Nothing about how the bot works changes. It writes the same four files
      *Always Free-eligible*. (The bot needs far less, but the headroom
      is free.)
 
-5. **NETWORKING — this is where a new account gets stuck.** A brand-new
-   Oracle tenancy has **no network at all**, so the *Virtual cloud network*
-   dropdown is empty and the *Subnet* box shows a red **Required**. You are
-   being asked to choose from a list of zero things. Do not try to fill
-   those dropdowns — switch both radio buttons instead:
+5. **STOP HERE. Do the networking FIRST, on its own, before you touch the
+   instance form.** A brand-new Oracle tenancy has no network at all, so the
+   *Virtual cloud network* dropdown is empty and *Subnet* shows a red
+   **Required**.
 
-   | Section | Change it to | Then |
-   |---|---|---|
-   | **Primary network** | **Create new virtual cloud network** | name it `omega-vcn`, leave the CIDR at `10.0.0.0/16` |
-   | **Subnet** | **Create new public subnet** | name it `omega-subnet`, leave the CIDR at `10.0.0.0/24` |
+   The obvious move — switching those radio buttons to *Create new virtual
+   cloud network* / *Create new public subnet* — **does not work**, and this
+   is the trap. The instance wizard's inline network builder is a
+   reduced-functionality path: it cannot verify that a subnet it has not
+   created yet is public, so **"Automatically assign public IPv4 address"
+   stays greyed out forever**, still showing *"You must select a public
+   subnet to assign a public IPv4 address."* The *Subnet IPv4 prefixes*
+   dropdown stays empty for the same reason. Oracle says so itself, in a
+   warning on that very page:
 
-   The word **public** in "Create new public subnet" is load-bearing. A
-   private subnet cannot have a public IP, and without a public IP you can
-   never log in.
+   > *"There are additional options available when you use the Networking
+   > pages in the console. To have the full range of options, Create a VCN
+   > and Create a Subnet and then select an existing VCN and subnet when you
+   > create a compute instance."*
 
-   - **Private IPv4 address:** leave it on *Automatically assign*.
-   - **Public IPv4 address:** ⚠️ **turn the toggle ON.** Until you have
-     created the public subnet above, this toggle is greyed out and warns
-     *"You must select a public subnet to assign a public IPv4 address."*
-     Once the subnet is set, the warning clears and the toggle works.
-     **If you leave this off, the server has no address on the internet
-     and is unreachable. You would have to delete it and start again.**
+   So **cancel out of the instance form** and build the network separately:
+
+   - **☰ menu → Networking → Virtual cloud networks**
+   - check the compartment selector on the left says your root compartment
+   - **Start VCN Wizard** (in newer consoles, under an **Actions** button)
+   - choose **"Create VCN with Internet Connectivity"** → *Start VCN Wizard*
+
+   | Field | Value |
+   |---|---|
+   | VCN name | `omega-vcn` |
+   | Compartment | your root compartment |
+   | VCN CIDR block | `10.0.0.0/16` (leave it) |
+   | Public subnet CIDR block | `10.0.0.0/24` (leave it) |
+   | Private subnet CIDR block | `10.0.1.0/24` (leave it) |
+
+   **Next** → **Create**, and wait for every line to go green. This builds the
+   VCN, a **public** subnet, a private subnet, an internet gateway, route
+   tables and security rules — everything the inline path could not. It also
+   opens port 22, so SSH works with no further firewall work. None of it
+   costs anything on the free tier.
+
+   Now go back to **☰ → Compute → Instances → Create instance** and set the
+   Networking step to the **opposite** of the inline path:
+
+   | Section | Choose |
+   |---|---|
+   | **Primary network** | **Select existing virtual cloud network** |
+   | Virtual cloud network | `omega-vcn` — now present in the dropdown |
+   | **Subnet** | **Select existing subnet** |
+   | Subnet | **`Public Subnet-omega-vcn`** |
+
+   ⚠️ The wizard made **two** subnets. Pick the one with **Public** in the
+   name. Choosing the private one puts you straight back to a greyed-out
+   toggle.
+
+   - **Private IPv4 address:** leave on *Automatically assign*.
+   - **Public IPv4 address:** the warning is now gone and the toggle works.
+     **Turn it ON.** Without a public IP the server has no address on the
+     internet and **you can never log in** — and it cannot be added to an
+     instance that was built without one. You would have to terminate it and
+     start over.
    - **IPv6:** leave off.
 
 6. **SSH keys:** choose *Generate a key pair for me*, then **Download
@@ -72,6 +111,12 @@ Nothing about how the bot works changes. It writes the same four files
 
    > Do not leave this page until both are saved. Oracle will not show
    > them again, and the private key is the only way into the machine.
+
+   > **If you already downloaded a key on an earlier attempt, that key is
+   > dead.** Each run of this form generates a fresh pair, and only the pair
+   > from the run that actually created the instance works. Delete the old
+   > files. Two near-identical `.key` files in your Downloads folder, one of
+   > which silently fails, is a miserable thing to debug at the SSH prompt.
 
 7. Click **Create**. After a minute or two you get a **Public IP address**.
    Write it down.
@@ -83,12 +128,6 @@ Nothing about how the bot works changes. It writes the same four files
 > two minutes, and has none of this networking:
 > **hetzner.com/cloud** → new project → Ubuntu 24.04 → CX22.
 
-> **Prefer to set the network up separately?** It is fewer controls per
-> screen, which helps on a phone. Cancel out, go to
-> **Menu → Networking → Virtual Cloud Networks → Start VCN Wizard →
-> "Create VCN with Internet Connectivity"**, accept every default, then
-> start the instance again and pick that VCN from the dropdown — it will
-> no longer be empty.
 
 ---
 
@@ -310,5 +349,7 @@ bigger reason to move than the 24×7 uptime is.
 | "no space left on device" | `df -h`, then `sudo logrotate -f /etc/logrotate.d/omega` |
 | bot runs but never trades | normal — see the report log; most scans find nothing |
 | lost the token | `sudo cat /etc/omega.token` |
-| cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you forgot the toggle in Step 1.5. It cannot be fixed from the instance page — terminate it and create a new one |
+| cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you missed the toggle in Step 1.5. Terminate it and create a new one — it cannot be added afterwards |
+| "Automatically assign public IPv4 address" is greyed out | you are on the instance wizard's inline network builder, which can never enable it. Build the VCN separately first — Step 1.5 |
+| the subnet dropdown offers two subnets | pick the one with **Public** in the name |
 | `Permission denied (publickey)` | wrong username (`ubuntu`, not `root`), or the key file needs `chmod 600` |
