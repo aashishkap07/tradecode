@@ -171,7 +171,19 @@ password — it is a **Personal Access Token**:
 github.com → *Settings* → *Developer settings* → *Personal access tokens* →
 *Tokens (classic)* → *Generate new token* → tick **repo** → copy it.
 
-Updating later is then one command: `cd /home/omega/omega && sudo git pull`.
+**Updating later** takes two commands, not one:
+
+```bash
+sudo git config --global --add safe.directory /home/omega/omega   # once, ever
+cd /home/omega/omega && sudo git pull
+```
+
+That first line is needed because `setup.sh` hands the folder to the `omega`
+user while `sudo git pull` runs as `root`. Git refuses to operate on a
+repository owned by somebody else and stops with *"detected dubious
+ownership"*. Run it once and never think about it again — but without it the
+pull fails silently in the middle of a list of pasted commands, and everything
+after it runs against the old code.
 
 ### The other way: copy the files up from a computer
 
@@ -207,6 +219,27 @@ sudo journalctl -u omega -f           # watch it live (Ctrl-C to stop watching)
 
 From this moment it runs 24×7. If it crashes, systemd restarts it in 10
 seconds. If the server reboots, it comes back on its own.
+
+---
+
+## Step 4a — A trap that will cost you twenty minutes
+
+**Never run the tunnel by typing it at the prompt.** `cloudflared tunnel --url
+...` takes over the terminal. Anything you type or paste afterwards goes into
+cloudflared, which ignores it — so your commands appear on screen, nothing
+happens, and it looks as though the server is broken when in fact nothing was
+ever run.
+
+You can tell at a glance: **if your pasted commands have no `$` prompt in front
+of them and produce no output, they did not run.**
+
+Press **Ctrl+C** to get the prompt back, then use the service instead
+(Step 5) so the terminal stays free.
+
+The same applies to any long-running command. When in doubt, paste **one line
+at a time** and wait for each to finish — five commands pasted together scroll
+their errors past too fast to read, and the first failure makes the rest
+meaningless.
 
 ---
 
@@ -391,6 +424,8 @@ bigger reason to move than the 24×7 uptime is.
 | bot runs but never trades | normal — see the report log; most scans find nothing |
 | 502 Bad gateway / "connection refused" on 8138 | the tunnel is fine, the bot is down. See Step 4b |
 | panel worked, then stopped after you closed SSH | you started the tunnel by hand. `sudo systemctl enable --now cloudflared-quick` |
+| pasted commands do nothing, no output, no prompt | the terminal is busy running something (usually cloudflared). Ctrl+C, then check you see a `$` before typing anything else |
+| `git pull` says "detected dubious ownership" | `sudo git config --global --add safe.directory /home/omega/omega` |
 | the tunnel address stopped working | a quick tunnel gets a new address on every restart. `sudo journalctl -u cloudflared-quick \| grep -o 'https://.*trycloudflare.com' \| tail -1` |
 | equity reset to its starting value after a restart | the bot resumed before it had ever saved state. Only happens before the first closed trade, and knowledge files survive it |
 | lost the token | `sudo cat /etc/omega.token` |
