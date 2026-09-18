@@ -122,6 +122,20 @@ def owns(cname, attr, seen=None):
     if attr in assigned.get(cname, ()): return True
     if attr in {m.name for m in classes.get(cname, ast.ClassDef(body=[])).body
                 if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))}: return True
+    # C467-D: METHODS OF A NESTED CLASS BELONG TO THAT NESTED CLASS.
+    # RemoteControl.start() defines a Handler class inside itself, and Handler's
+    # own methods (_send_json, _authed, _deny, _tail, ...) were being reported
+    # as wrong-object reads on RemoteControl -- 18 of them sat in the baseline
+    # permanently, and C467 would have added 6 more. That is a tool crying wolf
+    # two dozen times, which is how a real finding gets waved through. A nested
+    # class's methods are now recognised as owned.
+    _outer = classes.get(cname)
+    if _outer is not None:
+        for _n in ast.walk(_outer):
+            if isinstance(_n, ast.ClassDef) and _n is not _outer:
+                if attr in {m.name for m in _n.body
+                            if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))}:
+                    return True
     for n in classes.get(cname).body if cname in classes else []:
         if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name) and n.target.id == attr:
             return True
@@ -133,9 +147,16 @@ def owns(cname, attr, seen=None):
 # Attributes inherited from a STDLIB base this sweep cannot see (the classes
 # here subclass http.server.BaseHTTPRequestHandler and threading.Thread).
 # Named explicitly rather than silently widened, so the list stays auditable.
+# Attributes and METHODS a class inherits from a stdlib base the sweep cannot
+# resolve (BaseHTTPRequestHandler, Thread, logging.Filter). C467-D: the three
+# response METHODS were missing, so every single write of an HTTP response in
+# RemoteControl was reported as a wrong-object read -- 23 permanent false
+# positives, all of them the tool failing to know what it was looking at.
 STDLIB_BASE = {'path', 'headers', 'rfile', 'wfile', 'command', 'client_address',
                'server', 'requestline', 'request_version', 'connection',
-               'daemon', 'name', 'ident'}
+               'daemon', 'name', 'ident',
+               'send_response', 'send_header', 'end_headers', 'send_error',
+               'log_message', 'log_error', 'flush_headers', 'protocol_version'}
 
 bad = []
 for cname, items in read.items():

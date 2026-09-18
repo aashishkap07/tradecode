@@ -1,6 +1,268 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🔓 2026-09-18 — C467: THE CAPS COME OFF, AND THEY WERE NEVER THE PROBLEM
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C467.** Branch `claude/trading-system-analysis-tsvzj4`.
+AST **423 → 427**. Wrong-object sweep **120 → 74** findings (21 were the tool's
+own false positives; see Rule 23).
+Caps: `C403_TARGET_TRADES_DAY=0.0` · `C404_HARD_TRADES_DAY=0` ·
+`MAX_TRADES_PER_DAY=0` · `C435_SCORE_CAP=False`. **No per-day trade cap exists.**
+Day barrier: `C467_DYN_BARRIER=True`, loss-side only, realised-only.
+Display: width now MEASURED (was hardcoded 46 on Android), ceiling 100 → 140.
+Cloud: `deploy/` — systemd, Cloudflare Tunnel, logrotate, watchdog, DEPLOY.md.
+
+---
+
+## 🧾 THE 20260918 SESSION — AND A CORRECTION TO MY OWN ANALYSIS
+
+11h02m · 75 scans · 3,493 pair-analyses · **3 closed trades** · +$0.57 realised
+(the banner's +$1.34 blends in $0.77 of unrealised).
+
+**I told the operator, in text, that "the caps, not the filters, were binding —
+the bot logged the proof itself." THAT WAS WRONG, and counting properly shows
+it.** The honest census of the detail log:
+
+| what | count |
+|---|---|
+| scans producing ANY viable candidate | **8 of 75** |
+| `C435-2` per-scan cap firings | **1, all session, dropping 1 candidate** |
+| expectancy bar printing `+0.000R` | **46 of its 48 prints** |
+| nearest-miss reason = `score` below bar | **23 of 44** |
+
+The caps were near-irrelevant. The expectancy bar was **at its floor**. What
+actually refused the trades was `E >= 0`, and E = p(R×capture) − (1−p), so at
+the realised base rate (~0.44) it demands **R ≥ 2.1** against a projector that
+produces **R ≈ 1.0–1.1**. Nothing could pass. That is the same diagnosis C412
+recorded ("the stop is systematically wider than the projected move") and it
+has never been fixed.
+
+**→ Standing Rule 22: COUNT THE REFUSALS BEFORE NAMING THE CONSTRAINT.**
+A throttled log line ("C404 FEE BUDGET SPENT" printed 7 times) marks a WINDOW
+OF TIME, not a number of refusals. I read seven prints as seven bindings and
+built an argument on it. Grep the reason tallies, not the narration.
+
+## 🎯 EVERY TRADE WAS A PENALTY-FLOOR RESCUE. AGAIN.
+
+| pair | raw score | floored to | entered at | 8h MFE (real tape) | outcome |
+|---|---|---|---|---|---|
+| COTI | **0.33** | 0.43 | 0.434 | +2.51R, but **stop hit first at 20 min** | −$0.03 |
+| CRV  | **0.40** | 0.53 | 0.531 | **+0.29R** — dead trade | −$0.04 |
+| JUP  | **0.44** | 0.58 | 0.580 | **+2.15R** | **+$0.64** |
+
+Nine C367 penalty-stack lifts in the session; three became trades; **all three
+were lifts.** Not one trade was a candidate the bot's own scoring approved.
+C420 recorded exactly this at n=3 in a different session. **Two independent
+sessions, 6 of 6 trades, 100% floor-rescued.**
+
+And the decisive detail: **the RAW score ranked the three correctly**
+(0.44 > 0.40 > 0.33 = JUP > CRV > COTI by realised outcome). The floor lifted
+them all above the bar and destroyed that ranking. The evidence had the
+information; the rescue threw it away.
+
+*Not acted on in C467.* Changing the floor and the funnel in one version makes
+the next log unattributable (Rule 4). It is the next lever, and it now has two
+sessions of evidence behind it.
+
+## 📉 CHART-VERIFIED AGAINST THE REAL TAPE (Bitget 5m, bars pinned by IST)
+
+- **COTI** — the PEAK_FLOOR exit at breakeven was **RIGHT**. MFE was +15.29%
+  over 8h, but the **−0.75R stop was touched at 20 minutes**, long before
+  +1.00R arrived at 120 minutes. A holder is stopped out. The bot's own C444
+  follow-up was correct.
+- **CRV** — exit right, **entry** wrong. MFE +0.74% (+0.29R) in five hours.
+- **JUP** — exited at +1.36R at 39 minutes; **2.00R arrived at 90 minutes** and
+  MAE never exceeded −0.34R. C444 already says "held would have been better."
+- **0.50R was touched within 5 min (COTI) and 15 min (JUP)** — 2 of 3 would
+  have banked a half early. That agrees with the 662,800-bar barrier study,
+  where **0.50R/2.00R was the least-bad of 30 geometries**.
+
+**→ Standing Rule 24: AN EXIT IS JUDGED AGAINST THE STOP, NOT AGAINST THE MFE.**
+"It ran +15% after we left" is not a mistake if the stop stood between us and
+that run. Order of touch decides, and only the tape can say.
+
+## 🕳 THE DEAD BAND (mechanism confirmed, cost not yet demonstrated)
+
+Three profit-takers and one killer, denominated in two different units:
+
+| gate | fires at | unit |
+|---|---|---|
+| PEAK_FLOOR (kills) | peak > **0.6 PRU**, fully erased | PRU |
+| C338 half-bank | only via a `_C338_WIN_TOKENS` reason; JUP's needed **3.2 PRU** | PRU |
+| C373 capture | **1.0R** — held on 14 of 14 logged checks, 0 captures | R |
+| C415 trail | **2.00R** — "banking early is the worst-paying exit there is" | R |
+
+A trade peaking between 0.6 PRU and 3.2 PRU can be killed and cannot bank.
+COTI died at 1.3 PRU, CRV at 0.7 PRU. **PEAK_FLOOR is not in
+`_C338_WIN_TOKENS`, so the one situation where banking half would help most —
+a position giving back a peak — is the one it cannot address.**
+On THIS tape it cost nothing (both would have stopped out). Recorded as a
+mechanism, not a loss. And note C415's shipped comment asserts the exact
+opposite of the barrier study's measured result.
+
+---
+
+## 🔓 C467-A — THE CAPS, AND THE GATE THAT WAS REALLY BINDING
+
+Removed: the rate target, the hard cap, the per-scan score cap, and the
+display-only `MAX_TRADES_PER_DAY` (read at two sites, both the dashboard —
+a number the boot banner promised and the code never kept).
+
+**There is deliberately NO master "no cap" switch.** The four zeroed constants
+ARE the switch. A fifth control over the same state is how C420-1 got two
+initialisers for one value and cost seven hours of lockout.
+
+**The real change: E is demoted from a VETO to a PENALTY while p has no skill.**
+The log says `acc=0.44 brier=0.292 (baseline 0.250)` at n=315 — worse than the
+constant forecaster, unchanged since C420-5 recorded it at n=189.
+
+> **Standing Rule 25: A GATE MAY NOT VETO ON A SIGNAL WITH NO MEASURED SKILL.**
+> C342 holds FamilyMarkov at 'earning' for −6.8% skill; C343 lets IchiMarkov act
+> at +11.2%. The expectancy gate was exempt from the discipline applied
+> everywhere else — and from the bot's OWN architecture, which says (C403-5)
+> there are **three** hard vetoes: can't pay fees, no room to stop, not
+> tradeable. `E >= 0` was a fourth that nothing authorised.
+> It reverts to a veto **by itself** the moment Brier skill goes positive.
+
+In its place, hard veto #1 is made real: **fee coverage**, `R × capture ≥ 1.25 ×
+FeeR`, computed by the **existing** `_c408_fee_burden_r` (never a second copy —
+it alone knows per-instrument funding, 19% of a risk unit on QQQ, 0% on XAU).
+
+**Honest limit:** this admits trades the model prices as marginal. That is the
+point — on paper, a trade's cost is information. It must be re-measured on the
+first uncapped session, and `C467_MIN_EDGE_R` is the dial that tightens it.
+
+## 🛡 C467-B — THE DAY BARRIER, RELATIVISTIC AND LOSS-SIDE ONLY
+
+The old barrier was **fixed** (DD/22), **symmetric**, and fed by **live**
+equity. All three were wrong, and the 20260918 log shows it: **"94% used" at
+10:05 on a day that was UP.**
+
+```
+limit = (DD/22) × day-start equity × vol_ratio × trust
+        vol_ratio  this scan's median stop ÷ its own 24h EWMA baseline   [0.70, 1.50]
+        trust      realised expectancy of this bot's own closes          [0.60, 1.25]
+```
+
+- **Loss side only.** A day is never stopped for winning. On an account whose
+  present job is to accumulate closes so the C464 ledger can be priced, halting
+  a winning day throws away exactly the observations that are working.
+- **Realised only.** An open position marked temporarily underwater no longer
+  spends the day's allowance and blocks entries, then recovers and hands it
+  back. Open risk is still counted — by the **C313 reservation**, which is the
+  non-double-counting way.
+- **The stop IS the volatility reading.** R = 2×ATR, so the median stop across
+  a scan is the median ATR of everything the bot looked at, in the bot's own
+  units, with no extra fetch and no second definition to drift out of step.
+- **Month guard.** However far the two relative terms widen it, cumulative
+  realised drawdown may not run ahead of the declared monthly figure pro rata.
+
+> **Standing Rule 26: A CONTROL THAT CAN WIDEN MUST HAVE A MANDATE IT CANNOT
+> OUTRUN.** Otherwise it is a ratchet pointed the wrong way.
+
+*Tabulated, not asserted:* 9 volatility ratios × 7 records × 5 sample sizes;
+both ends clamped (0.30 and 0.50 agree; 2.00 and 4.00 agree); monotone in both
+terms; trust immovable below 8 closes; worst case anywhere is **0.42× base and
+still positive**; the month guard bites at 10 days / $40 and not before; a
+winning day spends **$0.00** where the old rule read **176% used**.
+
+## 📐 C467-C — THE SCREEN: TWO ONE-LINE CAUSES
+
+**"Half the screen is blank."** `_c462_width()` returned a **hardcoded 46** on
+Android and never asked the terminal. It now asks `os.get_terminal_size` first
+— which **raises** when there is no terminal, and that is what makes a real
+answer distinguishable from a fallback (`shutil`'s version silently substitutes
+its own default, so a detected 72 and an undetectable 72 come back identical).
+Ceiling raised 100 → 140. A **boot ruler** ends the guessing permanently.
+
+**"No spacing between the end of a scan and the summary."** `_emit()` wrote
+every blank separator to the report FILE and then **returned before the log
+chain**. The spacing was in the file all along and the screen never got one
+line of it. The old comment's premise — "the log chain strips empty records
+anyway" — was the bug: it does not strip them, it was never given them.
+
+> **Standing Rule 27: WHEN THE FILE AND THE SCREEN DISAGREE, THE SINK IS THE
+> SUSPECT.** Before redesigning a layout, check that what was drawn was
+> actually delivered.
+
+Also: word-boundary truncation (`0.343~`, never `0.3`); a flat curve now draws
+**flat** (min/max normalisation was amplifying rounding noise to full scale —
+the same near-zero curve drew `@@.@@@@@@@@`, `*@....`, and `_.____` within a
+few blocks); `_cols2` pairs short facts at ≥64 columns; blanks capped at 2.
+
+## ☁️ C467-D — THE CLOUD KIT
+
+`deploy/`: `omega.service` (auto-start, `Restart=always`), `setup.sh` (one
+command on a fresh Ubuntu box), `omega-logrotate.conf`, `omega-watchdog.sh`,
+`DEPLOY.md` in plain English. Oracle Always Free + Cloudflare Tunnel = **£0**.
+
+Control panel, previously **unauthenticated on 0.0.0.0**:
+- a token from `OMEGA_CTRL_TOKEN`, checked on **every** request, GET included
+  (`/api/status` alone tells a stranger the account size and the open book),
+  compared with `hmac.compare_digest`;
+- **with no token it binds to `127.0.0.1` only** — the unsafe case is
+  unreachable by construction, not by the operator remembering;
+- new: `/api/logs`, `/api/files`, `/api/download` (basename against an
+  allow-list built from the bot's own globs — never join user text onto a
+  directory), `/api/health` (reports the **age of the last scan**, because a
+  process that is alive and has stopped scanning is what a PID check cannot
+  see), `/api/restart`.
+
+**A bug the harness caught and no amount of reading would have.** Those POST
+routes matched `self.path` **exactly** — correct until C467-D put `?t=TOKEN` on
+every request. Pause, resume, **STOP** and force-scan all fell through to
+`{"error": "Unknown command"}` **with HTTP 200**: the panel would have looked
+like it worked and done nothing, from another country, including the stop
+button. The dashboard's own JavaScript also sent no token at all.
+
+> **Standing Rule 28: ADDING A QUERY PARAMETER CHANGES EVERY EXACT-MATCH
+> ROUTE.** And: an error returned with HTTP 200 is how that stayed invisible.
+
+**A geo-blocking note that matters strategically:** this development container
+is blocked from Binance and Bybit, which is why C464's taker-flow and
+open-interest channels ship *unmeasured*. **A VPS in Europe or India is not.**
+That unlocks two of the three remaining levers — a bigger reason to move than
+uptime.
+
+---
+
+## 🛠 BATTERY ADDITIONS
+
+- `omega_c467_test.py` — 40 checks. Caps zeroed with their guards intact;
+  every new module-level function **executed**; layout rendered at 11 widths
+  (0 overflows, 0 non-ASCII); truncation swept across every budget.
+- `omega_c467_barrier_test.py` — the barrier tabulated across regimes with
+  every bound asserted (above).
+- `omega_c467_remote_test.py` — **the server is started and attacked**: 12
+  unauthenticated routes refused, 5 wrong tokens refused, 6 path-traversal
+  attempts refused, every button proven to queue its command, both bind
+  addresses asserted.
+- `omega_display_test.py` — **repaired.** It had not run since C466 (a
+  `NameError` on `_c466_paint`, never added to its extraction list) and it
+  appended to its own log across runs, so it reported a growing phantom
+  "lost: N". Now 23 written / 23 delivered / **0 lost**.
+- `omega_wrong_object_sweep.py` — **sharpened**, 120 → 74 findings.
+
+> **Standing Rule 23: A TOOL THAT CRIES WOLF IS A TOOL THAT WILL BE IGNORED.**
+> The sweep could not see methods of a **nested** class (`RemoteControl.start`
+> defines `Handler` inside itself), nor methods inherited from
+> `BaseHTTPRequestHandler`. Twenty-one permanent false positives sat in the
+> baseline, and C467 would have added six more. Both taught; RemoteControl
+> false positives now **0**; and the sharpened tool was re-proven to catch a
+> planted real bug (Rule 16).
+
+**Self-caught before shipping:** `_SESSION_LOG_PATH` and `_DETAIL_LOG_PATH` —
+two global names I invented. `globals().get()` returns `None` silently, so the
+remote log viewer would have said "(no session log yet)" forever. The real
+names are `_C52_LOG_PATH` and `_C460_DETAIL_PATH`. Wrong-name family, and it
+now warns aloud if a path is ever missing (Rule 5).
+
+---
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🎨 2026-09-17d — C466: COLOUR, APPLIED AFTER THE LAYOUT, CONSOLE ONLY
 # ═══════════════════════════════════════════════════════════════════════════
 

@@ -629,7 +629,7 @@ def _c462_money(x, width=0, sign=False):
     return s.rjust(width) if width else s
 
 
-def _c462_spark(series, width=24, blocks=None):
+def _c462_spark(series, width=24, blocks=None, ref=None):
     """A one-line equity curve. Eight block heights, flat when the range is zero.
 
     A sparkline is the only 'graph' that survives a log file, a phone terminal
@@ -651,9 +651,31 @@ def _c462_spark(series, width=24, blocks=None):
         # in every font.
         blocks = blocks or '._-=+*#@'
         n = len(blocks) - 1
-        if hi - lo < 1e-12:
-            return blocks[0] * len(vals)
-        return ''.join(blocks[min(n, int((v - lo) / (hi - lo) * (n + 0.999)))]
+        # ═══ C467-C: MIN/MAX NORMALISATION AMPLIFIES NOTHING INTO NOISE ══
+        # The 20260918 report drew the SAME near-flat equity curve as
+        # "@@.@@@@@@@@", then "*@..............", then "_.____________"
+        # within a few blocks of each other. Nothing was happening; the scale
+        # was simply re-fitting itself to rounding noise every time, so a
+        # quarter-cent wiggle filled the full eight-level range.
+        # Two fixes, both relative, neither an absolute number:
+        #   ref   an optional reference span (the day's loss barrier). While the
+        #         real range is smaller than the reference, the reference is
+        #         used — so the curve is drawn against something that MEANS
+        #         something instead of against its own noise.
+        #   floor if the range is below one part in 10,000 of the level, the
+        #         series is flat to any reader and is drawn flat, at mid height.
+        mid = 0.5 * (hi + lo)
+        rng = hi - lo
+        try:
+            r = float(ref or 0.0)
+        except Exception:
+            r = 0.0
+        if r > 0 and r > rng:
+            lo, hi = mid - r / 2.0, mid + r / 2.0
+            rng = hi - lo
+        if rng <= max(1e-12, abs(mid) * 1e-4):
+            return blocks[n // 2] * len(vals)
+        return ''.join(blocks[min(n, max(0, int((v - lo) / rng * (n + 0.999))))]
                        for v in vals)
     except Exception:
         return ''
@@ -715,18 +737,66 @@ def _c462_width():
         try:
             v = int(os.environ.get(var, '') or 0)
             if v:
-                return max(34, min(100, v))
+                return max(34, min(140, v))
         except Exception:
             pass
+    # ═══ C467-C: ASK THE TERMINAL BEFORE ASSUMING ANYTHING ════════════
+    # The operator's report: "the display leaves almost half screen blank".
+    # The cause was three lines above this one — an Android test that returned
+    # a HARDCODED 46 and never asked the terminal at all. A phone terminal at a
+    # small font is routinely 70-90 columns, and the box was painting 46 of
+    # them, so nearly half the screen was empty by construction.
+    # os.get_terminal_size RAISES when there is no terminal, which is what makes
+    # a real answer distinguishable from a fallback. shutil's version silently
+    # substitutes its own default, so a detected 72 and an undetectable 72 come
+    # back identical — that is why this asks os first and shutil second.
+    for _fd in (1, 2, 0):
+        try:
+            _c = int(os.get_terminal_size(_fd).columns)
+            if _c >= 20:
+                return max(34, min(140, _c))
+        except Exception:
+            continue
     try:
-        if os.path.exists('/storage/emulated/0'):      # same test as IS_ANDROID
-            return 46
+        _c = int(shutil.get_terminal_size((0, 0)).columns)
+        if _c >= 20:
+            return max(34, min(140, _c))
     except Exception:
         pass
     try:
-        return max(34, min(100, shutil.get_terminal_size((72, 24)).columns))
+        if os.path.exists('/storage/emulated/0'):      # same test as IS_ANDROID
+            return 46                                  # last resort, phone-safe
     except Exception:
-        return 72
+        pass
+    return 72
+
+
+def _c467_ruler(cfg, resolved):
+    """C467-C: print a measuring tape once at boot, and stop guessing.
+
+    Width has been GUESSED for five versions — 46 columns hardcoded for
+    Android, never measured — and the operator's screen was half empty as a
+    result. A terminal that will not report its own size can still be MEASURED
+    BY EYE in two seconds: the ruler below is numbered every ten columns, and
+    wherever it wraps onto a second line is the real width. Put that number in
+    C462_LOG_WIDTH and the guessing is over permanently.
+    """
+    try:
+        if not bool(getattr(cfg, 'C467_RULER', True)):
+            return
+        top, bot = '', ''
+        for i in range(1, 141):
+            top += '|' if i % 10 == 0 else ('+' if i % 5 == 0 else '.')
+            bot += str((i // 10) % 10) if i % 10 == 0 else ' '
+        print("  📏 WIDTH CHECK — the row below is 140 columns, marked every 10.")
+        print("     Wherever it wraps onto a new line is your real screen width.")
+        print("     Put that number in Config: C462_LOG_WIDTH = <number>")
+        print("     " + top)
+        print("     " + bot)
+        _src = 'set by you' if int(getattr(cfg, 'C462_LOG_WIDTH', 0) or 0) else 'measured'
+        print(f"     using {resolved} columns ({_src})")
+    except Exception:
+        pass
 
 
 class _C462Report:
@@ -828,10 +898,33 @@ class _C462Report:
                     self._fh.flush()
         except Exception:
             pass
+        # ═══ C467-C: THE MISSING SPACING WAS NEVER MISSING ════════════
+        # The operator: "there is no spacing wherever it's required, for example
+        # between end of a scan and the summary". Every blank line the layout
+        # asked for was written to the report FILE and then RETURNED here,
+        # before the log chain — so the file had the spacing all along and the
+        # screen never got one line of it. The old comment's premise ("the log
+        # chain strips empty records anyway") was the bug: it does not strip
+        # them, it was never given them.
+        # A blank goes through as a single space, because a truly empty record
+        # is what some handlers DO drop, and one space renders as a blank line
+        # while surviving every handler in the chain.
         if not line:
-            # blank separators are spacing for the report FILE; the log chain
-            # strips empty records anyway, so do not hand it noise
+            try:
+                n_max = 2
+                try:
+                    n_max = int(getattr(_c467_cfg_ref[0], 'C467_BLANK_MAX', 2)) \
+                        if _c467_cfg_ref[0] is not None else 2
+                except Exception:
+                    n_max = 2
+                if int(getattr(self, '_blank_run', 0)) >= max(1, n_max):
+                    return                      # never three blanks in a row
+                self._blank_run = int(getattr(self, '_blank_run', 0)) + 1
+                logger.report(' ')
+            except Exception:
+                pass
             return
+        self._blank_run = 0
         try:
             logger.report(line)          # C465-1: flagged, not sniffed
         except Exception:
@@ -839,6 +932,69 @@ class _C462Report:
                 logger.info(line)
             except Exception:
                 pass
+
+    def _blank(self, n=1):
+        """C467-C: the spacing contract, in one place.
+
+            inside a block      0
+            between blocks      1
+            before the SUMMARY  2
+            anywhere, maximum   C467_BLANK_MAX (2)
+
+        Spacing that lives in one function can be reasoned about; spacing
+        sprinkled as bare _emit('') calls is how the report file ended up with
+        double and triple blanks in some places and none where the operator
+        actually needed one.
+        """
+        try:
+            for _ in range(max(0, int(n))):
+                self._emit('')
+        except Exception:
+            pass
+
+    def _fit(self, text, budget):
+        """C467-C: cut at a WORD boundary, never mid-word.
+
+        The 20260918 report shows what the old cut did:
+            top NDX100 0.11 (score 0.108 < 0.3
+            top USELESS 0.46 (score 0.343 < 0.
+        A number sliced in half is worse than an absent number, because it
+        still reads as a number. Falls back to a hard cut only when there is no
+        space late enough in the line to break on.
+        """
+        t = str(text)
+        if budget <= 1:
+            return t[:max(0, budget)]
+        if len(t) <= budget:
+            return t
+        cut = t[:budget - 1]
+        sp = cut.rfind(' ')
+        if sp >= int(budget * 0.55):
+            cut = cut[:sp]
+        return cut.rstrip() + self.g.get('approx', '~')
+
+    def _cols2(self, a_label, a_text, b_label, b_text):
+        """C467-C: two named facts side by side on a wide screen.
+
+        On a 44-column phone these are two rows, exactly as before. At
+        C467_TWO_COL_MIN_W and above they share one row, which is what stops a
+        wide terminal from showing a column of short values down its left edge
+        with nothing at all to their right.
+        """
+        try:
+            wide = self.W >= int(getattr(_c467_cfg_ref[0], 'C467_TWO_COL_MIN_W', 64)) \
+                if _c467_cfg_ref[0] is not None else self.W >= 64
+        except Exception:
+            wide = self.W >= 64
+        if not wide or not b_text:
+            self._row(a_label, a_text)
+            if b_text:
+                self._row(b_label, b_text)
+            return
+        half = (self.W - 2) // 2
+        left = f"{str(a_label):<{self.LW}}{self._fit(a_text, half - self.LW)}"
+        right = f"{str(b_label):<{self.LW}}{self._fit(b_text, self.W - 2 - half - self.LW)}"
+        self._emit(f"  {left:<{half}}{right}".rstrip())
 
     def _row(self, label, text):
         """One named row: two spaces, a label column, then the text.
@@ -848,9 +1004,7 @@ class _C462Report:
         column is pure ASCII and is the only alignment the design needs.
         """
         budget = self.W - 2 - self.LW
-        t = str(text)
-        if len(t) > budget:
-            t = t[:budget - 1] + '.'
+        t = self._fit(text, budget)          # C467-C: word boundary, not mid-word
         self._emit(f"  {str(label):<{self.LW}}{t}".rstrip())
 
     def _wrapped(self, prefix, parts, sep=None):
@@ -914,9 +1068,7 @@ class _C462Report:
     def _raw(self, text):
         """A row with no label column -- the position and trade lists."""
         budget = self.W - 2
-        t = str(text)
-        if len(t) > budget:
-            t = t[:budget - 1] + '.'
+        t = self._fit(text, budget)          # C467-C: word boundary, not mid-word
         self._emit(f"  {t}".rstrip())
 
     def _rule(self, title='', bottom=False, mid=False, head=False):
@@ -956,7 +1108,10 @@ class _C462Report:
         try:
             c = int(cols or 0)
             if c:
-                self.W = max(34, min(100, c))
+                # C467-C: ceiling raised 100 -> 140. A phone in landscape at a
+                # small font genuinely exceeds 100, and clamping to 100 was
+                # itself part of "half the screen is blank".
+                self.W = max(34, min(140, c))
                 self.LW = 10 if self.W >= 40 else 8
         except Exception:
             pass
@@ -1160,7 +1315,9 @@ class _C462Report:
             self._pack('RISK', [
                 f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}% = "
                 f"{_c462_money(eq * float((plan or {}).get('per_trade_pct', 0.0) or 0.0) / 100.0)}/trade",
-                f"max {int((plan or {}).get('max_trades', 4) or 4)}/day"])
+                (f"max {int((plan or {}).get('max_trades', 0) or 0)}/day"
+                 if int((plan or {}).get('max_trades', 0) or 0) > 0
+                 else "trades/day NO CAP")])      # C467-A
             if edge is not None:
                 self._pack('EDGE', [f"{float(edge):+.4f} blended"]
                            + ([f"{wr}" ] if wr else []))
@@ -1357,8 +1514,12 @@ class _C462Report:
             open_pos = pf.positions.get_all()
             locked = float(st.get('locked', 0.0) or 0.0)
 
-            self._emit('')
-            self._emit('')
+            # C467-C: TWO blank lines before the summary block, which is what
+            # the operator asked for ("no spacing between end of a scan and the
+            # summary"). They were always here; _emit dropped them before the
+            # screen ever saw one. Now they are a contract call, so the next
+            # reader can find every separator in the file by one name.
+            self._blank(2)
             self._rule(f"{datetime.now().strftime('%H:%M')}"
                        f"{self.g['sep']}up {self._uptime()}"
                        f"{self.g['sep']}scan {self.n_scans}")
@@ -1374,26 +1535,44 @@ class _C462Report:
                           if self.peak_equity > live + 0.005 else [])
                        + ([f"dd {abs(dd):.2f}%"] if abs(dd) >= 0.005 else []))
             # C465-3: two samples is not a curve. Wait until it can show one.
+            # C467-C: scale the curve against the DAY'S LOSS ROOM, not against
+            # its own min/max. A flat day now draws flat instead of drawing its
+            # own rounding noise at full amplitude.
+            _ref467 = None
+            try:
+                _ref467 = 2.0 * float(bot._c467_day_barrier().get('limit', 0.0) or 0.0)
+            except Exception:
+                _ref467 = None
             spark = (_c462_spark(self.equity_curve, self.W - 4 - self.LW,
-                                 self.g['spark'])
+                                 self.g['spark'], ref=_ref467)
                      if len(self.equity_curve) >= 6 else '')
             if spark:
                 self._row('CURVE', spark)
 
             # --- the day's risk budget, as a fraction spent ---
             try:
-                day0 = float(getattr(bot.mode_mgr, '_day_start_equity', 0.0) or 0.0)
-                cap = float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0
-                if day0 > 0 and cap > 0:
-                    day_pct = (live - day0) / day0 * 100.0
-                    used = abs(day_pct) / cap
+                # ═══ C467-B: THE DAY ROW SHOWS THE LOSS BARRIER ONLY ══════
+                # It used to show |day move| / fixed cap, so a WINNING day read
+                # "94% used" and looked like an emergency. Only losses spend the
+                # barrier now, and only REALISED ones, and the limit itself
+                # moves with the tape and with this bot's own record.
+                _b = bot._c467_day_barrier()
+                day0 = float(_b.get('day0', 0.0) or 0.0)
+                _lim = float(_b.get('limit', 0.0) or 0.0)
+                if day0 > 0 and _lim > 0:
+                    _pnl_d = float(_b.get('pnl', 0.0))
+                    used = float(_b.get('frac', 0.0))
                     _bw = min(self.W - self.LW - 4, 26)
-                    self._pack('DAY', [f"{day_pct:+.2f}% of {self.g['pm']}{cap:.2f}%",
-                                       f"{100.0 * used:.0f}% used"])
+                    _vt = f"vol x{float(_b.get('vol', 1.0)):.2f}" \
+                          f"{self.g['sep']}trust x{float(_b.get('trust', 1.0)):.2f}"
+                    self._pack('DAY', [
+                        f"real {_c462_money(_pnl_d, sign=True)}",
+                        f"loss room {_c462_money(_lim)} ({_lim / day0 * 100.0:.2f}%)",
+                        f"{100.0 * used:.0f}% used", _vt]
+                        + (['month guard'] if _b.get('capped') == 'month' else []))
                     self._day_used = used     # C466: the gauge's colour level
-                    self._row('', _c465_gauge(
-                        (day_pct / cap) if cap else 0.0, _bw,
-                        self.g['bar_on'], self.g['rule']))
+                    self._row('', _c462_bar(used, _bw,
+                                            self.g['bar_on'], self.g['bar_off']))
                 else:
                     self._row('DAY', 'barrier not yet derived (no day anchor)')
             except Exception:
@@ -1745,6 +1924,15 @@ class _C462Report:
             except Exception:
                 pass
 
+
+# ═══ C467-C: THE REPORTER IS BUILT AT IMPORT TIME, BEFORE CONFIG EXISTS ══
+# It has always needed a handful of Config answers (width, glyphs) and has
+# always got them through explicit setters. C467 adds two more (two-column
+# threshold, blank-run ceiling) and rather than grow a third and fourth setter
+# this holds ONE reference, filled at startup in the same breath as set_width.
+# A one-element list, not a bare name, so the reporter reads the CURRENT
+# config rather than a copy taken at some earlier moment.
+_c467_cfg_ref = [None]
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2557,7 +2745,11 @@ class Config:
         # E is strictly monotone in R, so ranking by E ranks by proj/stop —
         # how FAR a pair could go, with no view on whether the DIRECTION is
         # right. The score carries the direction; E is a floor, not a selector.
-        self.C435_SCORE_CAP        = True
+        # C467: OFF. This was the per-scan count cap ("the fee budget allows
+        # N per scan"). In the whole 11-hour 20260918 session it fired ONCE and
+        # dropped ONE candidate — so it was never the constraint the operator
+        # was feeling, but it is a trade-count cap and it goes.
+        self.C435_SCORE_CAP        = False   # was True — C467, cap removed
         # ═══ C436: BUILD p FROM THE PREDICTORS THAT HAVE EARNED IT ═══════════
         # One hand-written formula supplies p, it scores -11.7% skill over 233
         # trades, so C420-5 replaces it with a constant — and a constant cannot
@@ -2962,7 +3154,11 @@ class Config:
         # alone is ~2.5%% of a $250 account per MONTH — more than the target it
         # was sized for. Fees scale with the NUMBER of trades; the edge does not.
         # Operator's decision 20260915: 1-3 per day, held 4-8h.
-        self.C403_TARGET_TRADES_DAY = 2.0    # was 6.0 — see C461-3
+        # C467: 0 = NO TARGET RATE. _c403_rate_bar_mult() returns 1.00 the
+        # moment this is falsy, so the fee-budget servo can no longer raise the
+        # entry bar to hold the bot down to a quota. Operator directive
+        # 20260918: "remove any cap on the number of trades in a day".
+        self.C403_TARGET_TRADES_DAY = 0.0    # was 2.0 — C467, no rate target
         self.C403_RATE_BAND_LO      = 4.0    # servo deadband, low
         self.C403_RATE_BAND_HI      = 8.0    # servo deadband, high
         self.C403_BAR_MIN_MULT      = 1.00   # never EASE below nominal
@@ -3084,7 +3280,10 @@ class Config:
         # C403's soft servo is the right pacing tool but it saturated. A day's
         # fee budget can be spent exactly once; past 2x the target rate the
         # arithmetic that justifies trading at all has already failed.
-        self.C404_HARD_TRADES_DAY = 4        # was 12 — C461-3
+        # C467: 0 = NO HARD CAP. The C404-3 branch is guarded by
+        # `if _hard404 > 0`, so zero removes the stop entirely rather than
+        # leaving a disabled-looking number behind (C439-2's lesson).
+        self.C404_HARD_TRADES_DAY = 0        # was 4 — C467, cap removed
 
         # C404-4: ONE PAIR IS NOT A PORTFOLIO. ACU was entered THREE TIMES in
         # one session -- 43%% of the entire book on a single coin -- and the
@@ -3712,6 +3911,110 @@ class Config:
         #           every painted value also states its meaning in text.
         # 'mono'    bold only, no hue.
         self.C466_PALETTE        = 'classic'
+
+        # ═══ C467: NO TRADE-COUNT CAP, AND THE GATE THAT WAS REALLY BINDING ══
+        # The operator asked for the per-day trade caps to be removed because
+        # "it's taking too long to reach conclusions". They are removed below.
+        # BUT THE CAPS WERE NOT WHAT WAS BINDING, and saying so is the whole
+        # point of measuring. Session 20260918_005533, counted line by line:
+        #   • the expectancy bar printed "+0.000R" in 46 of its 48 prints — the
+        #     adaptive percentile sat on its floor essentially all session;
+        #   • the C435-2 per-scan cap fired EXACTLY ONCE in 11 hours, dropping
+        #     ONE candidate;
+        #   • 67 of 75 scans produced ZERO viable candidates before any cap
+        #     was consulted at all.
+        # What actually refused the trades was the E >= 0 veto. E = p(R×capture)
+        # − (1−p), so at the realised base rate (~0.44) it demands R >= 2.1
+        # against a projector that produces R ≈ 1.0–1.1. Nothing could pass.
+        # AND THE p IN THAT FORMULA HAS MEASURED NEGATIVE SKILL. The same log:
+        # "S3-EV: calib[315]: acc=0.44 brier=0.292 (baseline 0.250)" — accuracy
+        # below a coin flip and a Brier score WORSE than the naive constant
+        # forecaster. C420-5 recorded this at n=189 and it is unchanged at 315.
+        # This codebase already has a rule for a signal with no measured skill:
+        # C342 holds FamilyMarkov at 'earning' for −6.8% skill and C343 lets
+        # IchiMarkov act at +11.2%. The expectancy gate was simply exempt from
+        # the discipline applied everywhere else — and it was exempt from the
+        # bot's OWN stated architecture too, which says (C403-5) there are only
+        # THREE hard vetoes: can't pay fees, no room to stop, not tradeable.
+        # E >= 0 was a fourth hard veto that nothing authorised.
+        # C467 does not lower it. It DEMOTES it, on the codebase's own rule:
+        # while p carries no measured skill the expectancy gate stops VETOING
+        # and becomes a weighted penalty like every other non-veto signal. The
+        # fee-coverage test stays a hard veto, because that one is arithmetic
+        # rather than forecast — it is veto #1 of the three, correctly.
+        # The moment p earns positive Brier skill the veto returns by itself.
+        # NOTE: there is deliberately NO master "no day cap" switch here. The
+        # three zeroed constants above (C403_TARGET_TRADES_DAY,
+        # C404_HARD_TRADES_DAY, MAX_TRADES_PER_DAY) and C435_SCORE_CAP ARE the
+        # switch. A fourth control governing the same state is how C420-1 got
+        # two initialisers for one value, and that cost seven hours of lockout.
+        self.C467_EDGE_NEEDS_SKILL  = True   # E may veto only while p has skill
+        self.C467_MIN_EDGE_R        = 0.00   # absolute post-fee floor, in R
+        self.C467_FEE_COVER_MULT    = 1.25   # geometry must pay 1.25× the round trip
+        self.C467_EDGE_PENALTY_MAX  = 0.25   # how hard a negative E may tax the score
+        # ═══ C467-B: THE DAY BARRIER, RELATIVISTIC AND LOSS-SIDE ONLY ═════
+        # The old barrier was DD/22, symmetric, measured on LIVE equity. Three
+        # faults, all visible in the 20260918 log, which reached "94% used" at
+        # 10:05 on a session that was UP:
+        #   1 symmetric — it halts the day for WINNING. For a paper account
+        #     whose entire job is to accumulate closes, that is pure loss.
+        #   2 fed by unrealised marks — one open position temporarily underwater
+        #     spends the day's allowance and blocks new entries, then recovers.
+        #     A protection that fires on paper money is not a protection.
+        #   3 fixed — the same number on a violent day and a dead one, which is
+        #     exactly the absolute threshold Principle #1 of this project
+        #     forbids everywhere else.
+        # The C467 barrier keeps the operator's declared monthly drawdown as the
+        # anchor and scales the DAY's share of it by two relative terms:
+        #     limit = (DD/22) × equity × vol_ratio × trust
+        #   vol_ratio  today's median universe ATR ÷ the bot's own trailing
+        #              baseline of that same median. The market measured against
+        #              its own recent self, never an absolute percentage.
+        #   trust      the realised expectancy of this bot's own recent closes,
+        #              mapped to [TRUST_LO, TRUST_HI]. Losing streaks tighten it;
+        #              a working edge lets it breathe back toward base.
+        # Both are clamped, and a MONTH-TO-DATE guard forbids the widening term
+        # from ever carrying cumulative realised drawdown past the declared
+        # figure pro rata. A dynamic barrier that could outrun its own mandate
+        # would not be a barrier.
+        self.C467_DYN_BARRIER       = True
+        self.C467_BARRIER_VOL_LO    = 0.70   # calmest tape: 70% of the base allowance
+        self.C467_BARRIER_VOL_HI    = 1.50   # wildest tape: 150%
+        self.C467_BARRIER_TRUST_LO  = 0.60   # worst realised record
+        self.C467_BARRIER_TRUST_HI  = 1.25   # best
+        self.C467_BARRIER_TRUST_N   = 8      # closes before trust may move at all
+        self.C467_BARRIER_REALISED  = True   # unrealised marks do not spend the day
+        self.C467_DAY_PROFIT_HALT   = False  # never stop a day for winning
+        self.C467_BARRIER_VOL_HALFLIFE_H = 24.0   # memory of the volatility baseline
+        # ═══ C467-C: THE SCREEN ═══════════════════════════════
+        # "The display leaves almost half screen blank, there is no spacing
+        # wherever it's required." Both had one mechanical cause each.
+        # WIDTH: _c462_width() returned a HARDCODED 46 on Android without ever
+        # asking the terminal. It never measured. It now asks the real terminal
+        # first (os.get_terminal_size, which RAISES when there isn't one, so a
+        # genuine answer is distinguishable from a fallback) and only falls back
+        # to 46 when there is no answer at all.
+        # SPACING: _emit() wrote blank separator lines to the report FILE and
+        # then deliberately RETURNED before handing them to the log chain. Every
+        # blank line the layout asked for reached the file and none reached the
+        # screen — which is exactly "no spacing between the end of a scan and
+        # the summary", and the spacing was there in the file the whole time.
+        # ═══ C467-D: RUNNING IN THE CLOUD, REACHED OVER THE INTERNET ════
+        # The control panel has always listened on 0.0.0.0:8138 with NO
+        # AUTHENTICATION, which was defensible while it could only ever be
+        # reached from the operator's own wifi. The moment it is put behind a
+        # tunnel it is reachable by anyone who learns the URL, and it can pause,
+        # resume and STOP a trading bot. So: a token, and the token is read from
+        # the ENVIRONMENT, never written here — a secret committed to a file
+        # that goes to git is a secret you have already lost.
+        #   export OMEGA_CTRL_TOKEN='<a long random string>'
+        # With no token set the server binds to LOCALHOST ONLY and says so, so
+        # the insecure case cannot be reached from the network by accident.
+        self.C467_CTRL_AUTH         = True
+        self.C467_CTRL_TAIL_MAX     = 400    # lines a single log request returns
+        self.C467_RULER             = True   # print a width ruler once at boot
+        self.C467_TWO_COL_MIN_W     = 64     # two columns at/above this width
+        self.C467_BLANK_MAX         = 2      # never more than this many in a row
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -3839,7 +4142,12 @@ class Config:
         # Trade count is therefore a first-class RISK parameter, not a free
         # variable. This is a backstop against fee-churn, deliberately generous —
         # the day normally ends on target or on the loss cap long before it.
-        self.MAX_TRADES_PER_DAY = 4          # was 8 — C461-3
+        # C467: 0 = NO CAP. This one was DISPLAY-ONLY before C467 — the sweep
+        # found it read at exactly two sites, both of them the dashboard's risk
+        # line, and at none that could refuse a trade. It was a number the boot
+        # banner promised and the code never kept. It now reads 0 and the
+        # dashboard says "no cap", which is the truth.
+        self.MAX_TRADES_PER_DAY = 0          # was 4 — C467, cap removed
         self.PROFIT_TARGET_NORMAL_PCT = 0.15  # C94: was 1.5%, reduced for higher achievability
         # C75: HP target 1.0% (was 1.5%) — achievable bonus on top of Normal gains
         # HP's purpose is to consolidate Normal profit, not reach for more
@@ -18082,9 +18390,23 @@ class TradingBot:
         logger.info(f"               EXPECTANCY GATE [C404/C405]: R = proj×√t ÷ stop,")
         logger.info(f"               E = p(R×{float(getattr(self.cfg,'C404_CAPTURE',0.6)):.2f})−(1−p); "
                     f"E must clear 0 AND the live percentile bar.")
-        logger.info(f"               FEE BUDGET [C403-1]: bar servos to ~{_fee405:.0f} trades/day; "
-                    f"hard cap {int(getattr(self.cfg,'C404_HARD_TRADES_DAY',12))}/day, "
-                    f"{int(getattr(self.cfg,'C404_MAX_PER_PAIR',2))}/pair.")
+        # C467-A: this line claimed a servo target and a hard cap that no
+        # longer exist. A boot banner is the only description of the system the
+        # operator ever reads; when it is stale it is not decoration, it is
+        # misinformation (C405's own rule, applied to C405's own line).
+        _cap467 = int(getattr(self.cfg, 'C404_HARD_TRADES_DAY', 0) or 0)
+        _tgt467 = float(getattr(self.cfg, 'C403_TARGET_TRADES_DAY', 0.0) or 0.0)
+        if _cap467 <= 0 and _tgt467 <= 0:
+            logger.info(f"               TRADES/DAY [C467]: NO CAP. No count target, no hard "
+                        f"cap, no per-scan limit. {int(getattr(self.cfg,'C404_MAX_PER_PAIR',2))}"
+                        f"/pair still applies (that is concentration, not pace).")
+            logger.info(f"               What refuses a trade now: the three hard vetoes only "
+                        f"— can't pay fees, no room to stop, not tradeable. E<0 is a "
+                        f"PENALTY while p has no measured skill [C467].")
+        else:
+            logger.info(f"               FEE BUDGET [C403-1]: bar servos to ~{_tgt467:.0f} trades/day; "
+                        f"hard cap {_cap467}/day, "
+                        f"{int(getattr(self.cfg,'C404_MAX_PER_PAIR',2))}/pair.")
         logger.info("  3 MONITOR    SPLIT LOOP [C397]: prices every 0.8s (stop, floors);")
         logger.info(f"               OHLCV/DRI every {float(getattr(self.cfg,'C397_DRI_REFRESH_SEC',20)):.0f}s; "
                     f"regime every {float(getattr(self.cfg,'C397_REGIME_REFRESH_SEC',90)):.0f}s, AFTER positions.")
@@ -19383,8 +19705,16 @@ class TradingBot:
                 # half the REMAINING day budget. Tighter of the two wins.
                 try:
                     _ds_eq = getattr(self.mode_mgr, '_day_start_equity', None) or self.portfolio.equity
-                    _day_cap_usd = _ds_eq * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))  # C309
-                    _used_usd = max(0.0, _ds_eq - self.portfolio.equity)
+                    # C467-B: the SAME barrier the sizing reads. Two places that
+                    # decide how much the day may lose must not compute it twice.
+                    try:
+                        _b467s = self._c467_day_barrier()
+                        _day_cap_usd = float(_b467s.get('limit', 0.0)) or \
+                            _ds_eq * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))
+                        _used_usd = float(_b467s.get('used', 0.0))
+                    except Exception:
+                        _day_cap_usd = _ds_eq * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))
+                        _used_usd = max(0.0, _ds_eq - self.portfolio.equity)
                     _remaining_usd = max(0.10, _day_cap_usd - _used_usd)
                     _m_usd = max(getattr(pos, 'initial_margin', 1.0), 1.0)
                     self.cfg._budget_stop_pct = -max(1.0, (_remaining_usd * 0.5) / _m_usd * 100.0)
@@ -20659,7 +20989,14 @@ class TradingBot:
             for _k in ('cur', 'ref', 'E'):
                 if not isinstance(st.get(_k), list):
                     st[_k] = []
-            floor = float(getattr(c, 'C405_E_FLOOR', 0.0))
+            # C467-A: the ABSOLUTE floor, in R, under the adaptive percentile.
+            # The percentile is relative to the current scan's own board, which
+            # is right for ranking and says nothing about whether the best
+            # candidate on a bad board is worth trading at all. This is the one
+            # number that answers that, and it is a real dial: raise it and the
+            # bot demands genuine edge above fees no matter how thin the board.
+            floor = max(float(getattr(c, 'C405_E_FLOOR', 0.0)),
+                        float(getattr(c, 'C467_MIN_EDGE_R', 0.0)))
             pmin = float(getattr(c, 'C405_PCT_MIN', 55.0))
             pmax = float(getattr(c, 'C405_PCT_MAX', 99.0))
 
@@ -21527,6 +21864,195 @@ class TradingBot:
         except Exception:
             return 0.50
 
+
+    # ═══ C467-B: THE DAY BARRIER, MEASURED AGAINST THE MARKET'S OWN SELF ══
+    def _c467_note_stop(self, stop_pct):
+        """Collect this scan's stop distances.
+
+        The stop IS the volatility reading — R = 2×ATR, so the median stop
+        across a scan is the median ATR of everything the bot looked at, in the
+        bot's own units, with no extra fetch and no second definition of
+        volatility to drift out of step with the first. Called once per
+        candidate from the expectancy gate, which every scored pair reaches.
+        """
+        try:
+            v = float(stop_pct or 0.0)
+            if v > 0:
+                lst = getattr(self, '_c467_stop_scan', None)
+                if lst is None:
+                    lst = []
+                    self._c467_stop_scan = lst
+                if len(lst) < 400:
+                    lst.append(v)
+        except Exception:
+            pass
+
+    def _c467_vol_roll(self):
+        """At each scan boundary: median this scan, age the baseline, publish
+        the ratio. Called from the ONE place that already marks a scan tick
+        (_c420_scan_seq), because a second tick would be C420-1 again."""
+        try:
+            lst = getattr(self, '_c467_stop_scan', None) or []
+            self._c467_stop_scan = []
+            if len(lst) < 5:
+                return
+            srt = sorted(lst)
+            med = srt[len(srt) // 2] if len(srt) % 2 else \
+                  0.5 * (srt[len(srt) // 2 - 1] + srt[len(srt) // 2])
+            st = getattr(self, '_c467_vol_state', None)
+            if not isinstance(st, dict):
+                # First reading seeds the baseline AT itself, so the ratio opens
+                # at exactly 1.00 and the barrier opens at its base. A baseline
+                # seeded anywhere else would make the bot's first hour a lie
+                # about the market — that is the C420-1 defect, and it cost
+                # seven hours of lockout the last time it shipped.
+                st = {'base': med, 'last': time.time(), 'n': 0}
+                self._c467_vol_state = st
+            hl = max(1.0, float(getattr(self.cfg, 'C467_BARRIER_VOL_HALFLIFE_H', 24.0)))
+            now = time.time()
+            dt_h = max(0.0, (now - float(st.get('last', now))) / 3600.0)
+            # EWMA with a real half-life, decayed on the READ path as well as
+            # the write path — an estimator that only updates when something
+            # happens is a latch, not an estimator (C420-1).
+            a = 1.0 - 0.5 ** (dt_h / hl) if dt_h > 0 else 0.0
+            st['base'] = (1.0 - a) * float(st.get('base', med)) + a * med
+            st['last'] = now
+            st['n'] = int(st.get('n', 0)) + 1
+            st['med'] = med
+            st['ratio'] = med / max(float(st['base']), 1e-9)
+        except Exception:
+            pass
+
+    def _c467_day_realised(self):
+        """The day's REALISED profit and loss, in dollars.
+
+        Deliberately NOT live equity. The old barrier read day_start minus LIVE
+        equity, so an open position temporarily underwater spent the day's
+        allowance and blocked new entries, then recovered and gave it back. A
+        protection that fires on paper money is not a protection (standing rule
+        #5). Open risk is still counted — by the C313 open-stop RESERVATION,
+        which is the correct, non-double-counting way to do it.
+        """
+        try:
+            d0 = float(getattr(getattr(self, 'mode_mgr', None), '_day_start_equity', 0.0) or 0.0)
+            if d0 <= 0:
+                return 0.0, 0.0
+            if not bool(getattr(self.cfg, 'C467_BARRIER_REALISED', True)):
+                # The pre-C467 behaviour, kept as ONE line so the change can be
+                # A/B'd against the next log without reverting the version --
+                # the C403 method, which has held for sixty-odd versions.
+                try:
+                    live = float(self.portfolio.get_live_equity(self.exchange) or 0.0)
+                except Exception:
+                    live = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)
+                return (live - d0), d0
+            cash = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)
+            return (cash - d0), d0
+        except Exception:
+            return 0.0, 0.0
+
+    def _c467_day_barrier(self):
+        """How many dollars this day may LOSE, right now.
+
+            limit = (declared monthly drawdown / 22) × day-start equity
+                    × vol_ratio × trust
+
+        vol_ratio is the market measured against its own recent self; trust is
+        this bot measured against its own recent record. Neither is an absolute
+        number, which is Principle #1 of this project and the one thing the old
+        fixed DD/22 barrier could never be.
+
+        The month guard is the discipline: whatever the two relative terms say,
+        cumulative realised drawdown may not run ahead of the declared monthly
+        figure pro rata. A dynamic barrier that could outrun its own mandate
+        would not be a barrier, it would be a ratchet pointed the wrong way.
+        """
+        out = {'limit': 0.0, 'base': 0.0, 'vol': 1.0, 'trust': 1.0,
+               'used': 0.0, 'frac': 0.0, 'pnl': 0.0, 'day0': 0.0, 'capped': ''}
+        try:
+            pnl, d0 = self._c467_day_realised()
+            out['pnl'], out['day0'] = pnl, d0
+            if d0 <= 0:
+                return out
+            base = d0 * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.0045) or 0.0045)
+            out['base'] = base
+            if not bool(getattr(self.cfg, 'C467_DYN_BARRIER', True)):
+                out['limit'] = base
+                out['used'] = max(0.0, -pnl)
+                out['frac'] = out['used'] / max(base, 1e-9)
+                return out
+            # --- the market, against its own recent self ---
+            vst = getattr(self, '_c467_vol_state', None) or {}
+            vr = float(vst.get('ratio', 1.0) or 1.0)
+            vlo = float(getattr(self.cfg, 'C467_BARRIER_VOL_LO', 0.70))
+            vhi = float(getattr(self.cfg, 'C467_BARRIER_VOL_HI', 1.50))
+            vol = max(vlo, min(vhi, vr))
+            # --- this bot, against its own recent record ---
+            trust = 1.0
+            try:
+                tlo = float(getattr(self.cfg, 'C467_BARRIER_TRUST_LO', 0.60))
+                thi = float(getattr(self.cfg, 'C467_BARRIER_TRUST_HI', 1.25))
+                need = int(getattr(self.cfg, 'C467_BARRIER_TRUST_N', 8))
+                pay, n_pay = self._c463_realised_payoff()
+                if int(n_pay or 0) >= need:
+                    wr = float(self._c420_base_rate())
+                    # realised expectancy in R: wins pay `pay`, losses cost 1
+                    e_real = wr * float(pay) - (1.0 - wr)
+                    # map [-0.30R, +0.30R] onto [tlo, thi], clamped. 0 -> 1.00
+                    if e_real >= 0:
+                        trust = 1.0 + (thi - 1.0) * min(1.0, e_real / 0.30)
+                    else:
+                        trust = 1.0 - (1.0 - tlo) * min(1.0, -e_real / 0.30)
+                    trust = max(tlo, min(thi, trust))
+            except Exception:
+                trust = 1.0
+            out['vol'], out['trust'] = vol, trust
+            limit = base * vol * trust
+            # --- the month guard ---
+            try:
+                if limit > base:
+                    dd = float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0))
+                    mst = getattr(self, '_c467_month', None) or {}
+                    m_dd = float(mst.get('dd_usd', 0.0) or 0.0)      # realised, this month
+                    m_days = max(1.0, float(mst.get('days', 1.0) or 1.0))
+                    m_eq = float(mst.get('eq0', d0) or d0)
+                    allowed = m_eq * (dd / 100.0) * min(1.0, m_days / 22.0)
+                    if m_dd >= allowed > 0:
+                        limit = min(limit, base)
+                        out['capped'] = 'month'
+            except Exception:
+                pass
+            out['limit'] = max(base * vlo * float(getattr(self.cfg,
+                               'C467_BARRIER_TRUST_LO', 0.60)), limit)
+            out['used'] = max(0.0, -pnl)
+            out['frac'] = out['used'] / max(out['limit'], 1e-9)
+            return out
+        except Exception:
+            return out
+
+    def _c467_month_note(self, realised_delta):
+        """Keep the month-to-date realised drawdown the month guard reads.
+        Written on every close, so the guard cannot be reading a number nobody
+        maintains — the orphan-attribute family this project keeps paying for.
+        """
+        try:
+            import datetime as _dt467
+            st = getattr(self, '_c467_month', None)
+            key = _dt467.date.today().strftime('%Y-%m')
+            if not isinstance(st, dict) or st.get('key') != key:
+                st = {'key': key, 'dd_usd': 0.0, 'days': 1.0,
+                      'eq0': float(getattr(self.portfolio, 'equity', 0.0) or 0.0),
+                      'day': _dt467.date.today().toordinal()}
+                self._c467_month = st
+            d = _dt467.date.today().toordinal()
+            if d != int(st.get('day', d)):
+                st['days'] = float(st.get('days', 1.0)) + 1.0
+                st['day'] = d
+            v = float(realised_delta or 0.0)
+            if v < 0:
+                st['dd_usd'] = float(st.get('dd_usd', 0.0)) + abs(v)
+        except Exception:
+            pass
 
     def _c464_midrank(self, values, x):
         """Cross-sectional percentile with TIES SHARING THE AVERAGE POSITION.
@@ -23078,6 +23604,7 @@ class TradingBot:
             try:   # C462-4: one dashboard line per exit
                 _held462 = pos.get_age_seconds() / 60.0
                 _R462 = float(getattr(pos, '_c372_R_pct', 0.0) or 0.0)
+                self._c467_month_note(net_pnl)     # C467-B month guard ledger
                 _c462_report.note_close(
                     symbol, pos.side, pos.entry_price, exit_price,
                     price_move_pct, net_pnl, reason, _held462,
@@ -23791,7 +24318,23 @@ class TradingBot:
             # C177/C178: fixed schedule minus overshoot carry.
             _normal_target, _n_base = self.mode_mgr.effective_cycle_target(self.cfg, 'normal')
             _day_start = getattr(self.mode_mgr, '_day_start_equity', self.mode_mgr.normal_start_equity)
-            if pnl_pct >= _normal_target:
+            # ═══ C467-B: A DAY IS NEVER STOPPED FOR WINNING ═════════════
+            # The old barrier was symmetric: hit +cap and the day ended, every
+            # position was swept, and trading stopped until tomorrow. On an
+            # account whose entire present purpose is to ACCUMULATE CLOSES so
+            # the C464 ledger can be priced, halting a winning day is pure loss
+            # — it throws away exactly the observations that are working.
+            # The target is still computed, still logged, still the anchor for
+            # the taper. It simply no longer ends the day.
+            if pnl_pct >= _normal_target and not bool(
+                    getattr(self.cfg, 'C467_DAY_PROFIT_HALT', False)):
+                if time.time() - getattr(self, '_c467_tgt_log', 0.0) > 1800:
+                    self._c467_tgt_log = time.time()
+                    logger.info(
+                        f"   🏁 C467: the day is {pnl_pct:.2f}% against its "
+                        f"{_normal_target:.2f}% target — noted, and trading CONTINUES. "
+                        f"Only a loss can end a day now; a good one is left to run.")
+            elif pnl_pct >= _normal_target:
                 # ─── C300: PENDING-HP RESOLUTION (runs every tick while deferred) ───
                 # Mode stays NORMAL during the deferral, so this achieved-branch
                 # re-fires each tick; resolve quietly instead of re-running the
@@ -25866,6 +26409,12 @@ class TradingBot:
             self._c420_scan_seq = int(getattr(self, '_c420_scan_seq', 0)) + 1
         except Exception:
             self._c420_scan_seq = 1
+        # C467-B: the same tick ages the volatility baseline the day barrier
+        # scales on. One tick, two consumers — never a second tick.
+        try:
+            self._c467_vol_roll()
+        except Exception:
+            pass
         logger.info("📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair")
         # C98: Check if monitoring closed a position during scan → abort
         if getattr(self, '_monitor_triggered_close', False):
@@ -27062,7 +27611,85 @@ class TradingBot:
                             self._c455_cold = False      # C455-3: not the adaptive path
                             _minE404 = float(getattr(self.cfg, 'C404_MIN_E', 0.15))
                             _minR404 = float(getattr(self.cfg, 'C404_MIN_R', 1.7))
-                        if _E404 < _minE404 or _rr404 < _minR404:
+                        # ═══ C467: MAY THIS GATE VETO AT ALL? ══════════════
+                        # E = p(R×capture) − (1−p). Every term but p is
+                        # arithmetic; p is a FORECAST, and this bot measures its
+                        # own forecast skill every scan. The 20260918 log:
+                        # acc 0.44, Brier 0.292 against a 0.250 baseline — worse
+                        # than the constant forecaster, at n=315. C342 holds a
+                        # Markov family at 'earning' for −6.8% skill; C343 lets
+                        # one act at +11.2%. The SAME discipline, finally
+                        # applied here: while p has earned no skill, E carries
+                        # no information, and a gate carrying no information may
+                        # not hold a hard veto. It becomes a weighted penalty,
+                        # which is what C403-5 says every non-veto signal is.
+                        # The veto returns BY ITSELF the moment Brier skill goes
+                        # positive; nothing has to be switched back on.
+                        _wsk467 = 1.0
+                        _mayveto467 = True
+                        try:
+                            if bool(getattr(self.cfg, 'C467_EDGE_NEEDS_SKILL', True)):
+                                _wsk467 = float(self._c420_p_skill_weight())
+                                _mayveto467 = _wsk467 > 0.0
+                        except Exception:
+                            _wsk467, _mayveto467 = 1.0, True
+                        # ═══ C467: THE FEE-COVERAGE VETO, WHICH IS ARITHMETIC ═════
+                        # "Can't pay its own fees" is hard veto #1 of the three
+                        # C403-5 authorises, and unlike E it contains no
+                        # forecast: the projected reward, the stop and the fee
+                        # schedule are all measured. This is what actually
+                        # guards the downside once E stands down, so it is
+                        # installed BEFORE E is demoted, never after.
+                        _feeveto467 = False
+                        try:
+                            _cap467 = float(getattr(self.cfg, 'C404_CAPTURE', 0.6))
+                            # ONE fee-burden function, the C408 one. A second
+                            # hand-rolled copy of the same arithmetic is how
+                            # C420-1 got two initialisers for one state, and it
+                            # would also miss per-instrument funding, which is
+                            # 19% of a risk unit on QQQ and 0% on XAU.
+                            _feeR467 = float(self._c408_fee_burden_r(symbol, _R404))
+                            self._c467_note_stop(_R404)   # C467-B volatility reading
+                            _need467 = float(getattr(self.cfg, 'C467_FEE_COVER_MULT', 1.25))
+                            if _rr404 * _cap467 < _need467 * _feeR467:
+                                _feeveto467 = True
+                                if time.time() - getattr(self, '_c467_fee_log', 0.0) > 600:
+                                    self._c467_fee_log = time.time()
+                                    logger.info(
+                                        f"   💸 C467 fee floor: {symbol.split('/')[0]} "
+                                        f"expects {_rr404 * _cap467:.2f}R of reward against a "
+                                        f"{_feeR467:.2f}R round trip — it cannot pay its own "
+                                        f"fees {_need467:.2f}x over. This is the one hard veto "
+                                        f"here that contains no forecast [throttled 10min]")
+                        except Exception:
+                            _feeveto467 = False
+                        if _feeveto467:
+                            rejected_reasons['fee_floor'] = rejected_reasons.get('fee_floor', 0) + 1
+                            continue
+                        # E is below the bar but p has no right to veto: TAX the
+                        # score instead, in proportion to how far below zero E
+                        # sits measured in the candidate's own R. Bounded, so a
+                        # nonsense E cannot silently zero a candidate.
+                        if (_E404 < _minE404 or _rr404 < _minR404) and not _mayveto467:
+                            try:
+                                _short467 = max(0.0, float(_minE404) - float(_E404))
+                                _taxmax467 = float(getattr(self.cfg, 'C467_EDGE_PENALTY_MAX', 0.25))
+                                _tax467 = min(_taxmax467, _short467 * 2.0 * _taxmax467)
+                                analysis['_c467_edge_tax'] = round(_tax467, 4)
+                                analysis['score'] = float(analysis.get('score', 0) or 0) * (1.0 - _tax467)
+                                if time.time() - getattr(self, '_c467_tax_log', 0.0) > 600:
+                                    self._c467_tax_log = time.time()
+                                    logger.info(
+                                        f"   ⚖️ C467: {symbol.split('/')[0]} E={_E404:+.3f}R is "
+                                        f"below the {_minE404:+.3f}R bar, but the probability "
+                                        f"feeding E has NO measured skill (Brier skill ≤ 0), so "
+                                        f"E does not get a veto — score taxed {100*_tax467:.0f}% "
+                                        f"instead and the other gates decide. The veto returns "
+                                        f"automatically when p starts beating a coin flip "
+                                        f"[C467, throttled 10min]")
+                            except Exception:
+                                pass
+                        if (_E404 < _minE404 or _rr404 < _minR404) and _mayveto467:
                             _sn404 = symbol.split('/')[0]
                             _st405 = getattr(self, '_c405_state', {}) or {}
                             _cold455 = bool(getattr(self, '_c455_cold', False))
@@ -32762,8 +33389,21 @@ class TradingBot:
                     _bf_live_eq = float(getattr(self.portfolio, 'equity', 50.0) or 50.0)
                 _bf_day_start = float(getattr(getattr(self, 'mode_mgr', None), '_day_start_equity', None)
                                       or _bf_live_eq)
-                _bf_cap_d = _bf_day_start * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))  # C309: day cap in $ (single source)
-                _bf_used_d = max(0.0, _bf_day_start - _bf_live_eq)     # drawdown already consumed
+                # ═══ C467-B: ONE DAY BARRIER, DYNAMIC, REALISED-ONLY ═══════
+                # Was: a fixed DD/22 against LIVE equity. Live equity means an
+                # open position marked temporarily underwater SPENDS the day's
+                # allowance and blocks new entries, then recovers and hands it
+                # back — which is how the 20260918 session read "94% used" at
+                # 10:05 on a day it was UP. Open risk is still counted, by the
+                # C313 reservation below, which is the non-double-counting way.
+                try:
+                    _b467 = self._c467_day_barrier()
+                    _bf_cap_d = float(_b467.get('limit', 0.0)) or \
+                        _bf_day_start * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))
+                    _bf_used_d = float(_b467.get('used', 0.0))
+                except Exception:
+                    _bf_cap_d = _bf_day_start * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))
+                    _bf_used_d = max(0.0, _bf_day_start - _bf_live_eq)
                 # ─── C313: OPEN-STOP RESERVATION (closes the C309 overage corner) ───
                 # _bf_used_d is measured off LIVE equity, so an open position's
                 # unrealized loss is already counted — but its REMAINING distance to
@@ -35019,8 +35659,10 @@ def startup():
             except Exception as _e462s:
                 print(f"  \u26a0\ufe0f  session baseline failed: {type(_e462s).__name__}")
             try:   # C462-4: open the report with a header, not a wall of text
+                _c467_cfg_ref[0] = cfg           # C467-C
                 _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
                 _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
+                _c467_ruler(cfg, _c462_report.W)  # C467-C
                 _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
                                       getattr(cfg, 'C466_PALETTE', 'classic'))
                 _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
@@ -35120,8 +35762,10 @@ def startup():
             pass
         try:
             bot.portfolio._c462_mark_session_start()
+            _c467_cfg_ref[0] = cfg               # C467-C
             _c462_report.set_width(getattr(cfg, 'C462_LOG_WIDTH', 0))
             _c462_report.set_glyphs(getattr(cfg, 'C465_GLYPHS', 'ascii'))
+            _c467_ruler(cfg, _c462_report.W)      # C467-C
             _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
                                   getattr(cfg, 'C466_PALETTE', 'classic'))
             _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
@@ -35255,6 +35899,37 @@ class RemoteControl:
             from http.server import HTTPServer, BaseHTTPRequestHandler
             import json
             
+            # ═══ C467-D: what the request handler is allowed to reach ═════
+            # The Handler is a NESTED class, so it closes over these names. They
+            # are gathered HERE, once, rather than reached for through `self`
+            # inside the handler -- where `self` is the request, not the bot.
+            # That is the wrong-object family this project has paid for nine
+            # times, and a nested HTTP handler is exactly where it hides.
+            import os as _os467
+            _tok_ref = [str(os.environ.get('OMEGA_CTRL_TOKEN', '') or '').strip()]
+            if not bool(getattr(self.bot.cfg, 'C467_CTRL_AUTH', True)):
+                _tok_ref[0] = ''
+            _tailmax_ref = [int(getattr(self.bot.cfg, 'C467_CTRL_TAIL_MAX', 400))]
+            _logs_ref = [{}]
+            _files_ref = [[]]
+            try:
+                _logs_ref[0] = {
+                    'report': _C462_REPORT_PATH,
+                    'session': _C52_LOG_PATH,
+                    'detail': _C460_DETAIL_PATH}
+                for _k467, _v467 in list(_logs_ref[0].items()):
+                    if not _v467:
+                        # A log tail that silently reports "(no log yet)" for a
+                        # file that simply was not wired is a measurement that
+                        # fails quietly (standing rule 5). Say so, loudly, once.
+                        logger.warning(f"⚠️ C467-D: no path for the {_k467} log — "
+                                       f"the remote log viewer cannot show it")
+                _logdir467 = _os467.path.dirname(_C462_REPORT_PATH) or '.'
+                _files_ref[0] = [_os467.path.join(_logdir467, 'omega_*.log'),
+                                 _os467.path.join(_logdir467, '*.json')]
+            except Exception:
+                pass
+
             # Detect local IP address for display
             _local_ip = '0.0.0.0'
             try:
@@ -35272,30 +35947,171 @@ class RemoteControl:
             class Handler(BaseHTTPRequestHandler):
                 def log_message(self, format, *args):
                     pass  # Suppress HTTP logs
-                
+
+                # ═══ C467-D: NOTHING HAPPENS WITHOUT THE TOKEN ═══════════
+                # Checked on EVERY request, GET and POST alike, before the path
+                # is even looked at. A guard that protects the POSTs and leaves
+                # the GETs open is not a guard: /api/status alone tells a
+                # stranger the account size, the open book and the equity curve.
+                def _authed(self):
+                    if not _tok_ref[0]:
+                        return True          # no token -> localhost-only bind
+                    try:
+                        import urllib.parse as _up
+                        q = _up.parse_qs(_up.urlparse(self.path).query)
+                        given = (self.headers.get('X-Omega-Token')
+                                 or (q.get('t') or [''])[0] or '')
+                        # constant-time compare, so the token cannot be guessed
+                        # one character at a time from response timing
+                        import hmac
+                        return hmac.compare_digest(str(given), str(_tok_ref[0]))
+                    except Exception:
+                        return False
+
+                def _deny(self):
+                    self.send_response(401)
+                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(b'OMEGA: token required. Add ?t=YOUR_TOKEN '
+                                     b'to the address, or send an X-Omega-Token header.')
+
+                def _tail(self, which, n):
+                    """C467-D: the last N lines of one of the three log files."""
+                    import os as _os
+                    paths = dict(_logs_ref[0] or {})
+                    p = paths.get(which)
+                    if not p or not _os.path.exists(p):
+                        return f"(no {which} log yet)"
+                    try:
+                        n = max(1, min(int(n), int(_tailmax_ref[0])))
+                        with open(p, 'rb') as fh:
+                            fh.seek(0, 2)
+                            size = fh.tell()
+                            block = min(size, n * 220 + 4096)
+                            fh.seek(size - block)
+                            data = fh.read().decode('utf-8', 'replace')
+                        return '\n'.join(data.splitlines()[-n:])
+                    except Exception as e:
+                        return f"(could not read {which}: {type(e).__name__})"
+
                 def do_GET(self):
-                    if self.path == '/api/status':
+                    if not self._authed():
+                        return self._deny()
+                    import urllib.parse as _up
+                    _pr = _up.urlparse(self.path)
+                    _q = _up.parse_qs(_pr.query)
+                    _p = _pr.path
+                    if _p == '/api/status':
                         self._send_json(self._get_status())
-                    elif self.path == '/api/positions':
+                    elif _p == '/api/positions':
                         self._send_json(self._get_positions())
+                    elif _p == '/api/health':
+                        # C467-D: for the watchdog. A bot that has stopped
+                        # scanning while its process is still alive is the
+                        # failure mode a plain process check cannot see, so this
+                        # reports the AGE of the last scan, not just "I am up".
+                        import time as _t
+                        _age = None
+                        try:
+                            _ls = getattr(_c462_report, 'last_scan', None) or {}
+                            if _ls.get('t'):
+                                _age = round(_t.time() - float(_ls['t']), 1)
+                        except Exception:
+                            _age = None
+                        self._send_json({'ok': True, 'last_scan_age_s': _age,
+                                         'scans': getattr(_c462_report, 'n_scans', 0),
+                                         'uptime_s': round(_t.time() - getattr(
+                                             _c462_report, 't0', _t.time()), 1)})
+                    elif _p == '/api/logs':
+                        which = (_q.get('file') or ['report'])[0]
+                        n = (_q.get('n') or ['200'])[0]
+                        self._send_text(self._tail(which, n))
+                    elif _p == '/api/files':
+                        import os as _os, glob as _g
+                        out = []
+                        for _pat in (_files_ref[0] or []):
+                            for _f in _g.glob(_pat):
+                                try:
+                                    out.append({'name': _os.path.basename(_f),
+                                                'bytes': _os.path.getsize(_f),
+                                                'path': _f})
+                                except Exception:
+                                    pass
+                        self._send_json({'files': sorted(out, key=lambda a: a['name'])})
+                    elif _p == '/api/download':
+                        import os as _os, glob as _g
+                        want = (_q.get('f') or [''])[0]
+                        allowed = set()
+                        for _pat in (_files_ref[0] or []):
+                            for _f in _g.glob(_pat):
+                                allowed.add(_os.path.basename(_f))
+                        # C467-D: serve by BASENAME against an allow-list built
+                        # from the bot's own glob patterns. Never join user text
+                        # onto a directory -- that is a path-traversal hole, and
+                        # "../../.ssh/id_rsa" is a basename-shaped string too.
+                        if want not in allowed:
+                            self.send_response(404); self.end_headers()
+                            self.wfile.write(b'not an OMEGA file'); return
+                        real = None
+                        for _pat in (_files_ref[0] or []):
+                            for _f in _g.glob(_pat):
+                                if _os.path.basename(_f) == want:
+                                    real = _f; break
+                        try:
+                            with open(real, 'rb') as fh:
+                                body = fh.read()
+                            self.send_response(200)
+                            self.send_header('Content-Type', 'application/octet-stream')
+                            self.send_header('Content-Disposition',
+                                             f'attachment; filename="{want}"')
+                            self.send_header('Content-Length', str(len(body)))
+                            self.end_headers(); self.wfile.write(body)
+                        except Exception:
+                            self.send_response(500); self.end_headers()
                     else:
                         self._send_html(self._dashboard_html())
-                
+
                 def do_POST(self):
-                    if self.path == '/api/pause':
+                    if not self._authed():
+                        return self._deny()
+                    # ═══ C467-D, CAUGHT BY THE HARNESS ══════════════════
+                    # These routes matched `self.path` EXACTLY. That was correct
+                    # for as long as no request carried a query string -- and
+                    # C467-D put `?t=TOKEN` on every single one. Pause, resume,
+                    # STOP and force-scan would all have returned
+                    # {"error": "Unknown command"} with HTTP 200, so the panel
+                    # would have looked like it worked and done nothing. On a
+                    # machine in another country, with the STOP button, that is
+                    # about as bad as a silent failure gets.
+                    # Route on the path alone, once, at the top.
+                    _route = self.path.split('?')[0]
+                    if _route == '/api/restart':
+                        # C467-D: a clean stop. systemd's Restart=always brings
+                        # it straight back, which is what "restart" means on a
+                        # machine the operator cannot reach a keyboard on.
+                        cmd_ref['restart'] = True
+                        cmd_ref['stop'] = True
+                        self._send_json({'ok': True, 'msg': 'Restart requested'})
+                        return
+                    if _route == '/api/pause':
                         cmd_ref['pause'] = True
                         self._send_json({'ok': True, 'msg': 'Pause requested'})
-                    elif self.path == '/api/resume':
+                    elif _route == '/api/resume':
                         cmd_ref['resume'] = True
                         self._send_json({'ok': True, 'msg': 'Resume requested'})
-                    elif self.path == '/api/stop':
+                    elif _route == '/api/stop':
                         cmd_ref['stop'] = True
                         self._send_json({'ok': True, 'msg': 'Stop requested'})
-                    elif self.path == '/api/scan':
+                    elif _route == '/api/scan':
                         cmd_ref['force_scan'] = True
                         self._send_json({'ok': True, 'msg': 'Force scan requested'})
                     else:
-                        self._send_json({'error': 'Unknown command'})
+                        # C467-D: a 200 carrying {"error": ...} is how the bug
+                        # above stayed invisible. An unknown route is a 404.
+                        self.send_response(404)
+                        self.send_header('Content-Type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(b'{"error": "Unknown command"}')
                 
                 def _get_status(self):
                     try:
@@ -35357,9 +36173,14 @@ button.danger:hover{background:#f44;color:#111}
 #status{white-space:pre-line}
 </style>
 <script>
+// C467-D: the panel is opened as  .../?t=TOKEN , so the token is already in
+// this page's own address. Read it from there and put it on every request.
+// It is NOT templated into the HTML body: the page is the same for everyone,
+// and the secret stays in the address bar where the operator put it.
+function T(){var m=location.search.match(/[?&]t=([^&]*)/);return m?('?t='+m[1]):'';}
 async function refresh(){
   try{
-    let r=await fetch('/api/status');let d=await r.json();
+    let r=await fetch('/api/status'+T());let d=await r.json();
     let pnl=d.pnl>=0?`<span class="pos">+$${d.pnl}</span>`:`<span class="neg">-$${Math.abs(d.pnl)}</span>`;
     document.getElementById('status').innerHTML=
       `💰 Equity: $${d.equity}  |  PnL: ${pnl}
@@ -35367,7 +36188,7 @@ async function refresh(){
 📡 Positions: ${d.positions}  |  R: ${d.market_R}
 ⏱️ Scan: ${d.scan_age_s}s ago  |  Up: ${d.uptime_min}min
 🤖 ${d.version}`;
-    let p=await fetch('/api/positions');let pd=await p.json();
+    let p=await fetch('/api/positions'+T());let pd=await p.json();
     let ph='';
     if(pd.positions&&pd.positions.length>0){
       pd.positions.forEach(pos=>{
@@ -35379,7 +36200,7 @@ async function refresh(){
 }
 async function cmd(c){
   if(c=='stop'&&!confirm('STOP the bot?'))return;
-  await fetch('/api/'+c,{method:'POST'});
+  await fetch('/api/'+c+T(),{method:'POST'});
   refresh();
 }
 setInterval(refresh,5000);refresh();
@@ -35403,6 +36224,14 @@ setInterval(refresh,5000);refresh();
                     self.end_headers()
                     self.wfile.write(json.dumps(data).encode('utf-8'))
                 
+                def _send_text(self, text):
+                    body = str(text).encode('utf-8', 'replace')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                    self.send_header('Content-Length', str(len(body)))
+                    self.end_headers()
+                    self.wfile.write(body)
+
                 def _send_html(self, html):
                     self.send_response(200)
                     # C151: charset=utf-8 — browser was reading UTF-8 emoji bytes as Latin-1
@@ -35410,14 +36239,25 @@ setInterval(refresh,5000);refresh();
                     self.end_headers()
                     self.wfile.write(html.encode('utf-8'))
             
-            self._server = HTTPServer(('0.0.0.0', self.port), Handler)
+            # ═══ C467-D: BIND WHERE IT IS SAFE TO BIND ══════════════
+            # With a token: 0.0.0.0, so a tunnel or the local wifi can reach it.
+            # Without one: 127.0.0.1 ONLY. The panel can pause, resume and stop
+            # a trading bot, so an unauthenticated one must be unreachable from
+            # the network BY CONSTRUCTION rather than by the operator
+            # remembering. This is the one place that decision can be made once.
+            _bind467 = '0.0.0.0' if _tok_ref[0] else '127.0.0.1'
+            self._server = HTTPServer((_bind467, self.port), Handler)
             self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
             self._thread.start()
-            logger.info(f"🌐 Remote control started at http://0.0.0.0:{self.port}")
-            logger.info(f"   📱 Same WiFi: http://{_local_ip}:{self.port}")
-            logger.info(f"   🌍 Internet: Install 'pip install pyngrok' then run:")
-            logger.info(f"       from pyngrok import ngrok; ngrok.connect({self.port})")
-            logger.info(f"       OR use: ssh -R 80:localhost:{self.port} serveo.net")
+            if _tok_ref[0]:
+                logger.info(f"🌐 Remote control on http://{_bind467}:{self.port} — TOKEN REQUIRED")
+                logger.info(f"   📱 Same WiFi: http://{_local_ip}:{self.port}/?t=<your token>")
+                logger.info(f"   🌍 Internet: put a Cloudflare Tunnel in front of this port.")
+                logger.info(f"       See deploy/DEPLOY.md — one command, no open ports, free.")
+            else:
+                logger.info(f"🌐 Remote control on http://127.0.0.1:{self.port} — LOCALHOST ONLY")
+                logger.info(f"   🔒 No OMEGA_CTRL_TOKEN is set, so it is NOT reachable from the")
+                logger.info(f"      network. Set one to expose it: export OMEGA_CTRL_TOKEN='...'")
         except Exception as e:
             logger.warning(f"⚠️ Remote control failed to start: {e}")
     
@@ -35435,6 +36275,15 @@ setInterval(refresh,5000);refresh();
         if self._commands.get('force_scan'):
             self._commands.pop('force_scan', None)
             return 'force_scan'
+        # C467-D: 'restart' is delivered as a stop; the service manager brings
+        # the process back. It is popped and ANNOUNCED here so the log records
+        # that the operator asked for a restart rather than a shutdown -- two
+        # very different events that would otherwise look identical afterwards.
+        if self._commands.get('restart'):
+            self._commands.pop('restart', None)
+            logger.info("🔄 C467-D: RESTART requested from the control panel — "
+                        "stopping cleanly. systemd Restart=always will bring the bot "
+                        "back within seconds; see deploy/DEPLOY.md.")
         return None
 
 

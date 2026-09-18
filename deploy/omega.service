@@ -1,0 +1,64 @@
+# OMEGA V60 — systemd service unit  [C467-D]
+#
+# What this does, in plain English:
+#   - starts the bot when the machine boots
+#   - restarts it within 10 seconds if it ever stops or crashes
+#   - sends everything the bot prints to the system journal as well as
+#     to its own log files, so nothing is lost if a file is deleted
+#
+# Install:  sudo cp omega.service /etc/systemd/system/
+#           sudo systemctl daemon-reload
+#           sudo systemctl enable --now omega
+#
+# Look at it:   sudo systemctl status omega
+# Live log:     sudo journalctl -u omega -f
+# Stop it:      sudo systemctl stop omega
+# Start again:  sudo systemctl start omega
+# Restart:      sudo systemctl restart omega
+
+[Unit]
+Description=OMEGA V60 crypto perpetual futures bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=omega
+Group=omega
+WorkingDirectory=/home/omega/omega
+
+# The control-panel token. Keep it in this file, which is root-owned and
+# mode 0644 by default — tighten it: sudo chmod 600 /etc/systemd/system/omega.service
+# NEVER put the token in the Python file; that file goes to git.
+Environment=OMEGA_CTRL_TOKEN=CHANGE_ME_TO_A_LONG_RANDOM_STRING
+Environment=PYTHONUNBUFFERED=1
+# The bot measures the terminal, and a service has none. 100 is a good width
+# for reading the log through the browser panel.
+Environment=OMEGA_LOG_WIDTH=100
+# Exchange keys go here too when you eventually go live. Until then the bot is
+# in paper mode and needs none.
+# Environment=BITGET_API_KEY=...
+# Environment=BITGET_API_SECRET=...
+# Environment=BITGET_API_PASSWORD=...
+
+ExecStart=/home/omega/omega/venv/bin/python /home/omega/omega/omega_v60_reconstructed.py
+
+Restart=always
+RestartSec=10
+# If it crashes in a tight loop, back off rather than hammering the exchange.
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=omega
+
+# Modest hardening. The bot only needs its own directory and the network.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/omega/omega
+
+[Install]
+WantedBy=multi-user.target
