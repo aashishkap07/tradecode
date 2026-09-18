@@ -1938,6 +1938,12 @@ class _C462Report:
 # config rather than a copy taken at some earlier moment.
 _c467_cfg_ref = [None]
 
+# C469: ONE version string. The remote panel announced 'C151' for eighteen
+# versions because the literal was buried in a dict nobody re-read, and the boot
+# header carries its own. A version printed in two places is a version that will
+# disagree with itself.
+_OMEGA_VERSION = 'C469'
+
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
 # BEFORE the log is sealed — on Ctrl-C, on SIGTERM and on a clean return alike.
@@ -35783,7 +35789,7 @@ def startup():
                 _c467_ruler(cfg, _c462_report.W)  # C467-C
                 _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
                                       getattr(cfg, 'C466_PALETTE', 'classic'))
-                _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+                _c462_report.header(_OMEGA_VERSION, 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                     bot.portfolio.equity,
                                     day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
                 print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
@@ -35886,7 +35892,7 @@ def startup():
             _c467_ruler(cfg, _c462_report.W)      # C467-C
             _why466 = _c466_apply(getattr(cfg, 'C466_COLOR', 'auto'),
                                   getattr(cfg, 'C466_PALETTE', 'classic'))
-            _c462_report.header('C466', 'PAPER' if cfg.PAPER_MODE else 'LIVE',
+            _c462_report.header(_OMEGA_VERSION, 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                 bot.portfolio.equity,
                                 day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
             print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
@@ -36245,12 +36251,80 @@ class RemoteControl:
                         last_scan = getattr(bot_ref, '_last_scan_time', 0)
                         scan_age = round(time.time() - last_scan) if last_scan else 0
                         r = getattr(bot_ref, '_market_bias_resultant', 0)
-                        return {
+                        # ═══ C469: SEND WHAT THE OPERATOR ACTUALLY READS ═══════
+                        # This payload had not changed since C151 and still
+                        # announced itself as 'C151'. Everything built since --
+                        # the session trade journal, the equity curve, the
+                        # maker/taker split, the C467 day barrier -- existed only
+                        # in the log files, so the panel showed five lines while
+                        # the interesting numbers sat in a file nobody could
+                        # reach from a phone. All of it travels now.
+                        _out469 = {
                             'equity': round(eq, 2), 'mode': mode, 'pnl': pnl,
                             'positions': n_pos, 'win_rate': wr,
                             'scan_age_s': scan_age, 'market_R': round(r, 3),
-                            'version': 'C151', 'uptime_min': round((time.time() - getattr(bot_ref, '_bot_start_time', time.time())) / 60, 1)
+                            'version': _OMEGA_VERSION,
+                            'uptime_min': round((time.time() - getattr(bot_ref, '_bot_start_time', time.time())) / 60, 1),
+                            'paper': bool(getattr(bot_ref.cfg, 'PAPER_MODE', True)),
                         }
+                        try:      # the session journal
+                            _st469 = _c462_report.stats()
+                            _inf = float('inf')
+                            _out469.update({
+                                'trades': _st469['n'], 'wins': _st469['w'],
+                                'losses': _st469['l'],
+                                'wr_journal': round(100.0 * _st469['wr'], 1),
+                                'payoff': (None if _st469['payoff'] in (_inf,)
+                                           else round(_st469['payoff'], 2)),
+                                'expectancy': round(_st469['expectancy'], 3),
+                                'breakeven_wr': round(100.0 * _st469['breakeven_wr'], 1),
+                                'maker': _c462_report.n_maker,
+                                'taker': _c462_report.n_taker,
+                                # NOT 'fees_paid' -- that attribute does not
+                                # exist. The report keeps the two legs apart,
+                                # because the whole C461/C463 argument is about
+                                # the gap between them.
+                                'fees_maker': round(float(getattr(_c462_report, 'fees_maker', 0.0) or 0.0), 3),
+                                'fees_taker': round(float(getattr(_c462_report, 'fees_taker', 0.0) or 0.0), 3),
+                                'fees': round(float(getattr(_c462_report, 'fees_maker', 0.0) or 0.0)
+                                              + float(getattr(_c462_report, 'fees_taker', 0.0) or 0.0), 3),
+                                'scans': _c462_report.n_scans,
+                                'analyses': _c462_report.n_analyses,
+                            })
+                            # the curve, decimated -- a phone cannot draw 4,000
+                            # points and does not need to.
+                            _cv = [float(v) for v in (_c462_report.equity_curve or [])]
+                            if len(_cv) > 80:
+                                _stp = (len(_cv) - 1) / 79.0
+                                _cv = [_cv[int(round(i * _stp))] for i in range(80)]
+                            _out469['curve'] = [round(v, 4) for v in _cv]
+                        except Exception:
+                            pass
+                        try:      # the C467 day barrier
+                            _b469 = bot_ref._c467_day_barrier()
+                            _out469['day'] = {
+                                'realised': round(float(_b469.get('pnl', 0.0)), 2),
+                                'limit': round(float(_b469.get('limit', 0.0)), 2),
+                                'used': round(float(_b469.get('used', 0.0)), 2),
+                                'frac': round(float(_b469.get('frac', 0.0)), 4),
+                                'vol': round(float(_b469.get('vol', 1.0)), 2),
+                                'trust': round(float(_b469.get('trust', 1.0)), 2),
+                                'capped': _b469.get('capped', ''),
+                            }
+                        except Exception:
+                            pass
+                        try:      # the last scan, as the report saw it
+                            _ls469 = _c462_report.last_scan or {}
+                            _out469['last_scan'] = {
+                                'analyzed': _ls469.get('analyzed'),
+                                'passed': _ls469.get('passed'),
+                                'top': _ls469.get('top'),
+                                'score': _ls469.get('score'),
+                                'reason': _ls469.get('reason'),
+                            }
+                        except Exception:
+                            pass
+                        return _out469
                     except Exception as e:
                         return {'error': str(e)}
                 
@@ -36274,65 +36348,297 @@ class RemoteControl:
                         return {'error': str(e)}
                 
                 def _dashboard_html(self):
-                    return '''<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>OMEGA V60 Remote</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+                    """C469: the panel the operator actually reads.
+
+                    It had not changed since C151: five lines of status and four
+                    buttons, while the dashboard the whole C462-C467 arc was
+                    built to produce -- the trade journal, the equity curve, the
+                    day barrier, the scan detail -- went only to the log FILES,
+                    which cannot be reached from a phone. The operator asked the
+                    obvious question: "is this the log or the dashboard?"
+
+                    So the log comes to the panel. Four views (the latest
+                    dashboard block, then each of the three files), a font-size
+                    control because the report is laid out at 100 columns and a
+                    phone is not, wrap and auto-scroll toggles, and downloads.
+                    Every preference is remembered per device.
+
+                    COLOUR RULE, same as C466: status colour NEVER carries
+                    meaning alone. Every value it paints already says what it is
+                    in text -- a sign, or the words WIN / LOSS / maker / TAKER.
+                    The six colours were checked against the panel surface
+                    rather than chosen by eye; all clear WCAG 4.5:1.
+
+                    RAW STRING, deliberately. The script holds regex escapes
+                    (\\s, \\d, \\n). In an ordinary Python string \\n would become a
+                    real newline inside a JavaScript string literal and the page
+                    would die with a syntax error before rendering a thing.
+                    """
+                    return r'''<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>OMEGA V60</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
 <style>
-body{font-family:monospace;background:#111;color:#0f0;padding:15px;max-width:600px;margin:auto}
-h1{color:#0ff;font-size:1.3em}
-.card{background:#222;border:1px solid #333;padding:12px;margin:8px 0;border-radius:6px}
-.val{color:#fff;font-size:1.1em}
-.pos{color:#0f0} .neg{color:#f44}
-button{background:#333;color:#0f0;border:1px solid #0f0;padding:10px 20px;margin:5px;
-       border-radius:4px;font-family:monospace;cursor:pointer;font-size:1em}
-button:hover{background:#0f0;color:#111}
-button.danger{border-color:#f44;color:#f44}
-button.danger:hover{background:#f44;color:#111}
-#status{white-space:pre-line}
-</style>
+/* C469 palette. Every value below was CHECKED, not chosen by eye: each clears
+   WCAG 4.5:1 against --bg, and the three status roles pass CVD separation.
+   Status colour NEVER carries meaning alone -- every number it paints already
+   states its meaning in text (a sign, or the words WIN / LOSS / maker). */
+:root{
+  --bg:#0d1117; --panel:#161b22; --line:#30363d;
+  --ink:#e6edf3;      /* 16.0:1 */
+  --muted:#8b949e;    /*  6.2:1 */
+  --good:#0ca30c;     /*  5.6:1 */
+  --warn:#fab219;     /* 10.3:1 */
+  --bad:#ff7b72;      /*  7.5:1 */
+  --accent:#54aeff;   /*  8.0:1 */
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--mono);font-size:14px;-webkit-text-size-adjust:100%}
+body{padding:0 12px 28px;max-width:1100px;margin:0 auto}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  padding:12px 0 8px;border-bottom:1px solid var(--line);margin-bottom:12px}
+h1{margin:0;font-size:15px;letter-spacing:.06em;color:var(--accent);font-weight:600}
+.sub{color:var(--muted);font-size:11px;margin-top:3px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--good);margin-right:5px;vertical-align:middle}
+.dot.stale{background:var(--warn)} .dot.dead{background:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px}
+.tile .k{color:var(--muted);font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.tile .v{font-size:19px;margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile .s{color:var(--muted);font-size:11px;margin-top:2px;font-variant-numeric:tabular-nums}
+.good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)} .muted{color:var(--muted)}
+.meter{height:5px;background:#21262d;border-radius:3px;margin-top:7px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--good);border-radius:3px;
+  transition:width .4s ease}
+.meter i.w{background:var(--warn)} .meter i.b{background:var(--bad)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:11px;margin-top:10px}
+section h2{margin:0 0 8px;font-size:10px;letter-spacing:.09em;color:var(--muted);
+  text-transform:uppercase;font-weight:600}
+svg{display:block;width:100%;height:56px;overflow:visible}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+button,a.btn{background:#21262d;color:var(--ink);border:1px solid var(--line);
+  padding:9px 13px;border-radius:6px;font-family:var(--mono);font-size:12px;
+  cursor:pointer;text-decoration:none;display:inline-block;min-height:38px;line-height:1.5}
+button:active{background:#30363d}
+button.on{border-color:var(--accent);color:var(--accent)}
+button.danger{border-color:var(--bad);color:var(--bad)}
+pre#log{margin:0;background:#010409;border:1px solid var(--line);border-radius:6px;
+  padding:9px;overflow:auto;max-height:64vh;font-size:10px;line-height:1.42;
+  white-space:pre;color:var(--ink)}
+pre#log.wrap{white-space:pre-wrap;word-break:break-word}
+.l-g{color:var(--good)} .l-b{color:var(--bad)} .l-w{color:var(--warn)}
+.l-m{color:var(--muted)} .l-a{color:var(--accent)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tabs button{padding:6px 10px;font-size:11px;min-height:32px}
+.tools{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.tools button{padding:5px 9px;font-size:11px;min-height:30px}
+#err{color:var(--bad);font-size:11px;margin-top:6px;min-height:14px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+td{padding:3px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+</style></head><body>
+
+<header>
+  <h1><span class="dot" id="dot"></span>OMEGA V60 <span id="ver" class="muted"></span></h1>
+  <div class="sub" id="sub">connecting&hellip;</div>
+</header>
+
+<div class="grid">
+  <div class="tile"><div class="k">Equity</div>
+    <div class="v" id="eq">&mdash;</div><div class="s" id="eqs"></div></div>
+  <div class="tile"><div class="k">Day loss room</div>
+    <div class="v" id="day">&mdash;</div><div class="s" id="days"></div>
+    <div class="meter"><i id="daybar" style="width:0%"></i></div></div>
+  <div class="tile"><div class="k">Record</div>
+    <div class="v" id="rec">&mdash;</div><div class="s" id="recs"></div></div>
+  <div class="tile"><div class="k">Scanning</div>
+    <div class="v" id="scan">&mdash;</div><div class="s" id="scans"></div></div>
+</div>
+
+<section id="curvewrap" hidden>
+  <h2>Equity this session</h2>
+  <svg id="curve" viewBox="0 0 300 56" preserveAspectRatio="none"
+       role="img" aria-label="Equity over this session"></svg>
+  <div class="s muted" id="curvelab"></div>
+</section>
+
+<section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
+
+<section><h2>Controls</h2>
+  <div class="row">
+    <button onclick="cmd('pause')">Pause</button>
+    <button onclick="cmd('resume')">Resume</button>
+    <button onclick="cmd('scan')">Force scan</button>
+    <button onclick="cmd('restart')">Restart</button>
+    <button class="danger" onclick="cmd('stop')">STOP</button>
+  </div>
+  <div id="err"></div>
+</section>
+
+<section>
+  <h2>Log</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="tools">
+    <button onclick="fs(-1)">A&minus;</button>
+    <button onclick="fs(1)">A+</button>
+    <button id="wrapb" onclick="tw()">Wrap</button>
+    <button id="autob" onclick="ta()">Auto</button>
+    <a class="btn" id="dl" href="#">Download</a>
+    <span class="muted" id="lines" style="font-size:11px"></span>
+  </div>
+  <pre id="log">loading&hellip;</pre>
+</section>
+
 <script>
-// C467-D: the panel is opened as  .../?t=TOKEN , so the token is already in
-// this page's own address. Read it from there and put it on every request.
-// It is NOT templated into the HTML body: the page is the same for everyone,
-// and the secret stays in the address bar where the operator put it.
-function T(){var m=location.search.match(/[?&]t=([^&]*)/);return m?('?t='+m[1]):'';}
-async function refresh(){
+function T(){var m=location.search.match(/[?&]t=([^&]*)/);return m?m[1]:'';}
+var TOK=T(), Q=TOK?('?t='+TOK):'';
+function q(i){return document.getElementById(i)}
+function money(v){var n=Number(v)||0;return (n<0?'-$':'$')+Math.abs(n).toFixed(2)}
+function sgn(v){var n=Number(v)||0;return (n>=0?'+':'-')+'$'+Math.abs(n).toFixed(2)}
+function cls(v){return (Number(v)||0)>0?'good':((Number(v)||0)<0?'bad':'muted')}
+
+/* ---------- log viewer state, remembered per device ---------- */
+var LS={get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},
+        set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var FILE=LS.get('omega.file','live'), SIZE=+LS.get('omega.size',10),
+    WRAP=LS.get('omega.wrap','0')==='1', AUTO=LS.get('omega.auto','1')==='1';
+var TABS=[['live','Latest block'],['report','Report'],['session','Session'],['detail','Detail']];
+function drawTabs(){q('tabs').innerHTML='';TABS.forEach(function(t){
+  var b=document.createElement('button');b.textContent=t[1];
+  if(t[0]===FILE)b.className='on';
+  b.onclick=function(){FILE=t[0];LS.set('omega.file',FILE);drawTabs();pullLog()};
+  q('tabs').appendChild(b)})}
+function fs(d){SIZE=Math.max(7,Math.min(18,SIZE+d));LS.set('omega.size',SIZE);
+  q('log').style.fontSize=SIZE+'px'}
+function tw(){WRAP=!WRAP;LS.set('omega.wrap',WRAP?'1':'0');applyView()}
+function ta(){AUTO=!AUTO;LS.set('omega.auto',AUTO?'1':'0');applyView()}
+function applyView(){q('log').className=WRAP?'wrap':'';
+  q('wrapb').className=WRAP?'on':'';q('autob').className=AUTO?'on':'';
+  q('log').style.fontSize=SIZE+'px'}
+
+/* Paint the log with the SAME rules the console uses (C466): a sign, a word,
+   a marker. Colour is never the only carrier -- the text already says it. */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function paint(t){return esc(t)
+  .replace(/^(\s*(?:&gt;&gt;|&lt;&lt;|-&gt;|\.\.)\s.*)$/gm,'<span class="l-a">$1</span>')
+  .replace(/\b(WIN|maker|MAKER)\b/g,'<span class="l-g">$1</span>')
+  .replace(/\b(LOSS|TAKER|taker)\b/g,'<span class="l-b">$1</span>')
+  .replace(/\b(ERROR|FAILED|failed|HARD STOP)\b/g,'<span class="l-w">$1</span>')
+  .replace(/([+-]\$[\d,]+\.\d{2})/g,function(m){
+     return '<span class="'+(m[0]==='-'?'l-b':'l-g')+'">'+m+'</span>'})
+  .replace(/(^|[\s(])([+-]\d+\.\d+(?:%|R))\b/g,function(m,a,b){
+     return a+'<span class="'+(b[0]==='-'?'l-b':'l-g')+'">'+b+'</span>'})
+  .replace(/^(\s*[-=]{6,})$/gm,'<span class="l-m">$1</span>')}
+
+var stick=true;
+q('log').addEventListener('scroll',function(){
+  var e=q('log');stick=(e.scrollHeight-e.scrollTop-e.clientHeight)<40});
+
+async function pullLog(){
+  var f=(FILE==='live')?'report':FILE, n=(FILE==='live')?400:400;
+  q('dl').href='/api/files'+Q;
   try{
-    let r=await fetch('/api/status'+T());let d=await r.json();
-    let pnl=d.pnl>=0?`<span class="pos">+$${d.pnl}</span>`:`<span class="neg">-$${Math.abs(d.pnl)}</span>`;
-    document.getElementById('status').innerHTML=
-      `💰 Equity: $${d.equity}  |  PnL: ${pnl}
-📊 Mode: ${d.mode}  |  WR: ${d.win_rate}%
-📡 Positions: ${d.positions}  |  R: ${d.market_R}
-⏱️ Scan: ${d.scan_age_s}s ago  |  Up: ${d.uptime_min}min
-🤖 ${d.version}`;
-    let p=await fetch('/api/positions'+T());let pd=await p.json();
-    let ph='';
-    if(pd.positions&&pd.positions.length>0){
-      pd.positions.forEach(pos=>{
-        ph+=`${pos.symbol} ${pos.side.toUpperCase()} @$${pos.entry} ${pos.leverage}x $${pos.margin} (${pos.age_min}min)\\n`;
-      });
-    }else{ph='No open positions';}
-    document.getElementById('positions').textContent=ph;
-  }catch(e){document.getElementById('status').textContent='Connection error: '+e;}
+    var r=await fetch('/api/logs?file='+f+'&n='+n+(TOK?('&t='+TOK):''));
+    var t=await r.text();
+    if(FILE==='live'){
+      /* the last dashboard block = from the final rule line to the end */
+      var L=t.split('\n'), st=-1;
+      for(var i=L.length-1;i>=0;i--){ if(/^\s{2}={10,}/.test(L[i])||/^\s{2}\d{2}:\d{2}\s/.test(L[i])){st=i;break} }
+      if(st>0) t=L.slice(Math.max(0,st-1)).join('\n');
+    }
+    q('log').innerHTML=paint(t);
+    q('lines').textContent=t.split('\n').length+' lines';
+    if(AUTO&&stick)q('log').scrollTop=q('log').scrollHeight;
+  }catch(e){q('log').textContent='could not read the log: '+e}
 }
+
+function drawCurve(c){
+  if(!c||c.length<4){q('curvewrap').hidden=true;return}
+  q('curvewrap').hidden=false;
+  var lo=Math.min.apply(null,c), hi=Math.max.apply(null,c), r=hi-lo;
+  if(r<1e-9){lo-=0.5;hi+=0.5;r=hi-lo}
+  var pad=r*0.12; lo-=pad; hi+=pad; r=hi-lo;
+  var W=300,H=56,pts=c.map(function(v,i){
+    return [(i/(c.length-1))*W,H-((v-lo)/r)*H]});
+  var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' ');
+  var area=d+' L'+W+','+H+' L0,'+H+' Z';
+  q('curve').innerHTML=
+    '<path d="'+area+'" fill="var(--accent)" opacity=".12"/>'+
+    '<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" '+
+    'stroke-linejoin="round" stroke-linecap="round"/>'+
+    '<circle cx="'+pts[pts.length-1][0].toFixed(1)+'" cy="'+
+    pts[pts.length-1][1].toFixed(1)+'" r="3.5" fill="var(--accent)"/>';
+  q('curvelab').textContent='low '+money(Math.min.apply(null,c))+
+    '   high '+money(Math.max.apply(null,c))+'   '+c.length+' samples';
+}
+
+async function pull(){
+  try{
+    var r=await fetch('/api/status'+Q);
+    if(r.status===401){q('err').textContent='Token missing or wrong — open this page with ?t=YOUR_TOKEN';return}
+    var d=await r.json();
+    q('err').textContent='';
+    q('ver').textContent=d.version+(d.paper?' · PAPER':' · LIVE');
+    var age=Number(d.scan_age_s)||0;
+    q('dot').className='dot'+(age>1800?' dead':(age>900?' stale':''));
+    q('sub').textContent=d.mode+' · up '+d.uptime_min+' min · '+
+      (d.scans||0)+' scans · '+(d.analyses||0)+' pair looks';
+
+    q('eq').innerHTML=money(d.equity);
+    q('eqs').innerHTML='session <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>';
+
+    if(d.day){
+      var f=Math.max(0,Math.min(1,d.day.frac));
+      q('day').innerHTML=money(d.day.limit);
+      q('days').innerHTML=(100*f).toFixed(0)+'% spent · realised <span class="'+
+        cls(d.day.realised)+'">'+sgn(d.day.realised)+'</span>';
+      var bar=q('daybar');bar.style.width=(100*f).toFixed(1)+'%';
+      bar.className=f>0.8?'b':(f>0.5?'w':'');
+    }
+    if(d.trades!==undefined){
+      q('rec').textContent=d.wins+'W '+d.losses+'L';
+      q('recs').textContent=(d.trades?d.wr_journal+'% win · ':'')+
+        'payoff '+(d.payoff===null||d.payoff===undefined?'n/a':d.payoff)+
+        ' · mk'+d.maker+'/tk'+d.taker;
+    }
+    q('scan').textContent=(age<90?age+'s':(age/60).toFixed(0)+'m')+' ago';
+    var ls=d.last_scan||{};
+    q('scans').textContent=(ls.analyzed!=null)
+      ? (ls.analyzed+' looked, '+(ls.passed||0)+' viable')
+      : ('R '+d.market_R);
+    drawCurve(d.curve);
+
+    var p=await (await fetch('/api/positions'+Q)).json();
+    if(p.positions&&p.positions.length){
+      var h='<table>';p.positions.forEach(function(x){
+        h+='<tr><td>'+x.symbol.split('/')[0]+' '+x.side.toUpperCase()+
+           '</td><td>$'+x.margin+' · '+x.leverage+'x · '+x.age_min+'m</td></tr>'});
+      q('pos').innerHTML=h+'</table>';
+    }else{q('pos').innerHTML='<span class="muted">none — flat</span>'}
+  }catch(e){q('err').textContent='connection error: '+e}
+}
+
 async function cmd(c){
-  if(c=='stop'&&!confirm('STOP the bot?'))return;
-  await fetch('/api/'+c+T(),{method:'POST'});
-  refresh();
+  if((c==='stop'||c==='restart')&&!confirm(c.toUpperCase()+' the bot?'))return;
+  try{
+    var r=await fetch('/api/'+c+Q,{method:'POST'});
+    var d=await r.json();
+    q('err').textContent=d.msg||d.error||'';
+    setTimeout(pull,600);
+  }catch(e){q('err').textContent='command failed: '+e}
 }
-setInterval(refresh,5000);refresh();
-</script></head><body>
-<h1>🤖 OMEGA V60 Remote Control</h1>
-<div class="card" id="status">Loading...</div>
-<div class="card"><b>Positions:</b><pre id="positions">Loading...</pre></div>
-<div class="card">
-<button onclick="cmd('pause')">⏸️ Pause</button>
-<button onclick="cmd('resume')">▶️ Resume</button>
-<button onclick="cmd('scan')">🔍 Force Scan</button>
-<button class="danger" onclick="cmd('stop')">⏹️ STOP</button>
-</div></body></html>'''
-                
+
+drawTabs();applyView();pull();pullLog();
+setInterval(pull,5000);setInterval(pullLog,8000);
+</script></body></html>
+'''
+
                 def _send_json(self, data):
                     import json
                     self.send_response(200)
@@ -36341,7 +36647,7 @@ setInterval(refresh,5000);refresh();
                     self.send_header('Access-Control-Allow-Origin', '*')
                     self.end_headers()
                     self.wfile.write(json.dumps(data).encode('utf-8'))
-                
+
                 def _send_text(self, text):
                     body = str(text).encode('utf-8', 'replace')
                     self.send_response(200)

@@ -327,7 +327,7 @@ login. Then even someone who steals the token cannot get in.
 
 | Address | What it does |
 |---|---|
-| `/?t=TOKEN` | the dashboard — equity, positions, buttons |
+| `/?t=TOKEN` | **the dashboard** — stat tiles, equity curve, positions, the live log, and the buttons. This is the page you want |
 | `/api/logs?file=report&n=200&t=TOKEN` | last 200 lines of the **report** log |
 | `/api/logs?file=session&n=300&t=TOKEN` | the session log |
 | `/api/logs?file=detail&n=400&t=TOKEN` | the full forensic log |
@@ -341,6 +341,25 @@ Buttons (POST): `/api/pause`, `/api/resume`, `/api/stop`, `/api/scan`,
 
 Everything you have on the phone today is here, plus reading the logs and
 downloading files over the internet.
+
+### Reading the log on the dashboard
+
+The dashboard has a **Log** panel at the bottom with four views:
+
+| View | What it shows |
+|---|---|
+| **Latest block** | just the most recent dashboard block — the one screen worth reading |
+| **Report** | the whole report log: every block, every open and close |
+| **Session** | the readable running commentary |
+| **Detail** | everything, unfiltered, for digging into a specific decision |
+
+The report is laid out at 100 columns and a phone is not 100 columns wide, so
+use **A−** and **A+** to size the text, or **Wrap** to fold long lines. **Auto**
+keeps it scrolled to the newest line — turn it off when you are reading back
+through something. Every one of those choices is remembered on your device.
+
+If you scroll up to read, auto-scroll gets out of your way until you scroll back
+to the bottom.
 
 ---
 

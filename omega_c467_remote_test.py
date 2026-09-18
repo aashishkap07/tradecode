@@ -122,9 +122,19 @@ ok("  and does NOT list unrelated files", 'SECRET_not_an_omega_file' not in b)
 
 c, b = get(f'/?t={TOKEN}')
 ok("the dashboard page itself loads", c == 200 and '<button' in b, f"HTTP {c}")
-ok("  and its JavaScript carries the token on every call",
-   b.count("+T()") >= 3 and 'function T()' in b,
-   f"{b.count('+T()')} tokenised fetches")
+# C469: assert the PROPERTY, not one spelling of it. The old check counted
+# occurrences of the literal "+T()", so rewriting the page to precompute the
+# query string failed a test while the behaviour was perfect. What matters is
+# that no fetch leaves the page without a token -- every such call would 401
+# and the panel would look dead.
+_fetches = re.findall(r"fetch\(([^,)]+)", b)
+_untokened = [f for f in _fetches if ('Q' not in f and 't=' not in f)]
+ok("  every fetch in the page carries the token",
+   len(_fetches) >= 4 and not _untokened,
+   f"{len(_fetches)} fetch call(s), {len(_untokened)} without a token: {_untokened[:3]}")
+ok("  ...and the token is read from the page's own address, not templated in",
+   'location.search' in b and TOKEN not in b,
+   "the secret must stay in the address bar, not the HTML body")
 
 print("\n5. DOWNLOAD, AND THE PATH-TRAVERSAL GUARD")
 c, b = get(f'/api/download?f=omega_report_20260918_005533.log&t={TOKEN}')
