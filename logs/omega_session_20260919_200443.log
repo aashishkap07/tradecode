@@ -1040,3 +1040,113 @@
 01:07:50 | 📊 Step 3 result: 12 analyzed (+48 cached this 15m candle) → 0 passed | low_score=5,
     flat_projection=10, thin_expectancy=44, no_structural_room=1
   .. 01:14  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  12 analysed
+01:18:09 |    🪞 C266 board-parity (top movers vs screen): ONE +144%[#5] | AKE +119%[#4] | ZAMA
+    +50%[#18] | G +41%[#9] | EPIC +40%[#34]
+01:18:58 | 📊 Step 3 result: 60 analyzed → 0 passed | thin_expectancy=50, no_structural_room=2,
+    flat_projection=1, ct_noisy_block=6, capitulation=1
+  .. 01:22  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  60 analysed
+01:29:16 |    🪞 C266 board-parity (top movers vs screen): ONE +148%[#4] | AKE +77%[#5] | ZAMA
+    +46%[#19] | SYN +40%[#26] | EPIC +40%[#35]
+01:29:29 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | thin_expectancy=49,
+    no_structural_room=2, flat_projection=1, fee_floor=1, ct_noisy_block=6, capitulation=1
+  .. 01:30  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  1 analysed
+01:35:29 |    🧭 C458-17: exploration is due but the best refusal (score 0.341 < 0.594) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+01:35:29 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=3, thin_expectancy=48,
+    flat_projection=8, capitulation=1
+01:35:29 |    📌 Nearest miss: BR score=0.455 conf=0.359 quality=0.163/0.26 reason=score 0.341 <
+    0.594
+ 
+ 
+  01:38  up 5h34m  scan 51 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***======================
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.97  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 60 > 0 passed  top BR 0.46 (score 0.341 < 0.59)  51 scans, 1562 analysed
+  MARKET    TRENDING  bias -0.10  breadth +0.00  taker flow -0.25
+  NEWS      65 articles  + tone +0.16  DOGE +0.63  SOL +0.49  NEAR +0.47
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +148% #4  AKE +77% #5  ZAMA +46% #19  SYN +40% #26
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+01:40:38 |    🪞 C266 board-parity (top movers vs screen): ONE +133%[#5] | AKE +68%[#6] | ZAMA
+    +40%[#21] | EPIC +39%[#38] | SYN +38%[#28]
+01:40:56 |    🧭 C458-17: exploration is due but the best refusal (score 0.042 < 0.483) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+01:40:56 | 📊 Step 3 result: 10 analyzed (+50 cached this 15m candle) → 0 passed | low_score=4,
+    thin_expectancy=47, flat_projection=8, capitulation=1
+01:40:56 |    📌 Nearest miss: BTC score=0.042 conf=0.480 quality=0.020/0.26 reason=score 0.042 <
+    0.483
+01:46:56 |    🧭 C458-17: exploration is due but the best refusal (post_penalty_quality) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+01:46:56 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=7, thin_expectancy=43,
+    flat_projection=7, proj_confirms_trend=2, post_penalty_quality=1
+01:46:56 |    📌 Nearest miss: CROSS score=0.634 conf=0.694 quality=0.440/0.26
+    reason=post_penalty_quality
+  .. 01:46  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  60 analysed
+01:52:02 |    🪞 C266 board-parity (top movers vs screen): ONE +141%[#5] | AKE +65%[#6] | ZAMA
+    +41%[#18] | SYN +41%[#27] | EPIC +36%[#37]
+01:52:20 |    🧭 C458-17: exploration is due but the best refusal (score 0.279 < 0.483) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+01:52:20 | 📊 Step 3 result: 10 analyzed (+50 cached this 15m candle) → 0 passed | low_score=8,
+    thin_expectancy=42, flat_projection=6, proj_confirms_trend=2, post_penalty_quality=1,
+    poor_reward_risk=1
+01:52:20 |    📌 Nearest miss: UB score=0.371 conf=0.498 quality=0.185/0.26 reason=score 0.279 <
+    0.483
+  .. 01:54  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  10 analysed
+02:02:38 |    🪞 C266 board-parity (top movers vs screen): ONE +146%[#5] | AKE +60%[#6] | SYN
+    +41%[#23] | ZAMA +40%[#17] | EPIC +34%[#38]
+02:03:28 |    🧭 C458-17: exploration is due but the best refusal (low_agreement 50%<55%) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+02:03:28 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=1, late_leg_no_forward=1,
+    ct_noisy_block=3, thin_expectancy=46, proj_confirms_trend=2, flat_projection=5, low_agreement=1,
+    capitulation=1
+02:03:29 |    📌 Nearest miss: PONS score=0.483 (pre-pen 0.85) conf=0.460 quality=0.222/0.26
+    reason=low_agreement 50%<55%
+  .. 02:03  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  60 analysed
+ 
+ 
+  02:11  up 6h06m  scan 55 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***==========================
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.03  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 60 > 0 passed  top PONS 0.48 (low_agreement 50%<)  55 scans, 1702 analysed
+  MARKET    MIXED  bias -0.31  breadth -0.22  taker flow -0.15
+  NEWS      65 articles  + tone +0.14  DOGE +0.53  PUMP +0.51  XRP +0.34
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +146% #5  AKE +60% #6  SYN +41% #23  ZAMA +40% #17
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+02:13:51 |    🪞 C266 board-parity (top movers vs screen): ONE +149%[#5] | AKE +59%[#6] | ZAMA
+    +42%[#16] | SYN +37%[#23] | XTZ +29%[#21]
+02:14:07 |    🧭 C458-17: exploration is due but the best refusal (score 0.110 < 0.483) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+02:14:07 | 📊 Step 3 result: 2 analyzed (+58 cached this 15m candle) → 0 passed | low_score=2,
+    late_leg_no_forward=1, ct_noisy_block=3, thin_expectancy=47, proj_confirms_trend=2,
+    flat_projection=4, low_agreement=1
+02:14:07 |    📌 Nearest miss: ARX score=0.110 (pre-pen 0.18) conf=0.380 quality=0.042/0.26
+    reason=score 0.110 < 0.483
