@@ -6,7 +6,10 @@
 
 ## ⏩ RESUME STATE
 
-**Shipped: C478.** Branch `claude/trading-system-analysis-tsvzj4`.
+**Shipped: C479.** Branch `claude/trading-system-analysis-tsvzj4`.
+C479 fixed three ways the operator could lose control of, or sight of, a bot
+that was otherwise running perfectly — see the C479 section below. **No trading
+logic changed.**
 Running 24×7 on an Oracle VPS; logs push to the `logs` branch hourly and are
 readable without the operator doing anything. **31 closed trades on 19 Sep**
 against 3 in 11 hours before the caps came off — C467-A did exactly its job.
@@ -141,6 +144,182 @@ run it on is already here (`corpusO/`, `corpusL/`, 32 pairs). **The next piece
 of work is that harness on the extension/liveliness question, not a patch.**
 One day that agrees with a previous day is a reason to go and measure
 properly; it is not a reason to ship.
+
+---
+
+## 🚨 C479 — THE OPERATOR'S STOP BUTTON COULD VANISH, AND THE ALARM THAT SAYS SO WAS ITSELF MUTED
+
+**Found by the battery disagreeing with itself.** `omega_c467_remote_test.py`
+reported **FAIL** in the full battery and **PASS** run on its own. That gap was
+the whole finding. Running two copies at once reproduces it: the second binds
+port 18138, fails, and dies forty PASSes later on
+`'NoneType' object has no attribute 'server_address'`.
+
+The test was not flaky. It was reporting a **real defect in the bot**, in the
+one failure that happens in ordinary operation on a real server.
+
+### What the defect was
+
+`RemoteControl.start()` wrapped everything in one `except Exception → logger.warning`.
+C473 already hardened that block against a *missing name*. It did nothing about
+the **bind**, which is the failure that actually occurs:
+
+```
+systemd Restart=always fires
+  → the old process has not released :8138 yet
+  → bind raises EADDRINUSE
+  → ONE warning line scrolls past
+  → the bot trades on with NO dashboard and NO remote stop button
+  → and never tries again.
+```
+
+`SO_REUSEADDR` does not save this. `HTTPServer` already sets it, which covers
+TIME_WAIT — but a **live listener** still refuses the bind, and a live listener
+is exactly what an overlapping restart leaves behind. Verified: `errno 98` with
+`allow_reuse_address = 1`.
+
+### The watchdog turned it into a permanent restart loop
+
+`omega-watchdog.sh` read "health endpoint did not answer" as proof the bot was
+wedged, and ran `systemctl restart omega`. So a **healthy** bot — scanning,
+holding open positions — was restarted every five minutes forever, and each
+restart re-created the overlap that caused the busy port. The only symptom was
+one warning line and a syslog entry nobody reads.
+
+> **→ Standing Rule 33: A CONTROL THAT IS LOST SILENTLY IS WORSE THAN ONE THAT
+> WAS NEVER BUILT.** The operator believes they can stop the bot. A dead panel
+> does not say it is dead — it just stops answering, which looks exactly like a
+> network hiccup from the other end.
+
+> **→ Standing Rule 34: BEFORE RESTARTING SOMETHING, ASK WHETHER IT IS ACTUALLY
+> BROKEN — BY A ROUTE THAT DOES NOT SHARE THE SUSPECTED FAULT.** The watchdog
+> diagnosed liveness through the very port that had failed. It now asks whether
+> the bot is still *writing its log*, which cannot be confounded by the port.
+
+### The fix
+
+- **Bot:** EADDRINUSE is retried in the background every `C479_CTRL_RETRY_S`
+  (15s) until it succeeds. The panel comes back **by itself**, no restart, no
+  human. Any other error still raises to the outer handler. The operator is told
+  at ERROR, in plain English, that the bot is fine and only the panel is missing,
+  and is given `ss -ltnp | grep 8138` to find the culprit.
+- **Watchdog:** a silent panel now only causes a restart if the report log has
+  **also** gone quiet past `MAX_AGE`. Otherwise it logs that the bot is alive and
+  leaves it alone.
+
+### A bug in my own fix, caught by its own test
+
+The retry loop checked its stop flag at the top of the loop and then slept 15s.
+The flag is normally set *during* that sleep, so the loop woke and bound anyway
+— a retry loop that acts after being told to stop is not stoppable. It now
+sleeps in slices and re-checks after waking. **The test found this, not
+reading it.**
+
+---
+
+## 🔇 C479-B — SIXTY OF NINETY-EIGHT ALERTS NEVER REACHED THE SCREEN
+
+End-to-end with two real bots, C479 worked: B hit the busy port, logged the full
+explanation, and rebound one try after A died. **And none of it appeared on the
+console or in the session log.** Only `omega_detail_*.log` — the noisiest file —
+had it.
+
+`_C460ConsoleFilter`'s own rule 2 is *"anything wrong reaches the screen"*. It
+implemented that by **matching fifteen substrings against the message text**.
+`filter()` never looked at `record.levelno` at all.
+
+An AST scan of the bot's own `logger.error` / `logger.warning` calls:
+
+| | count |
+|---|---|
+| alert-level calls with readable literal text | 98 |
+| **invisible on console AND in the session log** | **60** |
+| …of which `logger.error` | 21 |
+
+Among the invisible:
+
+```
+🚨 EMERGENCY TRIGGERED: Unrealized X% (threshold Y%)
+🚨 Loss worsening (X% → Y%). Closing all.
+Save state error:      Load state error:     Order error:
+Close position error:  Exchange connect error:  Scan error:
+```
+
+**The emergency liquidation handler could not reach the operator's screen.**
+
+**And not mine either.** The same filter is attached to `_c52_file_handler` —
+the *session* log — and `omega-logpush.sh` pushes only `omega_report_*` and
+`omega_session_*` to GitHub. The detail log is never pushed. So for every
+session analysed remotely so far, those sixty alert lines were **absent from the
+only record I can read**. Any of them that fired on 19 Sep are not in the 26
+files on the `logs` branch. This is a hole in the evidence base, not just in the
+operator's view.
+
+And the reason is one this project has already paid for once: `_ALERT` carries
+`'ERROR'` in capitals while the code writes `'error:'` in lower case — the
+**same case-sensitivity defect C462 found in the C460-1 keep-list, still live in
+a second list.**
+
+> **→ Standing Rule 35: WHEN A STRUCTURED SIGNAL EXISTS, NEVER RE-DERIVE IT FROM
+> PROSE.** `logging` puts an authoritative severity on every record. Matching
+> words for it cannot cover what a future version adds, and fails on a letter's
+> case. This is the same family as the wrong-object bugs: the answer was already
+> on the object, and the code went looking for it somewhere else.
+
+### C479-C — AND THE ALARM COULD BE RAISED BUT NEVER CLEARED
+
+The end-to-end run exposed a sharper version of the same fault. C479's
+`CONTROL PANEL DID NOT OPEN` now reaches the screen **on its level**. Its
+partner, `✅ CONTROL PANEL IS BACK`, is `logger.info` — so it did not. The
+operator would be shown a red alarm saying their stop button is gone and
+**never shown that it came back**.
+
+The same applied to the panel's ordinary boot announcement:
+`🌐 Remote control on http://…` has **always** gone only to the detail log, so
+the operator has never seen the dashboard's own address in the readable log.
+
+> **→ Standing Rule 36: AN ALARM THAT CAN BE RAISED BUT NOT CLEARED IS A FALSE
+> ALARM LEFT STANDING.** Every alert needs a matching all-clear on the same
+> channel, or the operator learns that alerts do not mean anything — which
+> costs more than never having raised one.
+
+Six substrings added to `_DECISION` cover the whole panel block, both the
+tokened and localhost forms. Verified not to let per-pair working back in.
+
+### The fix, and what it costs
+
+`record.levelno >= logging.WARNING` passes, checked **before** the per-pair shape
+test — because a crash inside a per-pair path is still a crash, which is what
+that comment always intended and could not achieve with substrings.
+
+**Measured, not assumed.** An instrumented build ran a live session through a
+full 22-pair scan: **zero** added console lines beyond two benign startup
+warnings. Replaying 178 real INFO lines, 3% still pass. The filter only speaks
+more when something is actually wrong, which is the point.
+
+### Verification
+
+| check | result |
+|---|---|
+| `omega_c479_port_test.py` — 16 checks, incl. two real servers | PASS |
+| `omega_c479_watchdog_test.sh` — 11 checks, PATH-stubbed | PASS |
+| `omega_c479b_filter_test.py` — 18 checks | PASS |
+| end-to-end: two real bots overlapping on :8138 | panel healed in 1 retry |
+| negative control: pre-C479 bot never recovers | confirmed |
+| negative control: pre-C479 watchdog restarts a healthy bot | confirmed |
+| negative control: pre-C479-B filter hid **12 of 13** alerts | confirmed |
+| full battery + headless boot + wrong-object sweep + display | PASS |
+
+Every one of the three fixes ships with a **negative control that reproduces the
+old behaviour from the shipped source** and requires it to fail. Per Rule 16, a
+test that cannot fail is not a test — and each of the three says so loudly if the
+marker it reverts ever stops matching.
+
+### What did NOT change
+
+**No trading logic.** Not a gate, score, target, stop or sizing rule. C479 is
+entirely about whether the operator can see and steer the bot. The negative
+selection edge from 19 Sep stands untouched and still needs its replication batch.
 
 ---
 

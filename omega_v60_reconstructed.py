@@ -274,6 +274,20 @@ class _C460ConsoleFilter(logging.Filter):
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
         'NEWS',                     # C463-3 news panel
+        # C479-C: HOW TO REACH THE BOT IS A DECISION, NOT WORKING.
+        # These lines carry the dashboard's address and whether it is up. They
+        # were INFO with no keyword, so they went only to the detail log: the
+        # operator has never seen the panel's URL in the readable log, and --
+        # worse -- C479's loud "CONTROL PANEL DID NOT OPEN" passed on its level
+        # while the matching "IS BACK" did not. An alarm that can be raised but
+        # never cleared is a false alarm left standing, which is how an operator
+        # learns to ignore alarms (Rule 23).
+        'Remote control on',        # the panel's address, at boot
+        'CONTROL PANEL',            # ...did not open / ...is back
+        'Same WiFi',                # the LAN URL
+        'Cloudflare Tunnel in front',
+        'See deploy/DEPLOY.md',
+        'OMEGA_CTRL_TOKEN',         # why it is localhost-only, and how to change it
     )
 
     def filter(self, record):
@@ -285,6 +299,36 @@ class _C460ConsoleFilter(logging.Filter):
             m = str(record.getMessage())
             s = m.lstrip()
             if _c463_is_report(m):
+                return True
+            # ═══ C479-B: THE LEVEL IS THE SIGNAL, NOT THE WORDING ═══════════
+            # Rule 2 of this class is "anything wrong reaches the screen", and
+            # until now it was implemented by GUESSING AT PROSE -- fifteen
+            # substrings that a message had to happen to contain. Every line
+            # logged at warning or error whose wording missed all fifteen was
+            # dropped from the console AND the session log, leaving it only in
+            # the detail file.
+            #
+            # That was not hypothetical. An AST scan of this file's own
+            # logger.error / logger.warning calls found SIXTY of ninety-eight
+            # invisible, twenty-one of them errors, among them:
+            #     EMERGENCY TRIGGERED: Unrealized ...    Loss worsening ... Closing all.
+            #     Save state error:   Load state error:  Order error:
+            #     Close position error:                  Exchange connect error:
+            # The emergency liquidation handler could not reach the screen.
+            #
+            # And the reason is one this project has already paid for once:
+            # _ALERT carries 'ERROR' in capitals while the code writes 'error:'
+            # in lower case -- the SAME case-sensitivity defect C462 found in
+            # the C460-1 keep-list, still live in a second list.
+            #
+            # logging already carries an authoritative, structured "something
+            # is wrong" flag on every record. Read THAT. It cannot be missed by
+            # a spelling, it covers every line a future version adds without
+            # anyone remembering to extend a list, and it is checked BEFORE the
+            # per-pair shape test because a crash inside a per-pair path is
+            # still a crash -- which is what the _PAIRLINE comment below always
+            # intended and could not achieve with substrings.
+            if record.levelno >= logging.WARNING:
                 return True
             for p in self._ALERT:
                 if p in m:
@@ -1996,7 +2040,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C473'
+_OMEGA_VERSION = 'C479'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -4109,6 +4153,11 @@ class Config:
         self.C467_RULER             = True   # print a width ruler once at boot
         self.C467_TWO_COL_MIN_W     = 64     # two columns at/above this width
         self.C467_BLANK_MAX         = 2      # never more than this many in a row
+        # C479: how often to retry the control-panel port when it is already in
+        # use. An overlapping restart leaves the old process holding :8138 for a
+        # few seconds; without a retry the bot trades on with no dashboard and no
+        # remote stop button until a human notices. Seconds.
+        self.C479_CTRL_RETRY_S      = 15
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -36170,6 +36219,11 @@ class RemoteControl:
         self._commands = {}  # Thread-safe command queue
         self._server = None
         self._thread = None
+        # C479: set True to stop the background "port is busy" retry loop.
+        # A list, not a bare attribute, because the retry closure reads it from
+        # inside start() -- and reaching back through `self` from a nested scope
+        # is the wrong-object family this file has paid for ten times.
+        self._stop479 = [False]
     
     def start(self):
         """Start the remote control server in a background thread."""
@@ -36903,18 +36957,100 @@ setInterval(pull,5000);setInterval(pullLog,8000);
             # the network BY CONSTRUCTION rather than by the operator
             # remembering. This is the one place that decision can be made once.
             _bind467 = '0.0.0.0' if _tok_ref[0] else '127.0.0.1'
-            self._server = HTTPServer((_bind467, self.port), Handler)
-            self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
-            self._thread.start()
-            if _tok_ref[0]:
-                logger.info(f"🌐 Remote control on http://{_bind467}:{self.port} — TOKEN REQUIRED")
-                logger.info(f"   📱 Same WiFi: http://{_local_ip}:{self.port}/?t=<your token>")
-                logger.info(f"   🌍 Internet: put a Cloudflare Tunnel in front of this port.")
-                logger.info(f"       See deploy/DEPLOY.md — one command, no open ports, free.")
-            else:
-                logger.info(f"🌐 Remote control on http://127.0.0.1:{self.port} — LOCALHOST ONLY")
-                logger.info(f"   🔒 No OMEGA_CTRL_TOKEN is set, so it is NOT reachable from the")
-                logger.info(f"      network. Set one to expose it: export OMEGA_CTRL_TOKEN='...'")
+
+            def _announce479():
+                if _tok_ref[0]:
+                    logger.info(f"🌐 Remote control on http://{_bind467}:{self.port} — TOKEN REQUIRED")
+                    logger.info(f"   📱 Same WiFi: http://{_local_ip}:{self.port}/?t=<your token>")
+                    logger.info(f"   🌍 Internet: put a Cloudflare Tunnel in front of this port.")
+                    logger.info(f"       See deploy/DEPLOY.md — one command, no open ports, free.")
+                else:
+                    logger.info(f"🌐 Remote control on http://127.0.0.1:{self.port} — LOCALHOST ONLY")
+                    logger.info(f"   🔒 No OMEGA_CTRL_TOKEN is set, so it is NOT reachable from the")
+                    logger.info(f"      network. Set one to expose it: export OMEGA_CTRL_TOKEN='...'")
+
+            def _bind479():
+                """Bind and serve. Raises OSError(EADDRINUSE) if the port is held."""
+                _srv = HTTPServer((_bind467, self.port), Handler)
+                self._server = _srv
+                self._thread = threading.Thread(target=_srv.serve_forever, daemon=True)
+                self._thread.start()
+
+            # ═══ C479: A BUSY PORT MUST NOT COST THE STOP BUTTON ═════════
+            # Everything in this method used to sit under ONE `except -> warning`.
+            # That is survivable for a missing name (C473 hardened those). It is
+            # NOT survivable for the bind, because the bind is the one failure
+            # that happens in NORMAL operation on a real server:
+            #
+            #   systemd Restart=always fires -> the old process has not released
+            #   :8138 yet -> bind raises EADDRINUSE -> one warning line scrolls
+            #   past -> the bot trades on with NO dashboard and NO remote stop
+            #   button, and never tries again.
+            #
+            # The watchdog then made it worse, not better: it reads an unanswered
+            # /api/health as "the bot is wedged" and runs `systemctl restart`. So
+            # one transient bind failure became a HEALTHY bot restarted every five
+            # minutes forever, with open positions, and each restart re-created the
+            # very race that caused it. (Fixed on the watchdog side too.)
+            #
+            # SO_REUSEADDR does not help here: HTTPServer already sets it, which
+            # covers TIME_WAIT, but a LIVE listener still refuses the bind -- and a
+            # live listener is exactly what an overlapping restart leaves behind.
+            #
+            # So: keep trying, in the background, forever. The holder is almost
+            # always seconds from exiting, and the panel comes back on its own with
+            # no restart and no human. Only EADDRINUSE retries; any other error is
+            # a real bug and is raised to the outer handler as before.
+            _iv479 = max(1, int(getattr(self.bot.cfg, 'C479_CTRL_RETRY_S', 15) or 15))
+            try:
+                _bind479()
+                _announce479()
+            except OSError as _e479:
+                if getattr(_e479, 'errno', None) not in (98, 48, 10048):
+                    raise
+                logger.error(f"🚨 CONTROL PANEL DID NOT OPEN — port {self.port} is already in use.")
+                logger.error(f"   The bot itself is FINE and is trading normally. What is missing is")
+                logger.error(f"   the dashboard and the remote pause / stop buttons.")
+                logger.error(f"   Nearly always this means an older copy of the bot has not let go of")
+                logger.error(f"   the port yet. It is retried every {_iv479}s and the panel will come")
+                logger.error(f"   back BY ITSELF — you do not need to restart anything.")
+                logger.error(f"   If it never comes back, something else owns the port. Find it with:")
+                logger.error(f"      sudo ss -ltnp | grep {self.port}")
+
+                def _retry479():
+                    _n = 0
+                    while not self._stop479[0]:
+                        # Sleep in slices, and re-check the flag AFTER waking.
+                        # Checking only at the top of the loop is not enough: the
+                        # flag is normally set DURING the sleep, and a loop that
+                        # goes on to bind after being told to stop is not
+                        # stoppable at all. Caught by the C479 test, not by
+                        # reading -- which is the whole point of the test.
+                        _slept = 0.0
+                        while _slept < _iv479 and not self._stop479[0]:
+                            time.sleep(0.25)
+                            _slept += 0.25
+                        if self._stop479[0]:
+                            return
+                        _n += 1
+                        try:
+                            _bind479()
+                        except OSError:
+                            # One line every 5 minutes, not one every 15 seconds.
+                            # A log that floods is a log that gets muted (Rule 23).
+                            if _n % 20 == 0:
+                                logger.warning(f"⚠️ Control panel still waiting for port {self.port} "
+                                               f"({_n} tries, ~{_n * _iv479 // 60} min). The bot is fine.")
+                            continue
+                        except Exception as _e2479:
+                            logger.warning(f"⚠️ Control panel retry gave up: {_e2479}")
+                            return
+                        logger.info(f"✅ CONTROL PANEL IS BACK — the port freed up after {_n} "
+                                    f"{'try' if _n == 1 else 'tries'}.")
+                        _announce479()
+                        return
+
+                threading.Thread(target=_retry479, daemon=True).start()
         except Exception as e:
             logger.warning(f"⚠️ Remote control failed to start: {e}")
     

@@ -58,10 +58,21 @@ bot = types.SimpleNamespace(
                                    _day_start_equity=250.0),
     exchange=None)
 
-PORT = 18138
+PORT = int(os.environ.get('OMEGA_TEST_PORT', '18138'))
 rc = g['RemoteControl'](bot, port=PORT)
 rc.start()
 time.sleep(0.7)
+
+# C479: if the port was busy, EVERY check below fails for a reason that has
+# nothing to do with what they test, and the last one dies on an AttributeError
+# forty PASSes later. Say so here instead. A tool that cries the wrong wolf is
+# worse than one that stays quiet (Rule 23).
+if rc._server is None:
+    print(f"\nCANNOT RUN: port {PORT} is already in use, so the panel never bound.")
+    print(f"   This says NOTHING about the code under test. Free the port, or set")
+    print(f"   OMEGA_TEST_PORT to a spare one, and run again:")
+    print(f"      ss -ltnp | grep {PORT}")
+    sys.exit(2)
 
 def get(path, timeout=6):
     try:
@@ -195,6 +206,9 @@ print("\n7. WITH NO TOKEN THE PANEL MUST NOT REACH THE NETWORK")
 os.environ.pop('OMEGA_CTRL_TOKEN', None)
 rc2 = g['RemoteControl'](bot, port=PORT + 1)
 rc2.start(); time.sleep(0.5)
+if rc2._server is None:
+    print(f"\nCANNOT RUN: port {PORT + 1} is already in use. See the note above.")
+    sys.exit(2)
 addr = rc2._server.server_address[0] if rc2._server else None
 ok("it binds to 127.0.0.1, never 0.0.0.0", addr == '127.0.0.1', f"bound to {addr}")
 ok("  and the earlier tokened server DID bind 0.0.0.0",

@@ -22,10 +22,46 @@ TOKEN="$(cat /etc/omega.token 2>/dev/null || echo '')"
 # genuine problem; one is a slow exchange. 1800s = 30 minutes.
 MAX_AGE="${OMEGA_MAX_SCAN_AGE:-1800}"
 
+REPO="${OMEGA_HOME:-/home/omega/omega}"
+
 resp="$(curl -fsS --max-time 10 "http://127.0.0.1:${PORT}/api/health?t=${TOKEN}" 2>/dev/null || echo '')"
 
+# ═══ C479: A SILENT PORT IS NOT A STUCK BOT ══════════════════════
+# This used to read "health did not answer" as proof the bot was wedged, and
+# restart it. That is wrong, and it was dangerous in the one case that actually
+# happens: the control panel fails to bind :8138 because an older copy of the
+# bot still holds it. The bot is then perfectly healthy and trading -- it just
+# has no panel. The old rule restarted that healthy bot, WITH OPEN POSITIONS,
+# every five minutes forever, and each restart re-created the overlap that
+# caused the busy port in the first place.
+#
+# The process dying is systemd's job (Restart=always). This watchdog exists for
+# the process that is ALIVE but no longer working. So before restarting, ask a
+# liveness question that does not go through the port at all: is the bot still
+# WRITING ITS LOG? If it is, it is alive and doing its job, and the panel is a
+# separate (self-healing, see C479 in the bot) problem that must not cost a
+# restart. Only when the log has ALSO gone quiet is this a real wedge.
 if [ -z "$resp" ]; then
-    logger -t omega-watchdog "health endpoint did not answer — restarting omega"
+    newest="$(ls -t "$REPO"/omega_report_*.log 2>/dev/null | head -1)"
+
+    if [ -z "$newest" ]; then
+        # No report log at all: the bot has not got that far yet. Restarting
+        # here is the boot-loop mistake the scan-age branch below already
+        # guards against -- do not make it from this direction either.
+        logger -t omega-watchdog "panel silent and no report log yet — leaving it alone"
+        exit 0
+    fi
+
+    now="$(date +%s)"
+    mtime="$(stat -c %Y "$newest" 2>/dev/null || echo 0)"
+    log_age=$(( now - mtime ))
+
+    if [ "$log_age" -lt "$MAX_AGE" ]; then
+        logger -t omega-watchdog "control panel not answering, but the bot wrote its log ${log_age}s ago — it is ALIVE, NOT restarting (port :${PORT} is probably still held by an older copy; the bot retries it every 15s)"
+        exit 0
+    fi
+
+    logger -t omega-watchdog "panel silent AND log stale (${log_age}s > ${MAX_AGE}s) — restarting omega"
     systemctl restart omega
     exit 0
 fi
