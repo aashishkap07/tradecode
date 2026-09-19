@@ -33,49 +33,89 @@ die()  { printf '\033[1;31m !! %s\033[0m\n' "$*" >&2; logger -t omega-logpush "$
 
 # ─────────────────────────────────────────────────────────────────────────
 setup_help() {
-cat <<'HELP'
-GIVING THE LOG PUSH ACCESS TO YOUR REPO
+# ═══ C477: --setup DOES THE WORK IT CAN, AND PRINTS ONLY WHAT IT CANNOT ══
+# The first version printed a page of instructions containing PROSE and
+# BACKTICKS -- "(replace OWNER/REPO -- `git ... remote -v` shows yours)". The
+# operator pasted the whole block, bash opened a command substitution on the
+# unmatched backtick and sat at a `>` continuation prompt, and the literal
+# words "git -C /home/omega/omega remote -v" ended up inside the push URL:
+#     git@github.com:git -C /home/omega/omega remote -v.git
+# Instructions that are unsafe to paste are a defect in the instructions. This
+# now derives owner/repo from the existing remote, sets the push URL itself,
+# creates the key and the ssh config itself, and asks the human for the ONE
+# thing only a human can do: paste a public key into a web page.
+    # C477: NEVER assume a home directory is /home/<name>. It is for omega and
+    # it is not for root (/root), and a wrong path here fails as "ssh-keygen
+    # failed" with no clue why. Ask the password database.
+    local me home url owner_repo keyfile sshdir
+    me="$(id -un)"
+    home="$(getent passwd "$me" | cut -d: -f6)"
+    [ -n "$home" ] || home="${HOME:-/home/$me}"
+    sshdir="$home/.ssh"
+    keyfile="$sshdir/omega_deploy"
+    mkdir -p "$sshdir" && chmod 700 "$sshdir"
+    url="$(git -C "$REPO" remote get-url origin 2>/dev/null)"
+    owner_repo="$(printf '%s' "$url" \
+        | sed -E 's#^git@[^:]+:##; s#^https?://[^/]+/##; s#\.git$##')"
+    if [ -z "$owner_repo" ]; then
+        warn "could not work out owner/repo from the origin URL ($url)"
+        owner_repo="OWNER/REPO"
+    fi
 
-The push runs as the `omega` user, which has no GitHub credentials. A DEPLOY
-KEY is the right answer: it grants write access to THIS ONE REPOSITORY and
-nothing else, it is revocable from the repo's settings page, and unlike a
-personal access token it cannot touch your other repos if the server is ever
-compromised.
+    if [ ! -f "$keyfile" ]; then
+        say "Creating a deploy key for $(id -un)"
+        command -v ssh-keygen >/dev/null 2>&1 \
+            || die "ssh-keygen is not installed. Fix: sudo apt-get install -y openssh-client"
+        # C477: show the REAL error. "ssh-keygen failed" with the output
+        # swallowed sent me looking for a permissions problem when the binary
+        # simply was not there.
+        _kg="$(ssh-keygen -t ed25519 -f "$keyfile" -N "" -C "omega-logpush" 2>&1)" \
+            || die "ssh-keygen failed: $_kg"
+    else
+        say "Deploy key already exists at $keyfile"
+    fi
 
-1. On the server, make a key for the omega user:
+    if ! grep -q "omega_deploy" "$sshdir/config" 2>/dev/null; then
+        say "Telling git to use it for github.com"
+        {
+            echo "Host github.com"
+            echo "  IdentityFile $keyfile"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking accept-new"
+        } >> "$sshdir/config"
+        chmod 600 "$sshdir/config"
+    else
+        say "ssh config already points at the deploy key"
+    fi
 
-     sudo -u omega ssh-keygen -t ed25519 -f /home/omega/.ssh/omega_deploy -N "" -C "omega-logpush"
-     sudo -u omega cat /home/omega/.ssh/omega_deploy.pub
+    say "Pointing pushes at SSH for ${owner_repo}"
+    git -C "$REPO" remote set-url --push origin "git@github.com:${owner_repo}.git"
+    # C477: read back the STORED value. Some git builds keep reporting the
+    # fetch URL from `remote -v` / `get-url --push` even after the pushurl is
+    # set, which reads like the command silently failed when it did not.
+    echo "    push URL: $(git -C "$REPO" config --get remote.origin.pushurl)"
 
-2. Copy that whole line. On github.com open:
-     your repo -> Settings -> Deploy keys -> Add deploy key
-   Title: omega-logpush
-   Key:   paste it
-   TICK "Allow write access"          <-- easy to miss, and nothing works without it
-   Add key.
-
-3. Back on the server, tell git to use that key and talk SSH:
-
-     sudo -u omega tee -a /home/omega/.ssh/config >/dev/null <<'EOF'
-     Host github.com
-       IdentityFile /home/omega/.ssh/omega_deploy
-       IdentitiesOnly yes
-       StrictHostKeyChecking accept-new
-     EOF
-     sudo -u omega chmod 600 /home/omega/.ssh/config
-     sudo git -C /home/omega/omega remote set-url --push origin git@github.com:OWNER/REPO.git
-
-   (replace OWNER/REPO — `git -C /home/omega/omega remote -v` shows yours)
-
-4. Let the omega user read the token file, so the scrubber can actually redact
-   it. Group-readable, not world-readable:
-
-     sudo chgrp omega /etc/omega.token && sudo chmod 640 /etc/omega.token
-
-5. Check, then wire the cron job:
-
-     sudo -u omega /usr/local/bin/omega-logpush.sh --check
-HELP
+    echo
+    echo "────────────────────────────────────────────────────────────────"
+    echo " ONE STEP LEFT, and only you can do it."
+    echo "────────────────────────────────────────────────────────────────"
+    echo
+    echo " 1. Copy the line between the markers below (the key only):"
+    echo
+    echo "--------8<-------- COPY FROM HERE --------8<--------"
+    cat "${keyfile}.pub"
+    echo "--------8<--------- TO HERE ------------8<--------"
+    echo
+    echo " 2. Open:  https://github.com/${owner_repo}/settings/keys"
+    echo "    Add deploy key -> Title: omega-logpush -> paste the key"
+    echo "    TICK 'Allow write access'   <- nothing works without it"
+    echo "    Add key."
+    echo
+    echo " 3. Come back and run:"
+    echo "        $0 --check"
+    echo
+    echo " (If the key is already added, just run --check.)"
+    echo
 }
 
 [ "${1:-}" = "--setup" ] && { setup_help; exit 0; }
