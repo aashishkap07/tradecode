@@ -280,13 +280,32 @@ cd "$WT" || die "cannot enter the worktree"
 # their logs are reaching GitHub. The commit sat local-only and the `logs`
 # branch never appeared on the remote at all.
 # Staging and pushing are two different questions. Ask them separately.
-git add -A logs
+# ═══ C478: -f, BECAUSE THE REPO'S OWN .gitignore WAS EATING THE LOGS ═══
+# The code branch ignores omega_report_*.log / omega_session_*.log to keep the
+# headless boot test's residue out of source. Unanchored, those patterns match
+# at any depth, so they silently ignored the very files this script exists to
+# push: it copied 26, git staged 2, and the commit message said 26 because the
+# count came from the COPY loop rather than from what was committed. The
+# ignore rules are anchored now, but -f makes this independent of whatever
+# .gitignore happens to be on the logs branch.
+git add -A -f logs
 if git diff --cached --quiet; then
     :                                          # nothing new to record
 else
+    # Count what is ACTUALLY going in, not what was copied.
+    staged="$(git diff --cached --name-only | grep -c '^logs/' || true)"
     git -c user.name='omega-bot' -c user.email='omega@localhost' \
-        commit -q -m "logs: $(date -u '+%Y-%m-%d %H:%M UTC') ($copied file(s))" \
+        commit -q -m "logs: $(date -u '+%Y-%m-%d %H:%M UTC') (${staged} file(s))" \
         || die "commit failed"
+fi
+
+# And confirm the log files really are in the tree. A commit that quietly
+# contains only the two JSON state files looks identical, from outside, to one
+# that worked.
+_n_logs="$(git ls-tree -r --name-only HEAD -- logs 2>/dev/null | grep -c '\.log$' || true)"
+if [ "${_n_logs:-0}" -eq 0 ] && [ "$copied" -gt 0 ]; then
+    die "copied $copied file(s) but the commit contains NO .log files --
+     something is ignoring them. Check: git -C $WT check-ignore -v logs/*.log"
 fi
 
 # Are we ahead of the remote? A branch that does not exist there yet always is.

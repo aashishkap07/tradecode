@@ -6,6 +6,10 @@ corpusO/
 corpusF/
 # C468: the headless boot test runs the real bot, which writes its three logs
 # into the code directory. They are test residue, not source.
-omega_report_*.log
-omega_session_*.log
-omega_detail_*.log
+# C478: ANCHORED WITH A LEADING SLASH. Unanchored, these patterns match at ANY
+# depth, so they also hid logs/*.log on the logs branch -- the hourly push
+# copied 26 files, git ignored 24 of them, and the commit said "26 file(s)"
+# while the tree held two. A leading slash means "the repo root only".
+/omega_report_*.log
+/omega_session_*.log
+/omega_detail_*.log
