@@ -1,6 +1,104 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🎯 2026-09-19 — THE FIRST REAL SAMPLE: 31 TRADES, AND WHERE THE MONEY GOES
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C478.** Branch `claude/trading-system-analysis-tsvzj4`.
+Running 24×7 on an Oracle VPS; logs push to the `logs` branch hourly and are
+readable without the operator doing anything. **31 closed trades on 19 Sep**
+against 3 in 11 hours before the caps came off — C467-A did exactly its job.
+
+---
+
+## 🔴 THE FINDING: THE ENTRY SELECTION HAS NEGATIVE EDGE
+
+Measured against a **fixed 20-pair liquid benchmark over each entry's own
+time window** — so time-of-day cannot flatter or damn it:
+
+| hold | the bot's picks | the market then | **selection edge** | beat market |
+|---|---|---|---|---|
+| 1h | −0.45% | −0.16% | **−0.35%** | 10/31 |
+| 4h | −0.23% | +0.20% | **−0.60%** | 10/31 |
+| 8h | −0.45% | +0.29% | **−1.15%** | 9/31 |
+
+Beating a random liquid basket **9–10 times in 31** where a coin flip gives
+15.5. Two-sided p ≈ 0.03 at the 8h horizon. **And the gap WIDENS with holding
+time**, which is what rules out the two comfortable explanations: it is not
+fees (those are fixed at entry) and it is not the exits (the measurement never
+uses an exit).
+
+**The day was a gift and the bot still lost.** Real tape, 19 Sep: median pair
+**+5.39%**, **19 of 20 closed up**, 95% breadth. The bot took **31 LONGS** into
+that — direction correct, market co-operating — and finished down.
+
+> **→ Standing Rule 31: MEASURE SELECTION AGAINST WHAT WAS AVAILABLE AT THE
+> SAME MOMENT.** "Our trades lost" confounds the pick, the clock and the exit.
+> Benchmarking each entry against the market over its own window separates
+> them, and it is the only comparison that can indict the entry stack.
+
+## 🧭 WHAT IT IS NOT
+
+Three suspects eliminated by the same data:
+
+- **Not direction.** All 31 were long on a 95%-breadth up day. The
+  `MARKET … bias` reading was positive all day and it was RIGHT.
+- **Not the exits.** Simply HOLDING those same 31 entries also loses:
+  median +0.01% at 1h, −0.50% at 4h, −0.95% to end of day, 12/31 positive.
+  The exits are not giving away a profit that was there.
+- **Not the caps.** Removed at C467-A. Trade count went 3 → 31.
+
+## 🔎 THE MECHANISM, NOW REPLICATED
+
+Prior 24h move at entry vs next-4h return, across the bot's own 31 picks:
+
+| cohort | had already run | next 4h |
+|---|---|---|
+| least extended third | +5.45% | mean **+0.94%** |
+| middle | +9.16% | mean +0.35% |
+| **most extended third** | **+16.22%** | mean **−0.88%** |
+
+**corr(prior extension, next 4h) = −0.257.**
+
+C420-7 measured **−0.212** on a completely different session and different
+tape, and recorded it as "NOT acted on" pending replication. **This is the
+replication: two independent days, same sign, similar magnitude.** Standing
+Rule 9's bar for the MECHANISM is met, though not yet for the size of the
+effect.
+
+The causal chain is now explicit and it is not subtle: Step 1 ranks the
+universe by **liveliness**, which is definitionally recent movement; the top of
+that ranking is therefore the most-extended cohort; and extension
+anti-predicts. **The funnel's first stage is sorting the universe by the wrong
+sign.** The bot's picks had a median prior run of ~+9%, its top third +16%.
+
+## ⚖️ WHAT WAS NOT MEASURED, AND WHY
+
+- **P&L across the day does not compose.** The 31 closes span 13 separate
+  report logs — 13 restarts during the deployment work, with a fresh start
+  among them — so the bot's own `lifetime_pnl` (+$0.31 on 14 trades) covers a
+  different set than the 31 extracted here (−$4.16). **The selection-edge
+  measurement is independent of the bot's accounting entirely** — it uses entry
+  prices and exchange candles — which is why it is the number to trust.
+- **Maker 11 trades / 11 wins vs taker 20 / 1 win is an ARTEFACT, not
+  evidence.** C376 rests profit-taking exits as maker and stops must cross, so
+  "maker" is very nearly a synonym for "win" by construction. Reading it as
+  "maker exits cause wins" is Standing Rule 4a exactly.
+
+## 🚧 NOT ACTED ON — AND THAT IS THE POINT
+
+No entry logic changed on the strength of one day. The standing rule is a
+four-way out-of-sample harness with ≥3 of 4 splits positive, and the corpus to
+run it on is already here (`corpusO/`, `corpusL/`, 32 pairs). **The next piece
+of work is that harness on the extension/liveliness question, not a patch.**
+One day that agrees with a previous day is a reason to go and measure
+properly; it is not a reason to ship.
+
+---
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🔓 2026-09-18 — C467: THE CAPS COME OFF, AND THEY WERE NEVER THE PROBLEM
 # ═══════════════════════════════════════════════════════════════════════════
 
