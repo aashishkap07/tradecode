@@ -171,19 +171,30 @@ password — it is a **Personal Access Token**:
 github.com → *Settings* → *Developer settings* → *Personal access tokens* →
 *Tokens (classic)* → *Generate new token* → tick **repo** → copy it.
 
-**Updating later** takes two commands, not one:
+**Updating later — pull as `omega`, never as root:**
 
 ```bash
-sudo git config --global --add safe.directory /home/omega/omega   # once, ever
-cd /home/omega/omega && sudo git pull
+sudo -u omega git -C /home/omega/omega pull
+sudo systemctl restart omega
 ```
 
-That first line is needed because `setup.sh` hands the folder to the `omega`
-user while `sudo git pull` runs as `root`. Git refuses to operate on a
-repository owned by somebody else and stops with *"detected dubious
-ownership"*. Run it once and never think about it again — but without it the
-pull fails silently in the middle of a list of pasted commands, and everything
-after it runs against the old code.
+**Why this matters more than it looks.** `sudo git pull` runs as root, and
+every object git writes then belongs to root. The bot still runs fine — but
+anything else running as `omega` that needs to write to git (the hourly log
+push) fails with *"insufficient permission for adding an object to repository
+database .git/objects"*. Pulling as `omega` keeps ownership consistent and the
+problem never arises.
+
+If you have already pulled as root, repair it once:
+
+```bash
+sudo chown -R omega:omega /home/omega/omega
+```
+
+If you ever do need to run git as root in there, git will refuse with *"detected
+dubious ownership"* until you add:
+`sudo git config --global --add safe.directory /home/omega/omega` — but prefer
+the `sudo -u omega` form above and you will not need it.
 
 ### The other way: copy the files up from a computer
 
@@ -545,7 +556,8 @@ bigger reason to move than the 24×7 uptime is.
 | 502 Bad gateway / "connection refused" on 8138 | the tunnel is fine, the bot is down. See Step 4b |
 | panel worked, then stopped after you closed SSH | you started the tunnel by hand. `sudo systemctl enable --now cloudflared-quick` |
 | pasted commands do nothing, no output, no prompt | the terminal is busy running something (usually cloudflared). Ctrl+C, then check you see a `$` before typing anything else |
-| `git pull` says "detected dubious ownership" | `sudo git config --global --add safe.directory /home/omega/omega` |
+| `git pull` says "detected dubious ownership" | you are pulling as root. Use `sudo -u omega git -C /home/omega/omega pull` |
+| log push: "insufficient permission for adding an object to repository database" | the repo was pulled as root, so `.git/objects` belongs to root. `sudo chown -R omega:omega /home/omega/omega`, then always pull as `omega` |
 | the tunnel address stopped working | a quick tunnel gets a new address on every restart. `sudo journalctl -u cloudflared-quick \| grep -o 'https://.*trycloudflare.com' \| tail -1` |
 | equity reset to its starting value after a restart | the bot resumed before it had ever saved state. Only happens before the first closed trade, and knowledge files survive it |
 | equity is not the round number you started with | it RESUMED the saved balance, which is what you want on a 24x7 server. To start over, use the **Start fresh** button on the dashboard, or `sudo touch /home/omega/omega/data/FRESH_START && sudo systemctl restart omega` |

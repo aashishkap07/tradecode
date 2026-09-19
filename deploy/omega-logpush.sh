@@ -95,11 +95,26 @@ if [ "$CHECK_ONLY" = 1 ]; then
     say "Checking the log push as user $(id -un)"
     check "the repo exists"                 test -d "$REPO/.git"
     check "this user can write to the repo" test -w "$REPO"
+    # ═══ C475: CHECK WHAT THE OPERATION NEEDS, NOT SOMETHING NEARBY ═══════
+    # The first version checked `test -w "$REPO"` -- the WORKING directory --
+    # and reported all-clear while the real push died with "insufficient
+    # permission for adding an object to repository database
+    # .git/objects". Git writes objects into .git, not into the checkout, and
+    # a repo cloned or pulled with sudo has root-owned objects. A check that
+    # passes while the operation fails is worse than no check: it sends the
+    # operator to wire up a cron job that can never work.
+    check "this user can write git objects (.git/objects)" test -w "$REPO/.git/objects"
     check "the token file is readable (so the scrubber can redact it)" \
           test -r "$TOKEN_FILE"
     check "git will not block on a password prompt" test "$GIT_TERMINAL_PROMPT" = "0"
-    if git -C "$REPO" ls-remote --exit-code origin >/dev/null 2>&1; then
-        printf '  OK   the remote answers and this user can authenticate\n'
+    # ls-remote succeeds on a PUBLIC repo with no credentials at all, so it
+    # answers "can I read?" when the question is "can I write?". --dry-run
+    # asks the real one.
+    if git -C "$REPO" push --dry-run -q origin "HEAD:refs/heads/${BRANCH}" >/dev/null 2>&1; then
+        printf '  OK   this user can PUSH to the remote\n'
+    elif git -C "$REPO" ls-remote --exit-code origin >/dev/null 2>&1; then
+        printf '  \033[1;31mFAIL\033[0m the remote is reachable but this user cannot PUSH — run: %s --setup\n' "$0"
+        problems=$((problems+1))
     else
         printf '  \033[1;31mFAIL\033[0m the remote rejected this user — run: %s --setup\n' "$0"
         problems=$((problems+1))
@@ -115,6 +130,16 @@ fi
 
 # ─────────────────────────────────────────────────────────────────────────
 cd "$REPO" || die "cannot enter $REPO"
+
+# C475: fail here, with the cure, rather than 200 lines later inside git.
+if [ ! -w "$REPO/.git/objects" ]; then
+    die "$(id -un) cannot write to $REPO/.git/objects — the repo was cloned or
+     pulled with sudo, so git's object store belongs to root.
+     Fix: sudo chown -R $(id -un):$(id -un) $REPO
+     Then pull as this user from now on, NOT as root:
+         sudo -u $(id -un) git -C $REPO pull
+     A root-run 'git pull' re-creates root-owned objects and breaks it again."
+fi
 
 # ═══ C474: A SCRUBBER THAT CANNOT SCRUB MUST NOT PUSH ═══════════════════
 # The first version did `[ -f "$TOKEN_FILE" ] && TOK=$(cat ...)`. Run as the
