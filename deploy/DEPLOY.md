@@ -398,6 +398,28 @@ learning state all carry across — the bot resumes rather than starting over.
 
 ---
 
+## Starting over deliberately
+
+The bot RESUMES by default, because on a 24x7 server a restart must never wipe
+the account. To start again at your configured capital:
+
+**From the dashboard:** the **Start fresh (wipes ledger)** button, below the
+other controls and separated from them, because it discards data.
+
+**From the shell:**
+
+```bash
+sudo touch /home/omega/omega/data/FRESH_START
+sudo systemctl restart omega
+```
+
+Both write the same flag file. The flag is **consumed on use** — one restart,
+one fresh start — so it cannot quietly wipe the account on every reboot
+afterwards. Equity returns to `OMEGA_CAPITAL` and the trade ledger is
+discarded; the learning state (Markov chains, calibration) is kept.
+
+---
+
 ## Sending the logs for analysis
 
 The logs live on your server and nobody analysing them can reach your server.
@@ -499,7 +521,8 @@ bigger reason to move than the 24×7 uptime is.
 | `git pull` says "detected dubious ownership" | `sudo git config --global --add safe.directory /home/omega/omega` |
 | the tunnel address stopped working | a quick tunnel gets a new address on every restart. `sudo journalctl -u cloudflared-quick \| grep -o 'https://.*trycloudflare.com' \| tail -1` |
 | equity reset to its starting value after a restart | the bot resumed before it had ever saved state. Only happens before the first closed trade, and knowledge files survive it |
-| equity is not the round number you started with | it RESUMED yesterday's balance, which is what you want on a 24x7 server. To deliberately start over: `sudo systemctl stop omega`, `sudo rm /home/omega/omega/data/state_v60.json /home/omega/omega/data/mode_v60.json`, `sudo systemctl start omega` |
+| equity is not the round number you started with | it RESUMED the saved balance, which is what you want on a 24x7 server. To start over, use the **Start fresh** button on the dashboard, or `sudo touch /home/omega/omega/data/FRESH_START && sudo systemctl restart omega` |
+| the dashboard version does not match what you pulled | the page is cached. Reload, or open a private tab. The page now warns you itself when it notices |
 | day loss room shows a % spent with no trades today | fixed at C471 — `sudo git pull && sudo systemctl restart omega` |
 | lost the token | `sudo cat /etc/omega.token` |
 | cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you missed the toggle in Step 1.5. Terminate it and create a new one — it cannot be added afterwards |

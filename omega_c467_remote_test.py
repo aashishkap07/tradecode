@@ -37,6 +37,9 @@ g = {'os': os, 'time': time, 'threading': threading, 'sys': sys, 're': re,
                                      debug=lambda *a: None, report=lambda *a: None),
      '_C462_REPORT_PATH': REPORT, '_C52_LOG_PATH': SESSION,
      '_C460_DETAIL_PATH': DETAIL,
+     # real module globals the panel reads; the harness must supply them or it
+     # is testing a different program than the one that ships
+     '_OMEGA_VERSION': 'C473', 'BASE_PATH': tmp,
      '_c462_report': types.SimpleNamespace(last_scan={'t': time.time() - 42.0},
                                            n_scans=75, t0=time.time() - 3600)}
 exec(compile(ast.Module(body=[node], type_ignores=[]), '<rc>', 'exec'), g)

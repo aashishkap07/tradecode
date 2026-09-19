@@ -1992,7 +1992,11 @@ _c467_cfg_ref = [None]
 # versions because the literal was buried in a dict nobody re-read, and the boot
 # header carries its own. A version printed in two places is a version that will
 # disagree with itself.
-_OMEGA_VERSION = 'C469'
+# C473: BUMPED EVERY VERSION FROM NOW ON. It sat at 'C469' through C470,
+# C471 and C472, so the operator's dashboard said C469 while running C471 --
+# and the one question they could not answer by looking was "did my pull
+# actually land?". A version string that does not move is worse than none.
+_OMEGA_VERSION = 'C473'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -35730,14 +35734,45 @@ def startup():
         _has_state468 = os.path.exists(os.path.join(BASE_PATH, 'state_v60.json'))
     except Exception:
         _has_state468 = False
-    choice = _c468_input("Select (1/2) [1]: ", env='OMEGA_STATE',
-                         default=('2' if _has_state468 else '1'),
-                         mapping={'fresh': '1', 'new': '1',
-                                  'load': '2', 'resume': '2',
-                                  '1': '1', '2': '2'}).strip()
+    # ═══ C473: THE CHOICE, GIVEN BACK ══════════════════════
+    # C468 answered "fresh or resume?" automatically because a service has no
+    # keyboard, and defaulted to RESUME so a restart could not wipe the
+    # account. Both were right. But the operator lost a decision they used to
+    # make on every run, and the only way back to a fresh start was deleting
+    # files by hand over SSH.
+    # A FLAG FILE restores it without needing a terminal: create
+    # data/FRESH_START, restart, and the bot begins again at OMEGA_CAPITAL.
+    # The flag is CONSUMED on use -- one restart, one fresh start -- because a
+    # flag that persists would silently wipe the account on every reboot
+    # thereafter, which is the exact failure C468-3 exists to prevent.
+    # The dashboard's "Start fresh" button writes this same file, so the button
+    # and the command line are one mechanism, not two.
+    _flag473 = os.path.join(BASE_PATH, 'FRESH_START')
+    _forced473 = False
+    try:
+        if os.path.exists(_flag473):
+            _forced473 = True
+            os.remove(_flag473)          # consumed: never fires twice
+            print(f"  🆕 FRESH START requested (data/FRESH_START) — flag consumed, "
+                  f"so the next restart will RESUME as usual [C473]")
+    except Exception as _e473:
+        print(f"  ⚠️  C473: could not consume the fresh-start flag "
+              f"({type(_e473).__name__}) — refusing to act on a flag that "
+              f"cannot be cleared, because it would wipe the account on every "
+              f"restart from now on. Resuming instead.")
+        _forced473 = False
+    if _forced473:
+        choice = '1'
+    else:
+        choice = _c468_input("Select (1/2) [1]: ", env='OMEGA_STATE',
+                             default=('2' if _has_state468 else '1'),
+                             mapping={'fresh': '1', 'new': '1',
+                                      'load': '2', 'resume': '2',
+                                      '1': '1', '2': '2'}).strip()
     if _c468_headless():
         print(f"     state file {'found' if _has_state468 else 'not found'} at "
-              f"{BASE_PATH} → {'RESUMING' if choice == '2' else 'starting FRESH'} [C468]")
+              f"{BASE_PATH} → {'RESUMING' if choice == '2' else 'starting FRESH'}"
+              f"{' (flag)' if _forced473 else ''} [C468/C473]")
     fresh = (choice != '2')
     if fresh:
         # ═══ C371: OPERATOR-CHOSEN STARTING EQUITY ══════════════════════════
@@ -36154,6 +36189,16 @@ class RemoteControl:
             if not bool(getattr(self.bot.cfg, 'C467_CTRL_AUTH', True)):
                 _tok_ref[0] = ''
             _tailmax_ref = [int(getattr(self.bot.cfg, 'C467_CTRL_TAIL_MAX', 400))]
+            # C473: where FRESH_START is written. Looked up DEFENSIVELY, because
+            # everything in this method is wrapped in one `except Exception ->
+            # logger.warning`, so a single missing name does not disable a
+            # feature -- it disables THE WHOLE CONTROL PANEL, which is how the
+            # operator stops the bot remotely, and it does so with one warning
+            # line in a journal nobody is reading yet. Caught when the C467
+            # harness (which has no BASE_PATH) started returning HTTP 0 for
+            # every route. A degraded button is survivable; a dead panel is not.
+            _base_ref = [globals().get('BASE_PATH')
+                         or os.path.expanduser('~/OmegaBot60')]
             _logs_ref = [{}]
             _files_ref = [[]]
             try:
@@ -36336,6 +36381,22 @@ class RemoteControl:
                     # about as bad as a silent failure gets.
                     # Route on the path alone, once, at the top.
                     _route = self.path.split('?')[0]
+                    if _route == '/api/fresh':
+                        # C473: arm a fresh start, then stop. The service
+                        # manager brings the bot back and it re-anchors at
+                        # OMEGA_CAPITAL. Two steps, one button.
+                        try:
+                            _fp473 = os.path.join(_base_ref[0], 'FRESH_START')
+                            with open(_fp473, 'w') as _fh473:
+                                _fh473.write(str(time.time()))
+                            cmd_ref['restart'] = True
+                            cmd_ref['stop'] = True
+                            self._send_json({'ok': True,
+                                             'msg': 'Fresh start armed - restarting'})
+                        except Exception as _e:
+                            self._send_json({'ok': False,
+                                             'error': f'could not arm: {type(_e).__name__}'})
+                        return
                     if _route == '/api/restart':
                         # C467-D: a clean stop. systemd's Restart=always brings
                         # it straight back, which is what "restart" means on a
@@ -36501,7 +36562,7 @@ class RemoteControl:
                     real newline inside a JavaScript string literal and the page
                     would die with a syntax error before rendering a thing.
                     """
-                    return r'''<!DOCTYPE html>
+                    _page473 = r'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <title>OMEGA V60</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -36608,6 +36669,11 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
     <button onclick="cmd('restart')">Restart</button>
     <button class="danger" onclick="cmd('stop')">STOP</button>
   </div>
+  <!-- C473: on its own row. It DISCARDS the ledger, so it must not sit a
+       thumb's width from Resume on a phone. -->
+  <div class="row" style="margin-top:9px;border-top:1px solid var(--line);padding-top:9px">
+    <button class="danger" onclick="cmd('fresh')">Start fresh (wipes ledger)</button>
+  </div>
   <div id="err"></div>
 </section>
 
@@ -36626,6 +36692,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 </section>
 
 <script>
+var PAGEVER='__PAGEVER__';   /* C473: stamped when this page was served */
 function T(){var m=location.search.match(/[?&]t=([^&]*)/);return m?m[1]:'';}
 var TOK=T(), Q=TOK?('?t='+TOK):'';
 function q(i){return document.getElementById(i)}
@@ -36710,7 +36777,14 @@ async function pull(){
     if(r.status===401){q('err').textContent='Token missing or wrong — open this page with ?t=YOUR_TOKEN';return}
     var d=await r.json();
     q('err').textContent='';
-    q('ver').textContent=d.version+(d.paper?' · PAPER':' · LIVE');
+    /* C473: the page was built by one version and the bot may be another.
+       If they disagree the page is cached -- say so rather than let the
+       operator read a stale dashboard and trust it. */
+    q('ver').textContent=d.version+(d.paper?' \u00b7 PAPER':' \u00b7 LIVE');
+    if(PAGEVER&&d.version&&PAGEVER!==d.version){
+      q('err').textContent='This page was served by '+PAGEVER+' but the bot is '+
+        d.version+' \u2014 reload (or open in a private tab) to get the current one.';
+    }
     var age=Number(d.scan_age_s)||0;
     q('dot').className='dot'+(age>1800?' dead':(age>900?' stale':''));
     q('sub').textContent=d.mode+' · up '+d.uptime_min+' min · '+
@@ -36751,6 +36825,11 @@ async function pull(){
 }
 
 async function cmd(c){
+  /* C473: name what is lost. "Are you sure?" teaches people to tap yes. */
+  if(c==='fresh'&&!confirm(
+     'START FRESH?\n\nEquity resets to the configured starting capital and '+
+     'this account\u2019s trade ledger is discarded.\n\nLearning state '+
+     '(Markov chains, calibration) is kept.\n\nThis cannot be undone.'))return;
   if((c==='stop'||c==='restart')&&!confirm(c.toUpperCase()+' the bot?'))return;
   try{
     var r=await fetch('/api/'+c+Q,{method:'POST'});
@@ -36764,6 +36843,14 @@ drawTabs();applyView();pull();pullLog();
 setInterval(pull,5000);setInterval(pullLog,8000);
 </script></body></html>
 '''
+                    # C473: stamp the version the page was SERVED by, so the
+                    # page can notice when it is being read from cache.
+                    # globals().get, for the same reason _base_ref uses it: a
+                    # bare global reference here 500s THE WHOLE DASHBOARD, and
+                    # a version stamp is not worth a dead page. Second instance
+                    # of this in one version, so it is a rule now, not a patch.
+                    return _page473.replace('__PAGEVER__',
+                                            str(globals().get('_OMEGA_VERSION', '?')))
 
                 def _send_json(self, data):
                     import json
