@@ -398,6 +398,39 @@ learning state all carry across — the bot resumes rather than starting over.
 
 ---
 
+## Sending the logs for analysis
+
+The logs live on your server and nobody analysing them can reach your server.
+There are two ways to close that gap.
+
+**Manual** — tap **Download** on the dashboard, pick the file, attach it to the
+conversation. Fine occasionally. It means analysis happens when you remember,
+not when something interesting happens.
+
+**Automatic** — push them to GitHub hourly, where they can be read any time:
+
+```bash
+sudo cp /home/omega/omega/deploy/omega-logpush.sh /usr/local/bin/
+sudo chmod +x /usr/local/bin/omega-logpush.sh
+echo '17 * * * * omega /usr/local/bin/omega-logpush.sh' | sudo tee /etc/cron.d/omega-logpush
+```
+
+It commits the **report** and **session** logs plus the two state files to a
+`logs` branch, in a separate git worktree so it can never disturb the checkout
+the bot is running from. The detail log is excluded by default — roughly 3 MB
+an hour, and mostly working. `PUSH_DETAIL=1` includes it when an investigation
+needs it.
+
+**Every push is scrubbed** for the control token and for anything matching
+api_key / api_secret / passphrase / password. Not because the bot is expected
+to log one, but because a secret that reaches a git history is there
+permanently, and "expected not to" is not a control.
+
+You do not need to download anything at intervals. The files persist, and
+logrotate keeps 14 days of session logs and 26 weeks of report logs.
+
+---
+
 ## Optional: the watchdog
 
 systemd restarts the bot when the **process** dies. It cannot see a bot that

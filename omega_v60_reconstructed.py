@@ -368,6 +368,56 @@ _C466_TOKENS = re.compile(
 )
 
 
+_C472_CLASS = {
+    'rule': 'l-m', 'pm': None, 'good': 'l-g', 'bad': 'l-b',
+    'warnw': 'l-w', 'marker': 'l-a',
+}
+
+
+def _c472_escape(t):
+    return (str(t).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
+
+
+def _c472_paint_html(text):
+    """C472: paint a log for the browser using the SAME rules as the console.
+
+    C469 hand-wrote a second set of these rules in JavaScript, and immediately
+    reproduced a bug C466 had already fixed: it painted lowercase 'taker' red,
+    so every MARKET row's "taker flow -0.11" -- an ORDER-FLOW READING, not a
+    cost -- came out looking like a loss. Two implementations of one rule set
+    is the defect this project has paid for more than any other (C420-1, two
+    initialisers for one state). There is now one, here, in Python, and the
+    browser only inserts what it is given.
+
+    The text is escaped PIECE BY PIECE around the matches rather than escaped
+    first and matched after, so a coin name containing '<' can never open a
+    tag, and escaping can never alter what the patterns see.
+    """
+    out, pos = [], 0
+    try:
+        for m in _C466_TOKENS.finditer(str(text)):
+            out.append(_c472_escape(text[pos:m.start()]))
+            tok = m.group(0)
+            name = m.lastgroup
+            cls = _C472_CLASS.get(name, None)
+            if name in ('money', 'pct', 'rmult'):
+                # THE SIGN DECIDES -- and it is read EXACTLY as the console
+                # reads it: `t.lstrip('$')[0] == '+'`. My first version tested
+                # the raw first character, which for "$-0.04" is '$', so every
+                # money LOSS came out green. "Exactly as the console" has to
+                # mean the same expression, not the same intention.
+                cls = 'l-g' if tok.lstrip('$')[:1] == '+' else 'l-b'
+            if cls:
+                out.append(f'<span class="{cls}">{_c472_escape(tok)}</span>')
+            else:
+                out.append(_c472_escape(tok))     # 'pm': symmetric, never painted
+            pos = m.end()
+        out.append(_c472_escape(text[pos:]))
+        return ''.join(out)
+    except Exception:
+        return _c472_escape(text)
+
+
 def _c466_paint(line, pal, day_used=0.0):
     """Paint a finished line. Never called before the layout is measured."""
     try:
@@ -12301,8 +12351,20 @@ class TechnicalAnalysis:
                         _d += f" OIdiv={_odv_l:+.2f}"
                     if _bi_l is not None:
                         _d += f" book={_bi_l:+.2f}"
-                    # C301: green rule separating consecutive pair blocks in Step 3
-                    logger.info("   " + "\U0001f7e9" * 18)
+                    # ═══ C472: A SEPARATOR MUST NOT BE THE LOUDEST THING ON THE
+                    # SCREEN. C301 drew this as eighteen GREEN SQUARE EMOJI
+                    # (U+1F7E9). On a phone terminal it read as a tinted rule.
+                    # In the browser log viewer it is a solid green bar -- the
+                    # brightest object on the page, once per analysed pair, so
+                    # ~60 of them per scan -- drawing the eye to a line that
+                    # carries no information at all.
+                    # It is also exactly the glyph class C465 spent a whole
+                    # version removing from the dashboard: an emoji is two cells
+                    # wide in some fonts and one in others, and colour-carrying
+                    # besides, so it cannot be painted, measured or aligned.
+                    # The detail log simply never got that treatment.
+                    # A rule is a rule. ASCII, one cell, paintable, alignable.
+                    logger.info("   " + "-" * 36)
                     logger.info(f"   \U0001f9ec {symbol.split('/')[0]}: breadth {_n_agree}/{_n_fam} "
                                f"→ conviction {_fam_breadth:.2f}{_cat_s}{_d}")
                 _raw_score = abs(avg_sig) * _agree_eff
@@ -36207,7 +36269,14 @@ class RemoteControl:
                     elif _p == '/api/logs':
                         which = (_q.get('file') or ['report'])[0]
                         n = (_q.get('n') or ['200'])[0]
-                        self._send_text(self._tail(which, n))
+                        _raw472 = self._tail(which, n)
+                        if (_q.get('fmt') or [''])[0] == 'html':
+                            # C472: painted HERE, by the one painter, so the
+                            # browser never needs a second copy of the rules.
+                            self._send_text('\n'.join(
+                                _c472_paint_html(_l) for _l in _raw472.split('\n')))
+                        else:
+                            self._send_text(_raw472)
                     elif _p == '/api/files':
                         import os as _os, glob as _g
                         out = []
@@ -36583,20 +36652,13 @@ function applyView(){q('log').className=WRAP?'wrap':'';
   q('wrapb').className=WRAP?'on':'';q('autob').className=AUTO?'on':'';
   q('log').style.fontSize=SIZE+'px'}
 
-/* Paint the log with the SAME rules the console uses (C466): a sign, a word,
-   a marker. Colour is never the only carrier -- the text already says it. */
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function paint(t){return esc(t)
-  .replace(/^(\s*(?:&gt;&gt;|&lt;&lt;|-&gt;|\.\.)\s.*)$/gm,'<span class="l-a">$1</span>')
-  .replace(/\b(WIN|maker|MAKER)\b/g,'<span class="l-g">$1</span>')
-  .replace(/\b(LOSS|TAKER|taker)\b/g,'<span class="l-b">$1</span>')
-  .replace(/\b(ERROR|FAILED|failed|HARD STOP)\b/g,'<span class="l-w">$1</span>')
-  .replace(/([+-]\$[\d,]+\.\d{2})/g,function(m){
-     return '<span class="'+(m[0]==='-'?'l-b':'l-g')+'">'+m+'</span>'})
-  .replace(/(^|[\s(])([+-]\d+\.\d+(?:%|R))\b/g,function(m,a,b){
-     return a+'<span class="'+(b[0]==='-'?'l-b':'l-g')+'">'+b+'</span>'})
-  .replace(/^(\s*[-=]{6,})$/gm,'<span class="l-m">$1</span>')}
-
+/* C472: THE PAINTER LIVES ON THE SERVER NOW.
+   C469 hand-wrote a second copy of the console's colour rules here, in
+   JavaScript, and immediately reproduced a bug C466 had already fixed:
+   lowercase 'taker' was painted red, so every MARKET row's "taker flow -0.11"
+   -- an order-flow reading, not a cost -- looked like a loss. The log is
+   requested with fmt=html and arrives already painted by the one rule set in
+   Python, escaped there too. This page no longer has an opinion about colour. */
 var stick=true;
 q('log').addEventListener('scroll',function(){
   var e=q('log');stick=(e.scrollHeight-e.scrollTop-e.clientHeight)<40});
@@ -36605,15 +36667,18 @@ async function pullLog(){
   var f=(FILE==='live')?'report':FILE, n=(FILE==='live')?400:400;
   q('dl').href='/api/files'+Q;
   try{
-    var r=await fetch('/api/logs?file='+f+'&n='+n+(TOK?('&t='+TOK):''));
+    var r=await fetch('/api/logs?file='+f+'&n='+n+'&fmt=html'+(TOK?('&t='+TOK):''));
     var t=await r.text();
     if(FILE==='live'){
       /* the last dashboard block = from the final rule line to the end */
       var L=t.split('\n'), st=-1;
-      for(var i=L.length-1;i>=0;i--){ if(/^\s{2}={10,}/.test(L[i])||/^\s{2}\d{2}:\d{2}\s/.test(L[i])){st=i;break} }
+      for(var i=L.length-1;i>=0;i--){
+        var plain=L[i].replace(/<[^>]*>/g,'');          /* C472: strip the spans first */
+        if(/^\s{2}={10,}/.test(plain)||/^\s{2}\d{2}:\d{2}\s/.test(plain)){st=i;break}
+      }
       if(st>0) t=L.slice(Math.max(0,st-1)).join('\n');
     }
-    q('log').innerHTML=paint(t);
+    q('log').innerHTML=t;                     /* already painted and escaped */
     q('lines').textContent=t.split('\n').length+' lines';
     if(AUTO&&stick)q('log').scrollTop=q('log').scrollHeight;
   }catch(e){q('log').textContent='could not read the log: '+e}
