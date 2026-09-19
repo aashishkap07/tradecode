@@ -136,6 +136,30 @@ ok("  ...and the token is read from the page's own address, not templated in",
    'location.search' in b and TOKEN not in b,
    "the secret must stay in the address bar, not the HTML body")
 
+# ═══ C470: NOTHING THE PANEL SERVES MAY BE CACHED ═══════════════════════
+# C469 deployed correctly and the operator's phone still drew the OLD page.
+# No Cache-Control, no ETag, no Last-Modified means the browser is free to
+# guess, and it guesses "reuse". A deploy that worked looked like one that
+# had not happened. Headers are checked here because they are invisible in
+# every other way -- the body is byte-identical either way.
+def headers(path):
+    try:
+        with urllib.request.urlopen(f'http://127.0.0.1:{PORT}{path}', timeout=6) as r:
+            return {k.lower(): v for k, v in r.headers.items()}
+    except Exception:
+        return {}
+print("\n4b. NOTHING IS CACHEABLE")
+for p, label in ((f'/?t={TOKEN}', 'the dashboard page'),
+                 (f'/api/status?t={TOKEN}', 'status JSON'),
+                 (f'/api/positions?t={TOKEN}', 'positions JSON'),
+                 (f'/api/health?t={TOKEN}', 'health JSON'),
+                 (f'/api/logs?file=report&n=5&t={TOKEN}', 'the log tail')):
+    h = headers(p)
+    cc = h.get('cache-control', '')
+    ok(f"{label:<20} sends no-store", 'no-store' in cc, f"got {cc!r}")
+ok("  the page also sends Content-Length",
+   'content-length' in headers(f'/?t={TOKEN}'))
+
 print("\n5. DOWNLOAD, AND THE PATH-TRAVERSAL GUARD")
 c, b = get(f'/api/download?f=omega_report_20260918_005533.log&t={TOKEN}')
 ok("a real log downloads", c == 200 and 'line 0' in b, f"HTTP {c}")

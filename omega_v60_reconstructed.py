@@ -36446,6 +36446,9 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 
 <header>
   <h1><span class="dot" id="dot"></span>OMEGA V60 <span id="ver" class="muted"></span></h1>
+  <!-- C470 build stamp: if this page ever comes from cache, the version in
+       the header will disagree with the one /api/status reports, and the
+       mismatch is shown rather than hidden. -->
   <div class="sub" id="sub">connecting&hellip;</div>
 </header>
 
@@ -36645,6 +36648,7 @@ setInterval(pull,5000);setInterval(pullLog,8000);
                     # C151: charset=utf-8 — dashboard showed mojibake (ðŸ¤– etc)
                     self.send_header('Content-Type', 'application/json; charset=utf-8')
                     self.send_header('Access-Control-Allow-Origin', '*')
+                    self.send_header('Cache-Control', 'no-store')   # C470
                     self.end_headers()
                     self.wfile.write(json.dumps(data).encode('utf-8'))
 
@@ -36652,16 +36656,35 @@ setInterval(pull,5000);setInterval(pullLog,8000);
                     body = str(text).encode('utf-8', 'replace')
                     self.send_response(200)
                     self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                    # C470: a log tail served from cache is a log that has
+                    # stopped, which is the single most alarming thing this
+                    # panel could wrongly show.
+                    self.send_header('Cache-Control', 'no-store')
                     self.send_header('Content-Length', str(len(body)))
                     self.end_headers()
                     self.wfile.write(body)
 
                 def _send_html(self, html):
+                    body = html.encode('utf-8')
                     self.send_response(200)
                     # C151: charset=utf-8 — browser was reading UTF-8 emoji bytes as Latin-1
                     self.send_header('Content-Type', 'text/html; charset=utf-8')
+                    # ═══ C470: NEVER CACHE THIS PAGE ═══════════════════════
+                    # C469 rebuilt the dashboard and the operator pulled it,
+                    # restarted the bot, confirmed /api/health — and their phone
+                    # still drew the old C151 page, because nothing here ever
+                    # said how long it was good for. With no Cache-Control, no
+                    # ETag and no Last-Modified, a browser is free to guess, and
+                    # Chrome guesses "reuse it". So a deploy that worked
+                    # perfectly looked like a deploy that had not happened.
+                    # The page is a live control surface for a trading bot. It
+                    # is never worth showing from cache.
+                    self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                    self.send_header('Pragma', 'no-cache')
+                    self.send_header('Expires', '0')
+                    self.send_header('Content-Length', str(len(body)))
                     self.end_headers()
-                    self.wfile.write(html.encode('utf-8'))
+                    self.wfile.write(body)
             
             # ═══ C467-D: BIND WHERE IT IS SAFE TO BIND ══════════════
             # With a token: 0.0.0.0, so a tunnel or the local wifi can reach it.
