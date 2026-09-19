@@ -1,0 +1,622 @@
+
+  ================================================================================================
+  OMEGA C473  PAPER  Bitget perps
+  19 Sep 2026   20:04
+  start $250.66  day -0.68% loss
+  ================================================================================================
+
+
+
+  20:12  up 0h08m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $250.71  unreal $+0.05
+  SESSION   $+0.05 +0.02%
+  DAY       real $+0.66  loss room $1.70 (0.68%)  0% used  vol x1.00  trust x1.00
+            ..........................
+  RECORD    no closed trades yet this run
+  LIFETIME  6tr 2W 4L 33%  $+0.66
+  OPEN      1 pos $22.76 (9%)  free $227.90
+  FEES      no fills yet this run
+  SCAN      797 > 1 > 0 passed  top JUP 0.90 (late-leg F=-0.04)  2 scans, 61 analysed
+  MARKET    TRENDING  bias +0.49  breadth +0.00  taker flow -0.05
+  NEWS      65 articles  + tone +0.18  ARB -0.24  UNI +0.23  PEPE +0.21
+  INFO      1 tilted  flow/fund/news on 60
+  MOVERS    AKE +137% cut  B2 +63% cut  ONE +58% #8  AR +53% #10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KAS      LONG    0.039400  0.039460  +0.15%   +0.05   19m  + 56% left
+  ------------------------------------------------------------------------------------------------
+
+  >> 20:16  OPEN   JTO LONG @0.471100  x1 $45.44
+       target +5.8%  stop -1.7%  entry score 0.77  maker
+
+
+  20:20  up 0h16m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $250.83  unreal $+0.17
+  SESSION   $+0.17 +0.07%
+  DAY       real $+0.66  loss room $1.70 (0.68%)  0% used  vol x1.00  trust x1.00
+            ..........................
+  RECORD    no closed trades yet this run
+  LIFETIME  6tr 2W 4L 33%  $+0.66
+  OPEN      2 pos $68.20 (27%)  free $182.46
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 60 > 3 passed  top JTO 0.77 (viable)  3 scans, 121 analysed
+  MARKET    MIXED  bias +0.35  breadth +0.00  taker flow -0.56
+  NEWS      65 articles  + tone +0.18  ARB -0.24  UNI +0.23  PEPE +0.21
+  INFO      3 tilted  flow/fund/news on 75
+  MOVERS    AKE +141% #6  ONE +59% #9  AR +54% #11  B2 +50% #16
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KAS      LONG    0.039400  0.039630  +0.58%   +0.34   27m  + 56% left
+  JTO      LONG    0.471100  0.469700  -0.30%   -0.17    3m  - 56% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  20:28  up 0h24m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $250.97  unreal $+0.31
+  SESSION   $+0.31 +0.12%
+  DAY       real $+0.66  loss room $2.12 (0.85%)  0% used  vol x1.25  trust x1.00
+            ..........................
+  RECORD    no closed trades yet this run
+  LIFETIME  6tr 2W 4L 33%  $+0.66
+  OPEN      2 pos $68.20 (27%)  free $182.46
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 5 > 0 passed  top JTO 1.01 (mtf_disagree)  5 scans, 129 analysed
+  MARKET    MIXED  bias +0.32  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.18  ARB -0.24  UNI +0.23  PEPE +0.21
+  INFO      1 tilted  flow/fund/news on 75
+  MOVERS    AKE +142% #6  ONE +65% #10  AR +52% #13  ZAMA +45% #23
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KAS      LONG    0.039400  0.039730  +0.84%   +0.52   35m  + 61% left
+  JTO      LONG    0.471100  0.469300  -0.38%   -0.21   11m  - 53% left
+  ------------------------------------------------------------------------------------------------
+
+  -> 20:32  HALF   KAS LONG @0.039930  +1.35% $+0.45
+       win half banked  maker  $11.38 rides on
+  << 20:35  CLOSE  KAS LONG @0.039690  +0.74% $+0.24  WIN
+       held 42m  TRAILING_TP: peak=+3.8%   kept 58% of a +1.27% peak  +0.56R  maker
+  >> 20:37  OPEN   MON LONG @0.025360  x2 $26.46
+       target +4.6%  stop -1.3%  entry score 0.76  maker
+
+
+  20:37  up 0h32m  scan 7 ------------------------------------------------------------------------
+  EQUITY    $250.89  unreal $-0.46
+  SESSION   $+0.23 +0.09%  peak $251.35  dd 0.18%
+  CURVE     ====+=
+  DAY       real $+1.35  loss room $2.49 (0.99%)  0% used  vol x1.17  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      2 pos $71.90 (29%)  free $179.45
+  FEES      $0.03  mk4/tk0  0.013% of eq
+  SCAN      797 > 15 > 1 passed  top MON 0.76 (viable)  7 scans, 205 analysed
+  MARKET    TRENDING  bias +0.49  breadth +0.10  taker flow -0.44
+  NEWS      65 articles  + tone +0.27  ARB -0.24  UNI +0.23  PEPE +0.21
+  INFO      1 tilted  flow/fund/news on 83
+  MOVERS    AKE +137% cut  ONE +61% #8  AR +56% #10  XTZ +39% #25
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.466700  -0.93%   -0.46   20m  - 55% left
+  MON      LONG    0.025360  0.025380  +0.08%   -0.00    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  20:45  up 0h40m  scan 9 ------------------------------------------------------------------------
+  EQUITY    $250.44  unreal $-0.91
+  SESSION   $-0.22 -0.09%  peak $251.35  dd 0.36%
+  CURVE     ===++==
+  DAY       real $+1.35  loss room $1.88 (0.75%)  0% used  vol x0.88  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      2 pos $71.90 (29%)  free $179.45
+  FEES      $0.03  mk4/tk0  0.013% of eq
+  SCAN      797 > 1 > 0 passed  top MON 0.24 (post-penalty 0.239)  9 scans, 207 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.00  taker flow +0.40
+  NEWS      65 articles  + tone +0.27  LINK +0.55  ARB -0.24  UNI +0.23
+  INFO      1 tilted  flow/fund/news on 83
+  MOVERS    AKE +137% cut  ONE +61% #8  AR +56% #10  XTZ +39% #25
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.466200  -1.04%   -0.51   28m  - 49% left
+  MON      LONG    0.025360  0.025190  -0.67%   -0.40    8m  - 48% left
+  ------------------------------------------------------------------------------------------------
+
+  >> 20:48  OPEN   TAO LONG @271.63  x2 $27.01
+       target +4.4%  stop -1.2%  entry score 0.61  maker
+
+
+  20:53  up 0h48m  scan 11 -----------------------------------------------------------------------
+  EQUITY    $250.84  unreal $-0.51
+  SESSION   $+0.18 +0.07%  peak $251.35  dd 0.20%
+  CURVE     ===++===
+  DAY       real $+1.35  loss room $2.72 (1.09%)  0% used  vol x1.28  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (39%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 2 > 0 passed  top LAB 1.00 (corr_cap)  11 scans, 269 analysed
+  MARKET    TRENDING  bias +0.54  breadth -0.10  taker flow -0.14
+  NEWS      65 articles  + tone +0.27  LINK +0.55  ONE +0.34  SOL +0.29
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +138% #6  ONE +75% #9  AR +55% #12  ZAMA +42% #20
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.469000  -0.45%   -0.24   36m  - 47% left
+  MON      LONG    0.025360  0.025210  -0.59%   -0.36   16m  - 30% left
+  TAO      LONG      271.63    272.25  +0.23%   +0.08    5m  + 59% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:02  up 0h57m  scan 13 -----------------------------------------------------------------------
+  EQUITY    $250.57  unreal $-0.78
+  SESSION   $-0.09 -0.04%  peak $251.35  dd 0.31%
+  CURVE     ===++====
+  DAY       real $+1.35  loss room $2.72 (1.09%)  0% used  vol x1.28  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (39%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 60 > 0 passed  top USELESS 1.07 (h1_regime_shock)  13 scans, 334 analysed
+  MARKET    TRENDING  bias +0.32  breadth +0.00  taker flow -0.60
+  NEWS      65 articles  + tone +0.27  LINK +0.55  ONE +0.34  SOL +0.29
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +137% #6  ONE +74% #9  AR +51% #12  ZAMA +46% #18
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.468600  -0.53%   -0.28   45m  - 50% left
+  MON      LONG    0.025360  0.025200  -0.63%   -0.38   25m  - 26% left
+  TAO      LONG      271.63    271.19  -0.16%   -0.13   14m  - 53% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:10  up 1h05m  scan 14 -----------------------------------------------------------------------
+  EQUITY    $250.26  unreal $-1.09
+  SESSION   $-0.40 -0.16%  peak $251.35  dd 0.43%
+  CURVE     ==++++=+==
+  DAY       real $+1.35  loss room $2.29 (0.92%)  0% used  vol x1.08  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (40%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 15 > 0 passed  14 scans, 349 analysed
+  MARKET    TRENDING  bias +0.30  breadth -0.05  taker flow +0.09
+  NEWS      65 articles  ~ tone +0.05  LINK +0.55  ONE +0.34  SOL +0.29
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +137% #5  ONE +85% #6  AR +50% #11  ZAMA +47% #19
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.466400  -1.00%   -0.49   53m  - 44% left
+  MON      LONG    0.025360  0.025190  -0.67%   -0.40   33m  - 23% left
+  TAO      LONG      271.63    270.84  -0.29%   -0.20   22m  - 41% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:19  up 1h14m  scan 15 -----------------------------------------------------------------------
+  EQUITY    $250.65  unreal $-0.70
+  SESSION   $-0.01 -0.01%  peak $251.35  dd 0.28%
+  CURVE     ==++*+=+=-=
+  DAY       real $+1.35  loss room $2.15 (0.86%)  0% used  vol x1.01  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (39%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 60 > 0 passed  top LAB 0.96 (corr_cap)  15 scans, 409 analysed
+  MARKET    TRENDING  bias +0.61  breadth +0.00  taker flow -0.06
+  NEWS      65 articles  ~ tone +0.05  LINK +0.55  ONE +0.34  XMR +0.32
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +137% #6  ONE +92% #7  AR +49% #14  ZAMA +43% #23
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.471700  +0.13%   +0.02 1h02m  + 46% left
+  MON      LONG    0.025360  0.025170  -0.75%   -0.44   41m  - 21% left
+  TAO      LONG      271.63    270.44  -0.44%   -0.28   31m  - 39% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:27  up 1h22m  scan 15 -----------------------------------------------------------------------
+  EQUITY    $250.73  unreal $-0.62
+  SESSION   $+0.07 +0.03%  peak $251.35  dd 0.25%
+  CURVE     ==++++=+====
+  DAY       real $+1.35  loss room $2.95 (1.18%)  0% used  vol x1.39  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (39%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 60 > 0 passed  top LAB 0.96 (corr_cap)  15 scans, 409 analysed
+  MARKET    TRENDING  bias +0.61  breadth +0.00  taker flow +0.19
+  NEWS      65 articles  ~ tone +0.05  XMR +0.32  BNB +0.28  ARB -0.24
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +137% #6  ONE +92% #7  AR +49% #14  ZAMA +43% #23
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.473700  +0.55%   +0.21 1h10m  + 20% left
+  MON      LONG    0.025360  0.025150  -0.83%   -0.48   50m  - 19% left
+  TAO      LONG      271.63    270.05  -0.58%   -0.36   39m  - 33% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:35  up 1h30m  scan 17 -----------------------------------------------------------------------
+  EQUITY    $250.46  unreal $-0.89
+  SESSION   $-0.20 -0.08%  peak $251.35  dd 0.35%
+  CURVE     ==++++=+=====
+  DAY       real $+1.35  loss room $2.95 (1.18%)  0% used  vol x1.39  trust x1.25
+            ..........................
+  RECORD    1 closed  1W 0L  win 100%  avg $+0.24/tr
+  LIFETIME  7tr 3W 4L 43%  $+1.35
+  OPEN      3 pos $98.91 (39%)  free $152.44
+  FEES      $0.04  mk5/tk0  0.018% of eq
+  SCAN      797 > 60 > 0 passed  top JTO 0.91 (h1_regime_shock)  17 scans, 471 analysed
+  MARKET    MIXED  bias +0.38  breadth +0.00  taker flow +0.01
+  NEWS      65 articles  ~ tone +0.05  XMR +0.32  BNB +0.28  ARB -0.24
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +142% #6  ONE +85% #7  AR +46% #14  ZAMA +46% #20
+  TAPE      +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.474800  +0.79%   +0.32 1h18m  + 5% left
+  MON      LONG    0.025360  0.025120  -0.95%   -0.54   58m  - 17% left
+  TAO      LONG      271.63    268.51  -1.15%   -0.66   47m  - 19% left
+  ------------------------------------------------------------------------------------------------
+
+  << 21:36  CLOSE  TAO LONG @268.44  -1.17% $-0.68  LOSS
+       held 47m  C399_CONVICTION_COLLAPSE  round trip from +0.32%  -0.70R  TAKER
+  << 21:36  CLOSE  MON LONG @0.025010  -1.38% $-0.77  LOSS
+       held 59m  C377_RISK_STOP: -1.38% =  round trip from +0.16%  -0.78R  TAKER
+
+
+  21:43  up 1h38m  scan 18 -----------------------------------------------------------------------
+  EQUITY    $250.64  unreal $+0.75
+  SESSION   $-0.02 -0.01%  peak $251.35  dd 0.28%
+  CURVE     ++++*+=+==++=+-+
+  DAY       real $-0.11  loss room $2.24 (0.90%)  5% used  vol x1.05  trust x1.25
+            #.........................
+  RECORD    3 closed  1W 2L  win 33%  payoff 0.33  avg $-0.41/tr  best $+0.24  worst $-0.77
+            break-even 75%
+  LIFETIME  9tr 3W 6L 33%  $-0.11
+  OPEN      1 pos $45.44 (18%)  free $204.45
+  FEES      $0.11  mk5/tk2  0.043% of eq
+  SCAN      797 > 13 > 0 passed  top USUAL 1.00 (h1_regime_shock)  18 scans, 484 analysed
+  MARKET    MIXED  bias +0.43  breadth -0.08  taker flow -0.29
+  NEWS      65 articles  + tone +0.43  XMR +0.32  BNB +0.28  ARB -0.24
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +141% #6  ONE +101% #7  ZAMA +42% #23  AR +42% #13
+  TAPE      + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.479300  +1.74%   +0.75 1h26m  + 4% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:51  up 1h47m  scan 20 -----------------------------------------------------------------------
+  EQUITY    $250.00  unreal $+0.11
+  SESSION   $-0.66 -0.26%  peak $251.35  dd 0.54%
+  CURVE     ++++*+=+==++=+-+=
+  DAY       real $-0.11  loss room $2.75 (1.10%)  4% used  vol x1.29  trust x1.25
+            #.........................
+  RECORD    3 closed  1W 2L  win 33%  payoff 0.33  avg $-0.41/tr  best $+0.24  worst $-0.77
+            break-even 75%
+  LIFETIME  9tr 3W 6L 33%  $-0.11
+  OPEN      1 pos $45.44 (18%)  free $204.45
+  FEES      $0.11  mk5/tk2  0.043% of eq
+  SCAN      797 > 13 > 0 passed  top 1000BONK 0.82 (h1_regime_shock)  20 scans, 557 analysed
+  MARKET    MIXED  bias +0.45  breadth +0.00  taker flow +0.03
+  NEWS      65 articles  + tone +0.43  XRP +0.36  BNB +0.28  ARB -0.24
+  INFO      2 tilted  flow/fund/news/oi on 93
+  MOVERS    AKE +139% #6  ONE +92% #7  AR +45% #13  ZAMA +41% #23
+  TAPE      + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.472600  +0.32%   +0.11 1h34m  + 1% left
+  ------------------------------------------------------------------------------------------------
+
+  >> 22:01  OPEN   PEPE LONG @0.0000039196  x2 $17.44
+       target +4.9%  stop -1.2%  entry score 0.40  maker
+
+
+  22:01  up 1h56m  scan 21 -----------------------------------------------------------------------
+  EQUITY    $249.93  unreal $+0.04
+  SESSION   $-0.73 -0.29%  peak $251.35  dd 0.56%
+  CURVE     ++++*+=+==++=+-+--
+  DAY       real $-0.11  loss room $1.49 (0.60%)  7% used  vol x0.70  trust x1.25
+            ##........................
+  RECORD    3 closed  1W 2L  win 33%  payoff 0.33  avg $-0.41/tr  best $+0.24  worst $-0.77
+            break-even 75%
+  LIFETIME  9tr 3W 6L 33%  $-0.11
+  OPEN      2 pos $62.88 (25%)  free $187.01
+  FEES      $0.11  mk6/tk2  0.046% of eq
+  SCAN      797 > 60 > 1 passed  top PEPE 0.40 (viable)  21 scans, 617 analysed
+  MARKET    TRENDING  bias +0.48  breadth +0.00  taker flow -0.03
+  NEWS      65 articles  + tone +0.43  XRP +0.36  BNB +0.28  ARB -0.24
+  INFO      1 tilted  flow/news/oi on 116
+  MOVERS    AKE +136% #5  ONE +86% #8  AR +42% #13  ZAMA +41% #23
+  TAPE      + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JTO      LONG    0.471100  0.472200  +0.23%   +0.07 1h44m  + 0% left
+  PEPE     LONG  0.00000391960.0000039194  -0.01%   -0.03    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+  << 22:06  CLOSE  JTO LONG @0.470000  -0.23% $-0.14  LOSS
+       held 1h49m  PEAK_FLOOR: peaked at +2  round trip from +2.19%  -0.10R  TAKER
+  -> 22:06  HALF   PEPE LONG @0.0000039836  +1.63% $+0.28
+       win half banked  maker  $8.72 rides on
+
+
+  22:09  up 2h04m  scan 22 -----------------------------------------------------------------------
+  EQUITY    $250.46  unreal $+0.43
+  SESSION   $-0.20 -0.08%  peak $251.35  dd 0.35%
+  CURVE     ++++*+=++=++=+-+---=
+  DAY       real $+0.03  loss room $1.80 (0.72%)  0% used  vol x1.06  trust x1.00
+            ..........................
+  RECORD    4 closed  1W 3L  win 25%  payoff 0.45  avg $-0.34/tr  best $+0.24  worst $-0.77
+            break-even 69%
+  LIFETIME  10tr 3W 7L 30%  $+0.03
+  OPEN      1 pos $8.72 (3%)  free $241.31
+  FEES      $0.15  mk7/tk3  0.058% of eq
+  SCAN      797 > 1 > 0 passed  top PEPE 0.52 (post_penalty_quali)  22 scans, 618 analysed
+  MARKET    TRENDING  bias +0.59  breadth +0.00  taker flow -0.48
+  NEWS      65 articles  + tone +0.43  XRP +0.36  BNB +0.28  ARB -0.24
+  INFO      1 tilted  flow/news/oi on 116
+  MOVERS    AKE +136% #5  ONE +86% #8  AR +42% #13  ZAMA +41% #23
+  TAPE      + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PEPE     LONG  0.00000391960.0000040197  +2.55%   +0.43    8m  + 52% left
+  ------------------------------------------------------------------------------------------------
+
+  << 22:09  CLOSE  PEPE LONG @0.0000039971  +1.98% $+0.34  WIN
+       held 8m  EARLY_PEAK_CAPTURE: peak  kept 70% of a +2.83% peak  +1.19R  maker
+
+
+  22:17  up 2h12m  scan 23 -----------------------------------------------------------------------
+  EQUITY    $250.36
+  SESSION   $-0.30 -0.12%  peak $251.35  dd 0.39%
+  CURVE     ++++*+=++=++=+-+---===
+  DAY       real $+0.36  loss room $2.16 (0.86%)  0% used  vol x1.06  trust x1.20
+            ..........................
+  RECORD    5 closed  2W 3L  win 40%  payoff 0.54  avg $-0.20/tr  best $+0.34  worst $-0.77
+            break-even 65%
+  LIFETIME  11tr 4W 7L 36%  $+0.36
+  OPEN      flat  free $250.36
+  FEES      $0.15  mk8/tk3  0.059% of eq
+  SCAN      797 > 9 > 0 passed  top MARSCOIN 0.02 (score 0.024 < 0.42)  23 scans, 627 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.00  taker flow +0.33
+  NEWS      65 articles  - tone -0.08  XRP +0.36  BNB +0.28  ARB -0.24
+  INFO      1 tilted  flow/news/oi on 116
+  MOVERS    AKE +123% #5  ONE +85% #8  AR +45% #13  ZAMA +43% cut
+  TAPE      + - - - +
+  ------------------------------------------------------------------------------------------------
+
+  .. 22:25  flat  $250.36  $-0.30 -0.12%  2W 3L 40%  60 analysed
+  >> 22:33  OPEN   WIF LONG @0.216500  x2 $35.48
+       target +3.6%  stop -1.0%  entry score 0.51  maker
+  >> 22:33  OPEN   1000BONK LONG @0.00307000  x2 $28.09
+       target +4.0%  stop -1.2%  entry score 0.66  maker
+
+
+  22:33  up 2h28m  scan 26 -----------------------------------------------------------------------
+  EQUITY    $250.27  unreal $-0.09
+  SESSION   $-0.39 -0.16%  peak $251.35  dd 0.43%
+  CURVE     ++++*+=++=++=+-+=--=====
+  DAY       real $+0.36  loss room $2.36 (0.94%)  0% used  vol x1.15  trust x1.20
+            ..........................
+  RECORD    5 closed  2W 3L  win 40%  payoff 0.54  avg $-0.20/tr  best $+0.34  worst $-0.77
+            break-even 65%
+  LIFETIME  11tr 4W 7L 36%  $+0.36
+  OPEN      2 pos $63.57 (25%)  free $186.79
+  FEES      $0.17  mk10/tk3  0.070% of eq
+  SCAN      797 > 60 > 2 passed  top 1000BONK 0.66 (viable)  26 scans, 760 analysed
+  MARKET    TRENDING  bias +0.58  breadth +0.23  taker flow -0.18
+  NEWS      65 articles  - tone -0.08  HYPE +0.55  NEAR +0.36  BNB +0.28
+  INFO      2 tilted  flow/news/oi on 124
+  MOVERS    AKE +124% #4  ONE +86% #8  AR +43% #12  B2 +40% #19
+  TAPE      + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  WIF      LONG    0.216500  0.216600  +0.05%   -0.02    0m  - 100% left
+  1000BONK LONG  0.003070000.00306900  -0.03%   -0.06    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+  -> 22:40  HALF   1000BONK LONG @0.00310200  +1.04% $+0.28
+       win half banked  maker  $14.04 rides on
+
+
+  22:41  up 2h36m  scan 28 -----------------------------------------------------------------------
+  EQUITY    $250.60  unreal $-0.04
+  SESSION   $-0.06 -0.03%  peak $251.35  dd 0.30%
+  CURVE     +++**+=++=++=+-+---=====+
+  DAY       real $+0.64  loss room $1.61 (0.65%)  0% used  vol x0.79  trust x1.20
+            ..........................
+  RECORD    5 closed  2W 3L  win 40%  payoff 0.54  avg $-0.20/tr  best $+0.34  worst $-0.77
+            break-even 65%
+  LIFETIME  11tr 4W 7L 36%  $+0.64
+  OPEN      2 pos $49.52 (20%)  free $201.12
+  FEES      $0.18  mk11/tk3  0.072% of eq
+  SCAN      797 > 1 > 0 passed  28 scans, 774 analysed
+  MARKET    TRENDING  bias +0.59  breadth +0.39  taker flow -0.18
+  NEWS      65 articles  - tone -0.08  HYPE +0.55  NEAR +0.36  BNB +0.28
+  INFO      1 tilted  flow/news/oi on 127
+  MOVERS    AKE +135% cut  ONE +88% #6  AR +46% #12  ZAMA +43% #20
+  TAPE      + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  WIF      LONG    0.216500  0.215600  -0.42%   -0.35    8m  - 36% left
+  1000BONK LONG  0.003070000.00310600  +1.17%   +0.31    8m  + 55% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  22:49  up 2h44m  scan 29 -----------------------------------------------------------------------
+  EQUITY    $251.39  unreal $+0.75
+  SESSION   $+0.73 +0.29%
+  CURVE     ++++*+=++=++=+-+--_=====+#
+  DAY       real $+0.64  loss room $1.61 (0.65%)  0% used  vol x0.79  trust x1.20
+            ..........................
+  RECORD    5 closed  2W 3L  win 40%  payoff 0.54  avg $-0.20/tr  best $+0.34  worst $-0.77
+            break-even 65%
+  LIFETIME  11tr 4W 7L 36%  $+0.64
+  OPEN      2 pos $49.52 (20%)  free $201.12
+  FEES      $0.18  mk11/tk3  0.072% of eq
+  SCAN      797 > 60 > 2 passed  top 1000BONK 0.74 (viable)  29 scans, 834 analysed
+  MARKET    TRENDING  bias +0.62  breadth +0.00  taker flow +0.21
+  NEWS      65 articles  + tone +0.37  HYPE +0.55  NEAR +0.36  BNB +0.28
+  INFO      2 tilted  flow/news/oi on 129
+  MOVERS    AKE +117% #5  ONE +80% #8  ZAMA +46% #18  AR +41% #14
+  TAPE      + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  WIF      LONG    0.216500  0.217600  +0.51%   +0.30   16m  + 37% left
+  1000BONK LONG  0.003070000.00312100  +1.66%   +0.44   16m  + 57% left
+  ------------------------------------------------------------------------------------------------
+
+  << 22:49  CLOSE  1000BONK LONG @0.00312000  +1.63% $+0.45  WIN
+       held 16m  EARLY_PEAK_CAPTURE: peak  kept 78% of a +2.08% peak  +1.05R  maker
+  >> 22:51  OPEN   PENGU LONG @0.00831900  x1 $38.61
+       target +6.5%  stop -1.9%  entry score 0.67  maker
+  << 22:53  CLOSE  WIF LONG @0.216600  +0.05% $-0.02  LOSS
+       held 20m  REL_TRAIL: peak=+1.8%(1.  kept 5% of a +0.88% peak  +0.03R  TAKER
+  << 22:56  CLOSE  PENGU LONG @0.00816300  -1.88% $-0.75  LOSS
+       held 5m  C377_RISK_STOP: -1.91% =  -0.75R  TAKER
+
+
+  22:57  up 2h52m  scan 31 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***==
+  DAY       real $+0.31  loss room $1.70 (0.68%)  0% used  vol x0.99  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 1 > 0 passed  top PENGU 0.56 (quality 0.212 < 0.)  31 scans, 837 analysed
+  MARKET    TRENDING  bias +0.60  breadth +0.00  taker flow +0.31
+  NEWS      65 articles  + tone +0.37  ONE +0.70  ZEC +0.47  NEAR +0.36
+  INFO      1 tilted  flow/news/oi on 129
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    AKE +117% #5  ONE +80% #8  ZAMA +46% #18  AR +41% #14
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 23:05  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 23:13  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  1 analysed
+  .. 23:21  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+
+
+  23:29  up 3h24m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***======
+  DAY       real $+0.31  loss room $1.70 (0.68%)  0% used  vol x0.96  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 11 > 0 passed  35 scans, 967 analysed
+  MARKET    TRENDING  bias +0.34  breadth +0.00  taker flow -0.06
+  NEWS      65 articles  + tone +0.27  ONE +0.70  ZEC +0.47  BNB +0.28
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +92% #7  AKE +80% #6  ZAMA +40% #22  SYN +38% cut
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 23:37  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 23:45  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  8 analysed
+  .. 23:53  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+
+
+  00:01  up 3h56m  scan 39 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***==========
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.11  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 59 > 0 passed  top SHIB 0.15 (score 0.147 < 0.59)  39 scans, 1152 analysed
+  MARKET    MIXED  bias +0.15  breadth +0.00  taker flow -0.15
+  NEWS      65 articles  + tone +0.25  RENDER +0.83  ADA +0.70  NEAR +0.47
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +134% #6  AKE +81% #7  ZAMA +45% cut  SYN +36% #30
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 00:09  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 00:17  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 00:25  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  15 analysed
+
+
+  00:34  up 4h29m  scan 43 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***==============
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.07  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 59 > 0 passed  top MINA 0.42 (score 0.421 < 0.48)  43 scans, 1296 analysed
+  MARKET    MIXED  bias +0.05  breadth +0.00  taker flow -0.31
+  NEWS      65 articles  + tone +0.21  DOGE +0.81  LTC +0.70  HYPE +0.63
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +134% #6  AKE +73% #7  ZAMA +48% #21  SYN +40% cut
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 00:42  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 00:50  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  59 analysed
+  .. 00:58  flat  $250.31  $-0.35 -0.14%  3W 5L 38%  12 analysed
+
+
+  01:06  up 5h02m  scan 47 -----------------------------------------------------------------------
+  EQUITY    $250.31
+  SESSION   $-0.35 -0.14%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***==================
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.87  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      flat  free $250.31
+  FEES      $0.26  mk13/tk5  0.103% of eq
+  SCAN      797 > 60 > 0 passed  top MINA 0.36 (score 0.268 < 0.48)  47 scans, 1429 analysed
+  MARKET    MIXED  bias +0.05  breadth -0.17  taker flow +0.05
+  NEWS      65 articles  + tone +0.30  NEAR +0.74  SUI +0.74  AR +0.63
+  INFO      1 tilted  flow/news/oi on 132
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +143% #7  AKE +84% #6  ZAMA +48% #19  SYN +42% cut
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+
