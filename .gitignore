@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+corpus/
+corpusL/
+corpusO/
+corpusF/
+# C468: the headless boot test runs the real bot, which writes its three logs
+# into the code directory. They are test residue, not source.
+omega_report_*.log
+omega_session_*.log
+omega_detail_*.log

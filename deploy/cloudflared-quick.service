@@ -1,0 +1,37 @@
+# Cloudflare quick tunnel as a service  [C468]
+#
+# WHY: `cloudflared tunnel --url ...` typed at an SSH prompt DIES THE MOMENT
+# YOU CLOSE THE SESSION. The bot keeps running; the way in disappears. This
+# keeps the tunnel up across logouts and reboots.
+#
+# THE CATCH: a quick tunnel has no account behind it, so it gets a NEW RANDOM
+# ADDRESS every time it restarts. Find the current one with:
+#     sudo journalctl -u cloudflared-quick | grep -o 'https://.*trycloudflare.com' | tail -1
+#
+# For an address that never changes you need a named tunnel and a domain name —
+# see DEPLOY.md. Cloudflare also states quick tunnels have no uptime guarantee,
+# so treat this as the way to get going, not the way to stay.
+#
+# Install:
+#   sudo cp cloudflared-quick.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now cloudflared-quick
+
+[Unit]
+Description=Cloudflare quick tunnel for the OMEGA control panel
+After=network-online.target omega.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=omega
+Group=omega
+ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate --url http://localhost:8138
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cloudflared-quick
+
+[Install]
+WantedBy=multi-user.target
