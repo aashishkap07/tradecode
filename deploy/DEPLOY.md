@@ -468,6 +468,17 @@ When `--check` is clean:
 echo '17 * * * * omega /usr/local/bin/omega-logpush.sh' | sudo tee /etc/cron.d/omega-logpush
 ```
 
+**Then confirm it actually landed on GitHub** — a script exiting 0 is a claim,
+not evidence:
+
+```bash
+sudo -u omega git -C /home/omega/omega ls-remote origin refs/heads/logs
+```
+
+A hash means the branch is there. Empty output means it is not, whatever the
+script said. You can also just open the repo on github.com and look for the
+`logs` branch.
+
 The script **refuses to push** if it cannot read the token file, rather than
 pushing unscrubbed logs — a scrubber whose failure mode is "quietly does
 nothing" is worse than no scrubber, because it is trusted. It also sets

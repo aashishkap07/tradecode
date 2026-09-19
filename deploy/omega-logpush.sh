@@ -107,10 +107,33 @@ if [ "$CHECK_ONLY" = 1 ]; then
     check "the token file is readable (so the scrubber can redact it)" \
           test -r "$TOKEN_FILE"
     check "git will not block on a password prompt" test "$GIT_TERMINAL_PROMPT" = "0"
+    # C476: an unpushed commit is invisible to every other check here, and it
+    # is precisely what a silently-failing push leaves behind.
+    if [ -d "$REPO/.logpush" ]; then
+        _un="$(git -C "$REPO/.logpush" rev-list --count "origin/${BRANCH}..HEAD" 2>/dev/null || echo 0)"
+        if [ "${_un:-0}" -gt 0 ]; then
+            printf '  \033[1;33mWARN\033[0m %s commit(s) are committed locally but NOT on the remote\n' "$_un"
+            printf '       a normal run will push them; if it does not, the push is failing\n'
+        else
+            printf '  OK   nothing is waiting to be pushed\n'
+        fi
+    fi
     # ls-remote succeeds on a PUBLIC repo with no credentials at all, so it
     # answers "can I read?" when the question is "can I write?". --dry-run
     # asks the real one.
-    if git -C "$REPO" push --dry-run -q origin "HEAD:refs/heads/${BRANCH}" >/dev/null 2>&1; then
+    # C476: test push capability WITHOUT proposing a real ref update. Asking
+    # to push the CODE branch's HEAD onto refs/heads/logs is a non-fast-forward
+    # the moment the logs branch has any history of its own, so this reported
+    # "cannot PUSH" on a setup where pushing worked perfectly -- a false
+    # failure, which sends the operator hunting a credential problem that does
+    # not exist. Push the logs worktree's own HEAD when it exists (a genuine
+    # fast-forward), and otherwise a scratch ref name that cannot conflict.
+    if [ -d "$REPO/.logpush" ]; then
+        _pushsrc="$REPO/.logpush"; _pushref="refs/heads/${BRANCH}"
+    else
+        _pushsrc="$REPO"; _pushref="refs/heads/__omega_push_check__"
+    fi
+    if git -C "$_pushsrc" push --dry-run -q origin "HEAD:${_pushref}" >/dev/null 2>&1; then
         printf '  OK   this user can PUSH to the remote\n'
     elif git -C "$REPO" ls-remote --exit-code origin >/dev/null 2>&1; then
         printf '  \033[1;31mFAIL\033[0m the remote is reachable but this user cannot PUSH — run: %s --setup\n' "$0"
@@ -206,12 +229,50 @@ if [ -n "$TOK" ] && grep -rqF "$TOK" "$WT/logs" 2>/dev/null; then
 fi
 
 cd "$WT" || die "cannot enter the worktree"
+# ═══ C476: "NOTHING TO COMMIT" IS NOT "NOTHING TO PUSH" ═══════════════
+# The previous version was:
+#     git add -A logs
+#     git diff --cached --quiet && exit 0
+# If a run COMMITTED and then failed to PUSH -- which is exactly what happened
+# the first time this ran for real -- the next run finds nothing new to stage,
+# exits 0, and never touches the pending commit. Every hour after that it
+# reports success and pushes nothing, forever, while the operator believes
+# their logs are reaching GitHub. The commit sat local-only and the `logs`
+# branch never appeared on the remote at all.
+# Staging and pushing are two different questions. Ask them separately.
 git add -A logs
-git diff --cached --quiet && exit 0            # nothing changed, say nothing
-git -c user.name='omega-bot' -c user.email='omega@localhost' \
-    commit -q -m "logs: $(date -u '+%Y-%m-%d %H:%M UTC') ($copied file(s))"
+if git diff --cached --quiet; then
+    :                                          # nothing new to record
+else
+    git -c user.name='omega-bot' -c user.email='omega@localhost' \
+        commit -q -m "logs: $(date -u '+%Y-%m-%d %H:%M UTC') ($copied file(s))" \
+        || die "commit failed"
+fi
+
+# Are we ahead of the remote? A branch that does not exist there yet always is.
+if git rev-parse --quiet --verify "refs/remotes/origin/${BRANCH}" >/dev/null 2>&1; then
+    ahead="$(git rev-list --count "origin/${BRANCH}..HEAD" 2>/dev/null || echo 1)"
+else
+    ahead=1
+fi
+[ "${ahead:-0}" -gt 0 ] || exit 0              # genuinely up to date
+
+pushed=0
 for i in 1 2 3 4; do
-    git push -q origin "HEAD:$BRANCH" 2>/dev/null && exit 0
+    if git push -q origin "HEAD:${BRANCH}" 2>/dev/null; then pushed=1; break; fi
     sleep $((2 ** i))
 done
-die "push failed after 4 attempts — run '$0 --check'"
+[ "$pushed" = 1 ] || die "push failed after 4 attempts — run '$0 --check'"
+
+# ═══ C476: PROVE IT LANDED. ═══════════════════════════════════════════
+# A push that "succeeded" locally is a claim. Ask the remote what it holds
+# and compare. This is the check that found the bug above -- the script said
+# it was fine, and `git ls-remote` said the branch did not exist.
+local_head="$(git rev-parse HEAD)"
+remote_head="$(git ls-remote origin "refs/heads/${BRANCH}" 2>/dev/null | cut -f1)"
+if [ "$remote_head" != "$local_head" ]; then
+    die "push reported success but the remote does not have it.
+     local  $local_head
+     remote ${remote_head:-<branch missing>}"
+fi
+exit 0
