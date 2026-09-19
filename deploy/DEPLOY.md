@@ -363,6 +363,25 @@ to the bottom.
 
 ---
 
+## After a reboot
+
+Both services are enabled, so `omega` and `cloudflared-quick` start themselves.
+The only thing that does not survive is the **tunnel address** — a quick tunnel
+draws a new random one each time it starts.
+
+```bash
+sudo reboot
+# wait about 60 seconds, reconnect, then:
+sudo systemctl status omega cloudflared-quick
+curl -fsS "http://127.0.0.1:8138/api/health?t=$(sudo cat /etc/omega.token)"
+sudo journalctl -u cloudflared-quick | grep -o 'https://.*trycloudflare.com' | tail -1
+```
+
+That last line prints your new address. Equity, the trade ledger and the
+learning state all carry across — the bot resumes rather than starting over.
+
+---
+
 ## Everyday commands
 
 | I want to… | Type this |
@@ -447,6 +466,8 @@ bigger reason to move than the 24×7 uptime is.
 | `git pull` says "detected dubious ownership" | `sudo git config --global --add safe.directory /home/omega/omega` |
 | the tunnel address stopped working | a quick tunnel gets a new address on every restart. `sudo journalctl -u cloudflared-quick \| grep -o 'https://.*trycloudflare.com' \| tail -1` |
 | equity reset to its starting value after a restart | the bot resumed before it had ever saved state. Only happens before the first closed trade, and knowledge files survive it |
+| equity is not the round number you started with | it RESUMED yesterday's balance, which is what you want on a 24x7 server. To deliberately start over: `sudo systemctl stop omega`, `sudo rm /home/omega/omega/data/state_v60.json /home/omega/omega/data/mode_v60.json`, `sudo systemctl start omega` |
+| day loss room shows a % spent with no trades today | fixed at C471 — `sudo git pull && sudo systemctl restart omega` |
 | lost the token | `sudo cat /etc/omega.token` |
 | cannot SSH in at all, "connection timed out" | the instance has no public IP. Check the instance page: if *Public IP* is blank you missed the toggle in Step 1.5. Terminate it and create a new one — it cannot be added afterwards |
 | "Automatically assign public IPv4 address" is greyed out | you are on the instance wizard's inline network builder, which can never enable it. Build the VCN separately first — Step 1.5 |

@@ -7386,6 +7386,29 @@ class Portfolio:
             logger.info(f"💰 Carrying equity: ${self.equity:.2f}")
             logger.info("=" * 60)
             self.session_start_date = datetime.now().date()  # C200: session persists across midnight; portfolio-session re-anchored only at a NEW trading session
+            # ═══ C471: RE-ANCHOR THE DAY BARRIER AT MIDNIGHT ═══════════════
+            # check_new_day reset the date and the per-pair ledger and left
+            # _day_start_equity alone, so a bot running THROUGH midnight kept
+            # charging the new day against the old morning's equity. Same
+            # defect as the restore path, reached by simply staying up.
+            try:
+                _mm471 = getattr(self, '_bot_ref', None)
+                _mm471 = getattr(_mm471, 'mode_mgr', None) if _mm471 else None
+                if _mm471 is not None:
+                    _mm471._day_start_equity = float(self.equity)
+                    _mm471._day_anchor_date = datetime.now().date().isoformat()
+                    try:
+                        _mm471._save()
+                    except Exception:
+                        pass
+                    logger.info(f"   📅 C471: day loss barrier re-anchored at "
+                                f"${self.equity:.2f} for the new day")
+                else:
+                    # A measurement that fails quietly is not a measurement.
+                    logger.warning("   ⚠️ C471: could not reach mode_mgr to re-anchor the "
+                                   "day barrier — it is still using yesterday's baseline")
+            except Exception as _e471:
+                logger.warning(f"   ⚠️ C471: day re-anchor failed: {type(_e471).__name__}")
             # C108: Reset per-pair session losses on new day
             if hasattr(self, '_bot_ref') and hasattr(self._bot_ref, '_session_pair_pnl'):
                 self._bot_ref._session_pair_pnl = {}
@@ -15560,6 +15583,7 @@ class TradingModeManager:
         self._pending_new_session = False  # C200: session-cooldown -> fresh-session flag
         self._overshoot_credit = 0.0  # C178: overshoot carry-forward (% pts) reducing later cycle targets
         self._day_start_equity = None  # C142: Gnedenko daily cap tracking
+        self._day_anchor_date = None   # C471: which day that baseline belongs to
         self.mode_start_time = datetime.now()
         self._load()
 
@@ -15609,8 +15633,35 @@ class TradingModeManager:
                         self.mode = TradingMode.PAUSED
                 self._session_cycles = int(d.get('_session_cycles', 0) or 0)        # C178
                 self._overshoot_credit = float(d.get('_overshoot_credit', 0.0) or 0.0)
+                # ═══ C471: A DAY BARRIER MUST NOT INHERIT ANOTHER DAY'S LOSSES ══
+                # C200 keeps _day_start_equity across a restart ON PURPOSE, so a
+                # crash mid-afternoon does not hand the bot a fresh loss budget.
+                # That is right. But the number carried NO DATE, so a restart on
+                # a NEW day restored yesterday's anchor too, and the C467-B
+                # barrier opened already part-spent.
+                # MEASURED ON THE OPERATOR'S OWN DASHBOARD, 19 Sep: a session
+                # with 0W 0L, nine minutes old, reporting "36% spent · realised
+                # -$0.61". That $0.61 was lost the PREVIOUS DAY. The bot had
+                # spent a third of a budget it had not touched.
+                # AND IT COMPOUNDS: every losing day carries forward, so after a
+                # few of them the bot opens each morning at 100% of its barrier
+                # and refuses to size any trade at all -- silently, and for as
+                # long as the state file survives. A protection that ratchets
+                # itself shut is not a protection (standing rule 5).
+                _anch471 = d.get('_day_anchor_date')
+                _today471 = datetime.now().date().isoformat()
                 if d.get('_day_start_equity') is not None:
-                    self._day_start_equity = float(d.get('_day_start_equity'))   # C200: keep session cap across restart
+                    if _anch471 and str(_anch471) != _today471:
+                        logger.info(
+                            f"   📅 C471: the saved day anchor is from {_anch471} and "
+                            f"today is {_today471} — discarded. The day's loss barrier "
+                            f"re-anchors at this morning's equity, so yesterday's result "
+                            f"is not charged to today.")
+                        self._day_start_equity = None
+                        self._day_anchor_date = None
+                    else:
+                        self._day_start_equity = float(d.get('_day_start_equity'))   # C200
+                        self._day_anchor_date = _anch471 or _today471
                 self._pending_new_session = bool(d.get('_pending_new_session', False))  # C200
                 self._pending_hp = bool(d.get('pending_hp', False))                     # C300
                 # R3: Only load HP equity if mode is actually HP
@@ -15637,6 +15688,11 @@ class TradingModeManager:
                 # C304 float()/or-0.0 guard above it — a None could be persisted
                 # and reloaded. Duplicate removed; the coerced version survives.
                 '_day_start_equity': getattr(self, '_day_start_equity', None),      # C200: session cap baseline
+                # C471: WHICH DAY that baseline belongs to. Without this the
+                # number survives midnight and yesterday's losses are charged
+                # to today's barrier -- see the restore path for what that cost.
+                '_day_anchor_date': (getattr(self, '_day_anchor_date', None)
+                                     or datetime.now().date().isoformat()),
                 '_pending_new_session': getattr(self, '_pending_new_session', False),  # C200
             }
             with open(self.cfg.MODE_FILE, 'w') as f:
@@ -15700,6 +15756,7 @@ class TradingModeManager:
         # C142: Track day starting equity for Gnedenko daily cap
         if getattr(self, '_session_cycles', 0) == 0 or self._day_start_equity is None:
             self._day_start_equity = equity
+            self._day_anchor_date = datetime.now().date().isoformat()   # C471
             # C375: equity COMPOUNDS, so a budget derived once at boot goes
             # stale. Re-derive at each day anchor: C369's whole point is that
             # the $5 minimum-order floor binds below ~$250 and stops binding
@@ -15914,6 +15971,7 @@ class TradingModeManager:
         self._session_cycles = 0
         self._overshoot_credit = 0.0
         self._day_start_equity = equity          # fresh 2.5% session loss-cap baseline
+        self._day_anchor_date = datetime.now().date().isoformat()       # C471
         self.pause_until = None
         self.pause_shown = False
         self.next_day_equity = None
