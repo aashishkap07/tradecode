@@ -429,13 +429,40 @@ There are two ways to close that gap.
 conversation. Fine occasionally. It means analysis happens when you remember,
 not when something interesting happens.
 
-**Automatic** — push them to GitHub hourly, where they can be read any time:
+**Automatic** — push them to GitHub hourly, where they can be read any time.
+
+Install the script, then **check before you wire the cron job**:
 
 ```bash
 sudo cp /home/omega/omega/deploy/omega-logpush.sh /usr/local/bin/
 sudo chmod +x /usr/local/bin/omega-logpush.sh
+sudo -u omega /usr/local/bin/omega-logpush.sh --check
+```
+
+`--check` changes nothing and tells you exactly what is missing. Expect two
+failures on a fresh server, both normal:
+
+- **the token file is readable** — `/etc/omega.token` is root-only, and the
+  push runs as `omega`, so the scrubber cannot redact the token. One command:
+  `sudo chgrp omega /etc/omega.token && sudo chmod 640 /etc/omega.token`
+- **the remote rejected this user** — the `omega` user has no GitHub
+  credentials. Run `omega-logpush.sh --setup`, which prints the deploy-key
+  steps. A deploy key grants write access to **this one repository**, is
+  revocable from its settings page, and unlike a personal access token cannot
+  reach your other repos if the server is compromised.
+
+When `--check` is clean:
+
+```bash
 echo '17 * * * * omega /usr/local/bin/omega-logpush.sh' | sudo tee /etc/cron.d/omega-logpush
 ```
+
+The script **refuses to push** if it cannot read the token file, rather than
+pushing unscrubbed logs — a scrubber whose failure mode is "quietly does
+nothing" is worse than no scrubber, because it is trusted. It also sets
+`GIT_TERMINAL_PROMPT=0`, so a missing credential fails immediately instead of
+leaving a stuck process behind every hour waiting for a username nobody will
+type.
 
 It commits the **report** and **session** logs plus the two state files to a
 `logs` branch, in a separate git worktree so it can never disturb the checkout

@@ -1,36 +1,147 @@
 #!/usr/bin/env bash
-# OMEGA V60 — push the logs to GitHub so they can be analysed  [C472]
+# OMEGA V60 — push the logs to GitHub so they can be analysed  [C472, hardened C474]
 #
 # WHY THIS EXISTS. The logs live on your server. Nobody analysing them can
 # reach your server. Without this you have to remember to download files and
-# attach them, which means analysis happens when you remember, not when
-# something interesting happens.
+# attach them, so analysis happens when you remember, not when something
+# interesting happens.
 #
-# This commits the REPORT and SESSION logs to a `logs` branch every hour. The
-# detail log is NOT pushed by default: it is ~3 MB an hour and mostly working.
-# Set PUSH_DETAIL=1 if a specific investigation needs it.
+#   omega-logpush.sh            push once
+#   omega-logpush.sh --check    check everything is set up, change nothing
+#   omega-logpush.sh --setup    print the exact steps to give it push access
 #
-# Install:
+# Install (after --check passes):
 #   sudo cp omega-logpush.sh /usr/local/bin/ && sudo chmod +x /usr/local/bin/omega-logpush.sh
 #   echo '17 * * * * omega /usr/local/bin/omega-logpush.sh' | sudo tee /etc/cron.d/omega-logpush
-#
-# (minute 17, so it does not collide with every other cron job on the hour.)
 
 set -uo pipefail
 
 REPO="${OMEGA_HOME:-/home/omega/omega}"
 BRANCH="${OMEGA_LOG_BRANCH:-logs}"
 PUSH_DETAIL="${PUSH_DETAIL:-0}"
+TOKEN_FILE="${OMEGA_TOKEN_FILE:-/etc/omega.token}"
 
-cd "$REPO" || exit 1
+# C474: cron has no terminal. Without this git BLOCKS forever on
+# "Username for 'https://github.com':" instead of failing, and the job piles up
+# one stuck process an hour until the box runs out of them.
+export GIT_TERMINAL_PROMPT=0
+export GIT_ASKPASS=/bin/true
+
+say()  { printf '\033[1;36m==> %s\033[0m\n' "$*"; }
+warn() { printf '\033[1;33m !! %s\033[0m\n' "$*"; }
+die()  { printf '\033[1;31m !! %s\033[0m\n' "$*" >&2; logger -t omega-logpush "$*"; exit 1; }
+
+# ─────────────────────────────────────────────────────────────────────────
+setup_help() {
+cat <<'HELP'
+GIVING THE LOG PUSH ACCESS TO YOUR REPO
+
+The push runs as the `omega` user, which has no GitHub credentials. A DEPLOY
+KEY is the right answer: it grants write access to THIS ONE REPOSITORY and
+nothing else, it is revocable from the repo's settings page, and unlike a
+personal access token it cannot touch your other repos if the server is ever
+compromised.
+
+1. On the server, make a key for the omega user:
+
+     sudo -u omega ssh-keygen -t ed25519 -f /home/omega/.ssh/omega_deploy -N "" -C "omega-logpush"
+     sudo -u omega cat /home/omega/.ssh/omega_deploy.pub
+
+2. Copy that whole line. On github.com open:
+     your repo -> Settings -> Deploy keys -> Add deploy key
+   Title: omega-logpush
+   Key:   paste it
+   TICK "Allow write access"          <-- easy to miss, and nothing works without it
+   Add key.
+
+3. Back on the server, tell git to use that key and talk SSH:
+
+     sudo -u omega tee -a /home/omega/.ssh/config >/dev/null <<'EOF'
+     Host github.com
+       IdentityFile /home/omega/.ssh/omega_deploy
+       IdentitiesOnly yes
+       StrictHostKeyChecking accept-new
+     EOF
+     sudo -u omega chmod 600 /home/omega/.ssh/config
+     sudo git -C /home/omega/omega remote set-url --push origin git@github.com:OWNER/REPO.git
+
+   (replace OWNER/REPO — `git -C /home/omega/omega remote -v` shows yours)
+
+4. Let the omega user read the token file, so the scrubber can actually redact
+   it. Group-readable, not world-readable:
+
+     sudo chgrp omega /etc/omega.token && sudo chmod 640 /etc/omega.token
+
+5. Check, then wire the cron job:
+
+     sudo -u omega /usr/local/bin/omega-logpush.sh --check
+HELP
+}
+
+[ "${1:-}" = "--setup" ] && { setup_help; exit 0; }
+
+# ─────────────────────────────────────────────────────────────────────────
+CHECK_ONLY=0
+[ "${1:-}" = "--check" ] && CHECK_ONLY=1
+
+problems=0
+check() {  # check <description> <command...>
+    local d="$1"; shift
+    if "$@" >/dev/null 2>&1; then printf '  OK   %s\n' "$d"
+    else printf '  \033[1;31mFAIL\033[0m %s\n' "$d"; problems=$((problems+1)); fi
+}
+
+if [ "$CHECK_ONLY" = 1 ]; then
+    say "Checking the log push as user $(id -un)"
+    check "the repo exists"                 test -d "$REPO/.git"
+    check "this user can write to the repo" test -w "$REPO"
+    check "the token file is readable (so the scrubber can redact it)" \
+          test -r "$TOKEN_FILE"
+    check "git will not block on a password prompt" test "$GIT_TERMINAL_PROMPT" = "0"
+    if git -C "$REPO" ls-remote --exit-code origin >/dev/null 2>&1; then
+        printf '  OK   the remote answers and this user can authenticate\n'
+    else
+        printf '  \033[1;31mFAIL\033[0m the remote rejected this user — run: %s --setup\n' "$0"
+        problems=$((problems+1))
+    fi
+    echo
+    if [ "$problems" -eq 0 ]; then
+        say "All good. Wire it up:"
+        echo "    echo '17 * * * * $(id -un) $0' | sudo tee /etc/cron.d/omega-logpush"
+        exit 0
+    fi
+    die "$problems problem(s) above. Run '$0 --setup' for the fix."
+fi
+
+# ─────────────────────────────────────────────────────────────────────────
+cd "$REPO" || die "cannot enter $REPO"
+
+# ═══ C474: A SCRUBBER THAT CANNOT SCRUB MUST NOT PUSH ═══════════════════
+# The first version did `[ -f "$TOKEN_FILE" ] && TOK=$(cat ...)`. Run as the
+# omega user against a root-only 600 file, that prints "Permission denied",
+# leaves TOK empty, and redacts NOTHING — while continuing happily to push.
+# That is the same defect as the value-class bug this script already had: a
+# scrubber whose failure mode is "quietly does nothing" is worse than no
+# scrubber, because it is trusted. If the token exists and cannot be read,
+# stop, and name the one command that fixes it.
+TOK=""
+if [ -e "$TOKEN_FILE" ]; then
+    if [ -r "$TOKEN_FILE" ]; then
+        TOK="$(cat "$TOKEN_FILE")"
+    else
+        die "cannot read $TOKEN_FILE as $(id -un), so the control token could not be
+     redacted from the logs — refusing to push rather than push unscrubbed.
+     Fix: sudo chgrp $(id -un) $TOKEN_FILE && sudo chmod 640 $TOKEN_FILE"
+    fi
+fi
 
 # A worktree keeps the logs branch entirely separate from the code branch, so
-# this can never commit, stash or disturb the checkout the bot is running from.
+# this can never commit, stash or disturb the checkout the bot runs from.
 WT="${REPO}/.logpush"
-if [ ! -d "$WT/.git" ] && [ ! -f "$WT/.git" ]; then
-    git worktree add -B "$BRANCH" "$WT" 2>/dev/null || {
-        git fetch origin "$BRANCH" 2>/dev/null
-        git worktree add "$WT" "$BRANCH" 2>/dev/null || exit 1
+if [ ! -e "$WT/.git" ]; then
+    git worktree add -B "$BRANCH" "$WT" >/dev/null 2>&1 || {
+        git fetch origin "$BRANCH" >/dev/null 2>&1
+        git worktree add "$WT" "$BRANCH" >/dev/null 2>&1 || die "could not create the logs worktree"
     }
 fi
 
@@ -46,41 +157,36 @@ if [ "$PUSH_DETAIL" = "1" ]; then
         cp -f "$f" "$WT/logs/" && copied=$((copied+1))
     done
 fi
-# The state files are small and say what the bot believes about itself.
 for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done
-
 [ "$copied" -gt 0 ] || exit 0
 
-# ── SCRUB. Nothing here should carry a secret, but "should" is not a control.
-# A token or an API key that reaches a git history is there permanently, so
-# this runs on every push rather than trusting that the bot never logs one.
-if [ -f /etc/omega.token ]; then
-    TOK="$(cat /etc/omega.token)"
-    [ -n "$TOK" ] && grep -rlF "$TOK" "$WT/logs" 2>/dev/null | while read -r h; do
+# ─── SCRUB ───────────────────────────────────────────────────────────────
+if [ -n "$TOK" ]; then
+    grep -rlF "$TOK" "$WT/logs" 2>/dev/null | while read -r h; do
         sed -i "s|${TOK}|<TOKEN-REDACTED>|g" "$h"
     done
 fi
 # The value class MUST include _ and -. Exchange keys look like
-# "bg_9f8a7b6c5d4e..." and a class of [A-Za-z0-9/+] stops at the underscore,
-# matching two characters, failing the {16,} length test and redacting
-# NOTHING -- which is the worst possible outcome for a scrubber, because it
-# reports success. Caught by feeding it a real-shaped Bitget key.
+# "bg_9f8a7b6c..." and a class of [A-Za-z0-9/+] stops at the underscore,
+# matching two characters, failing the {16,} length test and redacting NOTHING.
 SECRET_RE='(api[_-]?key|api[_-]?secret|passphrase|secret|password)'
-grep -rlEi "${SECRET_RE}[\"':= ]+[A-Za-z0-9/+_-]{16,}" \
-     "$WT/logs" 2>/dev/null | while read -r h; do
+grep -rlEi "${SECRET_RE}[\"':= ]+[A-Za-z0-9/+_-]{16,}" "$WT/logs" 2>/dev/null | while read -r h; do
     sed -i -E "s/(${SECRET_RE})([\"':= ]+)[A-Za-z0-9\/+_-]{16,}/\1\3<REDACTED>/gI" "$h"
 done
+# Last line of defence: if the token is somehow still present, do not push.
+if [ -n "$TOK" ] && grep -rqF "$TOK" "$WT/logs" 2>/dev/null; then
+    die "the control token is STILL present after scrubbing — refusing to push"
+fi
 
-cd "$WT" || exit 1
+cd "$WT" || die "cannot enter the worktree"
 git add -A logs
-git diff --cached --quiet && exit 0          # nothing changed, say nothing
+git diff --cached --quiet && exit 0            # nothing changed, say nothing
 git -c user.name='omega-bot' -c user.email='omega@localhost' \
     commit -q -m "logs: $(date -u '+%Y-%m-%d %H:%M UTC') ($copied file(s))"
 for i in 1 2 3 4; do
-    git push -q origin "HEAD:$BRANCH" && exit 0
+    git push -q origin "HEAD:$BRANCH" 2>/dev/null && exit 0
     sleep $((2 ** i))
 done
-logger -t omega-logpush "push failed after 4 attempts"
-exit 1
+die "push failed after 4 attempts — run '$0 --check'"
