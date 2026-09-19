@@ -87,6 +87,52 @@ sign.** The bot's picks had a median prior run of ~+9%, its top third +16%.
   "maker" is very nearly a synonym for "win" by construction. Reading it as
   "maker exits cause wins" is Standing Rule 4a exactly.
 
+## ❌ THE HARNESS RAN, AND IT KILLED MY OWN HYPOTHESIS
+
+`omega_extension_harness.py` — 32 pairs, 330,400 bars of 15m data, ~108 days,
+non-overlapping forward windows, maker-both fees charged, cross-sectional
+ranking **within each timestamp** (the decision the bot actually faces: of the
+pairs available right now, which do I buy?), four-way time-disjoint ×
+pair-disjoint split.
+
+**Q1 (least extended) minus Q5 (most extended), per split:**
+
+| split | corpusO | corpusL |
+|---|---|---|
+| early / pairs A | **+0.0914%** | −0.1356% |
+| early / pairs B | **+0.0318%** | −0.0875% |
+| late / pairs A | −0.2072% | −0.0828% |
+| late / pairs B | −0.1401% | −0.0730% |
+| **splits favouring least-extended** | **2 of 4** | **0 of 4** |
+
+**DOES NOT REPLICATE.** On corpusO the sign FLIPS between the early and late
+halves; on corpusL it never favours the low-extension cohort at all.
+
+The two live correlations that motivated this — C420-7's −0.212 and 19 Sep's
+−0.257 — were each **one day**. Across 108 days split four ways the effect
+reverses by period. That is precisely the regime-dependent mirage Standing
+Rule 9 exists to catch, and it caught it.
+
+> **→ Standing Rule 32: TWO DAYS AGREEING IS A REASON TO MEASURE, NEVER A
+> REASON TO SHIP.** Both live readings were real; both were regime. Had Step 1
+> been rebuilt on them, the result would work in half of all periods and hurt
+> in the other half, and the next log would have been unattributable.
+
+**AND THE POOLED TABLE IS THE LARGER FINDING.** Every extension quintile lands
+between **−0.061% and +0.005% after fees**. Not one is profitable. This is the
+same wall as the 662,800-bar barrier study (30 of 30 geometries net negative)
+and the 9,383-settlement funding study (no directional information).
+**Re-sorting the universe does not get past it.** The negative selection edge
+measured on 19 Sep is a true description of that day; "chasing extension" is
+not its cause, and re-ranking Step 1 is not its cure.
+
+Three independent measurements now agree that nothing derivable from PRICE
+ALONE survives the fee schedule. The remaining levers are the channels that
+are not in the price series — order flow and open interest — which the VPS can
+reach and the development container cannot.
+
+---
+
 ## 🚧 NOT ACTED ON — AND THAT IS THE POINT
 
 No entry logic changed on the strength of one day. The standing rule is a
