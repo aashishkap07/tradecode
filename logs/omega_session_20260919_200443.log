@@ -1150,3 +1150,238 @@
     flat_projection=4, low_agreement=1
 02:14:07 |    📌 Nearest miss: ARX score=0.110 (pre-pen 0.18) conf=0.380 quality=0.042/0.26
     reason=score 0.110 < 0.483
+02:19:26 |    🎢→⚖️ AKE: C292 stands down — parabola BROKEN (range 10×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+02:20:08 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+02:20:10 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.664)
+02:20:10 |    🔒 C378 stop level $0.58373 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 02:20  OPEN   PONS SHORT @0.576280  x2 $25.68
+       target +7.8%  stop -1.3%  entry score 0.57  maker
+ 
+ 
+  02:20  up 6h15m  scan 57 -----------------------------------------------------------------------
+  EQUITY    $250.28  unreal $-0.03
+  SESSION   $-0.38 -0.15%  peak $251.39  dd 0.44%
+  CURVE     ++++*+=++=++=+-+---=====+***===========================
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.03  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 60 > 1 passed  top PONS 0.57 (viable)  57 scans, 1764 analysed
+  MARKET    MIXED  bias -0.02  breadth +0.00  taker flow +0.31
+  NEWS      65 articles  + tone +0.14  DOGE +0.53  PUMP +0.51  XRP +0.34
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +149% #5  AKE +59% #6  ZAMA +42% #16  SYN +37% #23
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.576200  +0.01%   -0.03    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  02:28  up 6h23m  scan 57 -----------------------------------------------------------------------
+  EQUITY    $250.30  unreal $-0.01
+  SESSION   $-0.36 -0.15%  peak $251.39  dd 0.43%
+  CURVE     ++++*+=++=++=+-+---=====+***============================
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.03  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 60 > 1 passed  top PONS 0.57 (viable)  57 scans, 1764 analysed
+  MARKET    MIXED  bias -0.02  breadth +0.00  taker flow +0.35
+  NEWS      65 articles  + tone +0.14  DOGE +0.53  PUMP +0.51  XRP +0.34
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +149% #5  AKE +59% #6  ZAMA +42% #16  SYN +37% #23
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.575980  +0.05%   -0.01    8m  - 75% left
+  ------------------------------------------------------------------------------------------------
+ 
+02:30:31 |    🪞 C266 board-parity (top movers vs screen): ONE +150%[#5] | AKE +54%[#6] | SYN
+    +37%[#24] | ZAMA +32%[#18] | BANK +32%[#26]
+02:31:25 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=1, low_score=5,
+    thin_expectancy=43, flat_projection=6, ct_noisy_block=2, proj_confirms_trend=3
+02:31:25 |    📌 Nearest miss: CAP score=0.479 conf=0.471 quality=0.226/0.26 reason=score 0.359 <
+    0.505
+ 
+  02:36  up 6h31m  scan 58 -----------------------------------------------------------------------
+  EQUITY    $251.02  unreal $+0.71
+  SESSION   $+0.36 +0.14%  peak $251.39  dd 0.15%
+  CURVE     ++++*+=++=++=+-+---=====+***============================*
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x1.12  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 60 > 0 passed  top CAP 0.48 (score 0.359 < 0.50)  58 scans, 1824 analysed
+  MARKET    MIXED  bias -0.28  breadth -0.17  taker flow -0.03
+  NEWS      65 articles  + tone +0.14  BCH +0.70  DOGE +0.53  PUMP +0.51
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +150% #5  AKE +54% #6  SYN +37% #24  ZAMA +32% #18
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.567820  +1.47%   +0.71   16m  + 63% left
+  ------------------------------------------------------------------------------------------------
+ 
+02:41:45 |    🪞 C266 board-parity (top movers vs screen): ONE +140%[#5] | AKE +53%[#6] | BANK
+    +38%[#21] | SYN +37%[#24] | ZAMA +34%[#17]
+02:42:04 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=5, thin_expectancy=43, flat_projection=6, ct_noisy_block=2, proj_confirms_trend=3
+ 
+  02:44  up 6h39m  scan 59 -----------------------------------------------------------------------
+  EQUITY    $250.94  unreal $+0.63
+  SESSION   $+0.28 +0.11%  peak $251.39  dd 0.18%
+  CURVE     ++++*+=++=++=+-+---=====+***============================*+
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.92  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 1 > 0 passed  59 scans, 1825 analysed
+  MARKET    MIXED  bias -0.27  breadth +0.00  taker flow -0.77
+  NEWS      65 articles  + tone +0.25  BCH +0.70  DOGE +0.53  NEAR +0.29
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +140% #5  AKE +53% #6  BANK +38% #21  SYN +37% #24
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.568780  +1.30%   +0.63   24m  + 61% left
+  ------------------------------------------------------------------------------------------------
+ 
+02:47:59 |    🎢→⚖️ EPIC: C292 stands down — parabola BROKEN (range 9×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+02:48:10 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=2, thin_expectancy=51,
+    proj_confirms_trend=4, flat_projection=2, absorption_at_extreme=1
+02:48:10 |    📌 Nearest miss: 牛来 score=0.299 conf=0.836 quality=0.250/0.26 reason=score 0.299 <
+    0.515
+ 
+  02:52  up 6h47m  scan 60 -----------------------------------------------------------------------
+  EQUITY    $250.85  unreal $+0.54
+  SESSION   $+0.19 +0.07%  peak $251.39  dd 0.21%
+  CURVE     ++++*+=++=++=+-+---=====+***============================*++
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.92  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 60 > 0 passed  top 牛来 0.30 (score 0.299 < 0.51)  60 scans, 1885 analysed
+  MARKET    TRENDING  bias -0.44  breadth +0.00  taker flow +0.58
+  NEWS      65 articles  + tone +0.25  BCH +0.70  DOGE +0.53  NEAR +0.29
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +140% #5  AKE +53% #6  BANK +38% #21  SYN +37% #24
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.569800  +1.12%   +0.54   32m  + 73% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  03:00  up 6h55m  scan 60 -----------------------------------------------------------------------
+  EQUITY    $250.25  unreal $-0.06
+  SESSION   $-0.41 -0.17%  peak $251.39  dd 0.45%
+  CURVE     ++++*+=++=++=+-+---=====+***============================*++=
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.92  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.108% of eq
+  SCAN      797 > 60 > 0 passed  top 牛来 0.30 (score 0.299 < 0.51)  60 scans, 1885 analysed
+  MARKET    TRENDING  bias -0.44  breadth +0.00  taker flow +0.10
+  NEWS      65 articles  + tone +0.25  BCH +0.70  DOGE +0.53  NEAR +0.29
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +140% #5  AKE +53% #6  BANK +38% #21  SYN +37% #24
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.576530  -0.04%   -0.06   40m  - 58% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:01:01 |    🪞 C266 board-parity (top movers vs screen): ONE +157%[#6] | AKE +46%[Live=0.15<cut] |
+    ZAMA +36%[Live=0.42<cut] | SYN +34%[#22] | STONK +32%[Live=0.30<cut]
+03:01:27 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 32×ATR, 23.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+03:01:55 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=1, regime_blip=3, thin_expectancy=49,
+    proj_confirms_trend=1, h1_regime_shock=2, flat_projection=2, capitulation=1,
+    late_leg_no_forward=1
+03:01:55 |    📌 Nearest miss: BOME score=0.428 conf=0.572 quality=0.245/0.26 reason=late-leg F=-0.03
+ 
+  03:08  up 7h03m  scan 61 -----------------------------------------------------------------------
+  EQUITY    $250.43  unreal $+0.12
+  SESSION   $-0.23 -0.09%  peak $251.39  dd 0.38%
+  CURVE     ++++*+=++=++=+-+---=====+***============================*++==
+  DAY       real $+0.00  loss room $1.71 (0.68%)  0% used  vol x0.85  trust x1.25  month guard
+            ..........................
+  RECORD    8 closed  3W 5L  win 38%  payoff 0.72  avg $-0.17/tr  best $+0.45  worst $-0.77
+            break-even 58%
+  LIFETIME  14tr 5W 9L 36%  $+0.31
+  OPEN      1 pos $25.68 (10%)  free $224.63
+  FEES      $0.27  mk14/tk5  0.107% of eq
+  SCAN      797 > 60 > 0 passed  top BOME 0.43 (late-leg F=-0.03)  61 scans, 1945 analysed
+  MARKET    TRENDING  bias -0.41  breadth +0.00  taker flow -0.34
+  NEWS      65 articles  + tone +0.25  PEPE +0.70  AVAX +0.53  ONE +0.48
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 6tr $-0.26 win 33%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +157% #6  AKE +46% cut  ZAMA +36% cut  SYN +34% #22
+  TAPE      + - - - + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PONS     SHORT   0.576280  0.574490  +0.31%   +0.12   48m  + 37% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:11:36 |    🪞 C266 board-parity (top movers vs screen): ONE +184%[#6] | AKE +49%[Live=0.15<cut] |
+    ZAMA +38%[Live=0.48<cut] | G +32%[#9] | BANK +31%[#26]
+03:11:56 | 📊 Step 3 result: 3 analyzed (+57 cached this 15m candle) → 0 passed | low_score=1,
+    regime_blip=3, thin_expectancy=50, proj_confirms_trend=1, h1_regime_shock=1, flat_projection=2,
+    capitulation=1, late_leg_no_forward=1
+03:13:03 | 🎯 EXIT SIGNAL: PONS/USDT:USDT - PEAK_FLOOR: peaked at +4.1%(1.4PRU) now=-0.0% — profit
+    fully erased, protecting capital
+  << 03:13  CLOSE  PONS SHORT @0.576800  -0.09% $-0.09  LOSS
+       held 52m  PEAK_FLOOR: peaked at +4  round trip from +2.03%  -0.05R  TAKER
+ 
+ 
+  03:16  up 7h11m  scan 62 -----------------------------------------------------------------------
+  EQUITY    $250.22
+  SESSION   $-0.44 -0.18%  peak $251.39  dd 0.47%
+  CURVE     ++++*+=++=++=+-+---=====+***============================+++====
+  DAY       real $-0.09  loss room $1.82 (0.73%)  5% used  vol x0.85  trust x1.25
+            #.........................
+  RECORD    9 closed  3W 6L  win 33%  payoff 0.83  avg $-0.16/tr  best $+0.45  worst $-0.77
+            break-even 55%
+  LIFETIME  15tr 5W 10L 33%  $+0.22
+  OPEN      flat  free $250.22
+  FEES      $0.30  mk14/tk6  0.120% of eq
+  SCAN      797 > 3 > 0 passed  62 scans, 1948 analysed
+  MARKET    TRENDING  bias -0.42  breadth +0.00  taker flow +0.58
+  NEWS      65 articles  + tone +0.25  PEPE +0.70  AVAX +0.53  ONE +0.48
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 7tr $-0.24 win 29%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +184% #6  AKE +49% cut  ZAMA +38% cut  G +32% #9
+  TAPE      + - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
