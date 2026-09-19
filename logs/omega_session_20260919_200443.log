@@ -1500,3 +1500,124 @@
 04:12:39 |    📌 Nearest miss: THETA score=0.139 (pre-pen 0.28) conf=0.383 quality=0.053/0.26
     reason=score 0.139 < 0.319
   .. 04:13  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  4 analysed
+04:18:53 |    🧭 C458-17: exploration is due but the best refusal (score 0.684 < 0.720) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+04:18:53 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=9, low_score=31,
+    flat_projection=11, micro_exhaustion=2, no_structural_room=4, capitulation=1, poor_reward_risk=2
+04:18:53 |    📌 Nearest miss: USUAL score=0.684 conf=0.771 quality=0.528/0.26 reason=score 0.684 <
+    0.720
+ 
+ 
+  04:21  up 8h16m  scan 69 -----------------------------------------------------------------------
+  EQUITY    $250.22
+  SESSION   $-0.44 -0.18%  peak $251.39  dd 0.47%
+  CURVE     ++++*+=++=++=+-+---=====+*++============================+++============
+  DAY       real $-0.09  loss room $2.21 (0.88%)  4% used  vol x1.03  trust x1.25
+            #.........................
+  RECORD    9 closed  3W 6L  win 33%  payoff 0.83  avg $-0.16/tr  best $+0.45  worst $-0.77
+            break-even 55%
+  LIFETIME  15tr 5W 10L 33%  $+0.22
+  OPEN      flat  free $250.22
+  FEES      $0.30  mk14/tk6  0.120% of eq
+  SCAN      797 > 60 > 0 passed  top USUAL 0.68 (score 0.684 < 0.72)  69 scans, 2263 analysed
+  MARKET    MIXED  bias +0.03  breadth +0.00  taker flow -0.32
+  NEWS      65 articles  + tone +0.23  PUMP +0.50  ARB -0.24  STRK -0.24
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 7tr $-0.24 win 29%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +159% #6  CELR +51% #38  AKE +44% cut  ZAMA +39% cut
+  TAPE      + - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:23:59 |    🪞 C266 board-parity (top movers vs screen): ONE +128%[#6] | CELR +58%[#26] | AKE
+    +41%[#8] | ZAMA +39%[#16] | BR +30%[Live=0.28<cut]
+04:24:19 |    🎢→⚖️ BERA: C292 stands down — parabola BROKEN (range 12×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:24:26 |    🧭 C458-17: exploration is due but the best refusal (vol_floor) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+04:24:26 | 📊 Step 3 result: 17 analyzed (+43 cached this 15m candle) → 0 passed | low_confidence=8,
+    low_score=34, flat_projection=11, no_structural_room=4, capitulation=1, micro_exhaustion=1,
+    vol_floor=1
+04:24:26 |    📌 Nearest miss: HOME score=0.978 conf=0.939 quality=0.918/0.26 reason=vol_floor
+  .. 04:29  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  17 analysed
+04:34:45 |    🪞 C266 board-parity (top movers vs screen): ONE +172%[#6] | CELR +54%[#34] | ZAMA
+    +38%[Live=0.10<cut] | AKE +35%[Live=0.23<cut] | BR +29%[#13]
+04:35:21 |    🎢→⚖️ MYX: C292 stands down — parabola BROKEN (range 18×ATR, 9.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:35:25 |    ⚖️ C462-7 CELR: penalties 0.74→0.56 (×0.75) vs bar 0.70 — the stack decided
+04:35:44 |    🧭 C458-17: exploration is due but the best refusal (vol_floor) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+04:35:44 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=5, low_score=28,
+    flat_projection=13, dir_proj_conflict=1, poor_reward_risk=2, no_structural_room=3,
+    micro_exhaustion=2, capitulation=4, proj_confirms_trend=1, vol_floor=1
+04:35:44 |    📌 Nearest miss: ATH score=1.173 conf=0.877 quality=1.029/0.26 reason=vol_floor
+  .. 04:37  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  60 analysed
+  .. 04:45  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  60 analysed
+04:46:05 |    🪞 C266 board-parity (top movers vs screen): ONE +178%[#5] | CELR +53%[#35] | ZAMA
+    +41%[#17] | AKE +40%[Live=0.13<cut] | G +34%[#10]
+04:46:35 |    🎢→⚖️ MYX: C292 stands down — parabola BROKEN (range 18×ATR, 9.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:46:47 |    ⚖️ C462-7 EVAA: penalties 0.72→0.54 (×0.75) vs bar 0.72 — the stack decided
+04:47:02 |    🧭 C458-17: exploration is due but the best refusal (dir_proj_conflict) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+04:47:02 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=7, low_score=25,
+    flat_projection=3, ct_noisy_block=13, dir_proj_conflict=1, capitulation=2, micro_exhaustion=4,
+    post_penalty_low=1, no_structural_room=4
+04:47:02 |    📌 Nearest miss: ONE score=0.868 conf=0.907 quality=0.787/0.26 reason=dir_proj_conflict
+ 
+ 
+  04:53  up 8h48m  scan 72 -----------------------------------------------------------------------
+  EQUITY    $250.22
+  SESSION   $-0.44 -0.18%  peak $251.39  dd 0.47%
+  CURVE     ++++*+=++=++=+-+---=====+*++============================+++================
+  DAY       real $-0.09  loss room $2.23 (0.89%)  4% used  vol x1.05  trust x1.25
+            #.........................
+  RECORD    9 closed  3W 6L  win 33%  payoff 0.83  avg $-0.16/tr  best $+0.45  worst $-0.77
+            break-even 55%
+  LIFETIME  15tr 5W 10L 33%  $+0.22
+  OPEN      flat  free $250.22
+  FEES      $0.30  mk14/tk6  0.120% of eq
+  SCAN      797 > 60 > 0 passed  top ONE 0.87 (dir_proj_conflict)  72 scans, 2400 analysed
+  MARKET    MIXED  bias +0.20  breadth -0.02  taker flow +0.01
+  NEWS      65 articles  + tone +0.38  PUMP +0.53  DOT +0.53  XRP +0.35
+  INFO      1 tilted  flow/news/oi on 140
+            info>0 7tr $-0.24 win 29%  info≤0 1tr $-0.02 win 0%
+  MOVERS    ONE +178% #5  CELR +53% #35  ZAMA +41% #17  AKE +40% cut
+  TAPE      + - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:57:21 |    🪞 C266 board-parity (top movers vs screen): ONE +137%[#5] | CELR +46%[#36] | AKE
+    +45%[Live=0.14<cut] | ZAMA +42%[#16] | G +39%[#9]
+04:57:36 |    🎢→⚖️ STONK: C292 stands down — parabola BROKEN (range 11×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:57:36 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=24, flat_projection=3, ct_noisy_block=14, dir_proj_conflict=1, capitulation=2,
+    micro_exhaustion=4, post_penalty_low=1, no_structural_room=4
+  .. 05:01  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  1 analysed
+05:03:11 |    🎢→⚖️ MYX: C292 stands down — parabola BROKEN (range 18×ATR, 9.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:03:37 |    🧭 C458-17: exploration is due but the best refusal (dir_proj_conflict) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+05:03:37 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=8, low_score=41,
+    news_tech_conflict=1, proj_confirms_trend=1, no_structural_room=2, flat_projection=4,
+    micro_exhaustion=2, dir_proj_conflict=1
+05:03:37 |    📌 Nearest miss: CELR score=0.884 conf=0.849 quality=0.750/0.26
+    reason=dir_proj_conflict
+05:08:44 |    🪞 C266 board-parity (top movers vs screen): ONE +100%[#6] | AKE +43%[Live=0.26<cut] |
+    CELR +42%[#31] | G +41%[#8] | ZAMA +40%[Live=0.29<cut]
+05:09:09 | 📊 Step 3 result: 12 analyzed (+48 cached) → 1 viable → Step 4 DRI/DSI
+  .. 05:09  flat  $250.22  $-0.44 -0.18%  3W 6L 33%  12 analysed
+05:09:12 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $312.7811 → $250.2249 (equity
+    $250.2249 − locked $0.0000 = $250.2249); discrepancy $+62.5562. Money that does not exist would
+    have been sized against [correction #2]
+05:14:26 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=37, news_tech_conflict=1, proj_confirms_trend=1, no_structural_room=2,
+    flat_projection=5, micro_exhaustion=2, dir_proj_conflict=1, vol_floor=1, capitulation=1
+05:14:26 |    📌 Nearest miss: HOME score=0.720 conf=0.750 quality=0.540/0.26 reason=vol_floor
