@@ -1366,3 +1366,56 @@
   AR       LONG      4.8220    5.2340  +8.54%   +1.46   19m  + 62% left
   ------------------------------------------------------------------------------------------------
 
+  -> 23:17  HALF   AR LONG @5.2360  +8.59% $+0.74
+       win half banked  maker  $8.61 rides on
+  << 23:18  CLOSE  AR LONG @5.1960  +7.76% $+0.66  WIN
+       held 26m  TRAILING_TP: peak=+8.8%   kept 89% of a +8.75% peak  +1.46R  maker
+
+
+  23:19  up 11h52m  scan 98 ----------------------------------------------------------------------
+  EQUITY    $251.70
+  SESSION   $+1.70 +0.68%  peak $251.76  dd 0.02%
+  CURVE     -----==--=====-------.__...._------------__-_--==++++++++++++++=*****##+=++=======*@@@
+  DAY       real $+1.70  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    10 closed  4W 6L  win 40%  payoff 2.15  avg $+0.06/tr  best $+0.72  worst $-0.66
+            break-even 32%
+  OPEN      flat  free $251.70
+  FEES      $0.26  mk16/tk8  0.105% of eq
+  SCAN      797 > 60 > 0 passed  top XPL 0.39 (final_gate)  98 scans, 3347 analysed
+  MARKET    TRENDING  bias +0.21  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.07  NEAR +0.55  ONE +0.49  PEPE +0.34
+  INFO      1 tilted  flow/fund/news/oi on 168
+            info>0 6tr $+0.22 win 67%  info≤0 4tr $-0.17 win 0%
+  MOVERS    CELR +55% cut  G -29% #11  BTW +27% cut  AR +21% #15
+  TAPE      - - - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
+  .. 23:27  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+  .. 23:35  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+  .. 23:43  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  15 analysed
+
+
+  23:51  up 12h24m  scan 103 ---------------------------------------------------------------------
+  EQUITY    $251.70
+  SESSION   $+1.70 +0.68%  peak $251.76  dd 0.02%
+  CURVE     -----==-=-===-------_--____------------___---==++++++++++++++=+*****+=++=======*######
+  DAY       real $+1.70  loss room $1.70 (0.68%)  0% used  vol x0.80  trust x1.25
+            ..........................
+  RECORD    10 closed  4W 6L  win 40%  payoff 2.15  avg $+0.06/tr  best $+0.72  worst $-0.66
+            break-even 32%
+  OPEN      flat  free $251.70
+  FEES      $0.26  mk16/tk8  0.105% of eq
+  SCAN      797 > 14 > 0 passed  top SKL 0.43 (score 0.434 < 0.50)  103 scans, 3499 analysed
+  MARKET    TRENDING  bias +0.23  breadth +0.63  taker flow +0.23
+  NEWS      65 articles  + tone +0.33  STRK -0.22  ARB -0.22  B +0.22
+  INFO      1 tilted  flow/fund/news/oi on 168
+            info>0 6tr $+0.22 win 67%  info≤0 4tr $-0.17 win 0%
+  MOVERS    CELR +40% #13  G -30% #11  BTW +26% cut  STRK +17% #20
+  TAPE      - - - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
+  .. 23:59  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  14 analysed
+  .. 00:07  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+  >> 00:17  OPEN   CAKE LONG @2.5189  x2 $31.00
+       target +3.5%  stop -1.0%  entry score 0.43  maker

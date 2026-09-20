@@ -2366,3 +2366,166 @@
 23:16:54 |    ⚖️ C462-7 JTO: penalties 0.61→0.35 (×0.57) vs bar 0.47 — the stack decided
 23:16:55 |    ⚖️ C462-7 DOT: penalties 0.56→0.32 (×0.57) vs bar 0.49 — the stack decided
 23:16:56 |    ⚖️ C462-7 FARTCOIN: penalties 0.56→0.36 (×0.65) vs bar 0.44 — the stack decided
+23:17:07 |    ⚖️ C462-7 PENGU: penalties 0.57→0.37 (×0.65) vs bar 0.44 — the stack decided
+23:17:18 |    ⚖️ C462-7 TIA: penalties 0.56→0.32 (×0.57) vs bar 0.44 — the stack decided
+23:17:32 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=45, flow_veto=1, ct_noisy_block=3,
+    regime_blip=1, post_penalty_quality=2, dir_proj_conflict=1, micro_exhaustion=1,
+    no_structural_room=2, post_penalty_low=1, final_gate=1, vol_floor=1, fee_floor=1
+23:17:32 |    📌 Nearest miss: XPL score=0.393 (pre-pen 0.77) conf=0.643 quality=0.253/0.26
+    reason=final_gate
+23:17:36 |    🎯 C462-6 MAKER half filled AR @$5.2360 — saved ~0.04% of the half notional (3 this
+    session)
+  -> 23:17  HALF   AR LONG @5.2360  +8.59% $+0.74
+       win half banked  maker  $8.61 rides on
+23:18:43 |    🎯 C376 MAKER exit filled AR @$5.1960 — saved ~0.04%% of notional (3 this session)
+  << 23:18  CLOSE  AR LONG @5.1960  +7.76% $+0.66  WIN
+       held 26m  TRAILING_TP: peak=+8.8%   kept 89% of a +8.75% peak  +1.46R  maker
+ 
+ 
+  23:19  up 11h52m  scan 98 ----------------------------------------------------------------------
+  EQUITY    $251.70
+  SESSION   $+1.70 +0.68%  peak $251.76  dd 0.02%
+  CURVE     -----==--=====-------.__...._------------__-_--==++++++++++++++=*****##+=++=======*@@@
+  DAY       real $+1.70  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    10 closed  4W 6L  win 40%  payoff 2.15  avg $+0.06/tr  best $+0.72  worst $-0.66
+            break-even 32%
+  OPEN      flat  free $251.70
+  FEES      $0.26  mk16/tk8  0.105% of eq
+  SCAN      797 > 60 > 0 passed  top XPL 0.39 (final_gate)  98 scans, 3347 analysed
+  MARKET    TRENDING  bias +0.21  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.07  NEAR +0.55  ONE +0.49  PEPE +0.34
+  INFO      1 tilted  flow/fund/news/oi on 168
+            info>0 6tr $+0.22 win 67%  info≤0 4tr $-0.17 win 0%
+  MOVERS    CELR +55% cut  G -29% #11  BTW +27% cut  AR +21% #15
+  TAPE      - - - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+ 
+23:22:32 | 📈 C398: pack extended +2.27 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:22:33 | ⊥ C97 TF-CONFLICT: 1h=-0.31×4h=+0.96=d14=-0.30 — only longs allowed (4h dominant)
+  .. 23:27  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+23:27:52 |    🪞 C266 board-parity (top movers vs screen): CELR +48%[Live=0.29<cut] | BTW
+    +28%[Live=0.05<cut] | G -27%[#12] | C +21%[Live=0.22<cut] | LUNA +18%[Live=0.47<cut]
+23:27:52 | 📈 C398: pack extended +2.33 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:27:53 | ⊥ C97 TF-CONFLICT: 1h=-0.31×4h=+0.96=d14=-0.30 — only longs allowed (4h dominant)
+23:28:11 | 📊 Step 3 result: 3 analyzed (+57 cached this 15m candle) → 0 passed | low_score=45,
+    flow_veto=1, ct_noisy_block=3, regime_blip=1, post_penalty_quality=3, dir_proj_conflict=1,
+    micro_exhaustion=1, no_structural_room=3, final_gate=1, post_penalty_low=1
+23:28:11 |    📌 Nearest miss: 1000BONK score=0.434 (pre-pen 0.57) conf=0.661 quality=0.287/0.26
+    reason=post_penalty_quality
+23:33:11 | 📈 C398: pack extended +2.33 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:33:13 | ⊥ C97 TF-CONFLICT: 1h=-0.88×4h=+0.89=d14=-0.78 — only longs allowed (4h dominant)
+23:33:39 |    ⚖️ C462-7 ADA: penalties 0.55→0.31 (×0.57) vs bar 0.50 — the stack decided
+23:33:47 |    ⚖️ C462-7 OP: penalties 0.60→0.34 (×0.57) vs bar 0.50 — the stack decided
+23:33:59 |    ⚖️ C462-7 S: penalties 0.55→0.38 (×0.69) vs bar 0.50 — the stack decided
+23:34:05 |    ⚖️ C462-7 PENGU: penalties 0.51→0.23 (×0.46) vs bar 0.50 — the stack decided
+23:34:06 |    ⚖️ C462-7 XPL: penalties 0.78→0.27 (×0.34) vs bar 0.50 — the stack decided
+23:34:10 |    ⚖️ C462-7 CRV: penalties 0.71→0.46 (×0.64) vs bar 0.52 — the stack decided
+23:34:11 |    ⚖️ C462-7 AVA: penalties 0.74→0.42 (×0.57) vs bar 0.51 — the stack decided
+23:34:15 |    ⚖️ C462-7 TIA: penalties 0.64→0.49 (×0.76) vs bar 0.49 — the stack decided
+23:34:18 |    ⚖️ C462-7 1000BONK: penalties 0.79→0.41 (×0.51) vs bar 0.48 — the stack decided
+23:34:20 |    ⚖️ C462-7 GUN: penalties 0.64→0.37 (×0.57) vs bar 0.48 — the stack decided
+23:34:23 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=52, mtf_disagree=1, regime_blip=2,
+    crowding=1, leg_exhausted=1, no_structural_room=2, trajectory_adj=1
+23:34:23 |    📌 Nearest miss: DOT score=0.461 (pre-pen 0.73) conf=0.537 quality=0.247/0.26
+    reason=trajectory_adj
+23:35:34 |    🔭 C456: VVV exited on C377_RISK_STOP: -3.39% = — at its OWN thesis horizon (120min)
+    the price is +0.88% (+0.21R) FURTHER IN OUR FAVOUR — held would have been better
+  .. 23:35  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+23:39:29 |    🪞 C266 board-parity (top movers vs screen): CELR +45%[#13] | G -29%[#12] | BTW
+    +26%[Live=0.00<cut] | LUNA +19%[#42] | C +17%[Live=0.30<cut]
+23:39:29 | 📈 C398: pack extended +2.33 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:39:30 | ⊥ C97 TF-CONFLICT: 1h=-0.88×4h=+0.89=d14=-0.78 — only longs allowed (4h dominant)
+23:39:59 | 📊 Step 3 result: 15 analyzed (+45 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=46, regime_blip=1, crowding=1, flat_projection=1, leg_exhausted=1, pair_cap=1,
+    no_structural_room=2, trajectory_adj=1, ct_noisy_block=2, post_penalty_low=1, capitulation=1
+23:39:59 |    📌 Nearest miss: LUNA score=0.274 (pre-pen 0.61) conf=0.447 quality=0.122/0.26
+    reason=post-penalty 0.274 < 0.33
+  .. 23:43  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  15 analysed
+23:45:00 | 📈 C398: pack extended +2.33 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:45:01 | ⊥ C97 TF-CONFLICT: 1h=-0.88×4h=+0.89=d14=-0.78 — only longs allowed (4h dominant)
+23:45:36 |    ⚖️ C462-7 APT: penalties 0.63→0.43 (×0.68) vs bar 0.55 — the stack decided
+23:45:46 |    ⚖️ C462-7 JTO: penalties 0.57→0.43 (×0.76) vs bar 0.52 — the stack decided
+23:45:48 |    ⚖️ C462-7 FF: penalties 0.70→0.40 (×0.57) vs bar 0.48 — the stack decided
+23:46:00 |    ⚖️ C462-7 1000BONK: penalties 0.64→0.29 (×0.46) vs bar 0.48 — the stack decided
+23:46:02 |    ⚖️ C462-7 TIA: penalties 0.62→0.36 (×0.57) vs bar 0.49 — the stack decided
+23:46:09 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=1, low_score=39, regime_blip=4,
+    ct_noisy_block=6, dir_proj_conflict=1, flat_projection=2, no_structural_room=3,
+    post_penalty_low=1, pair_cap=1, micro_wave=1, leg_exhausted=1
+23:46:09 |    📌 Nearest miss: S score=0.570 (pre-pen 0.75) conf=0.659 quality=0.375/0.26
+    reason=micro_wave
+23:51:15 |    🪞 C266 board-parity (top movers vs screen): CELR +40%[#13] | G -30%[#11] | BTW
+    +26%[Live=0.29<cut] | STRK +17%[#20] | LUNA +16%[Live=0.31<cut]
+23:51:15 | 📈 C398: pack extended +1.87 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:51:16 | ⊥ C97 TF-CONFLICT: 1h=-0.76×4h=+0.87=d14=-0.66 — only longs allowed (4h dominant)
+23:51:33 |    🎢→⚖️ C: C292 stands down — parabola BROKEN (range 8×ATR, 3.7 ATR off the day extreme):
+    the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path
+    [C299]
+23:51:35 |    ⚖️ C462-7 SKL: penalties 0.57→0.43 (×0.76) vs bar 0.50 — the stack decided
+23:51:40 | 📊 Step 3 result: 14 analyzed (+46 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=38, regime_blip=4, dir_proj_conflict=1, ct_noisy_block=7, flat_projection=1,
+    no_structural_room=5, post_penalty_low=1, pair_cap=1, leg_exhausted=1
+23:51:40 |    📌 Nearest miss: SKL score=0.434 (pre-pen 0.57) conf=0.650 quality=0.283/0.26
+    reason=score 0.434 < 0.505
+ 
+ 
+  23:51  up 12h24m  scan 103 ---------------------------------------------------------------------
+  EQUITY    $251.70
+  SESSION   $+1.70 +0.68%  peak $251.76  dd 0.02%
+  CURVE     -----==-=-===-------_--____------------___---==++++++++++++++=+*****+=++=======*######
+  DAY       real $+1.70  loss room $1.70 (0.68%)  0% used  vol x0.80  trust x1.25
+            ..........................
+  RECORD    10 closed  4W 6L  win 40%  payoff 2.15  avg $+0.06/tr  best $+0.72  worst $-0.66
+            break-even 32%
+  OPEN      flat  free $251.70
+  FEES      $0.26  mk16/tk8  0.105% of eq
+  SCAN      797 > 14 > 0 passed  top SKL 0.43 (score 0.434 < 0.50)  103 scans, 3499 analysed
+  MARKET    TRENDING  bias +0.23  breadth +0.63  taker flow +0.23
+  NEWS      65 articles  + tone +0.33  STRK -0.22  ARB -0.22  B +0.22
+  INFO      1 tilted  flow/fund/news/oi on 168
+            info>0 6tr $+0.22 win 67%  info≤0 4tr $-0.17 win 0%
+  MOVERS    CELR +40% #13  G -30% #11  BTW +26% cut  STRK +17% #20
+  TAPE      - - - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+ 
+23:56:40 | 📈 C398: pack extended +1.87 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+23:56:42 | ⊥ C97 TF-CONFLICT: 1h=-0.76×4h=+0.87=d14=-0.66 — only longs allowed (4h dominant)
+  .. 23:59  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  14 analysed
+00:02:00 |    🪞 C266 board-parity (top movers vs screen): CELR +40%[#15] | G -34%[#12] | BTW
+    +27%[Live=0.11<cut] | STRK +21%[#19] | LUNA +16%[Live=0.19<cut]
+00:02:00 | 📈 C398: pack extended +2.28 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+00:03:00 |    🎢→⚖️ C: C292 stands down — parabola BROKEN (range 9×ATR, 3.9 ATR off the day extreme):
+    the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path
+    [C299]
+00:03:24 |    ⚖️ C462-7 APR: penalties 0.47→0.32 (×0.69) vs bar 0.42 — the stack decided
+00:03:25 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 00:07  flat  $251.70  $+1.70 +0.68%  4W 6L 40%  60 analysed
+00:09:25 | 📈 C398: pack extended +2.28 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+00:09:39 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_score=28,
+    flat_projection=4, no_structural_room=10, counter_trend_block=4, low_quality=2,
+    exhaustion_hard=1, flow_veto=1, pair_cap=1, post_penalty_quality=1, post_penalty_low=2,
+    dir_proj_conflict=1, vol_floor=2, trajectory_adj=1, micro_exhaustion=1, capitulation=1
+00:15:45 |    🪞 C266 board-parity (top movers vs screen): CELR +36%[#15] | G -35%[#14] | BTW
+    +27%[#26] | STRK +18%[#21] | LUNA +16%[Live=0.18<cut]
+00:15:45 | 📈 C398: pack extended +1.67 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+00:15:46 | ⊥ C97 TF-CONFLICT: 1h=-0.53×4h=+0.90=d14=-0.48 — only longs allowed (4h dominant)
+00:16:27 |    ⚖️ C462-7 DOT: penalties 0.56→0.37 (×0.67) vs bar 0.54 — the stack decided
+00:16:39 |    ⚖️ C462-7 AVA: penalties 0.66→0.40 (×0.61) vs bar 0.49 — the stack decided
+00:16:39 |    ⚖️ C462-7 OP: penalties 0.49→0.33 (×0.67) vs bar 0.47 — the stack decided
+00:16:50 |    ⚖️ C462-7 MUBARAK: penalties 0.51→0.41 (×0.81) vs bar 0.47 — the stack decided
+00:17:00 | 📊 Step 3 result: 60 analyzed → 3 viable → Step 4 DRI/DSI
+00:17:01 |    🎲 C378 odds-size: orderliness 0.08 -> risk x0.75 ($0.642)
+00:17:01 |    🔒 C378 stop level $2.4928 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 00:17  OPEN   CAKE LONG @2.5189  x2 $31.00
+       target +3.5%  stop -1.0%  entry score 0.43  maker
