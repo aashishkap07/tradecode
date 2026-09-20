@@ -1464,3 +1464,83 @@
   MYX      SHORT   0.081270  0.077900  +4.15%   +0.20 1h39m  + 0% left
   ------------------------------------------------------------------------------------------------
 
+  << 09:18  CLOSE  MYX SHORT @0.078790  +3.05% $+0.14  WIN
+       held 1h46m  REL_TRAIL: peak=+5.8%(1.  kept 52% of a +5.82% peak  +0.32R  TAKER
+
+
+  09:19  up 13h14m  scan 114 ---------------------------------------------------------------------
+  EQUITY    $252.31
+  SESSION   $+1.65 +0.66%  peak $252.63  dd 0.13%
+  CURVE     ===+=-=-=-=---_----+==---------------------===----------------=++++++++++++++++#******
+  DAY       real $+2.00  loss room $2.70 (1.08%)  0% used  vol x1.26  trust x1.25
+            ..........................
+  RECORD    12 closed  6W 6L  win 50%  payoff 0.87  avg $-0.03/tr  best $+0.75  worst $-0.77
+            break-even 53%
+  LIFETIME  18tr 8W 10L 44%  $+2.31
+  OPEN      flat  free $252.31
+  FEES      $0.33  mk22/tk7  0.132% of eq
+  SCAN      797 > 60 > 0 passed  top JUP 0.50 (low_agreement 48%<)  114 scans, 3650 analysed
+  MARKET    TRENDING  bias -0.66  breadth +0.00  taker flow +0.22
+  NEWS      65 articles  + tone +0.12  PEPE +0.32  ADA +0.25  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 165
+            info>0 9tr $-0.07 win 44%  info≤0 2tr $+0.06 win 50%
+  MOVERS    CELR +91% #14  ONE +78% #6  G +55% cut  AKE +53% #7
+  TAPE      + - - - + + - - - + + +
+  ------------------------------------------------------------------------------------------------
+
+  .. 09:27  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  11 analysed
+  .. 09:35  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  60 analysed
+  .. 09:43  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  16 analysed
+
+
+  09:51  up 13h47m  scan 118 ---------------------------------------------------------------------
+  EQUITY    $252.31
+  SESSION   $+1.65 +0.66%  peak $252.63  dd 0.13%
+  CURVE     ===+===-=-==------=+=---------------------==----------------=+++++++++++++++**********
+  DAY       real $+2.00  loss room $3.04 (1.21%)  0% used  vol x1.42  trust x1.25
+            ..........................
+  RECORD    12 closed  6W 6L  win 50%  payoff 0.87  avg $-0.03/tr  best $+0.75  worst $-0.77
+            break-even 53%
+  LIFETIME  18tr 8W 10L 44%  $+2.31
+  OPEN      flat  free $252.31
+  FEES      $0.33  mk22/tk7  0.132% of eq
+  SCAN      797 > 60 > 0 passed  top CHIP 0.68 (dir_proj_conflict)  118 scans, 3797 analysed
+  MARKET    TRENDING  bias -0.17  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  ~ tone +0.04  PEPE +0.70  FIL +0.53  VET +0.53
+  INFO      1 tilted  flow/fund/news/oi on 165
+            info>0 9tr $-0.07 win 44%  info≤0 2tr $+0.06 win 50%
+  MOVERS    CELR +91% #14  ONE +82% #6  AKE +55% #7  G +47% #8
+  TAPE      + - - - + + - - - + + +
+  ------------------------------------------------------------------------------------------------
+
+  .. 09:59  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  2 analysed
+  .. 10:07  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  60 analysed
+
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       14h10m  121 scans  3872 pair-analyses  12 closed trades
+  P&L       $+1.65 (+0.66%)  $250.66 > $252.31  maxDD 0.64%
+  CURVE     --=+_=---_.-..____+=_____________________==_______________=++++++++++++++*@#@@@@@@@@@@
+  RECORD    6W 6L  win 50%  payoff 0.87  profit factor 0.87  avg win $+0.36  avg loss $-0.41
+            break-even 53%  expectancy $-0.03/tr  gross $2.15 won  $2.47 lost
+  HOLD      median 42m  range 5-110m
+  COST      fees $0.33  maker 22 / taker 7 fills  1652% of gross  76% of fills maker  maker $0.14
+            taker $0.19
+  INFO A/B  agreed 9tr $-0.07/tr win 44%  disagreed 2tr $+0.06/tr win 50%  gap $-0.13/tr
+  EXITS     TRAILING_TP: peak=+3 1  C399_CONVICTION_COLL 1  C377_RISK_STOP: -1.3 1
+            PEAK_FLOOR: peaked a 1  EARLY_PEAK_CAPTURE:  1  EARLY_PEAK_CAPTURE:  1
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE      MOVE      NET   HELD  EXIT
+  KAS      LONG    +0.74%   $+0.24    42m  TRAILING_TP: peak=+3 [W]
+  TAO      LONG    -1.17%   $-0.68    47m  C399_CONVICTION_COLL [L]
+  MON      LONG    -1.38%   $-0.77    59m  C377_RISK_STOP: -1.3 [L]
+  JTO      LONG    -0.23%   $-0.14  1h49m  PEAK_FLOOR: peaked a [L]
+  PEPE     LONG    +1.98%   $+0.34     8m  EARLY_PEAK_CAPTURE:  [W]
+  1000BONK LONG    +1.63%   $+0.45    16m  EARLY_PEAK_CAPTURE:  [W]
+  WIF      LONG    +0.05%   $-0.02    20m  REL_TRAIL: peak=+1.8 [L]
+  PENGU    LONG    -1.88%   $-0.75     5m  C377_RISK_STOP: -1.9 [L]
+  PONS     SHORT   -0.09%   $-0.09    52m  PEAK_FLOOR: peaked a [L]
+  PIEVERSE LONG    +8.09%   $+0.75    21m  EARLY_PEAK_CAPTURE:  [W]
+  PENGU    SHORT   +0.98%   $+0.24    19m  TRAILING_TP: peak=+4 [W]
+  MYX      SHORT   +3.05%   $+0.14  1h46m  REL_TRAIL: peak=+5.8 [W]
+  ------------------------------------------------------------------------------------------------
+

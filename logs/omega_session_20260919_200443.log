@@ -2513,3 +2513,186 @@
     proj_confirms_trend=1, final_gate=1, flat_projection=2
 09:13:40 |    📌 Nearest miss: APT score=0.191 conf=0.653 quality=0.125/0.26 reason=score 0.191 <
     0.352
+09:17:13 |    🎢→⚖️ INJ: C292 stands down — parabola BROKEN (range 10×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:17:23 |    🎢→⚖️ BANK: C292 stands down — parabola BROKEN (range 9×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:18:12 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=3, low_score=27,
+    counter_trend_block=11, regime_blip=2, micro_exhaustion=4, capitulation_short=7,
+    flat_projection=1, absorption_at_extreme=1, pair_cap=1, proj_confirms_trend=1, low_agreement=1,
+    late_leg_no_forward=1
+09:18:12 |    📌 Nearest miss: JUP score=0.502 conf=0.689 quality=0.346/0.26 reason=low_agreement
+    48%<53%
+09:18:50 | 🎯 EXIT SIGNAL: MYX/USDT:USDT - REL_TRAIL: peak=+5.8%(1.2PRU) gave=0.6PRU > trail=0.5PRU
+    cont=-0.63
+  << 09:18  CLOSE  MYX SHORT @0.078790  +3.05% $+0.14  WIN
+       held 1h46m  REL_TRAIL: peak=+5.8%(1.  kept 52% of a +5.82% peak  +0.32R  TAKER
+ 
+ 
+  09:19  up 13h14m  scan 114 ---------------------------------------------------------------------
+  EQUITY    $252.31
+  SESSION   $+1.65 +0.66%  peak $252.63  dd 0.13%
+  CURVE     ===+=-=-=-=---_----+==---------------------===----------------=++++++++++++++++#******
+  DAY       real $+2.00  loss room $2.70 (1.08%)  0% used  vol x1.26  trust x1.25
+            ..........................
+  RECORD    12 closed  6W 6L  win 50%  payoff 0.87  avg $-0.03/tr  best $+0.75  worst $-0.77
+            break-even 53%
+  LIFETIME  18tr 8W 10L 44%  $+2.31
+  OPEN      flat  free $252.31
+  FEES      $0.33  mk22/tk7  0.132% of eq
+  SCAN      797 > 60 > 0 passed  top JUP 0.50 (low_agreement 48%<)  114 scans, 3650 analysed
+  MARKET    TRENDING  bias -0.66  breadth +0.00  taker flow +0.22
+  NEWS      65 articles  + tone +0.12  PEPE +0.32  ADA +0.25  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 165
+            info>0 9tr $-0.07 win 44%  info≤0 2tr $+0.06 win 50%
+  MOVERS    CELR +91% #14  ONE +78% #6  G +55% cut  AKE +53% #7
+  TAPE      + - - - + + - - - + + +
+  ------------------------------------------------------------------------------------------------
+ 
+09:24:20 |    🪞 C266 board-parity (top movers vs screen): CELR +82%[#14] | ONE +77%[#6] | G
+    +57%[Live=0.71<cut] | AKE +57%[#7] | B2 +37%[Live=0.72<cut]
+09:24:47 | 📊 Step 3 result: 11 analyzed (+49 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=23, counter_trend_block=13, regime_blip=3, micro_exhaustion=4, capitulation=1,
+    capitulation_short=7, flat_projection=1, proj_confirms_trend=2, absorption_at_extreme=2,
+    pair_cap=1, low_agreement=1
+09:24:47 |    📌 Nearest miss: PENDLE score=0.487 conf=0.746 quality=0.363/0.26 reason=pending
+  .. 09:27  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  11 analysed
+09:31:23 |    🎢→⚖️ BANK: C292 stands down — parabola BROKEN (range 9×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:31:56 |    🧭 C458-17: exploration is due but the best refusal (pending) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+09:31:56 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=3, low_score=35,
+    news_tech_conflict=2, regime_blip=8, flat_projection=1, micro_exhaustion=3, leg_exhausted=1,
+    capitulation_short=1, proj_confirms_trend=2, absorption_at_extreme=3, pair_cap=1
+09:31:56 |    📌 Nearest miss: TAO score=0.604 conf=0.718 quality=0.434/0.26 reason=pending
+  .. 09:35  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  60 analysed
+09:37:01 |    🪞 C266 board-parity (top movers vs screen): CELR +85%[#17] | ONE +77%[#6] | G +56%[#7]
+    | AKE +51%[#8] | ZAMA +40%[#15]
+09:37:18 |    🎢→⚖️ BR: C292 stands down — parabola BROKEN (range 18×ATR, 3.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:37:27 |    🧭 C458-17: exploration is due but the best refusal (score 0.489 < 0.720) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+09:37:27 | 📊 Step 3 result: 16 analyzed (+44 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=35, news_tech_conflict=2, regime_blip=7, flat_projection=2, micro_exhaustion=3,
+    capitulation=1, leg_exhausted=1, capitulation_short=1, proj_confirms_trend=2,
+    absorption_at_extreme=2, fee_floor=1
+09:37:27 |    📌 Nearest miss: AVA score=0.464 (pre-pen 0.55) conf=0.720 quality=0.334/0.26
+    reason=score 0.489 < 0.720
+  .. 09:43  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  16 analysed
+09:47:48 |    🪞 C266 board-parity (top movers vs screen): CELR +91%[#14] | ONE +82%[#6] | AKE
+    +55%[#7] | G +47%[#8] | ZAMA +40%[#15]
+09:48:14 |    🎢→⚖️ BR: C292 stands down — parabola BROKEN (range 17×ATR, 3.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:48:14 |    🎢→⚖️ AR: C292 stands down — parabola BROKEN (range 13×ATR, 6.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:48:43 |    🧭 C458-17: exploration is due but the best refusal (dir_proj_conflict) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+09:48:43 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=3, low_score=28,
+    ct_noisy_block=19, micro_exhaustion=1, fee_floor=1, leg_exhausted=1, absorption_at_extreme=3,
+    dir_proj_conflict=1, no_structural_room=1, proj_confirms_trend=1, capitulation=1
+09:48:43 |    📌 Nearest miss: CHIP score=0.680 conf=0.692 quality=0.471/0.26
+    reason=dir_proj_conflict
+ 
+ 
+  09:51  up 13h47m  scan 118 ---------------------------------------------------------------------
+  EQUITY    $252.31
+  SESSION   $+1.65 +0.66%  peak $252.63  dd 0.13%
+  CURVE     ===+===-=-==------=+=---------------------==----------------=+++++++++++++++**********
+  DAY       real $+2.00  loss room $3.04 (1.21%)  0% used  vol x1.42  trust x1.25
+            ..........................
+  RECORD    12 closed  6W 6L  win 50%  payoff 0.87  avg $-0.03/tr  best $+0.75  worst $-0.77
+            break-even 53%
+  LIFETIME  18tr 8W 10L 44%  $+2.31
+  OPEN      flat  free $252.31
+  FEES      $0.33  mk22/tk7  0.132% of eq
+  SCAN      797 > 60 > 0 passed  top CHIP 0.68 (dir_proj_conflict)  118 scans, 3797 analysed
+  MARKET    TRENDING  bias -0.17  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  ~ tone +0.04  PEPE +0.70  FIL +0.53  VET +0.53
+  INFO      1 tilted  flow/fund/news/oi on 165
+            info>0 9tr $-0.07 win 44%  info≤0 2tr $+0.06 win 50%
+  MOVERS    CELR +91% #14  ONE +82% #6  AKE +55% #7  G +47% #8
+  TAPE      + - - - + + - - - + + +
+  ------------------------------------------------------------------------------------------------
+ 
+09:59:04 |    🪞 C266 board-parity (top movers vs screen): CELR +98%[#14] | ONE +82%[#6] | AKE
+    +54%[#7] | G +44%[#9] | ZAMA +38%[#16]
+09:59:20 |    🧭 C458-17: exploration is due but the best refusal (score 0.087 < 0.577) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+09:59:20 | 📊 Step 3 result: 2 analyzed (+58 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=29, ct_noisy_block=18, micro_exhaustion=1, fee_floor=1, leg_exhausted=1,
+    absorption_at_extreme=3, pair_cap=1, dir_proj_conflict=1, capitulation=1, proj_confirms_trend=1
+09:59:20 |    📌 Nearest miss: BERA score=0.087 (pre-pen 0.15) conf=0.463 quality=0.040/0.26
+    reason=score 0.087 < 0.577
+  .. 09:59  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  2 analysed
+10:04:41 |    ⚖️ C462-7 ONE: penalties 0.54→0.19 (×0.36) vs bar 0.47 — the stack decided
+10:04:48 |    🎢→⚖️ BR: C292 stands down — parabola BROKEN (range 17×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:04:51 |    🎢→⚖️ INJ: C292 stands down — parabola BROKEN (range 11×ATR, 4.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:05:08 |    ⚖️ C462-7 WIF: penalties 0.40→0.25 (×0.63) vs bar 0.40 — the stack decided
+10:05:16 |    ⚖️ C462-7 ACE: penalties 0.68→0.27 (×0.40) vs bar 0.45 — the stack decided
+10:05:21 |    ⚖️ C462-7 M: penalties 0.74→0.22 (×0.30) vs bar 0.71 — the stack decided
+10:05:22 |    🧭 C458-17: exploration is due but the best refusal (late-leg F=-0.01) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+10:05:22 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=14, low_score=38,
+    absorption_at_extreme=2, micro_exhaustion=2, late_leg_no_forward=1, pair_cap=1, fee_floor=1,
+    flat_projection=1
+10:05:22 |    📌 Nearest miss: XMR score=0.491 conf=0.770 quality=0.378/0.26 reason=late-leg F=-0.01
+  .. 10:07  flat  $252.31  $+1.65 +0.66%  6W 6L 50%  60 analysed
+10:11:28 |    🪞 C266 board-parity (top movers vs screen): CELR +113%[#15] | ONE +75%[#6] | G
+    +53%[#7] | AKE +42%[#9] | ZAMA +35%[#19]
+10:11:49 |    ⚖️ C462-7 CYS: penalties 0.65→0.26 (×0.39) vs bar 0.47 — the stack decided
+10:11:50 |    🧭 C458-17: exploration is due but the best refusal (OF-exhaustion OI=capitulation) is
+    a RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+10:11:50 | 📊 Step 3 result: 13 analyzed (+47 cached this 15m candle) → 0 passed | low_confidence=16,
+    low_score=35, absorption_at_extreme=1, micro_exhaustion=2, fee_floor=2, late_leg_no_forward=1,
+    pair_cap=1, flat_projection=1, leg_exhausted=1
+10:11:50 |    📌 Nearest miss: UB score=0.319 (pre-pen 0.50) conf=0.529 quality=0.169/0.26
+    reason=OF-exhaustion OI=capitulation
+10:14:50 | 🛑 Stopping...
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       14h10m  121 scans  3872 pair-analyses  12 closed trades
+  P&L       $+1.65 (+0.66%)  $250.66 > $252.31  maxDD 0.64%
+  CURVE     --=+_=---_.-..____+=_____________________==_______________=++++++++++++++*@#@@@@@@@@@@
+  RECORD    6W 6L  win 50%  payoff 0.87  profit factor 0.87  avg win $+0.36  avg loss $-0.41
+            break-even 53%  expectancy $-0.03/tr  gross $2.15 won  $2.47 lost
+  HOLD      median 42m  range 5-110m
+  COST      fees $0.33  maker 22 / taker 7 fills  1652% of gross  76% of fills maker  maker $0.14
+            taker $0.19
+  INFO A/B  agreed 9tr $-0.07/tr win 44%  disagreed 2tr $+0.06/tr win 50%  gap $-0.13/tr
+  EXITS     TRAILING_TP: peak=+3 1  C399_CONVICTION_COLL 1  C377_RISK_STOP: -1.3 1
+            PEAK_FLOOR: peaked a 1  EARLY_PEAK_CAPTURE:  1  EARLY_PEAK_CAPTURE:  1
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE      MOVE      NET   HELD  EXIT
+  KAS      LONG    +0.74%   $+0.24    42m  TRAILING_TP: peak=+3 [W]
+  TAO      LONG    -1.17%   $-0.68    47m  C399_CONVICTION_COLL [L]
+  MON      LONG    -1.38%   $-0.77    59m  C377_RISK_STOP: -1.3 [L]
+  JTO      LONG    -0.23%   $-0.14  1h49m  PEAK_FLOOR: peaked a [L]
+  PEPE     LONG    +1.98%   $+0.34     8m  EARLY_PEAK_CAPTURE:  [W]
+  1000BONK LONG    +1.63%   $+0.45    16m  EARLY_PEAK_CAPTURE:  [W]
+  WIF      LONG    +0.05%   $-0.02    20m  REL_TRAIL: peak=+1.8 [L]
+  PENGU    LONG    -1.88%   $-0.75     5m  C377_RISK_STOP: -1.9 [L]
+  PONS     SHORT   -0.09%   $-0.09    52m  PEAK_FLOOR: peaked a [L]
+  PIEVERSE LONG    +8.09%   $+0.75    21m  EARLY_PEAK_CAPTURE:  [W]
+  PENGU    SHORT   +0.98%   $+0.24    19m  TRAILING_TP: peak=+4 [W]
+  MYX      SHORT   +3.05%   $+0.14  1h46m  REL_TRAIL: peak=+5.8 [W]
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-20 10:14:50
+============================================================
