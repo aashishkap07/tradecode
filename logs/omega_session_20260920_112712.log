@@ -1,0 +1,219 @@
+11:27:12 |    day cap 0.68%  |  per-trade risk 0.341%  |  break-even WR 50.0% AT 1:1 PAYOFF — no
+    R-denominated payoff measured yet, so the honest break-even is the 1:1 figure above and nothing
+    better [C406/C463-10]
+11:27:12 | 📊 Paper Mode
+11:27:14 | ✅ Connected | 797 futures markets
+11:27:14 |    day cap 0.68%  |  per-trade risk 0.341%  |  break-even WR 50.0% AT 1:1 PAYOFF — at the
+    measured 2.17 payoff (9W/9L in R) it is 32%, which is the number that matters [C406/C463-10]
+ 
+  ================================================================================================
+  OMEGA C479  PAPER  Bitget perps
+  20 Sep 2026   11:27
+  start $250.00  day -0.68% loss
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $250.00  797 markets
+  DAY       -0.68% = $1.70 loss room  (15% DD / 22)
+  RISK      0.341% = $0.85/trade  trades/day NO CAP
+  EDGE      +0.0607 blended
+  NEED      32% win at 2.17 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+11:27:14 | ⚠️ Flask not available - web dashboard disabled
+11:27:14 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+11:27:14 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+11:27:14 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+11:27:14 |        See deploy/DEPLOY.md — one command, no open ports, free.
+11:27:14 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+11:27:14 | 💡 Press Ctrl+C to stop safely
+11:27:20 |    🪞 C266 board-parity (top movers vs screen): CELR +114%[#10] | ONE +88%[#6] | G
+    +79%[#7] | B2 +31%[#16] | CTSI +30%[#48]
+11:27:44 |    ⚖️ C462-7 G: penalties 0.65→0.28 (×0.43) vs bar 0.46 — the stack decided
+11:27:50 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 25×ATR, 14.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:27:56 |    ⚖️ C462-7 LSK: penalties 0.48→0.23 (×0.48) vs bar 0.46 — the stack decided
+11:27:58 |    ⚖️ C462-7 XMR: penalties 0.90→0.44 (×0.48) vs bar 0.47 — the stack decided
+11:28:10 |    ⚖️ C462-7 WIF: penalties 0.72→0.26 (×0.36) vs bar 0.38 — the stack decided
+11:28:11 |    ⚖️ C462-7 CTSI: penalties 0.63→0.27 (×0.43) vs bar 0.42 — the stack decided
+11:28:13 |    🎢→⚖️ EPIC: C292 stands down — parabola BROKEN (range 15×ATR, 6.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:28:14 |    ⚖️ C462-7 GENIUS: penalties 0.88→0.34 (×0.39) vs bar 0.47 — the stack decided
+11:28:21 |    ⚖️ C462-7 B: penalties 0.54→0.23 (×0.43) vs bar 0.42 — the stack decided
+11:28:23 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=6, low_score=36, mtf_disagree=1,
+    flat_projection=3, absorption_at_extreme=4, capitulation=4, late_leg_no_forward=2,
+    no_structural_room=2, micro_exhaustion=1, low_agreement=1
+11:28:23 |    📌 Nearest miss: C score=0.418 (pre-pen 0.93) conf=0.506 quality=0.211/0.26
+    reason=low_agreement 65%<65%
+11:34:44 |    ⚖️ C462-7 ONE: penalties 0.53→0.23 (×0.44) vs bar 0.46 — the stack decided
+11:34:45 |    ⚖️ C462-7 G: penalties 0.83→0.37 (×0.44) vs bar 0.38 — the stack decided
+11:34:51 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 28×ATR, 15.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:35:09 |    ⚖️ C462-7 MARSCOIN: penalties 0.55→0.22 (×0.40) vs bar 0.41 — the stack decided
+11:35:17 |    ⚖️ C462-7 WIF: penalties 0.52→0.24 (×0.45) vs bar 0.46 — the stack decided
+11:35:22 |    ⚖️ C462-7 GENIUS: penalties 0.78→0.26 (×0.33) vs bar 0.43 — the stack decided
+11:35:26 |    ⚖️ C462-7 B: penalties 0.52→0.23 (×0.44) vs bar 0.41 — the stack decided
+11:35:29 |    ⚖️ C462-7 ARK: penalties 0.64→0.28 (×0.44) vs bar 0.41 — the stack decided
+11:35:29 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=6, low_score=42, mtf_disagree=1,
+    news_tech_conflict=1, flat_projection=5, capitulation=2, poor_reward_risk=1,
+    no_structural_room=1, low_quality=1
+11:35:29 |    📌 Nearest miss: XMR score=0.557 (pre-pen 0.92) conf=0.556 quality=0.310/0.26
+    reason=mtf_disagree
+ 
+  11:35  up 0h08m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $250.00
+  SESSION   $+0.00 +0.00%
+  DAY       real $+0.00  loss room $2.13 (0.85%)  0% used  vol x1.00  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      flat  free $250.00
+  FEES      no fills yet this run
+  SCAN      797 > 60 > 0 passed  top XMR 0.56 (mtf_disagree)  2 scans, 120 analysed
+  MARKET    TRENDING  bias -0.46  breadth -0.33  taker flow -0.21
+  NEWS      65 articles  + tone +0.11  UNI -0.54  PEPE -0.50  JUP -0.29
+  MOVERS    CELR +114% #10  ONE +88% #6  G +79% #7  B2 +31% #16
+  ------------------------------------------------------------------------------------------------
+ 
+11:41:36 |    🪞 C266 board-parity (top movers vs screen): CELR +100%[#13] | ONE +91%[#7] | G
+    +85%[#6] | ZAMA +36%[#15] | B2 +33%[#16]
+11:41:54 |    ⚖️ C462-7 WLD: penalties 0.52→0.23 (×0.45) vs bar 0.41 — the stack decided
+11:42:01 | 📊 Step 3 result: 13 analyzed (+47 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=45, capitulation=2, flat_projection=4, poor_reward_risk=1, no_structural_room=1,
+    low_quality=1, micro_exhaustion=1
+11:42:01 |    📌 Nearest miss: SYN score=0.274 (pre-pen 0.45) conf=0.414 quality=0.114/0.26
+    reason=score 0.274 < 0.457
+  .. 11:43  flat  $250.00  $+0.00 +0.00%  0W 0L  13 analysed
+11:48:22 |    ⚖️ C462-7 G: penalties 0.68→0.26 (×0.38) vs bar 0.46 — the stack decided
+11:48:24 |    🎢→⚖️ AKE: C292 stands down — parabola BROKEN (range 11×ATR, 7.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:48:29 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 29×ATR, 15.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:48:33 |    ⚖️ C462-7 WLD: penalties 0.50→0.20 (×0.40) vs bar 0.41 — the stack decided
+11:48:43 |    ⚖️ C462-7 SKL: penalties 0.53→0.21 (×0.40) vs bar 0.41 — the stack decided
+11:48:44 |    ⚖️ C462-7 SYN: penalties 0.49→0.23 (×0.48) vs bar 0.46 — the stack decided
+11:48:46 |    ⚖️ C462-7 MARSCOIN: penalties 0.54→0.22 (×0.40) vs bar 0.41 — the stack decided
+11:48:50 |    ⚖️ C462-7 ONG: penalties 0.48→0.18 (×0.38) vs bar 0.46 — the stack decided
+11:48:57 |    ⚖️ C462-7 CTSI: penalties 0.50→0.19 (×0.38) vs bar 0.46 — the stack decided
+11:48:58 |    ⚖️ C462-7 GENIUS: penalties 0.58→0.23 (×0.40) vs bar 0.43 — the stack decided
+11:49:06 |    ⚖️ C462-7 S: penalties 0.47→0.18 (×0.38) vs bar 0.46 — the stack decided
+11:49:07 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+11:49:08 |    🎲 C378 odds-size: orderliness 0.02 -> risk x0.71 ($0.608)
+11:49:08 |    🔒 C378 stop level $1.0903 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 11:49  OPEN   ZRO SHORT @1.0761  x2 $22.92
+       target +5.0%  stop -1.3%  entry score 0.44  maker
+ 
+ 
+  11:51  up 0h24m  scan 4 ------------------------------------------------------------------------
+  EQUITY    $250.00
+  SESSION   $+0.00 +0.00%
+  DAY       real $+0.00  loss room $1.61 (0.64%)  0% used  vol x0.76  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 60 > 1 passed  top ZRO 0.44 (viable)  4 scans, 193 analysed
+  MARKET    TRENDING  bias -0.50  breadth -0.15  taker flow +0.33
+  NEWS      65 articles  + tone +0.11  UNI -0.54  PEPE -0.50  JUP -0.29
+  INFO      1 tilted  flow/fund/news on 73
+  MOVERS    CELR +100% #13  ONE +91% #7  G +85% #6  ZAMA +36% #15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0752  +0.08%   +0.00    2m  + 43% left
+  ------------------------------------------------------------------------------------------------
+ 
+11:52:14 |    🪞 C266 board-parity (top movers vs screen): CELR +105%[#14] | G +98%[#4] | ONE
+    +83%[#5] | ZAMA +38%[#15] | B2 +35%[#16]
+11:52:38 |    ⚖️ C462-7 STX: penalties 0.73→0.29 (×0.40) vs bar 0.38 — the stack decided
+11:52:42 |    ⚖️ C462-7 CAKE: penalties 0.85→0.26 (×0.30) vs bar 0.41 — the stack decided
+11:52:43 | 📊 Step 3 result: 17 analyzed (+43 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=49, news_tech_conflict=2, late_leg_no_forward=1, flat_projection=1, regime_blip=2,
+    capitulation=2, poor_reward_risk=1
+11:52:43 |    📌 Nearest miss: ZRO score=0.452 conf=0.672 quality=0.304/0.26 reason=score 0.339 <
+    0.456
+ 
+  11:59  up 0h32m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $250.01  unreal $+0.01
+  SESSION   $+0.01 +0.00%
+  DAY       real $+0.00  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 17 > 0 passed  top ZRO 0.45 (score 0.339 < 0.45)  5 scans, 210 analysed
+  MARKET    TRENDING  bias -0.44  breadth +0.00  taker flow -0.17
+  NEWS      65 articles  + tone +0.33  UNI -0.54  PEPE -0.50  JUP -0.29
+  INFO      1 tilted  flow/fund/news on 73
+  MOVERS    CELR +105% #14  G +98% #4  ONE +83% #5  ZAMA +38% #15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0751  +0.09%   +0.01   10m  + 40% left
+  ------------------------------------------------------------------------------------------------
+ 
+12:02:27 |    🪞 C266 board-parity (top movers vs screen): CELR +108%[#13] | G +98%[#6] | ONE
+    +79%[#7] | ZAMA +37%[#16] | B2 +34%[#17]
+12:02:56 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 33×ATR, 17.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:03:10 |    ⚖️ C462-7 ASTER: penalties 0.46→0.36 (×0.78) vs bar 0.45 — the stack decided
+12:03:16 |    ⚖️ C462-7 CYS: penalties 0.53→0.21 (×0.40) vs bar 0.41 — the stack decided
+12:03:23 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+12:06:40 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=30, regime_blip=11, no_structural_room=1, flat_projection=8, news_tech_conflict=1,
+    low_quality=1, capitulation=4, late_leg_no_forward=1, post_penalty_quality=1
+12:06:40 |    📌 Nearest miss: XMR score=0.637 (pre-pen 0.89) conf=0.435 quality=0.277/0.26
+    reason=quality 0.208 < 0.295
+ 
+  12:07  up 0h40m  scan 7 ------------------------------------------------------------------------
+  EQUITY    $250.04  unreal $+0.04
+  SESSION   $+0.04 +0.02%
+  CURVE     =====+
+  DAY       real $+0.00  loss room $2.04 (0.82%)  0% used  vol x0.96  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 1 > 0 passed  top XMR 0.64 (quality 0.208 < 0.)  7 scans, 271 analysed
+  MARKET    TRENDING  bias -0.43  breadth +0.28  taker flow -0.09
+  NEWS      65 articles  + tone +0.33  UNI +0.73  CAKE +0.73  PEPE +0.70
+  INFO      1 tilted  flow/fund/news/oi on 93
+  MOVERS    CELR +108% #13  G +98% #6  ONE +79% #7  ZAMA +37% #16
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0742  +0.18%   +0.04   18m  + 44% left
+  ------------------------------------------------------------------------------------------------
+ 
+12:15:03 |    🪞 C266 board-parity (top movers vs screen): CELR +112%[Live=0.46<cut] | G +95%[#6] |
+    ONE +73%[#7] | ZAMA +36%[#16] | C +36%[#32]
+12:15:28 |    🎢→⚖️ AKE: C292 stands down — parabola BROKEN (range 13×ATR, 7.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:15:30 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 33×ATR, 17.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:16:06 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  12:16  up 0h48m  scan 8 ------------------------------------------------------------------------
+  EQUITY    $250.25  unreal $+0.25
+  SESSION   $+0.25 +0.10%
+  CURVE     ======+
+  DAY       real $+0.00  loss room $2.04 (0.82%)  0% used  vol x0.96  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 60 > 1 passed  top XMR 0.60 (viable)  8 scans, 331 analysed
+  MARKET    TRENDING  bias -0.33  breadth +0.00  taker flow -0.02
+  NEWS      65 articles  + tone +0.33  UNI +0.73  CAKE +0.73  PEPE +0.70
+  INFO      1 tilted  flow/fund/news/oi on 100
+  MOVERS    CELR +112% cut  G +95% #6  ONE +73% #7  ZAMA +36% #16
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0694  +0.62%   +0.25   26m  + 47% left
+  ------------------------------------------------------------------------------------------------
+ 
