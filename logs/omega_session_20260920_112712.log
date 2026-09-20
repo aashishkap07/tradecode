@@ -3448,3 +3448,242 @@
     post_penalty_quality=3, vol_floor=1, fee_floor=1
 04:16:41 |    📌 Nearest miss: KMNO score=0.929 conf=0.815 quality=0.757/0.26 reason=capitulation rej
     vs RSI78
+ 
+  04:22  up 16h54m  scan 140 ---------------------------------------------------------------------
+  EQUITY    $253.32  unreal $-0.09
+  SESSION   $+3.32 +1.33%  peak $254.20  dd 0.35%
+  CURVE     ______________......________...___-----------=-==---_____========++*@#@@@@##*******@##
+  DAY       real $+1.70  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    17 closed  8W 9L  win 47%  payoff 1.48  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 40%
+  OPEN      2 pos $71.87 (28%)  free $181.53
+  FEES      $0.41  mk33/tk11  0.164% of eq
+  SCAN      797 > 66 > 0 passed  top KMNO 0.93 (capitulation rej v)  140 scans, 4758 analysed
+  MARKET    MIXED  bias +0.34  breadth +0.23  taker flow -0.10
+  NEWS      65 articles  + tone +0.25  LINK -0.74  XAU +0.34  FET -0.32
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +38% #20  G -32% #11  BTW +28% #23  NIL +27% #36
+  TAPE      - - - + - + + - - + + + + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7280  +0.18%   +0.04   32m  + 64% left
+  KMNO     LONG    0.032940  0.032840  -0.30%   -0.13   19m  - 72% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:27:06 |    🪞 C266 board-parity (top movers vs screen): FF +38%[#20] | G -32%[#11] | BTW +27%[#25]
+    | NIL +27%[#35] | ONE -23%[#9]
+04:27:07 |    🔭 C456: ZEC exited on C377_RISK_STOP: -1.94% = — at its OWN thesis horizon (120min)
+    the price is +1.96% (+0.78R) FURTHER IN OUR FAVOUR — held would have been better
+04:27:27 | 📊 Step 3 result: 3 analyzed (+64 cached this 15m candle) → 0 passed | low_score=28,
+    pair_cap=1, regime_blip=3, flat_projection=5, ct_noisy_block=8, flow_veto=2,
+    no_structural_room=3, absorption_at_extreme=4, post_penalty_low=3, late_leg_no_forward=2,
+    low_quality=1, capitulation=2, post_penalty_quality=3, vol_floor=1, fee_floor=1
+04:27:27 |    📌 Nearest miss: PENGU score=0.173 conf=0.529 quality=0.091/0.26 reason=score 0.173 <
+    0.474
+ 
+  04:30  up 17h02m  scan 141 ---------------------------------------------------------------------
+  EQUITY    $253.60  unreal $+0.19
+  SESSION   $+3.60 +1.44%  peak $254.20  dd 0.24%
+  CURVE     ______________......________...__--------------==--_____-++++++==+##@@@@@@@*******##@@
+  DAY       real $+1.70  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    17 closed  8W 9L  win 47%  payoff 1.48  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 40%
+  OPEN      2 pos $71.87 (28%)  free $181.53
+  FEES      $0.41  mk33/tk11  0.163% of eq
+  SCAN      797 > 3 > 0 passed  top PENGU 0.17 (score 0.173 < 0.47)  141 scans, 4761 analysed
+  MARKET    MIXED  bias +0.33  breadth +0.00  taker flow -0.76
+  NEWS      65 articles  + tone +0.25  LINK -0.74  XAU +0.34  FET -0.32
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +38% #20  G -32% #11  BTW +27% #25  NIL +27% #35
+  TAPE      - - - + - + + - - + + + + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7316  +0.39%   +0.12   40m  + 59% left
+  KMNO     LONG    0.032940  0.033040  +0.30%   +0.08   28m  + 70% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:32:57 | 🎯 EXIT SIGNAL: KMNO/USDT:USDT - PEAK_FLOOR: peaked at +1.1%(0.7PRU) now=+0.0% — profit
+    fully erased, protecting capital
+  << 04:32  CLOSE  KMNO LONG @0.032920  -0.06% $-0.05  LOSS
+       held 30m  PEAK_FLOOR: peaked at +1  round trip from +1.09%  -0.03R  TAKER
+04:33:57 |    ⚖️ C462-7 CP: penalties 0.61→0.27 (×0.45) vs bar 0.43 — the stack decided
+04:33:59 | 📊 Step 3 result: 67 analyzed → 3 viable → Step 4 DRI/DSI
+04:37:06 |    🪞 C266 board-parity (top movers vs screen): G -32%[#13] | BTW +28%[#24] | NIL
+    +23%[Live=0.27<cut] | KMNO +19%[#35] | EPIC +19%[#33]
+04:37:44 | 📊 Step 3 result: 16 analyzed (+51 cached) → 1 viable → Step 4 DRI/DSI
+04:37:45 |    🎲 C378 odds-size: orderliness 0.31 -> risk x0.89 ($0.767)
+04:37:45 |    🔒 C378 stop level $0.03231 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 04:37  OPEN   KMNO LONG @0.032970  x1 $29.41
+       target +6.9%  stop -2.0%  entry score 0.85  maker
+ 
+ 
+  04:38  up 17h10m  scan 143 ---------------------------------------------------------------------
+  EQUITY    $253.52  unreal $+0.16
+  SESSION   $+3.52 +1.41%  peak $254.20  dd 0.27%
+  CURVE     __________..._.................__----------_=--=---_____++++++==+##@@@@@@#*******###@@
+  DAY       real $+1.66  loss room $1.58 (0.63%)  0% used  vol x0.74  trust x1.25
+            ..........................
+  RECORD    18 closed  8W 10L  win 44%  payoff 1.61  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      2 pos $67.09 (26%)  free $186.26
+  FEES      $0.44  mk34/tk12  0.174% of eq
+  SCAN      797 > 16 > 1 passed  top KMNO 0.85 (viable)  143 scans, 4844 analysed
+  MARKET    MIXED  bias +0.45  breadth +0.15  taker flow -0.02
+  NEWS      65 articles  + tone +0.31  LINK -0.74  BNB +0.46  PEPE +0.44
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -32% #13  BTW +28% #24  NIL +23% cut  KMNO +19% #35
+  TAPE      - - - + - + + - - + + + + - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7333  +0.49%   +0.15   48m  + 61% left
+  KMNO     LONG    0.032970  0.033000  +0.09%   +0.00    0m  + 83% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:41:03 | 📊 Step 3 result: 1 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=28, flat_projection=6, pair_cap=2, proj_confirms_trend=2, late_leg_no_forward=4,
+    regime_blip=3, news_tech_conflict=1, flow_veto=3, no_structural_room=5, low_quality=1,
+    capitulation=3, post_penalty_low=1, vol_floor=2
+ 
+  04:46  up 17h19m  scan 144 ---------------------------------------------------------------------
+  EQUITY    $253.57  unreal $+0.21
+  SESSION   $+3.57 +1.43%  peak $254.20  dd 0.25%
+  CURVE     __________..__................___--------------=--______+=======+*##@@@@##*******@@@##
+  DAY       real $+1.66  loss room $1.76 (0.70%)  0% used  vol x0.82  trust x1.25
+            ..........................
+  RECORD    18 closed  8W 10L  win 44%  payoff 1.61  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      2 pos $67.09 (26%)  free $186.26
+  FEES      $0.44  mk34/tk12  0.174% of eq
+  SCAN      797 > 1 > 0 passed  144 scans, 4845 analysed
+  MARKET    MIXED  bias +0.45  breadth +0.00  taker flow -0.20
+  NEWS      65 articles  + tone +0.31  LINK -0.74  BNB +0.46  PEPE +0.44
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -32% #13  BTW +28% #24  NIL +23% cut  KMNO +19% #35
+  TAPE      - - - + - + + - - + + + + - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7328  +0.46%   +0.14   56m  + 60% left
+  KMNO     LONG    0.032970  0.033070  +0.30%   +0.07    8m  + 67% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:47:25 |    🪞 C266 board-parity (top movers vs screen): G -36%[#12] | BTW +28%[#22] | NIL
+    +21%[#37] | EPIC +20%[#30] | KMNO +19%[#33]
+04:47:57 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 42×ATR, 15.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:48:22 | 📊 Step 3 result: 67 analyzed → 0 passed | flat_projection=6, regime_blip=9, pair_cap=2,
+    h1_regime_shock=29, ct_noisy_block=16, no_structural_room=4, fee_floor=1
+04:48:22 |    📌 Nearest miss: RENDER score=0.703 conf=0.652 quality=0.458/0.26
+    reason=h1_regime_shock
+ 
+  04:54  up 17h27m  scan 145 ---------------------------------------------------------------------
+  EQUITY    $253.81  unreal $+0.45
+  SESSION   $+3.81 +1.52%  peak $254.20  dd 0.15%
+  CURVE     _________...__....._..........___---------_---==_-_____=++++++=+#*@@@@@@#******#####@@
+  DAY       real $+1.66  loss room $1.66 (0.66%)  0% used  vol x0.77  trust x1.25
+            ..........................
+  RECORD    18 closed  8W 10L  win 44%  payoff 1.61  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      2 pos $67.09 (26%)  free $186.26
+  FEES      $0.44  mk34/tk12  0.174% of eq
+  SCAN      797 > 67 > 0 passed  top RENDER 0.70 (h1_regime_shock)  145 scans, 4912 analysed
+  MARKET    MIXED  bias +0.16  breadth +0.01  taker flow +0.36
+  NEWS      65 articles  + tone +0.31  LINK -0.74  BNB +0.46  PEPE +0.44
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -36% #12  BTW +28% #22  NIL +21% #37  EPIC +20% #30
+  TAPE      - - - + - + + - - + + + + - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7441  +1.11%   +0.39 1h04m  + 43% left
+  KMNO     LONG    0.032970  0.033070  +0.30%   +0.07   16m  + 60% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:58:47 |    🪞 C266 board-parity (top movers vs screen): G -39%[#12] | BTW +28%[#22] | NIL
+    +23%[#35] | EPIC +20%[#30] | KMNO +20%[#33]
+04:59:08 | 📊 Step 3 result: 3 analyzed (+65 cached this 15m candle) → 0 passed | flat_projection=6,
+    regime_blip=8, pair_cap=2, h1_regime_shock=31, ct_noisy_block=17, no_structural_room=4
+04:59:08 |    📌 Nearest miss: SEI score=0.476 conf=0.546 quality=0.260/0.26 reason=h1_regime_shock
+05:01:45 |    🎯 C462-6 MAKER half filled KMNO @$0.034580 — saved ~0.04% of the half notional (8 this
+    session)
+  -> 05:01  HALF   KMNO LONG @0.034580  +4.88% $+0.71
+       win half banked  maker  $14.71 rides on
+ 
+ 
+  05:02  up 17h35m  scan 146 ---------------------------------------------------------------------
+  EQUITY    $254.95  unreal $+0.88
+  SESSION   $+4.95 +1.98%
+  CURVE     _________......................____________-------_____========+***#####********#####@
+  DAY       real $+2.37  loss room $1.66 (0.66%)  0% used  vol x0.77  trust x1.25
+            ..........................
+  RECORD    18 closed  8W 10L  win 44%  payoff 1.61  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      2 pos $52.38 (21%)  free $201.68
+  FEES      $0.44  mk35/tk12  0.174% of eq
+  SCAN      797 > 3 > 0 passed  top SEI 0.48 (h1_regime_shock)  146 scans, 4915 analysed
+  MARKET    MIXED  bias +0.17  breadth +0.00  taker flow +0.23
+  NEWS      65 articles  + tone +0.31  LINK -0.74  BNB +0.46  PEPE +0.44
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -39% #12  BTW +28% #22  NIL +23% #35  EPIC +20% #30
+  TAPE      - - - + - + + - - + + + + - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7420  +0.99%   +0.34 1h12m  + 5% left
+  KMNO     LONG    0.032970  0.034190  +3.70%   +0.53   24m  + 64% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:02:42 | 🎯 EXIT SIGNAL: KMNO/USDT:USDT - EARLY_PEAK_CAPTURE: peak=+5.0%(3.3PRU) now=+3.7%
+    gave=26%(0.9PRU)
+05:02:43 |    🎯 C376 MAKER exit filled KMNO @$0.034160 — saved ~0.04%% of notional (8 this session)
+  << 05:02  CLOSE  KMNO LONG @0.034160  +3.61% $+0.52  WIN
+       held 24m  EARLY_PEAK_CAPTURE: peak  kept 72% of a +5.00% peak  +1.34R  maker
+05:04:43 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 40×ATR, 15.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:04:59 |    🎢→⚖️ C: C292 stands down — parabola BROKEN (range 17×ATR, 10.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:05:19 | 📊 Step 3 result: 68 analyzed → 0 passed | regime_blip=10, h1_regime_shock=23, pair_cap=2,
+    flat_projection=12, ct_noisy_block=17, capitulation=2, poor_reward_risk=1, no_structural_room=1
+05:05:19 |    📌 Nearest miss: CFG score=0.788 conf=0.736 quality=0.580/0.26 reason=h1_regime_shock
+ 
+ 
+  05:10  up 17h43m  scan 147 ---------------------------------------------------------------------
+  EQUITY    $254.85  unreal $+0.26
+  SESSION   $+4.85 +1.94%  peak $254.95  dd 0.04%
+  CURVE     _________.....................____________-----_-_____-========***#####********#####@@
+  DAY       real $+2.89  loss room $1.66 (0.66%)  0% used  vol x0.77  trust x1.25
+            ..........................
+  RECORD    19 closed  9W 10L  win 47%  payoff 1.64  avg $+0.07/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      1 pos $37.68 (15%)  free $216.91
+  FEES      $0.45  mk36/tk12  0.175% of eq
+  SCAN      797 > 68 > 0 passed  top CFG 0.79 (h1_regime_shock)  147 scans, 4983 analysed
+  MARKET    MIXED  bias +0.25  breadth +0.00  taker flow -0.34
+  NEWS      65 articles  + tone +0.15  LINK -0.74  BNB +0.46  PEPE +0.44
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 13tr $+0.14 win 62%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -39% #12  BTW +28% #22  NIL +23% #35  EPIC +20% #30
+  TAPE      - - - + - + + - - + + + + - - - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7382  +0.77%   +0.26 1h20m  + 1% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:10:25 |    🪞 C266 board-parity (top movers vs screen): G -39%[#12] | BTW +28%[#24] | NIL
+    +23%[#40] | KMNO +23%[#37] | LUNA +21%[#46]
+05:10:51 | 📊 Step 3 result: 13 analyzed (+55 cached this 15m candle) → 0 passed | regime_blip=11,
+    h1_regime_shock=23, pair_cap=2, flat_projection=8, ct_noisy_block=17, no_structural_room=4,
+    capitulation=2, poor_reward_risk=1
+05:10:51 |    📌 Nearest miss: 龙虾 score=0.381 conf=0.708 quality=0.270/0.26 reason=h1_regime_shock
+05:16:34 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 38×ATR, 13.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
