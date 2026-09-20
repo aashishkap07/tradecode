@@ -217,3 +217,214 @@
   ZRO      SHORT     1.0761    1.0694  +0.62%   +0.25   26m  + 47% left
   ------------------------------------------------------------------------------------------------
  
+12:21:22 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=21, mtf_disagree=1, regime_blip=8, ct_noisy_block=11, flat_projection=8,
+    news_tech_conflict=1, capitulation=2, fee_floor=1, post_penalty_low=1, final_gate=1,
+    micro_exhaustion=1, no_structural_room=1, late_leg_no_forward=1, reward_conviction=1
+12:21:22 |    📌 Nearest miss: XMR score=0.778 (pre-pen 0.85) conf=0.583 quality=0.453/0.26
+    reason=mtf_disagree
+ 
+  12:24  up 0h56m  scan 9 ------------------------------------------------------------------------
+  EQUITY    $250.15  unreal $+0.15
+  SESSION   $+0.15 +0.06%  peak $250.25  dd 0.04%
+  CURVE     ======++
+  DAY       real $+0.00  loss room $1.58 (0.63%)  0% used  vol x0.74  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 1 > 0 passed  top XMR 0.78 (mtf_disagree)  9 scans, 332 analysed
+  MARKET    TRENDING  bias -0.35  breadth +0.20  taker flow -0.10
+  NEWS      65 articles  + tone +0.33  UNI +0.73  CAKE +0.73  PEPE +0.70
+  INFO      1 tilted  flow/fund/news/oi on 100
+  MOVERS    CELR +112% cut  G +95% #6  ONE +73% #7  ZAMA +36% #16
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0718  +0.40%   +0.15   34m  + 46% left
+  ------------------------------------------------------------------------------------------------
+ 
+12:26:28 |    🪞 C266 board-parity (top movers vs screen): CELR +110%[#11] | G +96%[#6] | ONE
+    +70%[#7] | ZAMA +40%[#15] | C +38%[#33]
+12:26:58 | 📊 Step 3 result: 13 analyzed (+48 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=24, mtf_disagree=2, regime_blip=9, ct_noisy_block=6, flat_projection=7,
+    news_tech_conflict=1, capitulation=2, late_leg_no_forward=1, post_penalty_low=1, fee_floor=1,
+    micro_exhaustion=1, final_gate=1, no_structural_room=2, reward_conviction=2
+12:26:58 |    📌 Nearest miss: MINA score=0.472 (pre-pen 0.79) conf=0.649 quality=0.306/0.26
+    reason=reward_conviction needs 63%
+12:33:11 | 📊 Step 3 result: 61 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  12:33  up 1h05m  scan 11 -----------------------------------------------------------------------
+  EQUITY    $250.05  unreal $+0.05
+  SESSION   $+0.05 +0.02%  peak $250.25  dd 0.08%
+  CURVE     ======++=
+  DAY       real $+0.00  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 61 > 1 passed  top MINA 0.49 (viable)  11 scans, 406 analysed
+  MARKET    TRENDING  bias -0.25  breadth +0.31  taker flow +0.53
+  NEWS      65 articles  + tone +0.21  UNI +0.73  CAKE +0.73  PEPE +0.70
+  INFO      1 tilted  flow/fund/news/oi on 105
+  MOVERS    CELR +110% #11  G +96% #6  ONE +70% #7  ZAMA +40% #15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0740  +0.20%   +0.05   44m  + 38% left
+  ------------------------------------------------------------------------------------------------
+ 
+12:38:20 |    🪞 C266 board-parity (top movers vs screen): CELR +103%[#9] | G +80%[#6] | ONE
+    +74%[Live=0.48<cut] | C +41%[#32] | ZAMA +36%[#15]
+12:38:51 | 📊 Step 3 result: 13 analyzed (+48 cached) → 1 viable → Step 4 DRI/DSI
+ 
+  12:41  up 1h14m  scan 12 -----------------------------------------------------------------------
+  EQUITY    $250.09  unreal $+0.09
+  SESSION   $+0.09 +0.04%  peak $250.25  dd 0.06%
+  CURVE     ======++==
+  DAY       real $+0.00  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 13 > 1 passed  top MINA 0.49 (viable)  12 scans, 419 analysed
+  MARKET    TRENDING  bias -0.24  breadth +0.00  taker flow -0.23
+  NEWS      65 articles  + tone +0.21  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +103% #9  G +80% #6  ONE +74% cut  C +41% #32
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0731  +0.28%   +0.09   52m  + 38% left
+  ------------------------------------------------------------------------------------------------
+ 
+12:44:12 | 📊 Step 3 result: 1 analyzed (+60 cached) → 1 viable → Step 4 DRI/DSI
+12:49:19 |    🪞 C266 board-parity (top movers vs screen): CELR +89%[#10] | ONE +67%[Live=0.35<cut] |
+    ZAMA +37%[#12] | B2 +32%[#15] | G +30%[#8]
+12:49:41 |    🎢→⚖️ G: C292 stands down — parabola BROKEN (range 11×ATR, 4.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:49:45 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 34×ATR, 19.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:49:52 |    🎢→⚖️ BANK: C292 stands down — parabola BROKEN (range 17×ATR, 9.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:49:57 |    🎢→⚖️ STX: C292 stands down — parabola BROKEN (range 12×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:50:07 |    🎢→⚖️ SKL: C292 stands down — parabola BROKEN (range 10×ATR, 4.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:50:22 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=2, low_score=24, regime_blip=8,
+    flat_projection=11, ct_noisy_block=9, proj_confirms_trend=2, post_penalty_quality=2,
+    capitulation=2
+12:50:22 |    📌 Nearest miss: COTI score=0.632 conf=0.792 quality=0.501/0.26
+    reason=post_penalty_quality
+ 
+  12:50  up 1h23m  scan 14 -----------------------------------------------------------------------
+  EQUITY    $250.27  unreal $+0.27
+  SESSION   $+0.27 +0.11%
+  CURVE     ======++==+
+  DAY       real $+0.00  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 60 > 0 passed  top COTI 0.63 (post_penalty_quali)  14 scans, 480 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.00  taker flow +0.33
+  NEWS      65 articles  + tone +0.21  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +89% #10  ONE +67% cut  ZAMA +37% #12  B2 +32% #15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0688  +0.68%   +0.27 1h01m  + 38% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  12:58  up 1h31m  scan 14 -----------------------------------------------------------------------
+  EQUITY    $250.04  unreal $+0.04
+  SESSION   $+0.04 +0.02%  peak $250.27  dd 0.09%
+  CURVE     ======++==+=
+  DAY       real $+0.00  loss room $1.53 (0.61%)  0% used  vol x0.72  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 60 > 0 passed  top COTI 0.63 (post_penalty_quali)  14 scans, 480 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.13  taker flow +0.20
+  NEWS      65 articles  + tone +0.21  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +89% #10  ONE +67% cut  ZAMA +37% #12  B2 +32% #15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0742  +0.18%   +0.04 1h09m  + 3% left
+  ------------------------------------------------------------------------------------------------
+ 
+13:00:44 |    🪞 C266 board-parity (top movers vs screen): CELR +86%[#10] | ONE +72%[#6] | ZIL
+    +37%[#23] | M +31%[Live=0.18<cut] | B2 +31%[#16]
+13:01:09 |    🎢→⚖️ ZAMA: C292 stands down — parabola BROKEN (range 12×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:01:11 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 34×ATR, 19.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:01:14 |    ⚖️ C462-7 LSK: penalties 0.45→0.35 (×0.77) vs bar 0.45 — the stack decided
+13:01:14 |    🎢→⚖️ BANK: C292 stands down — parabola BROKEN (range 17×ATR, 9.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:01:28 |    🎢→⚖️ SKL: C292 stands down — parabola BROKEN (range 9×ATR, 4.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:01:37 |    🎢→⚖️ ARK: C292 stands down — parabola BROKEN (range 10×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:01:41 |    ⚖️ C462-7 MINA: penalties 0.60→0.35 (×0.58) vs bar 0.45 — the stack decided
+13:01:41 | 📊 Step 3 result: 61 analyzed → 0 passed | low_confidence=4, low_score=22, regime_blip=11,
+    flat_projection=4, ct_noisy_block=13, proj_confirms_trend=2, no_structural_room=3, low_quality=2
+13:01:41 |    📌 Nearest miss: MINA score=0.462 (pre-pen 0.60) conf=0.539 quality=0.249/0.26
+    reason=score 0.346 < 0.449
+ 
+  13:06  up 1h39m  scan 15 -----------------------------------------------------------------------
+  EQUITY    $250.24  unreal $+0.24
+  SESSION   $+0.24 +0.10%  peak $250.27  dd 0.01%
+  CURVE     ======++==+=+
+  DAY       real $+0.00  loss room $1.53 (0.61%)  0% used  vol x0.72  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 61 > 0 passed  top MINA 0.46 (score 0.346 < 0.44)  15 scans, 541 analysed
+  MARKET    TRENDING  bias -0.24  breadth +0.00  taker flow +0.47
+  NEWS      65 articles  + tone +0.21  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +86% #10  ONE +72% #6  ZIL +37% #23  M +31% cut
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0697  +0.59%   +0.24 1h17m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+13:12:08 |    🪞 C266 board-parity (top movers vs screen): CELR +71%[#13] | ONE +66%[#6] | ZIL
+    +36%[#24] | EVAA +28%[#22] | ZAMA +27%[#14]
+13:12:29 | 📊 Step 3 result: 5 analyzed (+56 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=20, regime_blip=11, flat_projection=6, ct_noisy_block=13, no_structural_room=3,
+    low_quality=2, proj_confirms_trend=2
+13:12:29 |    📌 Nearest miss: STRK score=0.092 (pre-pen 0.20) conf=0.467 quality=0.043/0.26
+    reason=score 0.092 < 0.449
+ 
+  13:14  up 1h47m  scan 16 -----------------------------------------------------------------------
+  EQUITY    $250.24  unreal $+0.24
+  SESSION   $+0.24 +0.10%  peak $250.27  dd 0.01%
+  CURVE     ======++==+=++
+  DAY       real $+0.00  loss room $1.98 (0.79%)  0% used  vol x0.93  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 5 > 0 passed  top STRK 0.09 (score 0.092 < 0.44)  16 scans, 546 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.00  taker flow +0.12
+  NEWS      65 articles  + tone +0.50  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +71% #13  ONE +66% #6  ZIL +36% #24  EVAA +28% #22
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0697  +0.59%   +0.24 1h25m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
