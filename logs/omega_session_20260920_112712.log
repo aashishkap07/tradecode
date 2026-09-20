@@ -3229,3 +3229,222 @@
 03:14:28 |    📌 Nearest miss: XPL score=0.481 conf=0.530 quality=0.255/0.26 reason=score 0.361 <
     0.450
   .. 03:15  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  3 analysed
+03:19:56 |    ⚖️ C462-7 RENDER: penalties 0.53→0.32 (×0.60) vs bar 0.49 — the stack decided
+03:20:00 |    ⚖️ C462-7 BTW: penalties 0.51→0.23 (×0.45) vs bar 0.47 — the stack decided
+03:20:06 |    ⚖️ C462-7 S: penalties 0.50→0.36 (×0.72) vs bar 0.46 — the stack decided
+03:20:07 |    ⚖️ C462-7 EPIC: penalties 0.49→0.29 (×0.60) vs bar 0.47 — the stack decided
+03:20:19 |    ⚖️ C462-7 XPL: penalties 0.36→0.27 (×0.75) vs bar 0.27 — the stack decided
+03:20:20 |    ⚖️ C462-7 CAKE: penalties 0.67→0.40 (×0.60) vs bar 0.43 — the stack decided
+03:20:25 |    ⚖️ C462-7 FARTCOIN: penalties 0.30→0.21 (×0.70) vs bar 0.27 — the stack decided
+03:20:41 |    ⚖️ C462-7 VIRTUAL: penalties 0.31→0.24 (×0.75) vs bar 0.27 — the stack decided
+03:20:45 |    ⚖️ C462-7 SEI: penalties 0.58→0.35 (×0.60) vs bar 0.42 — the stack decided
+03:20:45 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=6, low_score=39, low_quality=2,
+    micro_exhaustion=2, flat_projection=6, post_penalty_quality=2, flow_veto=1,
+    no_structural_room=1, final_gate=1
+03:20:45 |    📌 Nearest miss: EVAA score=0.330 (pre-pen 0.49) conf=0.601 quality=0.198/0.26
+    reason=final_gate
+  .. 03:23  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  60 analysed
+03:25:53 |    🪞 C266 board-parity (top movers vs screen): FF +39%[#25] | G -32%[#11] | NIL +28%[#36]
+    | BTW +28%[#24] | ONE -24%[Live=0.43<cut]
+03:26:10 |    ⚖️ C462-7 UNI: penalties 0.29→0.17 (×0.60) vs bar 0.27 — the stack decided
+03:26:18 |    ⚖️ C462-7 MORPHO: penalties 0.51→0.30 (×0.60) vs bar 0.43 — the stack decided
+03:26:19 | 📊 Step 3 result: 11 analyzed (+48 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=38, absorption_at_extreme=1, low_quality=2, micro_exhaustion=2, flat_projection=4,
+    proj_confirms_trend=1, post_penalty_quality=2, final_gate=2, flow_veto=1, no_structural_room=1
+03:26:19 |    📌 Nearest miss: APT score=0.380 (pre-pen 0.46) conf=0.791 quality=0.301/0.26
+    reason=final_gate
+03:31:20 | ⚠️ C79 WEAK-RESULTANT: R=+0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+03:32:27 | 📊 Step 3 result: 59 analyzed → 0 passed | low_confidence=1, low_score=30,
+    flat_projection=16, no_structural_room=3, flow_veto=1, proj_confirms_trend=1,
+    micro_exhaustion=3, post_penalty_low=2, poor_reward_risk=1, final_gate=1
+03:32:27 |    📌 Nearest miss: EVAA score=0.351 (pre-pen 0.50) conf=0.674 quality=0.236/0.26
+    reason=final_gate
+ 
+ 
+  03:32  up 16h05m  scan 133 ---------------------------------------------------------------------
+  EQUITY    $252.85
+  SESSION   $+2.85 +1.14%  peak $254.20  dd 0.53%
+  CURVE     _______________......_________...__-----------_=--==_-_____-=++++++==*##@@@@@@@#******
+  DAY       real $+1.15  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      flat  free $252.85
+  FEES      $0.38  mk28/tk11  0.151% of eq
+  SCAN      797 > 59 > 0 passed  top EVAA 0.35 (final_gate)  133 scans, 4518 analysed
+  MARKET    MIXED  bias +0.06  breadth -0.18  taker flow -0.06
+  NEWS      65 articles  + tone +0.14  NEAR +0.40  ZEC +0.24  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 171
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #25  G -32% #11  NIL +28% #36  BTW +28% #24
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+03:37:34 |    🪞 C266 board-parity (top movers vs screen): FF +44%[#23] | G -34%[#12] | BTW +28%[#28]
+    | S +25%[#26] | ONE -24%[#9]
+03:37:35 | ⚠️ C79 WEAK-RESULTANT: R=+0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+03:37:58 | 📊 Step 3 result: 17 analyzed (+49 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=36, flat_projection=15, no_structural_room=4, flow_veto=1, capitulation=1,
+    proj_confirms_trend=1, post_penalty_low=2, micro_exhaustion=1, poor_reward_risk=1, final_gate=1,
+    leg_exhausted=1
+03:37:58 |    📌 Nearest miss: PENDLE score=0.431 conf=0.637 quality=0.274/0.26 reason=OF-exhaustion
+    OI=weak_rally
+  .. 03:40  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  17 analysed
+03:42:59 | ⚠️ C79 WEAK-RESULTANT: R=+0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+03:48:16 |    🪞 C266 board-parity (top movers vs screen): FF +44%[#26] | G -33%[#14] | BTW +28%[#32]
+    | ONE -24%[#10] | NIL +24%[#47]
+03:49:52 | 📊 Step 3 result: 66 analyzed → 6 viable → Step 4 DRI/DSI
+03:49:53 |    🎲 C378 odds-size: orderliness 0.25 -> risk x0.85 ($0.731)
+03:49:53 |    🔒 C378 stop level $1.6915 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 03:49  OPEN   RENDER LONG @1.7249  x1 $37.68
+       target +6.6%  stop -1.9%  entry score 0.56  maker
+03:49:55 |    🎲 C378 odds-size: orderliness 0.14 -> risk x0.78 ($0.676)
+03:49:55 |    🔒 C378 stop level $0.4193 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 03:49  OPEN   LDO LONG @0.424600  x2 $21.35
+       target +4.3%  stop -1.3%  entry score 0.47  maker
+ 
+ 
+  03:49  up 16h22m  scan 135 ---------------------------------------------------------------------
+  EQUITY    $252.91  unreal $+0.06
+  SESSION   $+2.91 +1.16%  peak $254.20  dd 0.51%
+  CURVE     __________..._..................___----------_---==---_____=++++++==+##@@@@@@@*******#
+  DAY       real $+1.15  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $59.03 (23%)  free $193.82
+  FEES      $0.40  mk30/tk11  0.158% of eq
+  SCAN      797 > 66 > 6 passed  top RENDER 0.56 (viable)  135 scans, 4601 analysed
+  MARKET    MIXED  bias +0.56  breadth +0.00  taker flow -0.07
+  NEWS      65 articles  + tone +0.14  LINK -0.74  DOGE +0.29  ONE -0.27
+  INFO      6 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +44% #26  G -33% #14  BTW +28% #32  ONE -24% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7264  +0.09%   +0.00    0m  + 100% left
+  LDO      LONG    0.424600  0.425500  +0.21%   +0.06    0m  + 100% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:53:22 | 📊 Step 3 result: 6 analyzed (+60 cached) → 1 viable → Step 4 DRI/DSI
+03:53:24 |    🎲 C378 odds-size: orderliness 0.32 -> risk x0.89 ($0.769)
+03:56:34 |    🪞 C266 board-parity (top movers vs screen): FF +38%[#27] | G -33%[#13] | BTW +29%[#29]
+    | ONE -25%[#10] | NIL +25%[#43]
+03:56:58 | 📊 Step 3 result: 4 analyzed (+62 cached this 15m candle) → 0 passed | low_score=31,
+    late_leg_no_forward=5, flow_veto=2, counter_trend_block=4, poor_reward_risk=1,
+    post_penalty_low=4, capitulation=2, no_structural_room=2, post_penalty_quality=5,
+    leg_exhausted=2, absorption_at_extreme=5, flat_projection=1, exhaustion_hard=1, low_quality=1
+03:56:58 |    📌 Nearest miss: KMNO score=1.138 conf=0.634 quality=0.722/0.26
+    reason=post_penalty_quality
+ 
+  03:57  up 16h30m  scan 137 ---------------------------------------------------------------------
+  EQUITY    $253.18  unreal $+0.33
+  SESSION   $+3.18 +1.27%  peak $254.20  dd 0.40%
+  CURVE     __________..._..................___----------_=--==_-______+=======++*##@@@@@#*******#
+  DAY       real $+1.15  loss room $1.87 (0.74%)  0% used  vol x0.87  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $59.03 (23%)  free $193.82
+  FEES      $0.40  mk30/tk11  0.157% of eq
+  SCAN      797 > 4 > 0 passed  top KMNO 1.14 (post_penalty_quali)  137 scans, 4611 analysed
+  MARKET    TRENDING  bias +0.56  breadth +0.00  taker flow +0.33
+  NEWS      65 articles  + tone +0.14  LINK -0.74  DOGE +0.29  ONE -0.27
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +38% #27  G -33% #13  BTW +29% #29  ONE -25% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7350  +0.59%   +0.19    8m  + 60% left
+  LDO      LONG    0.424600  0.426300  +0.40%   +0.14    8m  + 50% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:01:22 |    🎯 C462-6 MAKER half filled LDO @$0.430900 — saved ~0.04% of the half notional (7 this
+    session)
+  -> 04:01  HALF   LDO LONG @0.430900  +1.48% $+0.31
+       win half banked  maker  $10.68 rides on
+04:02:02 | 📊 Step 3 result: 66 analyzed → 5 viable → Step 4 DRI/DSI
+04:02:04 |    🎲 C378 odds-size: orderliness 0.31 -> risk x0.89 ($0.766)
+04:02:04 |    ⚖️ C427 LEDGER CORRECTED at allocate_margin: available $204.8080 → $204.8030 (equity
+    $253.1630 − locked $48.3600 = $204.8030); discrepancy $+0.0050. Money that does not exist would
+    have been sized against [correction #10]
+04:02:04 |    🔒 C378 stop level $0.03236 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 04:02  OPEN   KMNO LONG @0.032940  x1 $34.19
+       target +6.1%  stop -1.8%  entry score 0.73  maker
+04:05:12 |    🪞 C266 board-parity (top movers vs screen): FF +39%[#23] | G -32%[#12] | BTW +29%[#26]
+    | ONE -28%[#10] | NIL +26%[#41]
+04:05:38 | 📊 Step 3 result: 15 analyzed (+51 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=30, crowding=1, flow_veto=4, counter_trend_block=1, corr_cap=11, flat_projection=2,
+    no_structural_room=3, late_leg_no_forward=4, capitulation=1, exhaustion_hard=1,
+    post_penalty_quality=5, post_penalty_low=1, absorption_at_extreme=1
+04:05:38 |    📌 Nearest miss: RENDER score=1.171 conf=0.523 quality=0.613/0.26 reason=corr_cap
+ 
+ 
+  04:05  up 16h38m  scan 139 ---------------------------------------------------------------------
+  EQUITY    $253.83  unreal $+0.67
+  SESSION   $+3.83 +1.53%  peak $254.20  dd 0.14%
+  CURVE     __________..._......_...........__------------=--=-_-_____=++++++==+##@@@@@@@*******#@
+  DAY       real $+1.46  loss room $1.51 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      3 pos $82.55 (33%)  free $170.61
+  FEES      $0.41  mk32/tk11  0.161% of eq
+  SCAN      797 > 15 > 0 passed  top RENDER 1.17 (corr_cap)  139 scans, 4692 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.35  taker flow -0.19
+  NEWS      65 articles  + tone +0.25  LINK -0.74  FET -0.32  DOGE +0.29
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #23  G -32% #12  BTW +29% #26  ONE -28% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7387  +0.80%   +0.27   16m  + 57% left
+  LDO      LONG    0.424600  0.429300  +1.11%   +0.22   16m  + 51% left
+  KMNO     LONG    0.032940  0.033140  +0.61%   +0.18    3m  + 81% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:07:20 |    🎯 C376 MAKER exit filled LDO @$0.429600 — saved ~0.04%% of notional (7 this session)
+  << 04:07  CLOSE  LDO LONG @0.429600  +1.18% $+0.24  WIN
+       held 17m  TRAILING_TP: peak=+3.0%   kept 79% of a +1.48% peak  +0.70R  maker
+ 
+ 
+  04:14  up 16h46m  scan 139 ---------------------------------------------------------------------
+  EQUITY    $253.62  unreal $+0.21
+  SESSION   $+3.62 +1.45%  peak $254.20  dd 0.23%
+  CURVE     _______________....._________...__----------_=--==_-_____=++++++==+##@@@@@@@*******#@@
+  DAY       real $+1.70  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    17 closed  8W 9L  win 47%  payoff 1.48  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 40%
+  OPEN      2 pos $71.87 (28%)  free $181.53
+  FEES      $0.41  mk33/tk11  0.163% of eq
+  SCAN      797 > 15 > 0 passed  top RENDER 1.17 (corr_cap)  139 scans, 4692 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.00  taker flow -0.51
+  NEWS      65 articles  + tone +0.25  LINK -0.74  FET -0.32  DOGE +0.29
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #23  G -32% #12  BTW +29% #26  ONE -28% #10
+  TAPE      - - - + - + + - - + + + + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7418  +0.98%   +0.34   24m  + 65% left
+  KMNO     LONG    0.032940  0.032840  -0.30%   -0.13   11m  - 81% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:15:16 |    🪞 C266 board-parity (top movers vs screen): FF +38%[#20] | G -32%[#11] | BTW +28%[#23]
+    | NIL +27%[#36] | ONE -26%[#9]
+04:15:37 |    ⚖️ C462-7 AVAX: penalties 0.49→0.37 (×0.75) vs bar 0.47 — the stack decided
+04:15:39 |    ⚖️ C462-7 ENA: penalties 0.50→0.38 (×0.75) vs bar 0.43 — the stack decided
+04:16:25 |    ⚖️ C462-7 LDO: penalties 0.55→0.41 (×0.75) vs bar 0.43 — the stack decided
+04:16:41 | 📊 Step 3 result: 66 analyzed → 0 passed | low_score=27, regime_blip=3, flat_projection=5,
+    ct_noisy_block=9, flow_veto=2, no_structural_room=3, absorption_at_extreme=4,
+    post_penalty_low=3, late_leg_no_forward=2, low_quality=1, capitulation=2,
+    post_penalty_quality=3, vol_floor=1, fee_floor=1
+04:16:41 |    📌 Nearest miss: KMNO score=0.929 conf=0.815 quality=0.757/0.26 reason=capitulation rej
+    vs RSI78

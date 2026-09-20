@@ -1889,3 +1889,137 @@
 
   .. 03:07  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  59 analysed
   .. 03:15  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  3 analysed
+  .. 03:23  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  60 analysed
+
+
+  03:32  up 16h05m  scan 133 ---------------------------------------------------------------------
+  EQUITY    $252.85
+  SESSION   $+2.85 +1.14%  peak $254.20  dd 0.53%
+  CURVE     _______________......_________...__-----------_=--==_-_____-=++++++==*##@@@@@@@#******
+  DAY       real $+1.15  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      flat  free $252.85
+  FEES      $0.38  mk28/tk11  0.151% of eq
+  SCAN      797 > 59 > 0 passed  top EVAA 0.35 (final_gate)  133 scans, 4518 analysed
+  MARKET    MIXED  bias +0.06  breadth -0.18  taker flow -0.06
+  NEWS      65 articles  + tone +0.14  NEAR +0.40  ZEC +0.24  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 171
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #25  G -32% #11  NIL +28% #36  BTW +28% #24
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 03:40  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  17 analysed
+  >> 03:49  OPEN   RENDER LONG @1.7249  x1 $37.68
+       target +6.6%  stop -1.9%  entry score 0.56  maker
+  >> 03:49  OPEN   LDO LONG @0.424600  x2 $21.35
+       target +4.3%  stop -1.3%  entry score 0.47  maker
+
+
+  03:49  up 16h22m  scan 135 ---------------------------------------------------------------------
+  EQUITY    $252.91  unreal $+0.06
+  SESSION   $+2.91 +1.16%  peak $254.20  dd 0.51%
+  CURVE     __________..._..................___----------_---==---_____=++++++==+##@@@@@@@*******#
+  DAY       real $+1.15  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $59.03 (23%)  free $193.82
+  FEES      $0.40  mk30/tk11  0.158% of eq
+  SCAN      797 > 66 > 6 passed  top RENDER 0.56 (viable)  135 scans, 4601 analysed
+  MARKET    MIXED  bias +0.56  breadth +0.00  taker flow -0.07
+  NEWS      65 articles  + tone +0.14  LINK -0.74  DOGE +0.29  ONE -0.27
+  INFO      6 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +44% #26  G -33% #14  BTW +28% #32  ONE -24% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7264  +0.09%   +0.00    0m  + 100% left
+  LDO      LONG    0.424600  0.425500  +0.21%   +0.06    0m  + 100% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  03:57  up 16h30m  scan 137 ---------------------------------------------------------------------
+  EQUITY    $253.18  unreal $+0.33
+  SESSION   $+3.18 +1.27%  peak $254.20  dd 0.40%
+  CURVE     __________..._..................___----------_=--==_-______+=======++*##@@@@@#*******#
+  DAY       real $+1.15  loss room $1.87 (0.74%)  0% used  vol x0.87  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $59.03 (23%)  free $193.82
+  FEES      $0.40  mk30/tk11  0.157% of eq
+  SCAN      797 > 4 > 0 passed  top KMNO 1.14 (post_penalty_quali)  137 scans, 4611 analysed
+  MARKET    TRENDING  bias +0.56  breadth +0.00  taker flow +0.33
+  NEWS      65 articles  + tone +0.14  LINK -0.74  DOGE +0.29  ONE -0.27
+  INFO      1 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +38% #27  G -33% #13  BTW +29% #29  ONE -25% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7350  +0.59%   +0.19    8m  + 60% left
+  LDO      LONG    0.424600  0.426300  +0.40%   +0.14    8m  + 50% left
+  ------------------------------------------------------------------------------------------------
+
+  -> 04:01  HALF   LDO LONG @0.430900  +1.48% $+0.31
+       win half banked  maker  $10.68 rides on
+  >> 04:02  OPEN   KMNO LONG @0.032940  x1 $34.19
+       target +6.1%  stop -1.8%  entry score 0.73  maker
+
+
+  04:05  up 16h38m  scan 139 ---------------------------------------------------------------------
+  EQUITY    $253.83  unreal $+0.67
+  SESSION   $+3.83 +1.53%  peak $254.20  dd 0.14%
+  CURVE     __________..._......_...........__------------=--=-_-_____=++++++==+##@@@@@@@*******#@
+  DAY       real $+1.46  loss room $1.51 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      3 pos $82.55 (33%)  free $170.61
+  FEES      $0.41  mk32/tk11  0.161% of eq
+  SCAN      797 > 15 > 0 passed  top RENDER 1.17 (corr_cap)  139 scans, 4692 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.35  taker flow -0.19
+  NEWS      65 articles  + tone +0.25  LINK -0.74  FET -0.32  DOGE +0.29
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #23  G -32% #12  BTW +29% #26  ONE -28% #10
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7387  +0.80%   +0.27   16m  + 57% left
+  LDO      LONG    0.424600  0.429300  +1.11%   +0.22   16m  + 51% left
+  KMNO     LONG    0.032940  0.033140  +0.61%   +0.18    3m  + 81% left
+  ------------------------------------------------------------------------------------------------
+
+  << 04:07  CLOSE  LDO LONG @0.429600  +1.18% $+0.24  WIN
+       held 17m  TRAILING_TP: peak=+3.0%   kept 79% of a +1.48% peak  +0.70R  maker
+
+
+  04:14  up 16h46m  scan 139 ---------------------------------------------------------------------
+  EQUITY    $253.62  unreal $+0.21
+  SESSION   $+3.62 +1.45%  peak $254.20  dd 0.23%
+  CURVE     _______________....._________...__----------_=--==_-_____=++++++==+##@@@@@@@*******#@@
+  DAY       real $+1.70  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    17 closed  8W 9L  win 47%  payoff 1.48  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 40%
+  OPEN      2 pos $71.87 (28%)  free $181.53
+  FEES      $0.41  mk33/tk11  0.163% of eq
+  SCAN      797 > 15 > 0 passed  top RENDER 1.17 (corr_cap)  139 scans, 4692 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.00  taker flow -0.51
+  NEWS      65 articles  + tone +0.25  LINK -0.74  FET -0.32  DOGE +0.29
+  INFO      5 tilted  flow/fund/news/oi on 178
+            info>0 12tr $+0.11 win 58%  info≤0 5tr $-0.08 win 20%
+  MOVERS    FF +39% #23  G -32% #12  BTW +29% #26  ONE -28% #10
+  TAPE      - - - + - + + - - + + + + - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7418  +0.98%   +0.34   24m  + 65% left
+  KMNO     LONG    0.032940  0.032840  -0.30%   -0.13   11m  - 81% left
+  ------------------------------------------------------------------------------------------------
+
