@@ -3086,3 +3086,146 @@
     the reversal shows in price)
   << 02:16  CLOSE  ZEN LONG @8.0040  -1.78% $-0.43  LOSS
        held 21m  C399_CONVICTION_COLLAPSE  round trip from +0.86%  -0.47R  TAKER
+02:18:07 |    🪞 C266 board-parity (top movers vs screen): G -31%[Live=0.34<cut] | FF +30%[#29] | BTW
+    +28%[Live=0.28<cut] | NIL +24%[#44] | S +21%[#30]
+02:18:32 |    🎢→⚖️ CELR: C292 stands down — parabola BROKEN (range 24×ATR, 13.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+02:18:41 |    ⚖️ C462-7 RENDER: penalties 0.62→0.38 (×0.62) vs bar 0.47 — the stack decided
+02:18:42 |    ⚖️ C462-7 FF: penalties 0.54→0.33 (×0.62) vs bar 0.42 — the stack decided
+02:18:43 |    ⚖️ C462-7 S: penalties 0.43→0.26 (×0.62) vs bar 0.42 — the stack decided
+02:18:51 |    ⚖️ C462-7 FARTCOIN: penalties 0.46→0.29 (×0.62) vs bar 0.42 — the stack decided
+02:18:53 |    ⚖️ C462-7 GENIUS: penalties 0.51→0.42 (×0.82) vs bar 0.42 — the stack decided
+02:18:54 |    ⚖️ C462-7 WIF: penalties 0.58→0.29 (×0.49) vs bar 0.40 — the stack decided
+02:19:01 |    ⚖️ C462-7 JUP: penalties 0.46→0.29 (×0.62) vs bar 0.43 — the stack decided
+02:19:07 |    ⚖️ C462-7 ZRO: penalties 0.76→0.47 (×0.62) vs bar 0.52 — the stack decided
+02:19:11 | 📊 Step 3 result: 60 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+ 
+  02:19  up 14h52m  scan 124 ---------------------------------------------------------------------
+  EQUITY    $253.27  unreal $-0.26
+  SESSION   $+3.27 +1.31%  peak $254.20  dd 0.36%
+  CURVE     ___________...__....................__-------------=--==---______+++++++==++*#@@@@@@@#
+  DAY       real $+1.82  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    15 closed  7W 8L  win 47%  payoff 1.84  avg $+0.09/tr  best $+0.72  worst $-0.66
+            break-even 35%
+  OPEN      1 pos $33.49 (13%)  free $275.04
+  FEES      $0.36  mk28/tk10  0.143% of eq
+  SCAN      797 > 60 > 1 passed  top ALLO 0.52 (viable)  124 scans, 4189 analysed
+  MARKET    MIXED  bias +0.15  breadth +0.00  taker flow +0.06
+  NEWS      65 articles  + tone +0.33  AVAX +0.50  SUI +0.50  ONE +0.30
+  INFO      1 tilted  flow/fund/news/oi on 171
+            info>0 10tr $+0.17 win 60%  info≤0 5tr $-0.08 win 20%
+  MOVERS    G -31% cut  FF +30% #29  BTW +28% cut  NIL +24% #44
+  TAPE      - - - + - + + - - + + + + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZEC      LONG     1516.80   1506.19  -0.70%   -0.26   24m  - 33% left
+  ------------------------------------------------------------------------------------------------
+ 
+02:19:23 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $275.0449 → $220.0360 (equity
+    $253.5260 − locked $33.4900 = $220.0360); discrepancy $+55.0090. Money that does not exist would
+    have been sized against [correction #7]
+02:24:27 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_score=27,
+    mtf_disagree=1, pair_cap=1, regime_blip=3, post_penalty_quality=1, flat_projection=11,
+    micro_exhaustion=2, ct_noisy_block=7, fee_floor=1, no_structural_room=3, low_quality=2,
+    post_penalty_low=1
+02:24:27 |    📌 Nearest miss: ALLO score=0.497 (pre-pen 0.60) conf=0.431 quality=0.214/0.26
+    reason=quality 0.214 < 0.272
+02:26:37 |    🛑 C377 HARD STOP ZEC: -1.94% <= -1.89% (0.8R, R=2.52%) — arithmetic, not opinion
+02:26:37 | ❌ LOSS: ZEC/USDT:USDT | C377_RISK_STOP: -1.94% = -0.77R
+  << 02:26  CLOSE  ZEC LONG @1487.60  -1.93% $-0.67  LOSS
+       held 31m  C377_RISK_STOP: -1.94% =  round trip from +0.58%  -0.76R  TAKER
+ 
+ 
+  02:27  up 15h00m  scan 125 ---------------------------------------------------------------------
+  EQUITY    $252.85
+  SESSION   $+2.85 +1.14%  peak $254.20  dd 0.53%
+  CURVE     ________________......__________...___-----------_=--==---______+========+#*@#@@@@@#**
+  DAY       real $+1.15  loss room $1.62 (0.64%)  0% used  vol x0.75  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      flat  free $252.85
+  FEES      $0.38  mk28/tk11  0.151% of eq
+  SCAN      797 > 1 > 0 passed  top ALLO 0.50 (quality 0.214 < 0.)  125 scans, 4190 analysed
+  MARKET    MIXED  bias +0.11  breadth +0.15  taker flow -0.12
+  NEWS      65 articles  + tone +0.14  AVAX +0.50  SUI +0.50  LINK +0.47
+  INFO      1 tilted  flow/fund/news/oi on 171
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    G -31% cut  FF +30% #29  BTW +28% cut  NIL +24% #44
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 02:35  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  1 analysed
+02:39:34 |    🪞 C266 board-parity (top movers vs screen): FF +32%[#25] | G -32%[#9] | BTW +28%[#21]
+    | CELR +23%[#10] | NIL +20%[#44]
+02:39:35 | ⚠️ C79 WEAK-RESULTANT: R=+0.08 mag=0.08 < 0.08 — direction unclear, higher bar applied
+02:39:51 |    ⚖️ C462-7 NEAR: penalties 0.62→0.52 (×0.83) vs bar 0.53 — the stack decided
+02:39:54 |    ⚖️ C462-7 ONDO: penalties 0.57→0.36 (×0.62) vs bar 0.44 — the stack decided
+02:40:16 |    ⚖️ C462-7 CRV: penalties 0.50→0.41 (×0.83) vs bar 0.44 — the stack decided
+02:40:18 |    ⚖️ C462-7 GENIUS: penalties 0.51→0.37 (×0.72) vs bar 0.47 — the stack decided
+02:40:19 |    ⚖️ C462-7 NIL: penalties 0.58→0.44 (×0.75) vs bar 0.44 — the stack decided
+02:40:24 |    ⚖️ C462-7 TIA: penalties 0.45→0.37 (×0.83) vs bar 0.44 — the stack decided
+02:40:25 |    ⚖️ C462-7 EGLD: penalties 0.48→0.24 (×0.50) vs bar 0.47 — the stack decided
+02:40:31 |    ⚖️ C462-7 CFG: penalties 0.44→0.37 (×0.83) vs bar 0.44 — the stack decided
+02:40:32 | 📊 Step 3 result: 59 analyzed → 2 viable → Step 4 DRI/DSI
+  .. 02:43  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  59 analysed
+02:43:25 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $328.2548 → $252.8548 (equity
+    $252.8548 − locked $0.0000 = $252.8548); discrepancy $+75.4000. Money that does not exist would
+    have been sized against [correction #8]
+02:46:53 |    ⚖️ C462-7 MORPHO: penalties 0.41→0.24 (×0.60) vs bar 0.36 — the stack decided
+02:46:54 | 📊 Step 3 result: 59 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 02:51  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  59 analysed
+02:51:26 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $316.0685 → $252.8548 (equity
+    $252.8548 − locked $0.0000 = $252.8548); discrepancy $+63.2137. Money that does not exist would
+    have been sized against [correction #9]
+02:52:02 |    🪞 C266 board-parity (top movers vs screen): G -32%[#11] | FF +31%[#28] | BTW +29%[#20]
+    | CELR +23%[Live=0.36<cut] | NIL +22%[#42]
+02:52:38 | 📊 Step 3 result: 18 analyzed (+41 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=29, absorption_at_extreme=2, capitulation=7, proj_confirms_trend=1, low_quality=3,
+    dir_proj_conflict=2, post_penalty_low=4, flow_veto=1, flat_projection=2, post_penalty_quality=1,
+    final_gate=1, fee_floor=1, vol_floor=1
+02:52:38 |    📌 Nearest miss: EVAA score=0.345 (pre-pen 0.54) conf=0.753 quality=0.260/0.26
+    reason=final_gate
+02:56:38 |    📓 C444: ZEC exited on C377_RISK_STOP: -1.94% = at index 0.22 — 30min later the price
+    is -0.16% (-0.06R) inside the noise band — the exit was neutral
+ 
+ 
+  02:59  up 15h32m  scan 128 ---------------------------------------------------------------------
+  EQUITY    $252.85
+  SESSION   $+2.85 +1.14%  peak $254.20  dd 0.53%
+  CURVE     ___________..._...................___---------------=-_-______+========+###@@@@@@#****
+  DAY       real $+1.15  loss room $1.83 (0.73%)  0% used  vol x0.85  trust x1.25
+            ..........................
+  RECORD    16 closed  7W 9L  win 44%  payoff 1.58  avg $+0.04/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      flat  free $252.85
+  FEES      $0.38  mk28/tk11  0.151% of eq
+  SCAN      797 > 18 > 0 passed  top EVAA 0.35 (final_gate)  128 scans, 4326 analysed
+  MARKET    MIXED  bias -0.06  breadth -0.06  taker flow +0.12
+  NEWS      65 articles  + tone +0.30  NEAR +0.43  ZEC +0.24  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 171
+            info>0 11tr $+0.10 win 55%  info≤0 5tr $-0.08 win 20%
+  MOVERS    G -32% #11  FF +31% #28  BTW +29% #20  CELR +23% cut
+  TAPE      - - - + - + + - - + + + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+03:02:57 |    🪞 C266 board-parity (top movers vs screen): G -34%[#10] | FF +31%[#24] | BTW +27%[#21]
+    | NIL +26%[#33] | CELR +20%[Live=0.25<cut]
+03:03:54 | 📊 Step 3 result: 59 analyzed → 0 passed | low_score=44, flat_projection=8,
+    no_structural_room=3, leg_exhausted=1, post_penalty_quality=1, dir_proj_conflict=1,
+    post_penalty_low=1
+03:03:54 |    📌 Nearest miss: CAKE score=0.938 conf=0.768 quality=0.721/0.26
+    reason=post_penalty_quality
+  .. 03:07  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  59 analysed
+03:14:12 |    🪞 C266 board-parity (top movers vs screen): G -34%[#10] | FF +33%[#23] | BTW +29%[#21]
+    | NIL +28%[#30] | ONE -25%[Live=0.48<cut]
+03:14:27 |    ⚖️ C462-7 XPL: penalties 0.48→0.36 (×0.75) vs bar 0.45 — the stack decided
+03:14:28 | 📊 Step 3 result: 3 analyzed (+57 cached this 15m candle) → 0 passed | low_score=45,
+    flat_projection=8, no_structural_room=3, leg_exhausted=1, dir_proj_conflict=1,
+    post_penalty_quality=1, post_penalty_low=1
+03:14:28 |    📌 Nearest miss: XPL score=0.481 conf=0.530 quality=0.255/0.26 reason=score 0.361 <
+    0.450
+  .. 03:15  flat  $252.85  $+2.85 +1.14%  7W 9L 44%  3 analysed
