@@ -1438,3 +1438,161 @@
   ACE      LONG    0.162600  0.169200  +4.06%   +0.31   53m  + 65% left
   ------------------------------------------------------------------------------------------------
  
+18:18:55 |    🪞 C266 board-parity (top movers vs screen): CELR +72%[#10] | ONE +60%[#6] | B2
+    -40%[Live=0.36<cut] | CAP -38%[#29] | UB +24%[#20]
+18:19:36 |    ⚖️ C462-7 XTZ: penalties 0.50→0.35 (×0.70) vs bar 0.48 — the stack decided
+18:19:37 |    ⚖️ C462-7 MORPHO: penalties 0.54→0.38 (×0.70) vs bar 0.48 — the stack decided
+18:19:51 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=2, low_score=18, mtf_disagree=1,
+    flat_projection=12, regime_blip=10, h1_regime_shock=8, micro_exhaustion=1, no_structural_room=4,
+    late_leg_no_forward=3, vol_floor=1
+18:19:51 |    📌 Nearest miss: MINA score=0.622 (pre-pen 0.89) conf=0.592 quality=0.368/0.26
+    reason=mtf_disagree
+ 
+  18:19  up 6h52m  scan 57 -----------------------------------------------------------------------
+  EQUITY    $250.12  unreal $+0.30
+  SESSION   $+0.12 +0.05%  peak $250.35  dd 0.09%
+  CURVE     ++++++*+++*+****++++++++-===----=++++++++++++++===+=++++
+  DAY       real $-0.18  loss room $1.49 (0.60%)  12% used  vol x0.70  trust x1.25
+            ###.......................
+  RECORD    5 closed  1W 4L  win 20%  payoff 1.41  avg $-0.10/tr  best $+0.28  worst $-0.28
+            break-even 42%
+  OPEN      1 pos $7.79 (3%)  free $242.02
+  FEES      $0.20  mk9/tk5  0.079% of eq
+  SCAN      797 > 60 > 0 passed  top MINA 0.62 (mtf_disagree)  57 scans, 1991 analysed
+  MARKET    TRENDING  bias -0.17  breadth +0.00  taker flow -0.08
+  NEWS      65 articles  + tone +0.50  ZEC +0.24  ARB -0.24  STRK -0.24
+  INFO      2 tilted  flow/fund/news/oi on 155
+            info>0 2tr $+0.07 win 50%  info≤0 3tr $-0.22 win 0%
+  MOVERS    CELR +72% #10  ONE +60% #6  B2 -40% cut  CAP -38% #29
+  TAPE      - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ACE      LONG    0.162600  0.168900  +3.87%   +0.30 1h02m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+18:27:51 | 🎯 EXIT SIGNAL: ACE/USDT:USDT - EARLY_PEAK_CAPTURE: peak=+9.5%(5.2PRU) now=+8.6%
+    gave=10%(0.5PRU)
+ 
+  18:27  up 7h00m  scan 57 -----------------------------------------------------------------------
+  EQUITY    $250.51  unreal $+0.69
+  SESSION   $+0.51 +0.20%
+  CURVE     ++++++*+++*+**+*=====++=-==-----=+=============-====++++*
+  DAY       real $-0.18  loss room $1.49 (0.60%)  12% used  vol x0.70  trust x1.25
+            ###.......................
+  RECORD    5 closed  1W 4L  win 20%  payoff 1.41  avg $-0.10/tr  best $+0.28  worst $-0.28
+            break-even 42%
+  OPEN      1 pos $7.79 (3%)  free $242.02
+  FEES      $0.20  mk9/tk5  0.079% of eq
+  SCAN      797 > 60 > 0 passed  top MINA 0.62 (mtf_disagree)  57 scans, 1991 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.00  taker flow -0.12
+  NEWS      65 articles  + tone +0.50  LINK +0.49  ZEC +0.24  SOL +0.24
+  INFO      2 tilted  flow/fund/news/oi on 155
+            info>0 2tr $+0.07 win 50%  info≤0 3tr $-0.22 win 0%
+  MOVERS    CELR +72% #10  ONE +60% #6  B2 -40% cut  CAP -38% #29
+  TAPE      - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ACE      LONG    0.162600  0.177200  +8.98%   +0.69 1h10m  + 8% left
+  ------------------------------------------------------------------------------------------------
+ 
+18:27:51 |    🎯 C376 MAKER exit filled ACE @$0.177700 — saved ~0.04%% of notional (2 this session)
+  << 18:27  CLOSE  ACE LONG @0.177700  +9.29% $+0.72  WIN
+       held 1h10m  EARLY_PEAK_CAPTURE: peak  kept 97% of a +9.53% peak  +2.52R  maker
+18:27:52 | Loop error: dictionary changed size during iteration
+ 
+ 
+  18:27  up 7h00m  scan 57 -----------------------------------------------------------------------
+  EQUITY    $250.54
+  SESSION   $+0.54 +0.22%
+  CURVE     ++++++*+++*++++*=====++=-==-----===============-====++++***
+  DAY       real $+0.54  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    6 closed  2W 4L  win 33%  payoff 2.52  avg $+0.03/tr  best $+0.72  worst $-0.28
+            break-even 28%
+  OPEN      flat  free $250.54
+  FEES      $0.20  mk10/tk5  0.079% of eq
+  SCAN      797 > 60 > 0 passed  top MINA 0.62 (mtf_disagree)  57 scans, 1991 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.00  taker flow -0.12
+  NEWS      65 articles  + tone +0.50  LINK +0.49  ZEC +0.24  SOL +0.24
+  INFO      2 tilted  flow/fund/news/oi on 155
+            info>0 3tr $+0.29 win 67%  info≤0 3tr $-0.22 win 0%
+  MOVERS    CELR +72% #10  ONE +60% #6  B2 -40% cut  CAP -38% #29
+  TAPE      - - - + - +
+  ------------------------------------------------------------------------------------------------
+ 
+18:30:12 |    🪞 C266 board-parity (top movers vs screen): CELR +72%[#10] | ONE +57%[#6] | B2
+    -41%[Live=0.37<cut] | CAP -38%[#27] | UB +27%[#19]
+18:30:12 | ⚠️ C79 WEAK-RESULTANT: R=-0.08 mag=0.08 < 0.08 — direction unclear, higher bar applied
+18:31:10 | 📊 Step 3 result: 60 analyzed → 2 viable → Step 4 DRI/DSI
+  .. 18:35  flat  $250.54  $+0.54 +0.22%  2W 4L 33%  60 analysed
+18:35:54 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $353.5842 → $250.5383 (equity
+    $250.5383 − locked $0.0000 = $250.5383); discrepancy $+103.0459. Money that does not exist would
+    have been sized against [correction #3]
+18:36:13 | ⚠️ C79 WEAK-RESULTANT: R=-0.06 mag=0.06 < 0.08 — direction unclear, higher bar applied
+18:36:33 |    ⚖️ C462-7 NEAR: penalties 0.70→0.52 (×0.75) vs bar 0.54 — the stack decided
+18:36:33 | 📊 Step 3 result: 2 analyzed (+58 cached) → 1 viable → Step 4 DRI/DSI
+18:41:40 |    🪞 C266 board-parity (top movers vs screen): CELR +73%[#9] | ONE +59%[#6] | B2
+    -41%[Live=0.36<cut] | CAP -30%[#26] | UB +28%[#18]
+18:41:41 | ⚠️ C79 WEAK-RESULTANT: R=-0.04 mag=0.04 < 0.08 — direction unclear, higher bar applied
+18:42:05 | 📊 Step 3 result: 5 analyzed (+55 cached) → 1 viable → Step 4 DRI/DSI
+  .. 18:43  flat  $250.54  $+0.54 +0.22%  2W 4L 33%  5 analysed
+18:47:07 | ⚠️ C79 WEAK-RESULTANT: R=-0.04 mag=0.04 < 0.08 — direction unclear, higher bar applied
+18:47:58 |    ⚖️ C462-7 ALGO: penalties 0.56→0.42 (×0.75) vs bar 0.56 — the stack decided
+18:48:17 | 📊 Step 3 result: 60 analyzed → 2 viable → Step 4 DRI/DSI
+  .. 18:51  flat  $250.54  $+0.54 +0.22%  2W 4L 33%  60 analysed
+18:51:54 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $323.8583 → $250.5383 (equity
+    $250.5383 − locked $0.0000 = $250.5383); discrepancy $+73.3200. Money that does not exist would
+    have been sized against [correction #4]
+18:53:27 |    🪞 C266 board-parity (top movers vs screen): CELR +70%[#8] | ONE +62%[#6] | B2
+    -40%[Live=0.30<cut] | CAP -33%[#24] | G -26%[Live=0.43<cut]
+18:53:28 | ⚠️ C79 WEAK-RESULTANT: R=+0.06 mag=0.06 < 0.08 — direction unclear, higher bar applied
+18:54:01 | 📊 Step 3 result: 18 analyzed (+42 cached) → 1 viable → Step 4 DRI/DSI
+18:59:14 | 📊 Step 3 result: 1 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=40, mtf_disagree=1, flat_projection=6, capitulation=2, poor_reward_risk=2,
+    no_structural_room=3, post_penalty_low=1
+18:59:14 |    📌 Nearest miss: ZAMA score=0.696 conf=0.522 quality=0.363/0.26 reason=mtf_disagree
+ 
+ 
+  18:59  up 7h32m  scan 63 -----------------------------------------------------------------------
+  EQUITY    $250.54
+  SESSION   $+0.54 +0.22%
+  CURVE     ++++++++++*++++*=====++=-==-----===============-====++++*******
+  DAY       real $+0.54  loss room $1.52 (0.61%)  0% used  vol x0.71  trust x1.25
+            ..........................
+  RECORD    6 closed  2W 4L  win 33%  payoff 2.52  avg $+0.03/tr  best $+0.72  worst $-0.28
+            break-even 28%
+  OPEN      flat  free $313.17
+  FEES      $0.20  mk10/tk5  0.079% of eq
+  SCAN      797 > 1 > 0 passed  top ZAMA 0.70 (mtf_disagree)  63 scans, 2137 analysed
+  MARKET    TRENDING  bias +0.05  breadth -0.06  taker flow +0.05
+  NEWS      65 articles  + tone +0.24  ZEC +0.24  ARB -0.24  STRK -0.24
+  INFO      1 tilted  flow/fund/news/oi on 160
+            info>0 3tr $+0.29 win 67%  info≤0 3tr $-0.22 win 0%
+  MOVERS    CELR +70% #8  ONE +62% #6  B2 -40% cut  CAP -33% #24
+  TAPE      - - - + - +
+  ------------------------------------------------------------------------------------------------
+ 
+18:59:54 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $313.1729 → $250.5383 (equity
+    $250.5383 − locked $0.0000 = $250.5383); discrepancy $+62.6346. Money that does not exist would
+    have been sized against [correction #5]
+19:04:20 |    🪞 C266 board-parity (top movers vs screen): CELR +72%[#8] | ONE +57%[#6] | B2
+    -37%[Live=0.18<cut] | G -27%[Live=0.29<cut] | CAP -26%[#28]
+19:04:21 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+19:05:26 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=1, low_score=41,
+    flat_projection=10, post_penalty_low=2, flow_veto=1, poor_reward_risk=1, capitulation=2,
+    no_structural_room=2
+19:05:26 |    📌 Nearest miss: NEAR score=0.824 conf=0.843 quality=0.695/0.26 reason=flow veto
+    R=-0.47
+  .. 19:07  flat  $250.54  $+0.54 +0.22%  2W 4L 33%  60 analysed
+19:10:28 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+19:15:45 |    🪞 C266 board-parity (top movers vs screen): CELR +70%[#8] | ONE +52%[#6] | B2
+    -37%[Live=0.23<cut] | G -24%[#10] | BR +23%[#14]
+19:16:05 |    ⚖️ C462-7 AVAX: penalties 0.78→0.54 (×0.68) vs bar 0.72 — the stack decided
+19:16:07 |    ⚖️ C462-7 G: penalties 0.54→0.43 (×0.79) vs bar 0.46 — the stack decided
+19:16:45 |    ⚖️ C462-7 USELESS: penalties 0.65→0.56 (×0.86) vs bar 0.60 — the stack decided
+19:16:47 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=3, low_score=39,
+    flat_projection=8, capitulation=4, no_structural_room=3, proj_confirms_trend=1,
+    post_penalty_low=2
+19:16:47 |    📌 Nearest miss: USELESS score=0.654 conf=0.927 quality=0.606/0.26 reason=score 0.560 <
+    0.601
+  .. 19:16  flat  $250.54  $+0.54 +0.22%  2W 4L 33%  60 analysed
