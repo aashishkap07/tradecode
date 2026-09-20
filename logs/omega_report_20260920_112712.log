@@ -261,3 +261,93 @@
   ZRO      SHORT     1.0761    1.0697  +0.59%   +0.24 1h25m  + 0% left
   ------------------------------------------------------------------------------------------------
 
+
+
+  13:22  up 1h55m  scan 17 -----------------------------------------------------------------------
+  EQUITY    $250.22  unreal $+0.22
+  SESSION   $+0.22 +0.09%  peak $250.27  dd 0.02%
+  CURVE     ======++==+=+++
+  DAY       real $+0.00  loss room $1.98 (0.79%)  0% used  vol x0.93  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 61 > 0 passed  top F 0.29 (capitulation rej v)  17 scans, 607 analysed
+  MARKET    TRENDING  bias -0.13  breadth +0.00  taker flow +0.02
+  NEWS      65 articles  + tone +0.50  CAKE +0.73  LINK +0.55  ENA +0.55
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +71% #13  ONE +66% #6  ZIL +36% #24  EVAA +28% #22
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0701  +0.56%   +0.22 1h33m  + 0% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  13:30  up 2h03m  scan 18 -----------------------------------------------------------------------
+  EQUITY    $250.35  unreal $+0.35
+  SESSION   $+0.35 +0.14%
+  CURVE     ======+===+=++++
+  DAY       real $+0.00  loss room $1.49 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    no closed trades yet this run
+  OPEN      1 pos $22.92 (9%)  free $227.08
+  FEES      $0.01  mk1/tk0  0.004% of eq
+  SCAN      797 > 14 > 0 passed  top ZK 0.33 (score 0.250 < 0.40)  18 scans, 621 analysed
+  MARKET    TRENDING  bias -0.15  breadth -0.14  taker flow +0.03
+  NEWS      65 articles  + tone +0.50  CAKE +0.73  AAVE +0.55  JUP -0.29
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +77% #10  ONE +72% #6  ZIL +32% #26  EVAA +30% #20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZRO      SHORT     1.0761    1.0670  +0.85%   +0.35 1h41m  + 0% left
+  ------------------------------------------------------------------------------------------------
+
+  << 13:35  CLOSE  ZRO SHORT @1.0788  -0.25% $-0.15  LOSS
+       held 1h45m  PEAK_FLOOR: peaked at +2  round trip from +0.98%  -0.14R  TAKER
+
+
+  13:38  up 2h11m  scan 19 -----------------------------------------------------------------------
+  EQUITY    $249.85
+  SESSION   $-0.15 -0.06%  peak $250.35  dd 0.20%
+  CURVE     ======++==+=++++==
+  DAY       real $-0.15  loss room $1.49 (0.60%)  10% used  vol x0.70  trust x1.25
+            ###.......................
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.15/tr
+  OPEN      flat  free $249.85
+  FEES      $0.04  mk1/tk1  0.015% of eq
+  SCAN      797 > 60 > 0 passed  top TUT 0.69 (absorption cvd=+0.)  19 scans, 681 analysed
+  MARKET    TRENDING  bias -0.21  breadth +0.00  taker flow +0.26
+  NEWS      65 articles  + tone +0.50  CAKE +0.73  AAVE +0.55  JUP -0.29
+  INFO      1 tilted  flow/fund/news/oi on 108
+  MOVERS    CELR +76% #12  ONE +65% #6  B2 -43% #15  ZIL +33% #25
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+
+  .. 13:47  flat  $249.85  $-0.15 -0.06%  0W 1L 0%  60 analysed
+  .. 13:55  flat  $249.85  $-0.15 -0.06%  0W 1L 0%  1 analysed
+  .. 14:03  flat  $249.85  $-0.15 -0.06%  0W 1L 0%  60 analysed
+  >> 14:09  OPEN   MON SHORT @0.023450  x3 $27.65
+       target +2.8%  stop -0.8%  entry score 0.57  maker
+
+
+  14:11  up 2h44m  scan 24 -----------------------------------------------------------------------
+  EQUITY    $249.89  unreal $+0.04
+  SESSION   $-0.11 -0.04%  peak $250.35  dd 0.18%
+  CURVE     ======++==+=++++======
+  DAY       real $-0.15  loss room $1.49 (0.60%)  10% used  vol x0.70  trust x1.25
+            ###.......................
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.15/tr
+  OPEN      1 pos $27.65 (11%)  free $222.20
+  FEES      $0.05  mk2/tk1  0.021% of eq
+  SCAN      797 > 14 > 1 passed  top MON 0.57 (viable)  24 scans, 818 analysed
+  MARKET    TRENDING  bias -0.14  breadth +0.00  taker flow -0.02
+  NEWS      65 articles  + tone +0.44  CAKE +0.73  SUI +0.70  ETH +0.47
+  INFO      1 tilted  flow/fund/news/oi on 134
+  MOVERS    ONE +94% #5  CELR +78% #15  B2 -40% #17  EVAA +34% #24
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MON      SHORT   0.023450  0.023420  +0.13%   +0.04    2m  + 47% left
+  ------------------------------------------------------------------------------------------------
+
