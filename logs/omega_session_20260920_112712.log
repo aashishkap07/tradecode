@@ -4510,3 +4510,212 @@
   XPL      LONG    0.093370  0.094010  +0.69%   +0.16   26m  + 39% left
   ------------------------------------------------------------------------------------------------
  
+08:19:14 |    🔭 C456: EPIC exited on C377_RISK_STOP: -1.84% = — at its OWN thesis horizon (120min)
+    the price is +2.36% (+1.03R) FURTHER IN OUR FAVOUR — held would have been better
+08:19:32 |    🪞 C266 board-parity (top movers vs screen): G -45%[#14] | STONK +37%[#45] | CELR
+    -29%[#16] | BTW +27%[Live=0.37<cut] | VVV +26%[#23]
+08:19:33 | ⊥ C97 TF-CONFLICT: 1h=-0.78×4h=+0.32=d14=-0.25 — only shorts allowed (1h dominant)
+08:21:52 | 📊 Step 3 result: 74 analyzed → 1 viable → Step 4 DRI/DSI
+08:21:54 |    🎲 C378 odds-size: orderliness 0.06 -> risk x0.74 ($0.643)
+08:21:55 |    🔒 C378 stop level $1.20569 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 08:21  OPEN   BR LONG @1.2611  x1 $14.64
+       target +14.6%  stop -4.4%  entry score 0.58  maker
+08:22:03 |    🎯 C462-6 MAKER half filled XPL @$0.095950 — saved ~0.04% of the half notional (11 this
+    session)
+  -> 08:22  HALF   XPL LONG @0.095950  +2.76% $+0.35
+       win half banked  maker  $13.01 rides on
+ 
+ 
+  08:24  up 20h56m  scan 176 ---------------------------------------------------------------------
+  EQUITY    $255.95  unreal $+0.40
+  SESSION   $+5.95 +2.38%  peak $256.40  dd 0.18%
+  CURVE     ..._..__.................._________----______-------=+*****++++++++++*###*@@*#@@@#@@#@
+  DAY       real $+3.85  loss room $1.72 (0.68%)  0% used  vol x0.91  trust x1.25  month guard
+            ..........................
+  RECORD    25 closed  12W 13L  win 48%  payoff 1.37  avg $+0.05/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.65 (11%)  free $227.89
+  FEES      $0.57  mk49/tk16  0.223% of eq
+  SCAN      797 > 74 > 1 passed  top BR 0.58 (viable)  176 scans, 6033 analysed
+  MARKET    MIXED  bias +0.21  breadth +0.00  taker flow -0.25
+  NEWS      65 articles  + tone +0.38  DOGE +0.69  ONE +0.57  DOT +0.53
+  INFO      1 tilted  flow/fund/news/oi on 193
+            info>0 17tr $+0.00 win 53%  info≤0 8tr $+0.16 win 38%
+  MOVERS    G -45% #14  STONK +37% #45  CELR -29% #16  BTW +27% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XPL      LONG    0.093370  0.095920  +2.73%   +0.34   34m  + 32% left
+  BR       LONG      1.2611    1.2665  +0.43%   +0.05    2m  + 75% left
+  ------------------------------------------------------------------------------------------------
+ 
+08:25:35 |    🎯 C376 MAKER exit filled XPL @$0.095290 — saved ~0.04%% of notional (12 this session)
+  << 08:25  CLOSE  XPL LONG @0.095290  +2.06% $+0.26  WIN
+       held 35m  TRAILING_TP: peak=+3.2%   kept 64% of a +3.21% peak  +0.61R  maker
+08:26:58 | ⊥ C97 TF-CONFLICT: 1h=-0.78×4h=+0.32=d14=-0.25 — only shorts allowed (1h dominant)
+08:27:16 | 📊 Step 3 result: 1 analyzed (+73 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=20, ct_noisy_block=27, pair_cap=1, flat_projection=11, capitulation=2,
+    post_penalty_low=2, no_structural_room=4, dir_proj_conflict=1, micro_exhaustion=3,
+    poor_reward_risk=1, vol_floor=1
+ 
+ 
+  08:32  up 21h04m  scan 177 ---------------------------------------------------------------------
+  EQUITY    $255.84  unreal $+0.03
+  SESSION   $+5.84 +2.34%  peak $256.40  dd 0.22%
+  CURVE     ..._..__.................__________-_--______-------++****+++++++*+++####@@*########@@
+  DAY       real $+4.11  loss room $1.72 (0.68%)  0% used  vol x0.90  trust x1.25  month guard
+            ..........................
+  RECORD    26 closed  13W 13L  win 50%  payoff 1.32  avg $+0.06/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      1 pos $14.64 (6%)  free $241.17
+  FEES      $0.57  mk50/tk16  0.225% of eq
+  SCAN      797 > 1 > 0 passed  177 scans, 6034 analysed
+  MARKET    TRENDING  bias +0.21  breadth +0.10  taker flow +0.01
+  NEWS      65 articles  + tone +0.38  BNB +0.52  PEPE +0.32  ZEC +0.24
+  INFO      1 tilted  flow/fund/news/oi on 193
+            info>0 18tr $+0.02 win 56%  info≤0 8tr $+0.16 win 38%
+  MOVERS    G -45% #14  STONK +37% #45  CELR -29% #16  BTW +27% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BR       LONG      1.2611    1.2646  +0.27%   +0.03   10m  + 63% left
+  ------------------------------------------------------------------------------------------------
+ 
+08:32:39 |    🪞 C266 board-parity (top movers vs screen): G -45%[#14] | STONK +39%[#47] | CELR
+    -30%[#16] | VVV +28%[#21] | NIL +26%[#41]
+08:35:45 | 📊 Step 3 result: 76 analyzed → 3 viable → Step 4 DRI/DSI
+08:35:52 |    🎲 C378 odds-size: orderliness 0.24 -> risk x0.85 ($0.737)
+08:35:52 |    🔒 C378 stop level $31.523 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 08:35  OPEN   VVV LONG @32.8720  x1 $17.95
+       target +14.2%  stop -4.1%  entry score 0.68  maker
+08:39:49 | 📊 Step 3 result: 3 analyzed (+73 cached) → 2 viable → Step 4 DRI/DSI
+ 
+ 
+  08:40  up 21h13m  scan 179 ---------------------------------------------------------------------
+  EQUITY    $255.76  unreal $-0.05
+  SESSION   $+5.76 +2.30%  peak $256.40  dd 0.25%
+  CURVE     ...__.__.................__________---______-------=+*****++++++++++*##@*@@*@@@@###@@@
+  DAY       real $+4.11  loss room $1.72 (0.68%)  0% used  vol x1.01  trust x1.25  month guard
+            ..........................
+  RECORD    26 closed  13W 13L  win 50%  payoff 1.32  avg $+0.06/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      2 pos $32.59 (13%)  free $223.22
+  FEES      $0.58  mk51/tk16  0.226% of eq
+  SCAN      797 > 3 > 2 passed  top EGLD 0.85 (viable)  179 scans, 6113 analysed
+  MARKET    TRENDING  bias +0.51  breadth +0.13  taker flow +0.15
+  NEWS      65 articles  + tone +0.38  BNB +0.52  PEPE +0.32  ZEC +0.24
+  INFO      2 tilted  flow/fund/news/oi on 196
+            info>0 18tr $+0.02 win 56%  info≤0 8tr $+0.16 win 38%
+  MOVERS    G -45% #14  STONK +39% #47  CELR -30% #16  VVV +28% #21
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BR       LONG      1.2611    1.2632  +0.16%   +0.01   18m  + 66% left
+  VVV      LONG     32.8720   32.7760  -0.29%   -0.07    4m  - 61% left
+  ------------------------------------------------------------------------------------------------
+ 
+08:43:13 |    🪞 C266 board-parity (top movers vs screen): G -44%[#14] | STONK +37%[#44] | NIL
+    +27%[#37] | VVV +26%[#22] | CELR -26%[#16]
+08:44:15 |    ⚖️ C462-7 UAI: penalties 0.58→0.44 (×0.75) vs bar 0.54 — the stack decided
+08:44:20 | 📊 Step 3 result: 4 analyzed (+72 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=26, mtf_disagree=2, flat_projection=8, regime_blip=10, pair_cap=2, flow_veto=3,
+    h1_regime_shock=10, fee_floor=1, late_leg_no_forward=1, capitulation=1, absorption_at_extreme=2,
+    reentry_chase=1, micro_exhaustion=2, vol_floor=2, proj_confirms_trend=1, poor_reward_risk=1,
+    no_structural_room=1
+08:44:20 |    📌 Nearest miss: EGLD score=1.430 conf=0.560 quality=0.801/0.26 reason=mtf_disagree
+08:48:37 |    ⚖️ C462-7 ONE: penalties 0.50→0.19 (×0.38) vs bar 0.26 — the stack decided
+08:48:39 |    ⚖️ C462-7 AKE: penalties 0.39→0.15 (×0.38) vs bar 0.26 — the stack decided
+08:51:50 |    🛑 C377 HARD STOP BR: -4.59% <= -4.40% (0.8R, R=5.86%) — arithmetic, not opinion
+08:51:51 | ❌ LOSS: BR/USDT:USDT | C377_RISK_STOP: -4.59% = -0.78R
+  << 08:51  CLOSE  BR LONG @1.2006  -4.80% $-0.71  LOSS
+       held 29m  C377_RISK_STOP: -4.59% =  round trip from +0.74%  -0.82R  TAKER
+08:52:02 | 📊 Step 3 result: 76 analyzed → 0 passed | low_confidence=1, low_score=3,
+    flat_projection=8, regime_blip=8, h1_regime_shock=46, no_structural_room=2, pair_cap=1,
+    reentry_chase=1, session_short=6
+08:52:02 |    📌 Nearest miss: BR score=0.758 conf=0.667 quality=0.506/0.26 reason=h1_regime_shock
+ 
+ 
+  08:52  up 21h24m  scan 181 ---------------------------------------------------------------------
+  EQUITY    $254.97  unreal $-0.13
+  SESSION   $+4.97 +1.99%  peak $256.40  dd 0.56%
+  CURVE     ...__.__................._________----______=-----=++*****++++++**+*###*@@*#@@@#@@#@@#
+  DAY       real $+3.39  loss room $1.72 (0.68%)  0% used  vol x1.01  trust x1.25  month guard
+            ..........................
+  RECORD    27 closed  13W 14L  win 48%  payoff 1.24  avg $+0.03/tr  best $+1.36  worst $-1.64
+            break-even 45%
+  OPEN      1 pos $17.95 (7%)  free $237.14
+  FEES      $0.59  mk51/tk17  0.230% of eq
+  SCAN      797 > 76 > 0 passed  top BR 0.76 (h1_regime_shock)  181 scans, 6193 analysed
+  MARKET    TRENDING  bias +0.48  breadth +0.00  taker flow +0.16
+  NEWS      65 articles  + tone +0.35  BNB +0.52  PEPE +0.32  ZEC +0.24
+  INFO      2 tilted  flow/fund/news/oi on 196
+            info>0 18tr $+0.02 win 56%  info≤0 9tr $+0.06 win 33%
+  MOVERS    G -44% #14  STONK +37% #44  NIL +27% #37  VVV +26% #22
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  VVV      LONG     32.8720   32.6600  -0.64%   -0.13   16m  - 59% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  09:00  up 21h32m  scan 181 ---------------------------------------------------------------------
+  EQUITY    $255.07  unreal $-0.03
+  SESSION   $+5.07 +2.03%  peak $256.40  dd 0.52%
+  CURVE     ......__..................__________--______-------++***+++++++++++**##*@@##@@#####@##
+  DAY       real $+3.39  loss room $1.72 (0.68%)  0% used  vol x1.01  trust x1.25  month guard
+            ..........................
+  RECORD    27 closed  13W 14L  win 48%  payoff 1.24  avg $+0.03/tr  best $+1.36  worst $-1.64
+            break-even 45%
+  OPEN      1 pos $17.95 (7%)  free $237.14
+  FEES      $0.59  mk51/tk17  0.230% of eq
+  SCAN      797 > 76 > 0 passed  top BR 0.76 (h1_regime_shock)  181 scans, 6193 analysed
+  MARKET    TRENDING  bias +0.48  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  + tone +0.35  BNB +0.52  PEPE +0.32  ZEC +0.24
+  INFO      2 tilted  flow/fund/news/oi on 196
+            info>0 18tr $+0.02 win 56%  info≤0 9tr $+0.06 win 33%
+  MOVERS    G -44% #14  STONK +37% #44  NIL +27% #37  VVV +26% #22
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  VVV      LONG     32.8720   32.8410  -0.09%   -0.03   24m  - 55% left
+  ------------------------------------------------------------------------------------------------
+ 
+09:04:48 |    🪞 C266 board-parity (top movers vs screen): G -42%[#12] | STONK +41%[Live=0.22<cut] |
+    NIL +26%[#36] | CELR -25%[#14] | MINA +24%[#38]
+09:06:12 |    ⚖️ C462-7 AKE: penalties 0.32→0.06 (×0.18) vs bar 0.26 — the stack decided
+09:08:05 |    🎢→⚖️ LUNA: C292 stands down — parabola BROKEN (range 23×ATR, 12.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:08:56 | 📊 Step 3 result: 74 analyzed → 0 passed | low_confidence=5, low_score=1, regime_blip=5,
+    flat_projection=5, pair_cap=4, h1_regime_shock=44, reentry_chase=1, no_structural_room=5,
+    session_short=4
+09:08:56 |    📌 Nearest miss: BOME score=1.056 conf=0.859 quality=0.907/0.26 reason=h1_regime_shock
+ 
+  09:08  up 21h41m  scan 182 ---------------------------------------------------------------------
+  EQUITY    $254.90  unreal $-0.20
+  SESSION   $+4.90 +1.96%  peak $256.40  dd 0.59%
+  CURVE     ......__..................________-_--_____-------=++***+++++++*+++*###@@*####*###@@##
+  DAY       real $+3.39  loss room $1.72 (0.68%)  0% used  vol x1.00  trust x1.25  month guard
+            ..........................
+  RECORD    27 closed  13W 14L  win 48%  payoff 1.24  avg $+0.03/tr  best $+1.36  worst $-1.64
+            break-even 45%
+  OPEN      1 pos $17.95 (7%)  free $237.14
+  FEES      $0.59  mk51/tk17  0.230% of eq
+  SCAN      797 > 74 > 0 passed  top BOME 1.06 (h1_regime_shock)  182 scans, 6267 analysed
+  MARKET    TRENDING  bias +0.53  breadth +0.13  taker flow -0.08
+  NEWS      65 articles  + tone +0.35  LINK +0.39  AVAX +0.38  PEPE +0.32
+  INFO      2 tilted  flow/fund/news/oi on 196
+            info>0 18tr $+0.02 win 56%  info≤0 9tr $+0.06 win 33%
+  MOVERS    G -42% #12  STONK +41% cut  NIL +26% #36  CELR -25% #14
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  VVV      LONG     32.8720   32.5260  -1.05%   -0.20   33m  - 58% left
+  ------------------------------------------------------------------------------------------------
+ 
+09:15:40 |    🪞 C266 board-parity (top movers vs screen): G -43%[#9] | STONK +42%[#38] | NIL
+    +27%[#33] | KMNO +26%[#40] | MINA +25%[#32]
+09:16:27 |    ⚖️ C462-7 G: penalties 0.60→0.36 (×0.60) vs bar 0.48 — the stack decided
+09:16:52 |    ⚖️ C462-7 SEI: penalties 0.49→0.37 (×0.75) vs bar 0.47 — the stack decided
