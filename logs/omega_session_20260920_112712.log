@@ -7073,3 +7073,285 @@
     extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
     path [C299]
 20:16:58 |    ⚖️ C462-7 ARM: penalties 0.85→0.64 (×0.75) vs bar 0.72 — the stack decided
+20:17:26 |    🎢→⚖️ VVV: C292 stands down — parabola BROKEN (range 17×ATR, 5.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:17:32 |    🎢→⚖️ 牛来: C292 stands down — parabola BROKEN (range 14×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:18:54 | 📊 Step 3 result: 130 analyzed → 4 viable → Step 4 DRI/DSI
+20:19:00 |    🎲 C378 odds-size: orderliness 0.27 -> risk x0.86 ($0.757)
+20:19:01 |    🔒 C378 stop level $0.2012 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 20:19  OPEN   FET LONG @0.204800  x1 $14.38
+       target +9.9%  stop -1.8%  entry score 0.65  maker
+ 
+ 
+  20:19  up 32h51m  scan 268 ---------------------------------------------------------------------
+  EQUITY    $256.98  unreal $-0.16
+  SESSION   $+6.98 +2.79%  peak $257.33  dd 0.14%
+  CURVE     ...__............_______-____----=+*++====+++*##@####*#***++++++++++++*@@@@@@@@###@@@@
+  DAY       real $+5.44  loss room $1.37 (0.54%)  0% used  vol x0.80  trust x1.00
+            ..........................
+  RECORD    43 closed  17W 26L  win 40%  payoff 1.62  avg $+0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      3 pos $102.87 (40%)  free $154.27
+  FEES      $0.91  mk75/tk30  0.353% of eq
+  SCAN      802 > 130 > 4 passed  top SOXL 0.73 (viable)  268 scans, 10113 analysed
+  MARKET    TRENDING  bias +0.75  breadth +0.62  taker flow +0.06
+  NEWS      65 articles  + tone +0.29  UNI +0.57  XMR +0.37  BASED +0.34
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 28tr $+0.06 win 50%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +68% #12  PHA +54% #36  UAI +52% #47  MUBARAK +42% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   84.5900  +0.39%   +0.14   30m  + 18% left
+  LITE     LONG      978.81    973.02  -0.59%   -0.30   30m  - 47% left
+  FET      LONG    0.204800  0.205100  +0.15%   +0.01    0m  + 100% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:22:35 | 📊 Step 3 result: 4 analyzed (+126 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=55, regime_blip=19, pair_cap=4, proj_confirms_trend=4, late_leg_no_forward=5,
+    counter_trend_block=13, absorption_at_extreme=3, flat_projection=5, fee_floor=1,
+    poor_reward_risk=2, corr_cap=2, post_penalty_low=8, micro_exhaustion=4, leg_exhausted=1,
+    vol_floor=2
+20:22:35 |    📌 Nearest miss: SOXL score=0.862 (pre-pen 1.06) conf=0.497 quality=0.428/0.26
+    reason=late-leg F=-0.07
+20:25:46 |    🪞 C266 board-parity (top movers vs screen): ZETA +67%[#12] | UAI +53%[#41] | PHA
+    +52%[#36] | MUBARAK +43%[Live=0.32<cut] | STONK +31%[#68]
+20:26:34 | 📊 Step 3 result: 21 analyzed (+108 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=45, regime_blip=17, pair_cap=4, proj_confirms_trend=5, late_leg_no_forward=6,
+    counter_trend_block=11, absorption_at_extreme=3, fee_floor=1, poor_reward_risk=2,
+    flat_projection=6, post_penalty_low=6, corr_cap=15, micro_exhaustion=4, capitulation=1,
+    leg_exhausted=1, no_structural_room=1
+20:26:34 |    📌 Nearest miss: STONK score=0.947 conf=0.950 quality=0.899/0.26 reason=corr_cap
+ 
+  20:27  up 32h59m  scan 270 ---------------------------------------------------------------------
+  EQUITY    $256.63  unreal $-0.51
+  SESSION   $+6.63 +2.65%  peak $257.33  dd 0.27%
+  CURVE     ...__............_______-____----+++++====++***@+##***#***+++++++++==+*#@@#@@@@####@@@
+  DAY       real $+5.44  loss room $1.42 (0.57%)  0% used  vol x0.83  trust x1.00
+            ..........................
+  RECORD    43 closed  17W 26L  win 40%  payoff 1.62  avg $+0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      3 pos $102.87 (40%)  free $154.27
+  FEES      $0.91  mk75/tk30  0.353% of eq
+  SCAN      802 > 21 > 0 passed  top STONK 0.95 (corr_cap)  270 scans, 10138 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.00  taker flow +0.24
+  NEWS      65 articles  + tone +0.29  UNI +0.57  XMR +0.37  BASED +0.34
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 28tr $+0.06 win 50%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +67% #12  UAI +53% #41  PHA +52% #36  MUBARAK +43% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   84.6100  +0.42%   +0.15   38m  + 22% left
+  LITE     LONG      978.81    968.20  -1.08%   -0.52   38m  - 49% left
+  FET      LONG    0.204800  0.203100  -0.83%   -0.13    8m  - 43% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:30:49 |    🎢→⚖️ PHA: C292 stands down — parabola BROKEN (range 17×ATR, 4.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:31:30 |    🎢→⚖️ VVV: C292 stands down — parabola BROKEN (range 17×ATR, 5.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:31:33 |    🎢→⚖️ 牛来: C292 stands down — parabola BROKEN (range 14×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:32:32 | 📊 Step 3 result: 129 analyzed → 0 passed | corr_cap=74, regime_blip=18, pair_cap=4,
+    late_leg_no_forward=10, proj_confirms_trend=4, counter_trend_block=8, no_structural_room=1,
+    absorption_at_extreme=3, flat_projection=6, micro_exhaustion=1
+20:32:32 |    📌 Nearest miss: 1000BONK score=1.430 conf=0.950 quality=1.359/0.26 reason=corr_cap
+ 
+  20:35  up 33h07m  scan 271 ---------------------------------------------------------------------
+  EQUITY    $256.75  unreal $-0.39
+  SESSION   $+6.75 +2.70%  peak $257.33  dd 0.23%
+  CURVE     ...__............_______-____----+++++===+++***@*##*#*#***++++++++++++@@@@@@@@@#@#@@@@
+  DAY       real $+5.44  loss room $1.33 (0.53%)  0% used  vol x0.77  trust x1.00
+            ..........................
+  RECORD    43 closed  17W 26L  win 40%  payoff 1.62  avg $+0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      3 pos $102.87 (40%)  free $154.27
+  FEES      $0.91  mk75/tk30  0.353% of eq
+  SCAN      802 > 129 > 0 passed  top 1000BONK 1.43 (corr_cap)  271 scans, 10267 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.14  taker flow -0.16
+  NEWS      65 articles  + tone +0.29  UNI +0.57  XMR +0.37  BASED +0.34
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 28tr $+0.06 win 50%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +67% #12  UAI +53% #41  PHA +52% #36  MUBARAK +43% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   84.6400  +0.45%   +0.16   47m  + 31% left
+  LITE     LONG      978.81    972.22  -0.67%   -0.34   46m  - 41% left
+  FET      LONG    0.204800  0.202000  -1.37%   -0.21   16m  - 34% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:35:46 |    🪞 C266 board-parity (top movers vs screen): ZETA +58%[#14] | UAI +48%[#45] | MUBARAK
+    +43%[#41] | PHA +42%[#46] | STONK +33%[#63]
+20:36:36 | 📊 Step 3 result: 18 analyzed (+112 cached this 15m candle) → 0 passed | corr_cap=73,
+    regime_blip=21, late_leg_no_forward=11, proj_confirms_trend=4, flat_projection=4,
+    counter_trend_block=8, pair_cap=3, no_structural_room=2, absorption_at_extreme=3,
+    micro_exhaustion=1
+20:36:36 |    📌 Nearest miss: PENGU score=1.102 conf=0.828 quality=0.912/0.26 reason=corr_cap
+ 
+  20:43  up 33h16m  scan 272 ---------------------------------------------------------------------
+  EQUITY    $256.99  unreal $-0.15
+  SESSION   $+6.99 +2.80%  peak $257.33  dd 0.13%
+  CURVE     ...__............_______-____----+++++===+++***#*##*###***+++++++++=++@@@@@@@@@#@#@@@@
+  DAY       real $+5.44  loss room $1.59 (0.63%)  0% used  vol x0.93  trust x1.00
+            ..........................
+  RECORD    43 closed  17W 26L  win 40%  payoff 1.62  avg $+0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      3 pos $102.87 (40%)  free $154.27
+  FEES      $0.91  mk75/tk30  0.353% of eq
+  SCAN      803 > 18 > 0 passed  top PENGU 1.10 (corr_cap)  272 scans, 10285 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.00  taker flow +0.18
+  NEWS      65 articles  + tone +0.33  UNI +0.57  XMR +0.37  BASED +0.34
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 28tr $+0.06 win 50%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +58% #14  UAI +48% #45  MUBARAK +43% #41  PHA +42% #46
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   85.3500  +1.29%   +0.53   55m  + 35% left
+  LITE     LONG      978.81    967.86  -1.12%   -0.54   55m  - 39% left
+  FET      LONG    0.204800  0.203000  -0.88%   -0.14   24m  - 25% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:46:49 |    🪞 C266 board-parity (top movers vs screen): ZETA +64%[#13] | MUBARAK +43%[#38] | PHA
+    +42%[#41] | UAI +41%[#51] | NIL +32%[Live=0.36<cut]
+20:47:31 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 23×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:47:45 |    🎢→⚖️ ONE: C292 stands down — parabola BROKEN (range 14×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:47:51 |    🎢→⚖️ PHA: C292 stands down — parabola BROKEN (range 16×ATR, 5.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:48:33 |    🛑 C377 HARD STOP FET: -2.00% <= -1.78% (0.8R, R=2.38%) — arithmetic, not opinion
+20:48:33 | ❌ LOSS: FET/USDT:USDT | C377_RISK_STOP: -2.00% = -0.84R
+  << 20:48  CLOSE  FET LONG @0.200100  -2.29% $-0.34  LOSS
+       held 29m  C377_RISK_STOP: -2.00% =  round trip from +0.15%  -0.97R  TAKER
+20:48:56 | 📊 Step 3 result: 129 analyzed → 0 passed | absorption_at_extreme=6, corr_cap=76,
+    pair_cap=3, regime_blip=19, no_structural_room=3, counter_trend_block=8, capitulation=8,
+    proj_confirms_trend=2, late_leg_no_forward=3, flat_projection=1
+20:48:56 |    📌 Nearest miss: PENGU score=1.361 conf=0.945 quality=1.286/0.26 reason=corr_cap
+20:49:06 | 🎯 EXIT SIGNAL: LITE/USDT:USDT - REL_DSI+DRI DIVERGE: dsi_d=-0.257 dri_d=+0.081
+    thresh=0.07 shift=0.7 μ=-0.24
+  << 20:49  CLOSE  LITE LONG @969.63  -0.94% $-0.46  LOSS
+       held 1h00m  REL_DSI+DRI DIVERGE: dsi  round trip from +0.36%  -0.60R  TAKER
+ 
+ 
+  20:51  up 33h24m  scan 273 ---------------------------------------------------------------------
+  EQUITY    $257.13  unreal $+0.79
+  SESSION   $+7.13 +2.85%  peak $257.33  dd 0.08%
+  CURVE     ..._.............___________-----++++====+++*##@##***#***++++++++++++*@@@@@@@@#@#@@@@@
+  DAY       real $+4.64  loss room $1.59 (0.63%)  0% used  vol x0.93  trust x1.00
+            ..........................
+  RECORD    45 closed  17W 28L  win 38%  payoff 1.60  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $43.49 (17%)  free $212.85
+  FEES      $0.94  mk75/tk32  0.366% of eq
+  SCAN      803 > 129 > 0 passed  top PENGU 1.36 (corr_cap)  273 scans, 10414 analysed
+  MARKET    TRENDING  bias +0.77  breadth +0.00  taker flow +0.31
+  NEWS      65 articles  + tone +0.33  UNI +0.57  XMR +0.37  BASED +0.34
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 30tr $+0.03 win 47%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +64% #13  MUBARAK +43% #38  PHA +42% #41  UAI +41% #51
+  TAPE      - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   85.8500  +1.89%   +0.79 1h03m  + 27% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:59:16 |    🔭 C456: RAY exited on C377_RISK_STOP: -1.65% = — at its OWN thesis horizon (120min)
+    the price is +1.18% (+0.59R) FURTHER IN OUR FAVOUR — held would have been better
+20:59:53 |    🪞 C266 board-parity (top movers vs screen): ZETA +62%[#13] | MUBARAK +39%[#42] | PHA
+    +35%[#46] | NIL +34%[Live=0.38<cut] | UAI +30%[#65]
+21:00:40 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 23×ATR, 4.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:01:00 |    🎢→⚖️ ONE: C292 stands down — parabola BROKEN (range 14×ATR, 4.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:01:09 |    🎢→⚖️ PHA: C292 stands down — parabola BROKEN (range 15×ATR, 5.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:01:27 |    🎢→⚖️ UAI: C292 stands down — parabola BROKEN (range 10×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:02:11 |    🎢→⚖️ LUNA: C292 stands down — parabola BROKEN (range 33×ATR, 19.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:02:26 | 📊 Step 3 result: 129 analyzed → 0 passed | h1_regime_shock=61, regime_blip=26,
+    pair_cap=3, fee_floor=2, counter_trend_block=8, no_structural_room=20, flat_projection=4,
+    proj_confirms_trend=3, poor_reward_risk=2
+21:02:26 |    📌 Nearest miss: PNUT score=0.952 conf=0.877 quality=0.835/0.26 reason=h1_regime_shock
+ 
+  21:02  up 33h35m  scan 274 ---------------------------------------------------------------------
+  EQUITY    $256.97  unreal $+0.63
+  SESSION   $+6.97 +2.79%  peak $257.33  dd 0.14%
+  CURVE     ..._.............___________----=++++====+++*##+##*#*#***+++++++++=+*@@@@@@@@##@@@@@@@
+  DAY       real $+4.64  loss room $1.49 (0.59%)  0% used  vol x0.87  trust x1.00
+            ..........................
+  RECORD    45 closed  17W 28L  win 38%  payoff 1.60  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $43.49 (17%)  free $212.85
+  FEES      $0.94  mk75/tk32  0.367% of eq
+  SCAN      803 > 129 > 0 passed  top PNUT 0.95 (h1_regime_shock)  274 scans, 10543 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.38  taker flow +0.08
+  NEWS      65 articles  + tone +0.33  UNI +0.57  PEPE +0.45  ETH +0.45
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 30tr $+0.03 win 47%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +62% #13  MUBARAK +39% #42  PHA +35% #46  NIL +34% cut
+  TAPE      - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   85.5400  +1.52%   +0.63 1h14m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+21:09:08 |    🪞 C266 board-parity (top movers vs screen): ZETA +59%[#13] | MUBARAK
+    +39%[Live=0.45<cut] | PHA +33%[#44] | UAI +31%[#56] | NIL +31%[Live=0.55<cut]
+21:09:44 |    🎢→⚖️ JUP: C292 stands down — parabola BROKEN (range 15×ATR, 5.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:09:53 |    🎢→⚖️ CHIP: C292 stands down — parabola BROKEN (range 13×ATR, 5.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:09:54 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 25×ATR, 9.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:09:55 |    🎢→⚖️ REZ: C292 stands down — parabola BROKEN (range 13×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:10:04 | 📊 Step 3 result: 26 analyzed (+104 cached this 15m candle) → 0 passed |
+    h1_regime_shock=60, regime_blip=22, pair_cap=3, fee_floor=2, counter_trend_block=15,
+    no_structural_room=21, poor_reward_risk=3, flat_projection=3, proj_confirms_trend=1
+21:10:04 |    📌 Nearest miss: OUST score=1.065 conf=0.781 quality=0.832/0.26 reason=h1_regime_shock
+ 
+  21:10  up 33h43m  scan 275 ---------------------------------------------------------------------
+  EQUITY    $257.00  unreal $+0.66
+  SESSION   $+7.00 +2.80%  peak $257.33  dd 0.13%
+  CURVE     ..._.............___________-----++++====++**+@+##**##***+++++++=+=+*@@@@@@@@####@@@@@
+  DAY       real $+4.64  loss room $1.54 (0.61%)  0% used  vol x0.89  trust x1.00
+            ..........................
+  RECORD    45 closed  17W 28L  win 38%  payoff 1.60  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $43.49 (17%)  free $212.85
+  FEES      $0.94  mk75/tk32  0.367% of eq
+  SCAN      803 > 26 > 0 passed  top OUST 1.07 (h1_regime_shock)  275 scans, 10569 analysed
+  MARKET    TRENDING  bias +0.55  breadth +0.00  taker flow -0.11
+  NEWS      65 articles  + tone +0.15  UNI +0.57  LUNA +0.50  PEPE +0.45
+  INFO      4 tilted  flow/fund/news/oi on 292
+            info>0 30tr $+0.03 win 47%  info≤0 15tr $-0.09 win 20%
+  MOVERS    ZETA +59% #13  MUBARAK +39% cut  PHA +33% #44  UAI +31% #56
+  TAPE      - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CRWV     LONG     84.2600   85.6000  +1.59%   +0.66 1h22m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
