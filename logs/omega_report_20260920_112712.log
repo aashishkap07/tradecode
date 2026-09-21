@@ -3170,3 +3170,56 @@
   TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - -
   ------------------------------------------------------------------------------------------------
 
+  .. 10:24  flat  $253.63  $+3.63 +1.45%  13W 18L 42%  70 analysed
+  .. 10:32  flat  $253.63  $+3.63 +1.45%  13W 18L 42%  1 analysed
+  .. 10:40  flat  $253.63  $+3.63 +1.45%  13W 18L 42%  70 analysed
+
+
+  10:48  up 23h21m  scan 194 ---------------------------------------------------------------------
+  EQUITY    $253.63
+  SESSION   $+3.63 +1.45%  peak $256.40  dd 1.08%
+  CURVE     ....___................._________--_____------=++***++++++*+++###*@@####*###@###***+++
+  DAY       real $+1.93  loss room $1.72 (0.68%)  0% used  vol x0.85  trust x1.25  month guard
+            ..........................
+  RECORD    31 closed  13W 18L  win 42%  payoff 1.27  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 44%
+  OPEN      flat  free $317.04
+  FEES      $0.67  mk54/tk21  0.264% of eq
+  SCAN      797 > 69 > 1 passed  top PUMP 0.61 (viable)  194 scans, 6787 analysed
+  MARKET    TRENDING  bias -0.02  breadth +0.00  taker flow -0.08
+  NEWS      65 articles  + tone +0.07  BASED +0.34  FET -0.25  BGB -0.25
+  INFO      1 tilted  flow/fund/news/oi on 200
+            info>0 20tr $-0.02 win 50%  info≤0 11tr $-0.01 win 27%
+  MOVERS    ZETA +70% #17  G -52% #14  AKE -48% #11  CELR -35% #19
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 10:56  flat  $253.63  $+3.63 +1.45%  13W 18L 42%  1 analysed
+  >> 11:03  OPEN   PUMP LONG @0.00445400  x1 $30.74
+       target +7.2%  stop -2.2%  entry score 0.67  maker
+
+
+  11:04  up 23h37m  scan 197 ---------------------------------------------------------------------
+  EQUITY    $253.64  unreal $+0.01
+  SESSION   $+3.64 +1.46%  peak $256.40  dd 1.08%
+  CURVE     ...____................________---______------++****+++++++++*##@@@#@@@####@@###******
+  DAY       real $+1.93  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    31 closed  13W 18L  win 42%  payoff 1.27  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 44%
+  OPEN      1 pos $30.74 (12%)  free $222.89
+  FEES      $0.68  mk55/tk21  0.266% of eq
+  SCAN      797 > 76 > 1 passed  top PUMP 0.67 (viable)  197 scans, 6883 analysed
+  MARKET    TRENDING  bias +0.19  breadth -0.05  taker flow -0.23
+  NEWS      65 articles  + tone +0.25  BASED +0.34  FET -0.25  BGB -0.25
+  INFO      1 tilted  flow/fund/news/oi on 201
+            info>0 20tr $-0.02 win 50%  info≤0 11tr $-0.01 win 27%
+  MOVERS    ZETA +64% #16  AKE -51% #12  G -50% cut  STONK +38% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     LONG  0.004454000.00445900  +0.11%   +0.01    0m  + 59% left
+  ------------------------------------------------------------------------------------------------
+
+  << 11:10  CLOSE  PUMP LONG @0.00443400  -0.45% $-0.16  LOSS
+       held 7m  REGIME_EXIT: resultant f  round trip from +0.27%  -0.15R  TAKER
