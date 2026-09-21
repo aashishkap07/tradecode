@@ -805,3 +805,265 @@
     h1_regime_shock=35, no_structural_room=7, regime_blip=3, pair_cap=5, poor_reward_risk=1,
     micro_exhaustion=2, proj_confirms_trend=2, fee_floor=1
 03:16:04 |    📌 Nearest miss: EVAA score=1.046 conf=0.660 quality=0.691/0.26 reason=h1_regime_shock
+ 
+ 
+  03:18  up 39h50m  scan 327 ---------------------------------------------------------------------
+  EQUITY    $256.35
+  SESSION   $+6.35 +2.54%  peak $257.44  dd 0.42%
+  CURVE     ..............__________----+++===+++*+#****#**+++++++==++@@@@@@@##@@@@@@@@@@@@@@@@#@#
+  DAY       real $-0.36  loss room $1.39 (0.54%)  26% used  vol x0.79  trust x1.00
+            #######...................
+  RECORD    56 closed  20W 36L  win 36%  payoff 1.63  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $256.35
+  FEES      $1.15  mk89/tk41  0.447% of eq
+  SCAN      803 > 60 > 0 passed  top EVAA 1.05 (h1_regime_shock)  327 scans, 13402 analysed
+  MARKET    TRENDING  bias +0.40  breadth +0.00  taker flow +0.12
+  NEWS      65 articles  - tone -0.07  LUNA +0.50  BASED +0.34  ETH +0.27
+  INFO      2 tilted  flow/fund/news/oi on 321
+            info>0 37tr $+0.01 win 43%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +54% #8  FORM +43% #29  ALCH +41% #50  PHA +36% cut
+  TAPE      - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+ 
+03:22:05 | ⊥ C97 TF-CONFLICT: 1h=-0.36×4h=+0.69=d14=-0.25 — only longs allowed (4h dominant)
+  .. 03:26  flat  $256.35  $+6.35 +2.54%  20W 36L 36%  60 analysed
+03:28:26 |    🪞 C266 board-parity (top movers vs screen): ZETA +53%[#8] | FORM +42%[#26] | ALCH
+    +40%[#48] | PHA +34%[Live=0.12<cut] | MUBARAK +32%[#27]
+03:28:27 | ⊥ C97 TF-CONFLICT: 1h=-0.36×4h=+0.69=d14=-0.25 — only longs allowed (4h dominant)
+03:28:43 | 📊 Step 3 result: 3 analyzed (+57 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=3, h1_regime_shock=34, no_structural_room=7, regime_blip=3, pair_cap=5,
+    poor_reward_risk=1, micro_exhaustion=2, proj_confirms_trend=2, fee_floor=1, ct_noisy_block=1
+03:28:43 |    📌 Nearest miss: STX score=0.547 conf=0.615 quality=0.336/0.26 reason=h1_regime_shock
+03:33:44 | ⊥ C97 TF-CONFLICT: 1h=-0.84×4h=+0.58=d14=-0.49 — only shorts allowed (1h dominant)
+03:34:01 |    🎢→⚖️ PEPE: C292 stands down — parabola BROKEN (range 16×ATR, 3.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+03:34:27 |    🎢→⚖️ VVV: C292 stands down — parabola BROKEN (range 19×ATR, 5.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+03:34:55 |    🎢→⚖️ OPG: C292 stands down — parabola BROKEN (range 32×ATR, 15.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+03:34:56 |    ⚖️ C462-7 STX: penalties 0.76→0.45 (×0.59) vs bar 0.72 — the stack decided
+03:34:57 |    ⚖️ C462-7 AKT: penalties 0.91→0.58 (×0.64) vs bar 0.72 — the stack decided
+03:34:57 | 📊 Step 3 result: 60 analyzed → 2 viable → Step 4 DRI/DSI
+03:34:58 |    🎲 C378 odds-size: orderliness 0.18 -> risk x0.81 ($0.706)
+03:34:59 |    🎲 C378 odds-size: orderliness 0.11 -> risk x0.77 ($0.670)
+03:35:00 |    🔒 C378 stop level $0.21512 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 03:35  OPEN   XLM LONG @0.217820  x2 $26.95
+       target +5.1%  stop -1.2%  entry score 0.51  maker
+ 
+ 
+  03:35  up 40h07m  scan 329 ---------------------------------------------------------------------
+  EQUITY    $256.31  unreal $-0.04
+  SESSION   $+6.31 +2.52%  peak $257.44  dd 0.44%
+  CURVE     ..............__________---++++===++**#@##**#**++++++++=+*#@@@@@####@@@@@@@@@@@@@@@@@@
+  DAY       real $-0.36  loss room $1.35 (0.53%)  27% used  vol x0.77  trust x1.00
+            #######...................
+  RECORD    56 closed  20W 36L  win 36%  payoff 1.63  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $26.95 (11%)  free $229.40
+  FEES      $1.16  mk90/tk41  0.451% of eq
+  SCAN      803 > 60 > 2 passed  top EVAA 0.60 (viable)  329 scans, 13465 analysed
+  MARKET    TRENDING  bias +0.36  breadth +0.00  taker flow -0.26
+  NEWS      65 articles  + tone +0.09  LUNA +0.50  FORM -0.41  BASED +0.34
+  INFO      2 tilted  flow/fund/news/oi on 321
+            info>0 37tr $+0.01 win 43%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +53% #8  FORM +42% #26  ALCH +40% #48  PHA +34% cut
+  TAPE      - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XLM      LONG    0.217820  0.217830  +0.00%   -0.04    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  03:43  up 40h15m  scan 329 ---------------------------------------------------------------------
+  EQUITY    $256.43  unreal $+0.08
+  SESSION   $+6.43 +2.57%  peak $257.44  dd 0.39%
+  CURVE     ..............__________---++++===++**#+##**#**++++++++=+*@@@@@@###@@@@@@@@@@@@@@@@@@@
+  DAY       real $-0.36  loss room $1.35 (0.53%)  27% used  vol x0.77  trust x1.00
+            #######...................
+  RECORD    56 closed  20W 36L  win 36%  payoff 1.63  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $26.95 (11%)  free $229.40
+  FEES      $1.16  mk90/tk41  0.451% of eq
+  SCAN      803 > 60 > 2 passed  top EVAA 0.60 (viable)  329 scans, 13465 analysed
+  MARKET    TRENDING  bias +0.36  breadth +0.00  taker flow -0.09
+  NEWS      65 articles  + tone +0.09  LUNA +0.50  FORM -0.41  BASED +0.34
+  INFO      2 tilted  flow/fund/news/oi on 321
+            info>0 37tr $+0.01 win 43%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +53% #8  FORM +42% #26  ALCH +40% #48  PHA +34% cut
+  TAPE      - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XLM      LONG    0.217820  0.218330  +0.23%   +0.08    8m  + 102% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:45:22 |    🪞 C266 board-parity (top movers vs screen): ZETA +53%[#7] | ALCH +43%[#45] | FORM
+    +40%[#30] | PHA +34%[Live=-0.02<cut] | MUBARAK +31%[#29]
+03:45:56 |    ⚖️ C462-7 SHIB: penalties 0.58→0.50 (×0.85) vs bar 0.54 — the stack decided
+03:46:11 |    ⚖️ C462-7 VIRTUAL: penalties 0.74→0.48 (×0.64) vs bar 0.55 — the stack decided
+03:46:16 |    ⚖️ C462-7 G: penalties 0.36→0.07 (×0.20) vs bar 0.33 — the stack decided
+03:46:39 | 📊 Step 3 result: 71 analyzed → 2 viable → Step 4 DRI/DSI
+03:46:40 |    🎲 C378 odds-size: orderliness 0.18 -> risk x0.81 ($0.709)
+03:46:41 |    🔒 C378 stop level $2.169 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 03:46  OPEN   TRUMP LONG @2.1960  x2 $10.25
+       target +4.9%  stop -1.3%  entry score 0.78  maker
+03:49:59 | 📊 Step 3 result: 2 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=8,
+    low_score=32, mtf_disagree=1, regime_blip=2, absorption_at_extreme=3, pair_cap=5,
+    late_leg_no_forward=10, flat_projection=4, micro_exhaustion=1, post_penalty_quality=1,
+    leg_exhausted=2, capitulation=1, fee_floor=1
+03:49:59 |    📌 Nearest miss: TRUMP score=1.263 (pre-pen 1.47) conf=0.523 quality=0.661/0.26
+    reason=mtf_disagree
+ 
+ 
+  03:51  up 40h23m  scan 331 ---------------------------------------------------------------------
+  EQUITY    $256.39  unreal $+0.04
+  SESSION   $+6.39 +2.56%  peak $257.44  dd 0.41%
+  CURVE     ..............__________---=+++===++**#+##**#**++++++=+=+*@@#@@@###@@@#@#@@@@@@@@@#@##
+  DAY       real $-0.36  loss room $1.27 (0.50%)  28% used  vol x0.73  trust x1.00
+            #######...................
+  RECORD    56 closed  20W 36L  win 36%  payoff 1.63  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      2 pos $37.20 (15%)  free $219.15
+  FEES      $1.16  mk91/tk41  0.453% of eq
+  SCAN      803 > 2 > 0 passed  top TRUMP 1.26 (mtf_disagree)  331 scans, 13538 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.35  taker flow +0.17
+  NEWS      65 articles  + tone +0.09  HYPE +0.77  PEPE +0.70  ETH +0.54
+  INFO      2 tilted  flow/fund/news/oi on 321
+            info>0 37tr $+0.01 win 43%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +53% #7  ALCH +43% #45  FORM +40% #30  PHA +34% cut
+  TAPE      - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XLM      LONG    0.217820  0.218380  +0.26%   +0.10   16m  + 105% left
+  TRUMP    LONG      2.1960    2.1920  -0.18%   -0.05    4m  - 44% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:56:26 |    🪞 C266 board-parity (top movers vs screen): ZETA +54%[#6] | ALCH +41%[#46] | FORM
+    +39%[#28] | PHA +33%[Live=-0.02<cut] | EVAA +31%[#71]
+03:56:47 |    ⚖️ C462-7 STX: penalties 0.79→0.68 (×0.85) vs bar 0.72 — the stack decided
+03:56:48 | 📊 Step 3 result: 4 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=31, mtf_disagree=1, regime_blip=2, absorption_at_extreme=3, pair_cap=5,
+    late_leg_no_forward=9, flat_projection=4, counter_trend_block=1, post_penalty_quality=1,
+    micro_exhaustion=1, leg_exhausted=2, capitulation=1, fee_floor=1
+03:56:48 |    📌 Nearest miss: STX score=0.676 (pre-pen 0.79) conf=0.691 quality=0.467/0.26
+    reason=score 0.676 < 0.720
+ 
+  03:59  up 40h31m  scan 332 ---------------------------------------------------------------------
+  EQUITY    $255.55  unreal $-0.80
+  SESSION   $+5.55 +2.22%  peak $257.44  dd 0.73%
+  CURVE     ..............__________---=+++===++*##*##**#**++++++=+=+#@@#@@@###@@@@@@@@@@@@@@@@@@#
+  DAY       real $-0.36  loss room $1.27 (0.50%)  28% used  vol x0.73  trust x1.00
+            #######...................
+  RECORD    56 closed  20W 36L  win 36%  payoff 1.63  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      2 pos $37.20 (15%)  free $219.15
+  FEES      $1.16  mk91/tk41  0.454% of eq
+  SCAN      803 > 4 > 0 passed  top STX 0.68 (score 0.676 < 0.72)  332 scans, 13542 analysed
+  MARKET    TRENDING  bias +0.56  breadth +0.00  taker flow +0.08
+  NEWS      65 articles  + tone +0.29  HYPE +0.77  PEPE +0.70  ETH +0.54
+  INFO      2 tilted  flow/fund/news/oi on 321
+            info>0 37tr $+0.01 win 43%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +54% #6  ALCH +41% #46  FORM +39% #28  PHA +33% cut
+  TAPE      - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XLM      LONG    0.217820  0.215510  -1.06%   -0.61   24m  - 74% left
+  TRUMP    LONG      2.1960    2.1780  -0.82%   -0.18   12m  - 24% left
+  ------------------------------------------------------------------------------------------------
+ 
+03:59:21 | 🎯 EXIT SIGNAL: XLM/USDT:USDT - PEAK_FLOOR: peaked at +1.9%(1.1PRU) now=-2.1% — profit
+    fully erased, protecting capital
+  << 03:59  CLOSE  XLM LONG @0.215590  -1.02% $-0.59  LOSS
+       held 24m  PEAK_FLOOR: peaked at +1  round trip from +0.95%  -0.62R  TAKER
+04:00:24 |    ⚖️ C462-7 XLM: penalties 0.87→0.56 (×0.64) vs bar 0.72 — the stack decided
+04:00:34 |    ⚖️ C462-7 DOT: penalties 0.72→0.46 (×0.64) vs bar 0.72 — the stack decided
+04:01:12 |    ⚖️ C462-7 RUNE: penalties 1.02→0.66 (×0.64) vs bar 0.72 — the stack decided
+04:01:25 |    ⚖️ C462-7 EVAA: penalties 1.09→0.70 (×0.64) vs bar 0.72 — the stack decided
+04:01:25 | 📊 Step 3 result: 71 analyzed → 2 viable → Step 4 DRI/DSI
+04:01:27 |    🎲 C378 odds-size: orderliness 0.22 -> risk x0.83 ($0.725)
+04:01:27 |    🔒 C378 stop level $0.3417 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 04:01  OPEN   STX LONG @0.346500  x2 $5.00
+       target +6.9%  stop -1.4%  entry score 0.81  maker
+04:04:38 |    🪞 C266 board-parity (top movers vs screen): ZETA +54%[#6] | FORM +40%[Live=0.23<cut] |
+    ALCH +40%[Live=0.13<cut] | PHA +33%[Live=-0.05<cut] | EVAA +32%[#38]
+04:05:01 | 🎯 EXIT SIGNAL: TRUMP/USDT:USDT - C399_CONVICTION_COLLAPSE: only 6% of the entry thesis
+    left — DRI -0.200->-0.012 (6% left), DSI +0.244->+0.111 (45% left) | PnL=-0.3% (exiting BEFORE
+    the reversal shows in price)
+  << 04:05  CLOSE  TRUMP LONG @2.1950  -0.05% $-0.03  LOSS
+       held 18m  C399_CONVICTION_COLLAPSE  round trip from +0.14%  -0.03R  TAKER
+04:05:07 | 📊 Step 3 result: 15 analyzed (+55 cached this 15m candle) → 0 passed | low_confidence=10,
+    low_score=23, mtf_disagree=1, regime_blip=5, crowding=1, capitulation=4, pair_cap=6,
+    late_leg_no_forward=3, counter_trend_block=12, post_penalty_low=1, no_structural_room=2,
+    flat_projection=1, fee_floor=1
+04:05:07 |    📌 Nearest miss: STX score=0.822 (pre-pen 1.46) conf=0.512 quality=0.421/0.26
+    reason=mtf_disagree
+ 
+ 
+  04:07  up 40h39m  scan 334 ---------------------------------------------------------------------
+  EQUITY    $255.71  unreal $-0.02
+  SESSION   $+5.71 +2.28%  peak $257.44  dd 0.67%
+  CURVE     .............._________----++++===++*+#****#***+++++++=+*#@@@@@###@@@@@#@@@@@@@@@@@@@#
+  DAY       real $-0.98  loss room $1.31 (0.51%)  75% used  vol x0.75  trust x1.00
+            ###################.......
+  RECORD    58 closed  20W 38L  win 34%  payoff 1.63  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $250.73
+  FEES      $1.21  mk92/tk43  0.472% of eq
+  SCAN      803 > 15 > 0 passed  top STX 0.82 (mtf_disagree)  334 scans, 13628 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.21  taker flow +0.05
+  NEWS      65 articles  + tone +0.29  PEPE +0.70  ETH +0.54  LUNA +0.50
+  INFO      2 tilted  flow/fund/news/oi on 322
+            info>0 39tr $-0.01 win 41%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +54% #6  FORM +40% cut  ALCH +40% cut  PHA +33% cut
+  TAPE      - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  STX      LONG    0.346500  0.346200  -0.09%   -0.02    5m  - 73% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  04:15  up 40h47m  scan 334 ---------------------------------------------------------------------
+  EQUITY    $255.68  unreal $-0.05
+  SESSION   $+5.68 +2.27%  peak $257.44  dd 0.68%
+  CURVE     .............._________----+++=====+*+#*#**#**++++++++=+*@@@@@@####@@#@#@@@@@@@@@#@###
+  DAY       real $-0.98  loss room $1.31 (0.51%)  75% used  vol x0.75  trust x1.00
+            ###################.......
+  RECORD    58 closed  20W 38L  win 34%  payoff 1.63  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $250.73
+  FEES      $1.21  mk92/tk43  0.472% of eq
+  SCAN      803 > 15 > 0 passed  top STX 0.82 (mtf_disagree)  334 scans, 13628 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.21  taker flow +0.18
+  NEWS      65 articles  + tone +0.29  PEPE +0.70  ETH +0.54  LUNA +0.50
+  INFO      2 tilted  flow/fund/news/oi on 322
+            info>0 39tr $-0.01 win 41%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +54% #6  FORM +40% cut  ALCH +40% cut  PHA +33% cut
+  TAPE      - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  STX      LONG    0.346500  0.345000  -0.43%   -0.05   13m  - 81% left
+  ------------------------------------------------------------------------------------------------
+ 
+04:15:47 |    🪞 C266 board-parity (top movers vs screen): ZETA +53%[Live=0.26<cut] | FORM
+    +39%[Live=0.04<cut] | ALCH +38%[Live=0.31<cut] | PHA +35%[Live=0.08<cut] | EVAA +32%[#34]
+04:15:49 | ⊥ C97 TF-CONFLICT: 1h=-0.45×4h=+0.54=d14=-0.24 — only longs allowed (4h dominant)
+04:16:10 |    ⚖️ C462-7 XRP: penalties 1.18→0.51 (×0.43) vs bar 0.72 — the stack decided
+04:16:14 |    ⚖️ C462-7 BCH: penalties 0.84→0.48 (×0.57) vs bar 0.72 — the stack decided
+04:16:16 |    ⚖️ C462-7 TRUMP: penalties 0.74→0.43 (×0.57) vs bar 0.72 — the stack decided
+04:16:18 |    ⚖️ C462-7 XLM: penalties 0.72→0.41 (×0.57) vs bar 0.72 — the stack decided
+04:16:27 |    🎢→⚖️ VVV: C292 stands down — parabola BROKEN (range 16×ATR, 5.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:16:30 |    ⚖️ C462-7 EVAA: penalties 1.07→0.61 (×0.57) vs bar 0.72 — the stack decided
+04:16:39 |    ⚖️ C462-7 VET: penalties 1.07→0.46 (×0.43) vs bar 0.72 — the stack decided
+04:16:54 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=2, low_score=35, regime_blip=4,
+    flat_projection=4, pair_cap=6, late_leg_no_forward=10, absorption_at_extreme=2, capitulation=2,
+    no_structural_room=2, ct_noisy_block=3
+04:16:54 |    📌 Nearest miss: XRP score=0.679 (pre-pen 1.18) conf=0.584 quality=0.397/0.26
+    reason=score 0.509 < 0.720
