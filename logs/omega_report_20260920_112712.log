@@ -3223,3 +3223,51 @@
 
   << 11:10  CLOSE  PUMP LONG @0.00443400  -0.45% $-0.16  LOSS
        held 7m  REGIME_EXIT: resultant f  round trip from +0.27%  -0.15R  TAKER
+
+
+  11:20  up 23h53m  scan 197 ---------------------------------------------------------------------
+  EQUITY    $253.47
+  SESSION   $+3.47 +1.39%  peak $256.40  dd 1.14%
+  CURVE     ....___................________-_-_____------=++***++++++*+++*##@@*#@@####@@##****++++
+  DAY       real $+1.77  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    32 closed  13W 19L  win 41%  payoff 1.31  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      flat  free $253.47
+  FEES      $0.69  mk55/tk22  0.274% of eq
+  SCAN      797 > 76 > 1 passed  top PUMP 0.67 (viable)  197 scans, 6883 analysed
+  MARKET    TRENDING  bias +0.19  breadth -0.05  taker flow +0.00
+  NEWS      65 articles  + tone +0.25  BASED +0.34  FET -0.25  BGB -0.25
+  INFO      1 tilted  flow/fund/news/oi on 201
+            info>0 20tr $-0.02 win 50%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +64% #16  AKE -51% #12  G -50% cut  STONK +38% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 11:28  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  76 analysed
+  .. 11:36  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  76 analysed
+  .. 11:44  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  15 analysed
+
+
+  11:52  up 24h25m  scan 201 ---------------------------------------------------------------------
+  EQUITY    $253.47
+  SESSION   $+3.47 +1.39%  peak $256.40  dd 1.14%
+  CURVE     ...____..............._________--______-----=+*****+++++**+*##@@@*@@@###@@####*****+++
+  DAY       real $+1.77  loss room $1.33 (0.53%)  0% used  vol x0.77  trust x1.00
+            ..........................
+  RECORD    32 closed  13W 19L  win 41%  payoff 1.31  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      flat  free $253.47
+  FEES      $0.69  mk55/tk22  0.274% of eq
+  SCAN      797 > 75 > 2 passed  top XMR 0.55 (viable)  201 scans, 7125 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.00  taker flow -0.20
+  NEWS      65 articles  + tone +0.38  BASED +0.34  XRP +0.34  XAU +0.34
+  INFO      2 tilted  flow/fund/news/oi on 201
+            info>0 20tr $-0.02 win 50%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +63% #15  G -55% cut  STONK +45% cut  NIL +43% #23
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 12:00  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  2 analysed
+  .. 12:08  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  74 analysed
+  .. 12:16  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  1 analysed

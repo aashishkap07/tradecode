@@ -5107,3 +5107,95 @@
     PnL=-0.4% (armed 443s, own-DRI -0.05)
   << 11:10  CLOSE  PUMP LONG @0.00443400  -0.45% $-0.16  LOSS
        held 7m  REGIME_EXIT: resultant f  round trip from +0.27%  -0.15R  TAKER
+ 
+ 
+  11:20  up 23h53m  scan 197 ---------------------------------------------------------------------
+  EQUITY    $253.47
+  SESSION   $+3.47 +1.39%  peak $256.40  dd 1.14%
+  CURVE     ....___................________-_-_____------=++***++++++*+++*##@@*#@@####@@##****++++
+  DAY       real $+1.77  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    32 closed  13W 19L  win 41%  payoff 1.31  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      flat  free $253.47
+  FEES      $0.69  mk55/tk22  0.274% of eq
+  SCAN      797 > 76 > 1 passed  top PUMP 0.67 (viable)  197 scans, 6883 analysed
+  MARKET    TRENDING  bias +0.19  breadth -0.05  taker flow +0.00
+  NEWS      65 articles  + tone +0.25  BASED +0.34  FET -0.25  BGB -0.25
+  INFO      1 tilted  flow/fund/news/oi on 201
+            info>0 20tr $-0.02 win 50%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +64% #16  AKE -51% #12  G -50% cut  STONK +38% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+11:23:56 |    🪞 C266 board-parity (top movers vs screen): G -53%[Live=0.22<cut] | ZETA +52%[#19] |
+    STONK +40%[#41] | AKE -35%[#12] | CELR -34%[#17]
+11:25:08 | 📊 Step 3 result: 76 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 11:28  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  76 analysed
+11:28:21 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $311.6886 → $253.4686 (equity
+    $253.4686 − locked $0.0000 = $253.4686); discrepancy $+58.2200. Money that does not exist would
+    have been sized against [correction #15]
+11:30:39 |    🎢→⚖️ AVAX: C292 stands down — parabola BROKEN (range 20×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:31:47 | 📊 Step 3 result: 76 analyzed → 2 viable → Step 4 DRI/DSI
+  .. 11:36  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  76 analysed
+11:37:57 |    🪞 C266 board-parity (top movers vs screen): ZETA +61%[#14] | G -53%[Live=0.17<cut] |
+    STONK +43%[Live=0.22<cut] | AKE -36%[#12] | NIL +34%[#28]
+11:38:19 |    ⚖️ C462-7 ZAMA: penalties 0.65→0.48 (×0.75) vs bar 0.51 — the stack decided
+11:38:26 | 📊 Step 3 result: 15 analyzed (+61 cached this 15m candle) → 0 passed | low_confidence=31,
+    low_score=25, mtf_disagree=1, pair_cap=2, fee_floor=3, capitulation=3, late_leg_no_forward=3,
+    session_short=2, poor_reward_risk=2, flat_projection=2, vol_floor=1, no_structural_room=1
+11:38:26 |    📌 Nearest miss: XMR score=0.926 conf=0.583 quality=0.540/0.26 reason=mtf_disagree
+  .. 11:44  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  15 analysed
+11:50:48 |    🪞 C266 board-parity (top movers vs screen): ZETA +63%[#15] | G -55%[Live=0.28<cut] |
+    STONK +45%[Live=0.18<cut] | NIL +43%[#23] | AKE -38%[#12]
+11:51:11 |    🎢→⚖️ AVAX: C292 stands down — parabola BROKEN (range 19×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:51:40 |    ⚖️ C462-7 BTW: penalties 0.72→0.54 (×0.75) vs bar 0.63 — the stack decided
+11:52:06 | 📊 Step 3 result: 75 analyzed → 2 viable → Step 4 DRI/DSI
+ 
+ 
+  11:52  up 24h25m  scan 201 ---------------------------------------------------------------------
+  EQUITY    $253.47
+  SESSION   $+3.47 +1.39%  peak $256.40  dd 1.14%
+  CURVE     ...____..............._________--______-----=+*****+++++**+*##@@@*@@@###@@####*****+++
+  DAY       real $+1.77  loss room $1.33 (0.53%)  0% used  vol x0.77  trust x1.00
+            ..........................
+  RECORD    32 closed  13W 19L  win 41%  payoff 1.31  avg $-0.02/tr  best $+1.36  worst $-1.64
+            break-even 43%
+  OPEN      flat  free $253.47
+  FEES      $0.69  mk55/tk22  0.274% of eq
+  SCAN      797 > 75 > 2 passed  top XMR 0.55 (viable)  201 scans, 7125 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.00  taker flow -0.20
+  NEWS      65 articles  + tone +0.38  BASED +0.34  XRP +0.34  XAU +0.34
+  INFO      2 tilted  flow/fund/news/oi on 201
+            info>0 20tr $-0.02 win 50%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +63% #15  G -55% cut  STONK +45% cut  NIL +43% #23
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+11:58:28 | 📊 Step 3 result: 2 analyzed (+73 cached this 15m candle) → 0 passed | low_confidence=21,
+    low_score=32, mtf_disagree=1, pair_cap=1, proj_confirms_trend=1, flat_projection=4,
+    post_penalty_quality=1, absorption_at_extreme=2, exhaustion_hard=1, late_leg_no_forward=1,
+    no_structural_room=3, capitulation=2, post_penalty_low=1, micro_exhaustion=1, fee_floor=2,
+    leg_exhausted=1
+11:58:28 |    📌 Nearest miss: NIL score=0.926 conf=0.660 quality=0.611/0.26
+    reason=post_penalty_quality
+  .. 12:00  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  2 analysed
+12:04:35 |    🪞 C266 board-parity (top movers vs screen): ZETA +72%[#13] | G -55%[Live=0.17<cut] |
+    STONK +47%[Live=0.38<cut] | NIL +40%[#32] | AKE -40%[#12]
+12:05:37 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 25×ATR, 10.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+12:05:39 |    ⚖️ C462-7 MINA: penalties 0.56→0.42 (×0.75) vs bar 0.43 — the stack decided
+12:05:44 |    ⚖️ C462-7 EGLD: penalties 0.69→0.52 (×0.75) vs bar 0.55 — the stack decided
+12:06:07 | 📊 Step 3 result: 74 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 12:08  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  74 analysed
+12:12:22 | 📊 Step 3 result: 1 analyzed (+73 cached this 15m candle) → 0 passed | low_confidence=16,
+    low_score=34, mtf_disagree=2, capitulation=3, late_leg_no_forward=7, pair_cap=2,
+    no_structural_room=3, post_penalty_low=3, absorption_at_extreme=1, flat_projection=1,
+    micro_exhaustion=1, vol_floor=1
+12:12:22 |    📌 Nearest miss: XMR score=0.767 conf=0.591 quality=0.453/0.26 reason=mtf_disagree
+  .. 12:16  flat  $253.47  $+3.47 +1.39%  13W 19L 41%  1 analysed
