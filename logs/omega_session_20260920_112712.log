@@ -62,3 +62,280 @@
 00:16:24 |    🎢→⚖️ SUI: C292 stands down — parabola BROKEN (range 16×ATR, 3.9 ATR off the day
     extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
     path [C299]
+00:17:04 |    ⚖️ C462-7 STONK: penalties 0.77→0.54 (×0.70) vs bar 0.72 — the stack decided
+00:17:06 |    ⚖️ C462-7 OPENAI: penalties 0.85→0.60 (×0.70) vs bar 0.72 — the stack decided
+00:17:13 |    ⚖️ C462-7 SYN: penalties 1.06→0.68 (×0.64) vs bar 0.72 — the stack decided
+00:17:14 |    🎯 C462-6 MAKER half filled NBIS @$238.03 — saved ~0.04% of the half notional (16 this
+    session)
+  -> 00:17  HALF   NBIS LONG @238.03  +2.07% $+0.39
+       win half banked  maker  $19.05 rides on
+00:17:18 |    ⚖️ C462-7 EVAA: penalties 0.83→0.58 (×0.70) vs bar 0.72 — the stack decided
+00:17:51 |    ⚖️ C462-7 PNUT: penalties 0.98→0.69 (×0.70) vs bar 0.72 — the stack decided
+00:17:58 | 📊 Step 3 result: 130 analyzed → 4 viable → Step 4 DRI/DSI
+00:17:59 |    🎲 C378 odds-size: orderliness 0.19 -> risk x0.81 ($0.713)
+00:18:00 |    🔒 C378 stop level $48.066 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 00:18  OPEN   IREN LONG @48.6540  x1 $25.50
+       target +4.8%  stop -1.2%  entry score 0.56  maker
+ 
+ 
+  00:18  up 36h50m  scan 302 ---------------------------------------------------------------------
+  EQUITY    $257.22  unreal $+0.12
+  SESSION   $+7.22 +2.89%  peak $257.44  dd 0.09%
+  CURVE     ...._..........___________----=+++=====+*##+##**##**+++++++++=+#@@@@@@@###@@@@@@@@@@@@
+  DAY       real $+0.39  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    48 closed  18W 30L  win 38%  payoff 1.62  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      3 pos $74.41 (29%)  free $182.69
+  FEES      $1.00  mk83/tk34  0.390% of eq
+  SCAN      803 > 130 > 4 passed  top IREN 0.56 (viable)  302 scans, 12407 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.32  LUNA +0.50  XMR +0.38  ETH +0.34
+  INFO      4 tilted  flow/fund/news/oi on 315
+            info>0 32tr $+0.03 win 47%  info≤0 16tr $-0.08 win 19%
+  MOVERS    ZETA +57% #12  FORM +41% cut  PHA +38% cut  MUBARAK +32% cut
+  TAPE      + + - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  NBIS     LONG      233.21    237.72  +1.93%   +0.35 2h12m  + 7% left
+  MRNA     LONG      175.41    174.59  -0.47%   -0.16   59m  - 42% left
+  IREN     LONG     48.6540   48.5660  -0.18%   -0.07    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+ 
+00:18:34 | 🎯 EXIT SIGNAL: MRNA/USDT:USDT - REL_DSI+DRI DIVERGE: dsi_d=-0.131 dri_d=+0.104
+    thresh=0.10 shift=0.6 μ=-0.24
+  << 00:18  CLOSE  MRNA LONG @174.26  -0.66% $-0.22  LOSS
+       held 1h00m  REL_DSI+DRI DIVERGE: dsi  round trip from +0.82%  -0.31R  TAKER
+00:21:31 | 📊 Step 3 result: 4 analyzed (+126 cached this 15m candle) → 0 passed | low_confidence=47,
+    low_score=33, crowding=1, pair_cap=3, flat_projection=10, no_structural_room=21, regime_blip=8,
+    micro_exhaustion=1, fee_floor=1, poor_reward_risk=2, capitulation=2, leg_exhausted=1
+00:21:31 |    📌 Nearest miss: MRNA score=0.289 (pre-pen 0.41) conf=0.293 quality=0.085/0.26
+    reason=confidence 0.293 < 0.42250000000000004
+00:22:15 |    🎯 C376 MAKER exit filled NBIS @$236.61 — saved ~0.04%% of notional (17 this session)
+  << 00:22  CLOSE  NBIS LONG @236.61  +1.46% $+0.27  WIN
+       held 2h17m  TRAILING_TP: peak=+2.0%   kept 72% of a +2.03% peak  +0.55R  maker
+00:24:44 |    🪞 C266 board-parity (top movers vs screen): ZETA +58%[#12] | FORM +40%[Live=0.40<cut]
+    | PHA +40%[Live=0.31<cut] | MUBARAK +32%[Live=-0.05<cut] | BTW +29%[#39]
+00:25:19 |    ⚖️ C462-7 GPS: penalties 1.21→0.64 (×0.53) vs bar 0.72 — the stack decided
+00:25:20 | 📊 Step 3 result: 7 analyzed (+123 cached this 15m candle) → 0 passed | low_confidence=44,
+    low_score=31, crowding=1, pair_cap=3, flat_projection=10, no_structural_room=22, regime_blip=9,
+    micro_exhaustion=1, fee_floor=1, poor_reward_risk=2, counter_trend_block=3, capitulation=2,
+    leg_exhausted=1
+00:25:20 |    📌 Nearest miss: GPS score=0.848 (pre-pen 1.21) conf=0.807 quality=0.685/0.26
+    reason=score 0.636 < 0.720
+ 
+ 
+  00:26  up 36h58m  scan 304 ---------------------------------------------------------------------
+  EQUITY    $257.04  unreal $-0.11
+  SESSION   $+7.04 +2.82%  peak $257.44  dd 0.16%
+  CURVE     ...._..........___________---=++++===+++*+#*##**#**+++++++++=+*#@@@@@@###@@@@@@@@@@@@@
+  DAY       real $+0.44  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    50 closed  19W 31L  win 38%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $25.50 (10%)  free $231.65
+  FEES      $1.03  mk84/tk35  0.399% of eq
+  SCAN      803 > 7 > 0 passed  top GPS 0.85 (score 0.636 < 0.72)  304 scans, 12418 analysed
+  MARKET    TRENDING  bias +0.58  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  + tone +0.35  LUNA +0.50  XMR +0.38  ETH +0.34
+  INFO      4 tilted  flow/fund/news/oi on 315
+            info>0 32tr $+0.03 win 47%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +58% #12  FORM +40% cut  PHA +40% cut  MUBARAK +32% cut
+  TAPE      - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  IREN     LONG     48.6540   48.4860  -0.35%   -0.11    8m  - 53% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  00:34  up 37h06m  scan 304 ---------------------------------------------------------------------
+  EQUITY    $256.93  unreal $-0.22
+  SESSION   $+6.93 +2.77%  peak $257.44  dd 0.20%
+  CURVE     ...._..........______-____----+++====++**+#*****#**+++++++=+=+*@@@@@@@###@@@@@@@@@@@@@
+  DAY       real $+0.44  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    50 closed  19W 31L  win 38%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $25.50 (10%)  free $231.65
+  FEES      $1.03  mk84/tk35  0.399% of eq
+  SCAN      803 > 7 > 0 passed  top GPS 0.85 (score 0.636 < 0.72)  304 scans, 12418 analysed
+  MARKET    TRENDING  bias +0.58  breadth +0.00  taker flow -0.38
+  NEWS      65 articles  + tone +0.35  LUNA +0.50  XMR +0.38  ETH +0.34
+  INFO      4 tilted  flow/fund/news/oi on 315
+            info>0 32tr $+0.03 win 47%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +58% #12  FORM +40% cut  PHA +40% cut  MUBARAK +32% cut
+  TAPE      - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  IREN     LONG     48.6540   48.2700  -0.79%   -0.22   16m  - 45% left
+  ------------------------------------------------------------------------------------------------
+ 
+00:37:34 |    🪞 C266 board-parity (top movers vs screen): ZETA +59%[#12] | FORM +40%[#55] | PHA
+    +39%[#33] | MUBARAK +32%[Live=-0.03<cut] | BTW +31%[#34]
+00:39:47 | 📊 Step 3 result: 130 analyzed → 1 viable → Step 4 DRI/DSI
+00:39:49 |    🎲 C378 odds-size: orderliness 0.19 -> risk x0.82 ($0.714)
+00:39:49 |    🔒 C378 stop level $0.7962 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 00:39  OPEN   EVAA LONG @0.829900  x1 $17.59
+       target +14.1%  stop -4.1%  entry score 0.70  maker
+ 
+ 
+  00:42  up 37h14m  scan 305 ---------------------------------------------------------------------
+  EQUITY    $257.05  unreal $-0.10
+  SESSION   $+7.05 +2.82%  peak $257.44  dd 0.15%
+  CURVE     ...._..........______-____---=+++====++**##****##**+++++++++=+#@@@@@@@##@@@@@@@@@@@@@@
+  DAY       real $+0.44  loss room $1.30 (0.51%)  0% used  vol x0.74  trust x1.00
+            ..........................
+  RECORD    50 closed  19W 31L  win 38%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      2 pos $43.09 (17%)  free $214.06
+  FEES      $1.03  mk85/tk35  0.400% of eq
+  SCAN      803 > 130 > 1 passed  top EVAA 0.70 (viable)  305 scans, 12548 analysed
+  MARKET    TRENDING  bias +0.65  breadth +0.00  taker flow +0.39
+  NEWS      65 articles  + tone +0.35  LUNA +0.50  XMR +0.38  ETH +0.34
+  INFO      1 tilted  flow/fund/news/oi on 317
+            info>0 32tr $+0.03 win 47%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +59% #12  FORM +40% #55  PHA +39% #33  MUBARAK +32% cut
+  TAPE      - - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  IREN     LONG     48.6540   48.0800  -1.18%   -0.32   24m  - 43% left
+  EVAA     LONG    0.829900  0.841200  +1.36%   +0.23    2m  + 79% left
+  ------------------------------------------------------------------------------------------------
+ 
+00:42:31 |    🛑 C377 HARD STOP IREN: -1.30% <= -1.21% (0.8R, R=1.61%) — arithmetic, not opinion
+00:42:31 | ❌ LOSS: IREN/USDT:USDT | C377_RISK_STOP: -1.30% = -0.80R
+  << 00:42  CLOSE  IREN LONG @48.0620  -1.22% $-0.33  LOSS
+       held 24m  C377_RISK_STOP: -1.30% =  -0.75R  TAKER
+00:43:19 | 📊 Step 3 result: 1 analyzed (+129 cached this 15m candle) → 0 passed | low_score=32,
+    regime_blip=5, crowding=2, session_short=56, pair_cap=5, counter_trend_block=14,
+    flat_projection=7, micro_exhaustion=1, fee_floor=2, leg_exhausted=1, post_penalty_low=2,
+    late_leg_no_forward=1, vol_floor=2
+00:43:19 |    📌 Nearest miss: EVAA score=0.420 (pre-pen 0.93) conf=0.596 quality=0.250/0.26
+    reason=post-penalty 0.420 < 0.47
+00:46:29 |    🪞 C266 board-parity (top movers vs screen): ZETA +60%[#12] | PHA +41%[#32] | FORM
+    +37%[#56] | MUBARAK +32%[Live=0.14<cut] | BTW +31%[#36]
+00:47:23 |    ⚖️ C462-7 FARTCOIN: penalties 0.83→0.62 (×0.75) vs bar 0.72 — the stack decided
+00:47:35 |    ⚖️ C462-7 USELESS: penalties 0.82→0.52 (×0.63) vs bar 0.72 — the stack decided
+00:47:44 |    ⚖️ C462-7 SYN: penalties 1.10→0.63 (×0.58) vs bar 0.72 — the stack decided
+00:48:18 |    ⚖️ C462-7 VET: penalties 1.12→0.71 (×0.63) vs bar 0.72 — the stack decided
+00:48:38 | 📊 Step 3 result: 130 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+ 
+  00:50  up 37h22m  scan 307 ---------------------------------------------------------------------
+  EQUITY    $256.60  unreal $-0.22
+  SESSION   $+6.60 +2.64%  peak $257.44  dd 0.33%
+  CURVE     ...._..........__________----=+++====++**#+*#**#***++++++++=++@@@@@@@####@@@@@@@@@@@@@
+  DAY       real $+0.11  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    51 closed  19W 32L  win 37%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $17.59 (7%)  free $239.23
+  FEES      $1.04  mk85/tk36  0.407% of eq
+  SCAN      803 > 130 > 1 passed  top PENGU 0.50 (viable)  307 scans, 12679 analysed
+  MARKET    TRENDING  bias +0.56  breadth +0.00  taker flow +0.13
+  NEWS      65 articles  + tone +0.35  ETH +0.72  AVAX +0.70  LUNA +0.50
+  INFO      1 tilted  flow/fund/news/oi on 317
+            info>0 33tr $+0.02 win 45%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +60% #12  PHA +41% #32  FORM +37% #56  MUBARAK +32% cut
+  TAPE      - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.829900  0.820100  -1.18%   -0.22   10m  - 79% left
+  ------------------------------------------------------------------------------------------------
+ 
+00:52:15 | 📊 Step 3 result: 1 analyzed (+129 cached) → 1 viable → Step 4 DRI/DSI
+00:55:29 |    🪞 C266 board-parity (top movers vs screen): ZETA +60%[#12] | PHA +48%[#26] | FORM
+    +38%[#56] | MUBARAK +34%[Live=0.15<cut] | BTW +31%[#36]
+00:56:05 | 📊 Step 3 result: 7 analyzed (+123 cached this 15m candle) → 0 passed | low_confidence=13,
+    low_score=24, regime_blip=9, crowding=2, flat_projection=5, session_short=56,
+    micro_exhaustion=1, counter_trend_block=10, capitulation=2, pair_cap=2, no_structural_room=4,
+    fee_floor=2
+00:56:05 |    📌 Nearest miss: PENGU score=0.766 (pre-pen 1.22) conf=0.374 quality=0.286/0.26
+    reason=confidence 0.374 < 0.39
+ 
+  00:58  up 37h30m  scan 309 ---------------------------------------------------------------------
+  EQUITY    $256.60  unreal $-0.22
+  SESSION   $+6.60 +2.64%  peak $257.44  dd 0.33%
+  CURVE     ...._..........__________----=+++=====+**#+##**#**+++++++=+=+*#@@@@@@####@@@@@@@@@@@@@
+  DAY       real $+0.11  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    51 closed  19W 32L  win 37%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $17.59 (7%)  free $239.23
+  FEES      $1.04  mk85/tk36  0.407% of eq
+  SCAN      803 > 7 > 0 passed  top PENGU 0.77 (confidence 0.374 <)  309 scans, 12687 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.00  taker flow -0.23
+  NEWS      65 articles  + tone +0.14  ETH +0.72  AVAX +0.70  LUNA +0.50
+  INFO      1 tilted  flow/fund/news/oi on 317
+            info>0 33tr $+0.02 win 45%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +60% #12  PHA +48% #26  FORM +38% #56  MUBARAK +34% cut
+  TAPE      - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.829900  0.820200  -1.17%   -0.22   18m  - 40% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  01:06  up 37h38m  scan 309 ---------------------------------------------------------------------
+  EQUITY    $256.64  unreal $-0.18
+  SESSION   $+6.64 +2.66%  peak $257.44  dd 0.31%
+  CURVE     ...._..........______-___----=+++====++**@*##**#***++++++=+=+*@@@@@@@###@@@@@@@@@@@@@@
+  DAY       real $+0.11  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    51 closed  19W 32L  win 37%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $17.59 (7%)  free $239.23
+  FEES      $1.04  mk85/tk36  0.407% of eq
+  SCAN      803 > 7 > 0 passed  top PENGU 0.77 (confidence 0.374 <)  309 scans, 12687 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.00  taker flow +0.29
+  NEWS      65 articles  + tone +0.14  ETH +0.72  AVAX +0.70  LUNA +0.50
+  INFO      1 tilted  flow/fund/news/oi on 317
+            info>0 33tr $+0.02 win 45%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +60% #12  PHA +48% #26  FORM +38% #56  MUBARAK +34% cut
+  TAPE      - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.829900  0.821900  -0.96%   -0.18   26m  - 72% left
+  ------------------------------------------------------------------------------------------------
+ 
+01:07:50 |    🪞 C266 board-parity (top movers vs screen): ZETA +56%[#12] | PHA +42%[#33] | FORM
+    +39%[#56] | MUBARAK +34%[Live=0.07<cut] | BTW +31%[#38]
+01:09:48 |    🎢→⚖️ KMNO: C292 stands down — parabola BROKEN (range 22×ATR, 9.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+01:10:26 | 📊 Step 3 result: 130 analyzed → 5 viable → Step 4 DRI/DSI
+01:12:39 |    📓 C444: IREN exited on C377_RISK_STOP: -1.30% = at index 0.42 — 30min later the price
+    is -1.06% (-0.66R) lower — the exit protected capital
+01:14:12 | 📊 Step 3 result: 5 analyzed (+125 cached) → 4 viable → Step 4 DRI/DSI
+01:14:14 |    🎲 C378 odds-size: orderliness 0.24 -> risk x0.84 ($0.737)
+01:14:15 |    🔒 C378 stop level $0.008623 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 01:14  OPEN   PENGU LONG @0.00886600  x1 $13.41
+       target +9.5%  stop -2.7%  entry score 1.04  maker
+ 
+ 
+  01:14  up 37h47m  scan 311 ---------------------------------------------------------------------
+  EQUITY    $256.76  unreal $-0.06
+  SESSION   $+6.76 +2.70%  peak $257.44  dd 0.26%
+  CURVE     ...._..........______-___----=+++===+++**@*##**#**+++++++=+=+*@@@@@@@##@@@@@@#@@@@@@@@
+  DAY       real $+0.11  loss room $1.23 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    51 closed  19W 32L  win 37%  payoff 1.59  avg $-0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      2 pos $31.00 (12%)  free $225.82
+  FEES      $1.05  mk86/tk36  0.408% of eq
+  SCAN      803 > 5 > 4 passed  top PENGU 1.04 (viable)  311 scans, 12822 analysed
+  MARKET    TRENDING  bias +0.69  breadth +0.23  taker flow -0.15
+  NEWS      65 articles  + tone +0.14  LUNA +0.50  NEAR +0.38  XMR +0.37
+  INFO      4 tilted  flow/fund/news/oi on 317
+            info>0 33tr $+0.02 win 45%  info≤0 18tr $-0.07 win 22%
+  MOVERS    ZETA +56% #12  PHA +42% #33  FORM +39% #56  MUBARAK +34% cut
+  TAPE      - + + + + - - - + - + - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.829900  0.829200  -0.08%   -0.03   34m  - 97% left
+  PENGU    LONG  0.008866000.00885000  -0.18%   -0.03    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+ 
