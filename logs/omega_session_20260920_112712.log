@@ -3687,3 +3687,305 @@
 05:16:34 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 38×ATR, 13.8 ATR off the day
     extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
     path [C299]
+05:17:08 |    🎢→⚖️ C: C292 stands down — parabola BROKEN (range 18×ATR, 11.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:17:11 |    ⚖️ C462-7 PIEVERSE: penalties 0.52→0.23 (×0.45) vs bar 0.46 — the stack decided
+05:17:13 |    ⚖️ C462-7 GRT: penalties 0.51→0.38 (×0.75) vs bar 0.43 — the stack decided
+05:17:23 | 📊 Step 3 result: 68 analyzed → 5 viable → Step 4 DRI/DSI
+05:17:24 |    🎲 C378 odds-size: orderliness 0.23 -> risk x0.84 ($0.727)
+05:17:25 |    🔒 C378 stop level $0.2931 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 05:17  OPEN   JUP LONG @0.297700  x1 $45.78
+       target +6.3%  stop -1.6%  entry score 0.77  maker
+05:17:26 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.677)
+05:17:27 |    🔒 C378 stop level $0.10809 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 05:17  OPEN   POL LONG @0.109160  x3 $7.32
+       target +3.6%  stop -1.0%  entry score 0.57  maker
+ 
+ 
+  05:18  up 17h51m  scan 149 ---------------------------------------------------------------------
+  EQUITY    $254.70  unreal $+0.11
+  SESSION   $+4.70 +1.88%  peak $254.95  dd 0.10%
+  CURVE     _________.....................____________---=-_-_____========+*##@####*******##*###@@
+  DAY       real $+2.89  loss room $1.76 (0.70%)  0% used  vol x0.82  trust x1.25
+            ..........................
+  RECORD    19 closed  9W 10L  win 47%  payoff 1.64  avg $+0.07/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      3 pos $90.78 (36%)  free $163.81
+  FEES      $0.46  mk38/tk12  0.181% of eq
+  SCAN      797 > 68 > 5 passed  top JUP 0.77 (viable)  149 scans, 5064 analysed
+  MARKET    MIXED  bias +0.32  breadth +0.08  taker flow -0.56
+  NEWS      65 articles  + tone +0.15  LINK -0.74  CAKE +0.41  HBAR +0.38
+  INFO      5 tilted  flow/fund/news/oi on 181
+            info>0 13tr $+0.14 win 62%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -39% #12  BTW +28% #24  NIL +23% #40  KMNO +23% #37
+  TAPE      - - - + - + + - - + + + + - - - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7361  +0.65%   +0.21 1h28m  + 0% left
+  JUP      LONG    0.297700  0.297300  -0.13%   -0.10    0m  - 80% left
+  POL      LONG    0.109160  0.109200  +0.04%   -0.01    0m  - 76% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:22:33 |    🪞 C266 board-parity (top movers vs screen): G -40%[#10] | BTW +28%[Live=0.39<cut] |
+    EPIC +22%[#26] | NIL +22%[#37] | LUNA +19%[#46]
+05:22:56 |    🎢→⚖️ GENIUS: C292 stands down — parabola BROKEN (range 17×ATR, 5.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:22:59 | 📊 Step 3 result: 15 analyzed (+53 cached this 15m candle) → 0 passed | low_score=21,
+    mtf_disagree=1, late_leg_no_forward=5, ct_noisy_block=14, flat_projection=3, corr_cap=10,
+    no_structural_room=4, micro_wave=1, post_penalty_low=1, regime_blip=4, pair_cap=1,
+    capitulation=2, proj_confirms_trend=1
+05:22:59 |    📌 Nearest miss: JUP score=1.285 conf=0.581 quality=0.747/0.26 reason=corr_cap
+ 
+  05:26  up 17h59m  scan 150 ---------------------------------------------------------------------
+  EQUITY    $254.89  unreal $+0.30
+  SESSION   $+4.89 +1.96%  peak $254.95  dd 0.02%
+  CURVE     _________.....................____________------_____-========**######********#####@@@
+  DAY       real $+2.89  loss room $1.77 (0.70%)  0% used  vol x0.82  trust x1.25
+            ..........................
+  RECORD    19 closed  9W 10L  win 47%  payoff 1.64  avg $+0.07/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      3 pos $90.78 (36%)  free $163.81
+  FEES      $0.46  mk38/tk12  0.181% of eq
+  SCAN      797 > 15 > 0 passed  top JUP 1.29 (corr_cap)  150 scans, 5079 analysed
+  MARKET    MIXED  bias +0.32  breadth +0.03  taker flow +0.31
+  NEWS      65 articles  + tone +0.15  LINK -0.74  CAKE +0.41  HBAR +0.38
+  INFO      5 tilted  flow/fund/news/oi on 181
+            info>0 13tr $+0.14 win 62%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -40% #10  BTW +28% cut  EPIC +22% #26  NIL +22% #37
+  TAPE      - - - + - + + - - + + + + - - - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7340  +0.53%   +0.17 1h36m  + 0% left
+  JUP      LONG    0.297700  0.298500  +0.27%   +0.09    8m  + 59% left
+  POL      LONG    0.109160  0.109460  +0.27%   +0.04    8m  + 54% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:33:23 |    🪞 C266 board-parity (top movers vs screen): G -42%[#11] | BTW +27%[#22] | EPIC
+    +25%[Live=0.30<cut] | NIL +22%[#35] | S +20%[Live=0.23<cut]
+05:34:05 |    🎢→⚖️ KMNO: C292 stands down — parabola BROKEN (range 18×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:34:17 |    🎢→⚖️ LUNA: C292 stands down — parabola BROKEN (range 21×ATR, 9.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:34:18 |    ⚖️ C462-7 LUNA: penalties 0.30→0.12 (×0.41) vs bar 0.26 — the stack decided
+05:34:23 | 📊 Step 3 result: 68 analyzed → 0 passed | low_score=1, corr_cap=25, regime_blip=6,
+    flat_projection=14, ct_noisy_block=13, no_structural_room=7, pair_cap=2
+05:34:23 |    📌 Nearest miss: STX score=0.777 (pre-pen 1.34) conf=0.651 quality=0.506/0.26
+    reason=corr_cap
+ 
+  05:34  up 18h07m  scan 151 ---------------------------------------------------------------------
+  EQUITY    $255.39  unreal $+0.80
+  SESSION   $+5.39 +2.16%
+  CURVE     ...______..._.................___________-----_-_____-=====-==+**####*+++++++*****@#@@
+  DAY       real $+2.89  loss room $1.78 (0.71%)  0% used  vol x0.83  trust x1.25
+            ..........................
+  RECORD    19 closed  9W 10L  win 47%  payoff 1.64  avg $+0.07/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      3 pos $90.78 (36%)  free $163.81
+  FEES      $0.46  mk38/tk12  0.180% of eq
+  SCAN      797 > 68 > 0 passed  top STX 0.78 (corr_cap)  151 scans, 5147 analysed
+  MARKET    MIXED  bias +0.28  breadth +0.00  taker flow +0.22
+  NEWS      65 articles  + tone +0.15  LINK -0.74  HBAR +0.38  LTC +0.25
+  INFO      5 tilted  flow/fund/news/oi on 181
+            info>0 13tr $+0.14 win 62%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -42% #11  BTW +27% #22  EPIC +25% cut  NIL +22% #35
+  TAPE      - - - + - + + - - + + + + - - - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7515  +1.54%   +0.55 1h44m  + 0% left
+  JUP      LONG    0.297700  0.300000  +0.77%   +0.32   16m  + 60% left
+  POL      LONG    0.109160  0.108900  -0.24%   -0.07   16m  - 42% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  05:42  up 18h15m  scan 151 ---------------------------------------------------------------------
+  EQUITY    $255.26  unreal $+0.67
+  SESSION   $+5.26 +2.10%  peak $255.39  dd 0.05%
+  CURVE     ...______..._................____________----__-_____========*+*####**++++++*****#@@@@
+  DAY       real $+2.89  loss room $1.80 (0.72%)  0% used  vol x0.84  trust x1.25
+            ..........................
+  RECORD    19 closed  9W 10L  win 47%  payoff 1.64  avg $+0.07/tr  best $+0.72  worst $-0.67
+            break-even 38%
+  OPEN      3 pos $90.78 (36%)  free $163.81
+  FEES      $0.46  mk38/tk12  0.180% of eq
+  SCAN      797 > 68 > 0 passed  top STX 0.78 (corr_cap)  151 scans, 5147 analysed
+  MARKET    MIXED  bias +0.24  breadth -0.01  taker flow +0.46
+  NEWS      64 articles  ~ tone -0.04  LINK -0.74  HBAR +0.38  LTC +0.25
+  INFO      5 tilted  flow/fund/news/oi on 181
+            info>0 13tr $+0.14 win 62%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -42% #11  BTW +27% #22  EPIC +25% cut  NIL +22% #35
+  TAPE      - - - + - + + - - + + + + - - - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7423  +1.01%   +0.35 1h52m  + 9% left
+  JUP      LONG    0.297700  0.300300  +0.87%   +0.36   25m  + 63% left
+  POL      LONG    0.109160  0.109030  -0.12%   -0.04   25m  - 28% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:44:45 |    🪞 C266 board-parity (top movers vs screen): G -44%[#9] | BTW +26%[#22] | EPIC
+    +25%[Live=0.29<cut] | NIL +23%[#35] | S +19%[Live=0.23<cut]
+05:45:51 |    🎢→⚖️ LUNA: C292 stands down — parabola BROKEN (range 17×ATR, 8.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:45:58 | 📊 Step 3 result: 68 analyzed → 0 passed | corr_cap=34, no_structural_room=8,
+    capitulation=3, ct_noisy_block=5, flat_projection=4, regime_blip=3, h1_regime_shock=5,
+    late_leg_no_forward=4, pair_cap=2
+05:45:58 |    📌 Nearest miss: STX score=1.031 conf=0.797 quality=0.822/0.26 reason=capitulation rej
+    vs RSI72
+05:47:28 |    🛑 C377 HARD STOP POL: -1.58% <= -0.99% (0.8R, R=1.31%) — arithmetic, not opinion
+05:47:28 | ❌ LOSS: POL/USDT:USDT | C377_RISK_STOP: -1.58% = -1.20R
+  << 05:47  CLOSE  POL LONG @0.107330  -1.68% $-0.39  LOSS
+       held 30m  C377_RISK_STOP: -1.58% =  round trip from +0.47%  -1.28R  TAKER
+ 
+ 
+  05:50  up 18h23m  scan 152 ---------------------------------------------------------------------
+  EQUITY    $255.59  unreal $+1.38
+  SESSION   $+5.59 +2.24%
+  CURVE     ...___.__.....................___________----_______-=====-==+*##****+++++++*****#@@@@
+  DAY       real $+2.51  loss room $1.80 (0.72%)  0% used  vol x0.84  trust x1.25
+            ..........................
+  RECORD    20 closed  9W 11L  win 45%  payoff 1.59  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $83.46 (33%)  free $170.74
+  FEES      $0.47  mk38/tk13  0.185% of eq
+  SCAN      797 > 68 > 0 passed  top STX 1.03 (capitulation rej v)  152 scans, 5215 analysed
+  MARKET    TRENDING  bias +0.26  breadth +0.00  taker flow +0.02
+  NEWS      64 articles  ~ tone -0.04  LINK -0.74  HBAR +0.38  LTC +0.25
+  INFO      5 tilted  flow/fund/news/oi on 181
+            info>0 14tr $+0.10 win 57%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -44% #9  BTW +26% #22  EPIC +25% cut  NIL +23% #35
+  TAPE      - - - + - + + - - + + + + - - - + - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7576  +1.90%   +0.68 2h00m  + 12% left
+  JUP      LONG    0.297700  0.302500  +1.61%   +0.70   33m  + 61% left
+  ------------------------------------------------------------------------------------------------
+ 
+05:52:14 |    🎯 C462-6 MAKER half filled JUP @$0.305300 — saved ~0.04% of the half notional (9 this
+    session)
+  -> 05:52  HALF   JUP LONG @0.305300  +2.55% $+0.58
+       win half banked  maker  $22.89 rides on
+05:54:22 |    🪞 C266 board-parity (top movers vs screen): G -44%[#11] | BTW +26%[#29] | NIL
+    +25%[#35] | EPIC +24%[#27] | STONK +23%[Live=0.41<cut]
+05:55:05 | 📊 Step 3 result: 17 analyzed (+52 cached) → 1 viable → Step 4 DRI/DSI
+05:56:07 |    🎯 C462-6 MAKER half filled RENDER @$1.7586 — saved ~0.04% of the half notional (10
+    this session)
+  -> 05:56  HALF   RENDER LONG @1.7586  +1.95% $+0.36
+       win half banked  maker  $18.84 rides on
+05:58:23 | 📊 Step 3 result: 1 analyzed (+68 cached this 15m candle) → 0 passed | low_score=6,
+    corr_cap=22, no_structural_room=8, pair_cap=3, capitulation=3, late_leg_no_forward=8,
+    ct_noisy_block=5, flat_projection=4, regime_blip=3, post_penalty_low=1, h1_regime_shock=4,
+    proj_confirms_trend=1, leg_exhausted=1
+05:58:23 |    📌 Nearest miss: EPIC score=0.749 (pre-pen 0.82) conf=0.535 quality=0.401/0.26
+    reason=late-leg F=-0.08
+ 
+ 
+  05:58  up 18h31m  scan 154 ---------------------------------------------------------------------
+  EQUITY    $255.94  unreal $+0.80
+  SESSION   $+5.94 +2.38%
+  CURVE     ...___.__....................___________-----_______=------=++******+++++++*+++*###@*@
+  DAY       real $+3.44  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    20 closed  9W 11L  win 45%  payoff 1.59  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $41.73 (16%)  free $213.41
+  FEES      $0.48  mk40/tk13  0.188% of eq
+  SCAN      797 > 1 > 0 passed  top EPIC 0.75 (late-leg F=-0.08)  154 scans, 5233 analysed
+  MARKET    TRENDING  bias +0.58  breadth +0.29  taker flow +0.45
+  NEWS      64 articles  ~ tone -0.04  LINK -0.74  LTC +0.25  ZEC +0.23
+  INFO      1 tilted  flow/fund/news/oi on 184
+            info>0 14tr $+0.10 win 57%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -44% #11  BTW +26% #29  NIL +25% #35  EPIC +24% #27
+  TAPE      - - - + - + + - - + + + + - - - + - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7534  +1.65%   +0.30 2h08m  + 10% left
+  JUP      LONG    0.297700  0.304500  +2.28%   +0.50   41m  + 63% left
+  ------------------------------------------------------------------------------------------------
+ 
+06:01:53 |    ⚖️ C462-7 XRP: penalties 0.48→0.36 (×0.75) vs bar 0.47 — the stack decided
+06:02:28 |    🎢→⚖️ BTW: C292 stands down — parabola BROKEN (range 34×ATR, 13.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:02:55 |    ⚖️ C462-7 B2: penalties 0.52→0.31 (×0.60) vs bar 0.43 — the stack decided
+06:03:00 |    🎢→⚖️ LUNA: C292 stands down — parabola BROKEN (range 17×ATR, 8.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:03:04 |    ⚖️ C462-7 ENSO: penalties 0.48→0.43 (×0.90) vs bar 0.47 — the stack decided
+06:03:18 | 📊 Step 3 result: 69 analyzed → 5 viable → Step 4 DRI/DSI
+06:03:20 |    🎲 C378 odds-size: orderliness 0.05 -> risk x0.73 ($0.638)
+06:06:30 |    🪞 C266 board-parity (top movers vs screen): G -48%[#13] | NIL +25%[#35] | EPIC
+    +24%[#28] | STONK +23%[#63] | BTW +23%[#33]
+06:07:05 |    ⚖️ C462-7 APT: penalties 0.52→0.39 (×0.75) vs bar 0.43 — the stack decided
+06:07:30 | 📊 Step 3 result: 18 analyzed (+51 cached) → 2 viable → Step 4 DRI/DSI
+ 
+  06:07  up 18h40m  scan 156 ---------------------------------------------------------------------
+  EQUITY    $256.40  unreal $+1.26
+  SESSION   $+6.40 +2.56%
+  CURVE     ...__..__....................______________-_______--------=+++***+++++++++*+++**###@@
+  DAY       real $+3.44  loss room $1.88 (0.75%)  0% used  vol x0.88  trust x1.25
+            ..........................
+  RECORD    20 closed  9W 11L  win 45%  payoff 1.59  avg $+0.05/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $41.73 (16%)  free $213.41
+  FEES      $0.48  mk40/tk13  0.188% of eq
+  SCAN      797 > 18 > 2 passed  top ONDO 0.78 (viable)  156 scans, 5320 analysed
+  MARKET    TRENDING  bias +0.69  breadth +0.38  taker flow +0.23
+  NEWS      65 articles  + tone +0.21  LINK -0.74  LTC +0.25  ZEC +0.23
+  INFO      2 tilted  flow/fund/news/oi on 184
+            info>0 14tr $+0.10 win 57%  info≤0 6tr $-0.08 win 17%
+  MOVERS    G -48% #13  NIL +25% #35  EPIC +24% #28  STONK +23% #63
+  TAPE      - - - + - + + - - + + + + - - - + - + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RENDER   LONG      1.7249    1.7567  +1.84%   +0.33 2h17m  + 14% left
+  JUP      LONG    0.297700  0.310000  +4.13%   +0.93   50m  + 67% left
+  ------------------------------------------------------------------------------------------------
+ 
+06:07:51 | 🎯 EXIT SIGNAL: RENDER/USDT:USDT - EARLY_PEAK_CAPTURE: peak=+2.7%(1.8PRU) now=+1.8%
+    gave=31%(0.5PRU)
+06:07:52 |    🎯 C376 MAKER exit filled RENDER @$1.7570 — saved ~0.04%% of notional (9 this session)
+  << 06:07  CLOSE  RENDER LONG @1.7570  +1.86% $+0.34  WIN
+       held 2h17m  EARLY_PEAK_CAPTURE: peak  kept 70% of a +2.67% peak  +0.72R  maker
+06:10:55 | 📊 Step 3 result: 2 analyzed (+67 cached) → 1 viable → Step 4 DRI/DSI
+06:10:57 |    🎲 C378 odds-size: orderliness 0.17 -> risk x0.80 ($0.704)
+06:10:57 |    🔒 C378 stop level $0.5727 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 06:10  OPEN   EPIC LONG @0.582600  x1 $41.00
+       target +8.3%  stop -1.7%  entry score 0.63  maker
+06:14:16 | 📊 Step 3 result: 1 analyzed (+68 cached this 15m candle) → 0 passed | low_score=19,
+    mtf_disagree=1, late_leg_no_forward=8, pair_cap=3, crowding=3, flow_veto=4,
+    absorption_at_extreme=4, h1_regime_shock=7, fee_floor=3, post_penalty_low=4, capitulation=3,
+    proj_confirms_trend=1, poor_reward_risk=1, vol_floor=2, post_penalty_quality=4,
+    no_structural_room=1, leg_exhausted=1
+06:14:16 |    📌 Nearest miss: EPIC score=0.981 conf=0.549 quality=0.538/0.26 reason=mtf_disagree
+ 
+ 
+  06:15  up 18h48m  scan 158 ---------------------------------------------------------------------
+  EQUITY    $256.24  unreal $+0.75
+  SESSION   $+6.24 +2.50%  peak $256.40  dd 0.06%
+  CURVE     ..._...__....................___________-_--_______--------+++****++++++++*+++**###@@@
+  DAY       real $+3.78  loss room $1.50 (0.60%)  0% used  vol x0.70  trust x1.25
+            ..........................
+  RECORD    21 closed  10W 11L  win 48%  payoff 1.54  avg $+0.06/tr  best $+0.72  worst $-0.67
+            break-even 39%
+  OPEN      2 pos $63.89 (25%)  free $191.59
+  FEES      $0.49  mk42/tk13  0.193% of eq
+  SCAN      797 > 1 > 0 passed  top EPIC 0.98 (mtf_disagree)  158 scans, 5323 analysed
+  MARKET    TRENDING  bias +0.69  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  + tone +0.21  LINK +0.66  ONDO +0.56  PUMP +0.38
+  INFO      1 tilted  flow/fund/news/oi on 184
+            info>0 14tr $+0.10 win 57%  info≤0 7tr $-0.02 win 29%
+  MOVERS    G -48% #13  NIL +25% #35  EPIC +24% #28  STONK +23% #63
+  TAPE      - - - + - + + - - + + + + - - - + - + - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  JUP      LONG    0.297700  0.310200  +4.20%   +0.94   58m  + 67% left
+  EPIC     LONG    0.582600  0.580400  -0.38%   -0.19    4m  - 66% left
+  ------------------------------------------------------------------------------------------------
+ 
