@@ -5595,3 +5595,245 @@
 14:13:44 | 📊 Step 3 result: 2 analyzed (+67 cached) → 1 viable → Step 4 DRI/DSI
 14:16:51 |    🪞 C266 board-parity (top movers vs screen): ZETA +71%[Live=0.47<cut] | AKE
     -45%[Live=0.31<cut] | STONK +37%[Live=0.27<cut] | NIL +35%[Live=0.38<cut] | KMNO +30%[#40]
+14:18:06 |    ⚖️ C462-7 ETC: penalties 0.70→0.53 (×0.75) vs bar 0.69 — the stack decided
+14:18:54 | 📊 Step 3 result: 72 analyzed → 0 passed | low_score=27, absorption_at_extreme=4,
+    late_leg_no_forward=17, pair_cap=3, capitulation=3, flow_veto=4, counter_trend_block=2,
+    regime_blip=2, leg_exhausted=2, proj_confirms_trend=1, post_penalty_low=4,
+    post_penalty_quality=1, vol_floor=1, dir_proj_conflict=1
+14:18:54 |    📌 Nearest miss: PHA score=0.941 (pre-pen 1.03) conf=0.703 quality=0.661/0.26
+    reason=vol_floor
+ 
+  14:18  up 26h51m  scan 218 ---------------------------------------------------------------------
+  EQUITY    $253.65  unreal $+0.46
+  SESSION   $+3.65 +1.46%  peak $256.40  dd 1.07%
+  CURVE     ....._.............._________-_____------++***+++++*++**#*@@#@@####@##***+++++++++++++
+  DAY       real $+1.49  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.33 (11%)  free $225.86
+  FEES      $0.73  mk59/tk24  0.288% of eq
+  SCAN      797 > 72 > 0 passed  top PHA 0.94 (vol_floor)  218 scans, 7856 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.00  taker flow +0.04
+  NEWS      65 articles  + tone +0.09  ARB +0.50  DOT +0.50  BASED +0.34
+  INFO      1 tilted  flow/fund/news/oi on 203
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +71% cut  AKE -45% cut  STONK +37% cut  NIL +35% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.493930  +2.10%   +0.34 1h10m  + 22% left
+  PHA      LONG    0.043660  0.044190  +1.21%   +0.12    8m  + 69% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  14:26  up 26h59m  scan 218 ---------------------------------------------------------------------
+  EQUITY    $253.49  unreal $+0.30
+  SESSION   $+3.49 +1.40%  peak $256.40  dd 1.13%
+  CURVE     ....._.............._________-_____------++**++++++*++*##@@*#@#*##@@##***+++++++++++++
+  DAY       real $+1.49  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.33 (11%)  free $225.86
+  FEES      $0.73  mk59/tk24  0.288% of eq
+  SCAN      797 > 72 > 0 passed  top PHA 0.94 (vol_floor)  218 scans, 7856 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.60  taker flow +0.13
+  NEWS      65 articles  + tone +0.09  DOT +0.50  BASED +0.34  DOGE -0.25
+  INFO      1 tilted  flow/fund/news/oi on 203
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +71% cut  AKE -45% cut  STONK +37% cut  NIL +35% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.491380  +1.58%   +0.25 1h18m  + 6% left
+  PHA      LONG    0.043660  0.043880  +0.50%   +0.04   16m  + 68% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  14:35  up 27h07m  scan 218 ---------------------------------------------------------------------
+  EQUITY    $254.16  unreal $+0.97
+  SESSION   $+4.16 +1.66%  peak $256.40  dd 0.87%
+  CURVE     ..____.............._______---_____====-=+****+++++***##@@@#@@@#@@@@@##*********+*++**
+  DAY       real $+1.49  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.33 (11%)  free $225.86
+  FEES      $0.73  mk59/tk24  0.287% of eq
+  SCAN      797 > 72 > 0 passed  top PHA 0.94 (vol_floor)  218 scans, 7856 analysed
+  MARKET    TRENDING  bias +0.76  breadth +0.60  taker flow -0.56
+  NEWS      65 articles  + tone +0.09  DOT +0.50  BASED +0.34  DOGE -0.25
+  INFO      1 tilted  flow/fund/news/oi on 203
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +71% cut  AKE -45% cut  STONK +37% cut  NIL +35% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.506280  +4.66%   +0.77 1h26m  + 12% left
+  PHA      LONG    0.043660  0.044540  +2.02%   +0.20   24m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+14:38:29 |    🪞 C266 board-parity (top movers vs screen): ZETA +81%[Live=0.70<cut] | AKE
+    -45%[Live=0.36<cut] | NIL +38%[Live=0.20<cut] | STONK +37%[Live=0.26<cut] | KMNO +28%[#40]
+14:38:29 | 📈 C398: pack extended +1.64 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:40:37 |    ⚖️ C462-7 1000BONK: penalties 0.61→0.46 (×0.75) vs bar 0.53 — the stack decided
+14:41:23 | 📊 Step 3 result: 72 analyzed → 9 viable → Step 4 DRI/DSI
+ 
+  14:43  up 27h15m  scan 219 ---------------------------------------------------------------------
+  EQUITY    $254.62  unreal $+1.43
+  SESSION   $+4.62 +1.85%  peak $256.40  dd 0.69%
+  CURVE     .._.._..............________--_____-----=+***+++++++++###@@#@@####@##******+++++++++*#
+  DAY       real $+1.49  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.33 (11%)  free $225.86
+  FEES      $0.73  mk59/tk24  0.287% of eq
+  SCAN      797 > 72 > 9 passed  top ACE 0.78 (viable)  219 scans, 7928 analysed
+  MARKET    TRENDING  bias +0.78  breadth +0.00  taker flow +0.41
+  NEWS      65 articles  + tone +0.23  DOT +0.50  BASED +0.34  DOGE -0.25
+  INFO      9 tilted  flow/fund/news/oi on 204
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +81% cut  AKE -45% cut  NIL +38% cut  STONK +37% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.515850  +6.63%   +1.10 1h34m  + 16% left
+  PHA      LONG    0.043660  0.045070  +3.23%   +0.33   32m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+14:44:24 | 📈 C398: pack extended +1.64 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:44:59 |    ⚖️ C462-7 AAVE: penalties 0.90→0.68 (×0.75) vs bar 0.69 — the stack decided
+14:45:35 |    ⚖️ C462-7 UAI: penalties 0.76→0.57 (×0.75) vs bar 0.69 — the stack decided
+14:46:22 | 📊 Step 3 result: 43 analyzed (+29 cached) → 2 viable → Step 4 DRI/DSI
+14:49:29 |    🪞 C266 board-parity (top movers vs screen): ZETA +75%[#10] | AKE -48%[Live=0.43<cut] |
+    STONK +36%[Live=0.28<cut] | NIL +36%[Live=0.32<cut] | BTW +30%[Live=0.50<cut]
+14:49:29 | 📈 C398: pack extended +1.79 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:50:10 |    ⚖️ C462-7 ENA: penalties 0.72→0.54 (×0.75) vs bar 0.68 — the stack decided
+14:51:07 | 📊 Step 3 result: 43 analyzed (+27 cached) → 7 viable → Step 4 DRI/DSI
+ 
+  14:51  up 27h23m  scan 221 ---------------------------------------------------------------------
+  EQUITY    $254.81  unreal $+1.62
+  SESSION   $+4.81 +1.92%  peak $256.40  dd 0.62%
+  CURVE     .._.._.............._______-_-_____-----++***++++++++**#*@@#@####@@##***+++++++++++++#
+  DAY       real $+1.49  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $27.33 (11%)  free $225.86
+  FEES      $0.73  mk59/tk24  0.287% of eq
+  SCAN      797 > 43 > 7 passed  top TAO 0.73 (viable)  221 scans, 8014 analysed
+  MARKET    TRENDING  bias +0.82  breadth +0.79  taker flow +0.21
+  NEWS      65 articles  + tone +0.23  BNB +0.74  ETH +0.72  PEPE +0.70
+  INFO      7 tilted  flow/fund/news/oi on 204
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +75% #10  AKE -48% cut  STONK +36% cut  NIL +36% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.515870  +6.64%   +1.10 1h42m  + 17% left
+  PHA      LONG    0.043660  0.045850  +5.02%   +0.52   40m  + 71% left
+  ------------------------------------------------------------------------------------------------
+ 
+14:54:09 | 📈 C398: pack extended +1.79 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:54:49 | 📊 Step 3 result: 7 analyzed (+63 cached) → 5 viable → Step 4 DRI/DSI
+14:56:04 |    🎯 C462-6 MAKER half filled PHA @$0.050990 — saved ~0.04% of the half notional (12 this
+    session)
+  -> 14:56  HALF   PHA LONG @0.050990  +16.79% $+0.89
+       win half banked  maker  $5.29 rides on
+ 
+ 
+  14:59  up 27h31m  scan 222 ---------------------------------------------------------------------
+  EQUITY    $256.24  unreal $+2.16
+  SESSION   $+6.24 +2.50%  peak $256.40  dd 0.06%
+  CURVE     .._.._.............._______-_-_____-----++***+++++*++*##*@*###*##@@##***++++++++++++*@
+  DAY       real $+2.38  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $22.03 (9%)  free $232.05
+  FEES      $0.73  mk60/tk24  0.286% of eq
+  SCAN      797 > 7 > 5 passed  top TAO 0.81 (viable)  222 scans, 8021 analysed
+  MARKET    TRENDING  bias +0.82  breadth +0.67  taker flow -0.01
+  NEWS      65 articles  + tone +0.23  BNB +0.74  ETH +0.72  PEPE +0.70
+  INFO      5 tilted  flow/fund/news/oi on 204
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +75% #10  AKE -48% cut  STONK +36% cut  NIL +36% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.515450  +6.55%   +1.08 1h50m  + 15% left
+  PHA      LONG    0.043660  0.052590 +20.45%   +1.08   48m  + 74% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  15:07  up 27h39m  scan 222 ---------------------------------------------------------------------
+  EQUITY    $256.75  unreal $+2.67
+  SESSION   $+6.75 +2.70%
+  CURVE     .._.._.............._________-_____-----=+**++====+++#*#######*#####**++++++++++++++*@
+  DAY       real $+2.38  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    34 closed  13W 21L  win 38%  payoff 1.40  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 42%
+  OPEN      2 pos $22.03 (9%)  free $232.05
+  FEES      $0.73  mk60/tk24  0.285% of eq
+  SCAN      797 > 7 > 5 passed  top TAO 0.81 (viable)  222 scans, 8021 analysed
+  MARKET    TRENDING  bias +0.82  breadth +0.67  taker flow -0.19
+  NEWS      65 articles  + tone +0.23  BNB +0.74  ETH +0.72  PEPE +0.70
+  INFO      5 tilted  flow/fund/news/oi on 204
+            info>0 22tr $-0.03 win 45%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +75% #10  AKE -48% cut  STONK +36% cut  NIL +36% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.519590  +7.41%   +1.23 1h58m  + 16% left
+  PHA      LONG    0.043660  0.055650 +27.46%   +1.45   56m  + 79% left
+  ------------------------------------------------------------------------------------------------
+ 
+15:08:41 |    🎯 C462-6 MAKER half filled UAI @$0.519920 — saved ~0.04% of the half notional (13 this
+    session)
+  -> 15:08  HALF   UAI LONG @0.519920  +7.47% $+0.62
+       win half banked  maker  $8.37 rides on
+15:09:15 | 🎯 EXIT SIGNAL: PHA/USDT:USDT - PEAK_REVERSAL: peak=+27.6%(11.6PRU) now=+25.7%(+10.8PRU)
+    gave=7%(0.8PRU) thr=20% dom=1h
+15:09:15 |    🎯 C376 MAKER exit filled PHA @$0.054360 — saved ~0.04%% of notional (13 this session)
+  << 15:09  CLOSE  PHA LONG @0.054360  +24.51% $+1.30  WIN
+       held 58m  PEAK_REVERSAL: peak=+27.  kept 89% of a +27.65% peak  +5.26R  maker
+15:09:37 |    🪞 C266 board-parity (top movers vs screen): ZETA +71%[#10] | AKE -53%[Live=0.24<cut] |
+    PHA +50%[#41] | STONK +37%[Live=0.02<cut] | NIL +37%[Live=0.36<cut]
+15:09:37 | 📈 C398: pack extended +1.79 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+15:10:35 |    ⚖️ C462-7 ENA: penalties 0.48→0.36 (×0.75) vs bar 0.46 — the stack decided
+15:12:05 |    ⚖️ C462-7 GRAM: penalties 0.53→0.40 (×0.75) vs bar 0.46 — the stack decided
+15:13:17 | 📊 Step 3 result: 70 analyzed → 11 viable → Step 4 DRI/DSI
+ 
+ 
+  15:15  up 27h48m  scan 223 ---------------------------------------------------------------------
+  EQUITY    $256.63  unreal $+0.63
+  SESSION   $+6.63 +2.65%  peak $256.75  dd 0.05%
+  CURVE     .._.._..............______________-----==+**+====++++*#*@@#@#*##@@#***+++++++++++++*@@
+  DAY       real $+4.30  loss room $1.20 (0.48%)  0% used  vol x0.70  trust x1.00
+            ..........................
+  RECORD    35 closed  14W 21L  win 40%  payoff 1.55  avg $+0.01/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $8.37 (3%)  free $247.63
+  FEES      $0.74  mk62/tk24  0.286% of eq
+  SCAN      797 > 70 > 11 passed  top 1000BONK 1.05 (viable)  223 scans, 8091 analysed
+  MARKET    TRENDING  bias +0.82  breadth +0.00  taker flow -0.15
+  NEWS      35 articles  + tone +0.43  BNB +0.74  ETH +0.72  PEPE +0.70
+  INFO      10 tilted  flow/fund/news/oi on 204
+            info>0 23tr $+0.02 win 48%  info≤0 12tr $-0.02 win 25%
+  MOVERS    ZETA +71% #10  AKE -53% cut  PHA +50% #41  STONK +37% cut
+  TAPE      - - - + - + + - - + + + + - - - + - + - + - + - + + - - - - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      LONG    0.483760  0.520630  +7.62%   +0.63 2h06m  + 19% left
+  ------------------------------------------------------------------------------------------------
+ 
+15:16:18 | 📈 C398: pack extended +1.79 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
