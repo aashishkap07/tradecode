@@ -7064,3 +7064,150 @@
 
   << 15:12  CLOSE  EPIC LONG @0.666000  -1.84% $-0.10  LOSS
        held 6m  C377_RISK_STOP: -1.80% =  round trip from +0.22%  -0.79R  TAKER
+
+
+  15:17  up 51h50m  scan 412 ---------------------------------------------------------------------
+  EQUITY    $255.33  unreal $-0.12
+  SESSION   $+5.33 +2.13%  peak $257.44  dd 0.82%
+  CURVE     .._........________---+++==++*#+#**#**+++++++*@@@@@#@@@@@@@@@@@@@@@@##################
+  DAY       real $-1.26  loss room $1.39 (0.54%)  91% used  vol x0.79  trust x1.00
+            ########################..
+  RECORD    67 closed  22W 45L  win 33%  payoff 1.70  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      1 pos $11.36 (4%)  free $244.09
+  FEES      $1.27  mk105/tk50  0.496% of eq
+  SCAN      801 > 69 > 0 passed  top COOKIE 0.99 (h1_regime_shock)  412 scans, 17335 analysed
+  MARKET    MIXED  bias +0.11  breadth +0.00  taker flow +0.20
+  NEWS      65 articles  + tone +0.33  PROVE +0.70  ETH +0.65  RAY +0.53
+  INFO      2 tilted  flow/fund/news/oi on 342
+            info>0 47tr $-0.02 win 36%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +57% #10  KERNEL +38% cut  龙虾 -37% #33  UAI -31% cut
+  TAPE      + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  GRASS    LONG    0.457900  0.453270  -1.01%   -0.12   11m  - 64% left
+  ------------------------------------------------------------------------------------------------
+
+  << 15:19  CLOSE  GRASS LONG @0.444540  -2.92% $-0.34  LOSS
+       held 13m  C377_RISK_STOP: -3.04% =  round trip from +1.67%  -1.13R  TAKER
+
+
+  15:25  up 51h58m  scan 412 ---------------------------------------------------------------------
+  EQUITY    $255.11
+  SESSION   $+5.11 +2.04%  peak $257.44  dd 0.91%
+  CURVE     .._........________---++===++*#****#*+++++==+*@@@@@##@@@@@@@@@@@@@@@#################*
+  DAY       real $-1.60  loss room $1.39 (0.54%)  115% used  vol x0.79  trust x1.00
+            ##########################
+  RECORD    68 closed  22W 46L  win 32%  payoff 1.69  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      flat  free $255.11
+  FEES      $1.27  mk105/tk51  0.499% of eq
+  SCAN      801 > 69 > 0 passed  top COOKIE 0.99 (h1_regime_shock)  412 scans, 17335 analysed
+  MARKET    MIXED  bias +0.11  breadth +0.00  taker flow +0.20
+  NEWS      65 articles  + tone +0.33  PROVE +0.70  ETH +0.65  RAY +0.53
+  INFO      2 tilted  flow/fund/news/oi on 342
+            info>0 48tr $-0.03 win 35%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +57% #10  KERNEL +38% cut  龙虾 -37% #33  UAI -31% cut
+  TAPE      + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 15:33  flat  $255.11  $+5.11 +2.04%  22W 46L 32%  68 analysed
+  .. 15:41  flat  $255.11  $+5.11 +2.04%  22W 46L 32%  68 analysed
+  >> 15:51  OPEN   BROCCOLI LONG @0.023380  x1 $5.00
+       target +22.4%  stop -5.2%  entry score 0.66  maker
+
+
+  15:51  up 52h23m  scan 415 ---------------------------------------------------------------------
+  EQUITY    $255.11
+  SESSION   $+5.11 +2.04%  peak $257.44  dd 0.91%
+  CURVE     ...........______._---++====+#@*#*#**++++++=+@@@@@###@@@@@@@@@@@@@@##################*
+  DAY       real $-1.60  loss room $1.75 (0.68%)  92% used  vol x1.00  trust x1.00  month guard
+            ########################..
+  RECORD    68 closed  22W 46L  win 32%  payoff 1.69  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      1 pos $5.00 (2%)  free $250.11
+  FEES      $1.27  mk106/tk51  0.499% of eq
+  SCAN      801 > 69 > 4 passed  top MAGMA 0.71 (viable)  415 scans, 17475 analysed
+  MARKET    MIXED  bias +0.25  breadth +0.00  taker flow +0.37
+  NEWS      65 articles  + tone +0.36  RAY +0.53  MET +0.53  LUNA +0.50
+  INFO      4 tilted  flow/fund/news/oi on 343
+            info>0 48tr $-0.03 win 35%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +50% #12  KERNEL +33% #21  UAI -32% cut  龙虾 -28% #32
+  TAPE      + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BROCCOLI LONG    0.023380  0.023380  +0.00%   -0.00    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  15:59  up 52h31m  scan 415 ---------------------------------------------------------------------
+  EQUITY    $255.04  unreal $-0.07
+  SESSION   $+5.04 +2.02%  peak $257.44  dd 0.93%
+  CURVE     ...........______._--=++====*#@*#*#**++++++=+@@@@@##@@@@@@@@@@@@@@@#################**
+  DAY       real $-1.60  loss room $1.75 (0.68%)  92% used  vol x1.00  trust x1.00  month guard
+            ########################..
+  RECORD    68 closed  22W 46L  win 32%  payoff 1.69  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      1 pos $5.00 (2%)  free $250.11
+  FEES      $1.27  mk106/tk51  0.500% of eq
+  SCAN      801 > 69 > 4 passed  top MAGMA 0.71 (viable)  415 scans, 17475 analysed
+  MARKET    MIXED  bias +0.25  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  + tone +0.36  RAY +0.53  MET +0.53  LUNA +0.50
+  INFO      4 tilted  flow/fund/news/oi on 343
+            info>0 48tr $-0.03 win 35%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +50% #12  KERNEL +33% #21  UAI -32% cut  龙虾 -28% #32
+  TAPE      + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BROCCOLI LONG    0.023380  0.023080  -1.28%   -0.07    8m  - 39% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  16:07  up 52h40m  scan 416 ---------------------------------------------------------------------
+  EQUITY    $255.09  unreal $-0.02
+  SESSION   $+5.09 +2.04%  peak $257.44  dd 0.91%
+  CURVE     ..............___._--=++===+*#@##*#**++++++=+#@@@@###@@@@@@@@@@@@@@#################**
+  DAY       real $-1.60  loss room $1.68 (0.66%)  95% used  vol x0.96  trust x1.00
+            #########################.
+  RECORD    68 closed  22W 46L  win 32%  payoff 1.69  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      1 pos $5.00 (2%)  free $250.11
+  FEES      $1.27  mk106/tk51  0.499% of eq
+  SCAN      801 > 69 > 1 passed  top BROCCOLI 0.53 (viable)  416 scans, 17544 analysed
+  MARKET    MIXED  bias +0.08  breadth +0.06  taker flow +0.54
+  NEWS      65 articles  + tone +0.22  RAY +0.53  MET +0.53  LUNA +0.50
+  INFO      1 tilted  flow/fund/news/oi on 343
+            info>0 48tr $-0.03 win 35%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +51% #7  UAI -34% #36  龙虾 -32% #24  KERNEL +27% #19
+  TAPE      + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BROCCOLI LONG    0.023380  0.023300  -0.34%   -0.02   16m  - 38% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  16:15  up 52h48m  scan 417 ---------------------------------------------------------------------
+  EQUITY    $255.12  unreal $+0.01
+  SESSION   $+5.12 +2.05%  peak $257.44  dd 0.90%
+  CURVE     ..............___._-_=++===+**#*#*#**+++++==+#@@@@#@#@@@@@@@@@@@@@@#################**
+  DAY       real $-1.60  loss room $1.69 (0.66%)  95% used  vol x0.97  trust x1.00
+            #########################.
+  RECORD    68 closed  22W 46L  win 32%  payoff 1.69  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 37%
+  OPEN      1 pos $5.00 (2%)  free $250.11
+  FEES      $1.27  mk106/tk51  0.499% of eq
+  SCAN      801 > 1 > 0 passed  top BROCCOLI 0.57 (score 0.662 < 0.72)  417 scans, 17545 analysed
+  MARKET    MIXED  bias +0.08  breadth -0.13  taker flow -0.05
+  NEWS      65 articles  + tone +0.22  RAY +0.53  LUNA +0.50  FORM +0.50
+  INFO      1 tilted  flow/fund/news/oi on 343
+            info>0 48tr $-0.03 win 35%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +51% #7  UAI -34% #36  龙虾 -32% #24  KERNEL +27% #19
+  TAPE      + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  BROCCOLI LONG    0.023380  0.023450  +0.30%   +0.01   24m  + 55% left
+  ------------------------------------------------------------------------------------------------
+
