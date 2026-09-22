@@ -4413,3 +4413,153 @@
     leg_exhausted=1, low_quality=2, poor_reward_risk=2, post_penalty_low=1, capitulation=1,
     post_penalty_quality=1, dir_proj_conflict=1
 22:16:57 |    📌 Nearest miss: CVC score=0.965 conf=0.791 quality=0.763/0.26 reason=dir_proj_conflict
+ 
+  22:17  up 58h50m  scan 461 ---------------------------------------------------------------------
+  EQUITY    $254.98  unreal $-0.01
+  SESSION   $+4.98 +1.99%  peak $257.44  dd 0.96%
+  CURVE     .........._______--+++==++*@##*#*++++++=*@@@@#@#@@@@@@@@@@@@################***##*****
+  DAY       real $-1.73  loss room $1.75 (0.68%)  99% used  vol x1.07  trust x1.00  month guard
+            ##########################
+  RECORD    73 closed  24W 49L  win 33%  payoff 1.63  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $249.99
+  FEES      $1.29  mk113/tk55  0.508% of eq
+  SCAN      802 > 128 > 0 passed  top CVC 0.96 (dir_proj_conflict)  461 scans, 20264 analysed
+  MARKET    MIXED  bias +0.01  breadth +0.00  taker flow -0.25
+  NEWS      64 articles  + tone +0.15  TRX +0.75  LUNA +0.50  LTC +0.43
+  INFO      1 tilted  flow/fund/news/oi on 368
+            info>0 52tr $-0.02 win 37%  info≤0 21tr $-0.07 win 24%
+  MOVERS    MUBARAK +74% #9  龙虾 -40% cut  CHR +39% #73  BROCCOLI +27% cut
+  TAPE      - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.9300   35.8700  -0.17%   -0.01   33m  - 71% left
+  ------------------------------------------------------------------------------------------------
+ 
+22:21:58 | ⚠️ C79 WEAK-RESULTANT: R=-0.04 mag=0.04 < 0.08 — direction unclear, higher bar applied
+ 
+  22:25  up 58h58m  scan 461 ---------------------------------------------------------------------
+  EQUITY    $254.98  unreal $-0.01
+  SESSION   $+4.98 +1.99%  peak $257.44  dd 0.96%
+  CURVE     .........._______--=++==++##*#*#*+++++++*@@@@##@@@@@@@@@@@@@################**********
+  DAY       real $-1.73  loss room $1.75 (0.68%)  99% used  vol x1.11  trust x1.00  month guard
+            ##########################
+  RECORD    73 closed  24W 49L  win 33%  payoff 1.63  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $249.99
+  FEES      $1.29  mk113/tk55  0.508% of eq
+  SCAN      802 > 128 > 0 passed  top CVC 0.96 (dir_proj_conflict)  461 scans, 20264 analysed
+  MARKET    MIXED  bias +0.07  breadth +0.10  taker flow -0.68
+  NEWS      64 articles  + tone +0.15  SHIB +0.85  TRX +0.75  COIN +0.70
+  INFO      1 tilted  flow/fund/news/oi on 368
+            info>0 52tr $-0.02 win 37%  info≤0 21tr $-0.07 win 24%
+  MOVERS    MUBARAK +74% #9  龙虾 -40% cut  CHR +39% #73  BROCCOLI +27% cut
+  TAPE      - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.9300   35.9000  -0.08%   -0.01   41m  - 85% left
+  ------------------------------------------------------------------------------------------------
+ 
+22:32:23 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +82%[#9] | CHR +48%[#60] | 龙虾
+    -40%[Live=0.30<cut] | BROCCOLI +29%[Live=0.32<cut] | MINA +28%[Live=0.39<cut]
+22:33:21 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 28×ATR, 12.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+22:34:21 | 📊 Step 3 result: 129 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  22:34  up 59h07m  scan 462 ---------------------------------------------------------------------
+  EQUITY    $255.00  unreal $+0.01
+  SESSION   $+5.00 +2.00%  peak $257.44  dd 0.95%
+  CURVE     .........._______--=++==++###**#*+++++++*@@@@##@@@@@@@@@@@@@################***#******
+  DAY       real $-1.73  loss room $1.75 (0.68%)  99% used  vol x1.11  trust x1.00  month guard
+            ##########################
+  RECORD    73 closed  24W 49L  win 33%  payoff 1.63  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $249.99
+  FEES      $1.29  mk113/tk55  0.508% of eq
+  SCAN      802 > 129 > 1 passed  top ZRO 0.60 (viable)  462 scans, 20393 analysed
+  MARKET    MIXED  bias +0.17  breadth +0.00  taker flow -0.06
+  NEWS      64 articles  + tone +0.15  SHIB +0.85  TRX +0.75  COIN +0.70
+  INFO      1 tilted  flow/fund/news/oi on 369
+            info>0 52tr $-0.02 win 37%  info≤0 21tr $-0.07 win 24%
+  MOVERS    MUBARAK +82% #9  CHR +48% #60  龙虾 -40% cut  BROCCOLI +29% cut
+  TAPE      - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.9300   36.0200  +0.25%   +0.01   49m  + 81% left
+  ------------------------------------------------------------------------------------------------
+ 
+22:39:59 | 📊 Step 3 result: 1 analyzed (+128 cached) → 1 viable → Step 4 DRI/DSI
+22:40:01 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.678)
+ 
+  22:42  up 59h15m  scan 463 ---------------------------------------------------------------------
+  EQUITY    $254.99
+  SESSION   $+4.99 +2.00%  peak $257.44  dd 0.95%
+  CURVE     .........._______--=++==++###**#*+++++++@@@@@##@@@@@@@@@@@@@################**##******
+  DAY       real $-1.73  loss room $1.71 (0.67%)  101% used  vol x0.98  trust x1.00
+            ##########################
+  RECORD    73 closed  24W 49L  win 33%  payoff 1.63  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      1 pos $5.00 (2%)  free $249.99
+  FEES      $1.29  mk113/tk55  0.508% of eq
+  SCAN      802 > 1 > 1 passed  top ZRO 0.60 (viable)  463 scans, 20394 analysed
+  MARKET    MIXED  bias +0.17  breadth +0.22  taker flow -0.09
+  NEWS      64 articles  + tone +0.15  SHIB +0.85  TRX +0.75  COIN +0.70
+  INFO      1 tilted  flow/fund/news/oi on 369
+            info>0 52tr $-0.02 win 37%  info≤0 21tr $-0.07 win 24%
+  MOVERS    MUBARAK +82% #9  CHR +48% #60  龙虾 -40% cut  BROCCOLI +29% cut
+  TAPE      - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.9300   35.9700  +0.11%   +0.00   58m  + 82% left
+  ------------------------------------------------------------------------------------------------
+ 
+22:45:12 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +87%[#9] | CHR +48%[#59] | 龙虾
+    -41%[Live=0.20<cut] | BROCCOLI +33%[#56] | NIL +31%[Live=0.24<cut]
+22:46:27 |    ⚖️ C462-7 ZRO: penalties 0.77→0.57 (×0.75) vs bar 0.72 — the stack decided
+22:47:24 | 📊 Step 3 result: 129 analyzed → 2 viable → Step 4 DRI/DSI
+22:47:25 |    🎲 C378 odds-size: orderliness 0.09 -> risk x0.76 ($0.656)
+22:47:28 | 🎯 EXIT SIGNAL: MVLL/USDT:USDT - C399_CONVICTION_COLLAPSE: only 15% of the entry thesis
+    left — DRI -0.063->-0.082, DSI +0.312->+0.046 (15% left) | PnL=-0.0% (exiting BEFORE the
+    reversal shows in price)
+  << 22:47  CLOSE  MVLL LONG @35.9200  -0.03% $-0.01  LOSS
+       held 1h03m  C399_CONVICTION_COLLAPSE  round trip from +0.42%  -0.01R  TAKER
+ 
+ 
+  22:50  up 59h23m  scan 464 ---------------------------------------------------------------------
+  EQUITY    $254.98
+  SESSION   $+4.98 +1.99%  peak $257.44  dd 0.96%
+  CURVE     .__......._______--=++===**##**#*++++==+@@@@@##@@@@@@@@@@@@################***********
+  DAY       real $-1.73  loss room $1.71 (0.67%)  102% used  vol x0.98  trust x1.00
+            ##########################
+  RECORD    74 closed  24W 50L  win 32%  payoff 1.66  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $254.98
+  FEES      $1.30  mk113/tk56  0.509% of eq
+  SCAN      802 > 129 > 2 passed  top MET 0.84 (viable)  464 scans, 20523 analysed
+  MARKET    MIXED  bias +0.33  breadth +0.00  taker flow +0.18
+  NEWS      65 articles  + tone +0.15  SHIB +0.85  TRX +0.75  COIN +0.70
+  INFO      2 tilted  flow/fund/news/oi on 371
+            info>0 52tr $-0.02 win 37%  info≤0 22tr $-0.06 win 23%
+  MOVERS    MUBARAK +87% #9  CHR +48% #59  龙虾 -41% cut  BROCCOLI +33% #56
+  TAPE      - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 22:58  flat  $254.98  $+4.98 +1.99%  24W 50L 32%  129 analysed
+23:02:38 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +79%[#8] | CHR +44%[#54] | 龙虾
+    -43%[Live=0.21<cut] | NIL +31%[Live=0.01<cut] | MINA +31%[#40]
+23:03:10 |    ⚖️ C462-7 SOXL: penalties 0.78→0.59 (×0.75) vs bar 0.72 — the stack decided
+23:03:13 |    ⚖️ C462-7 BCH: penalties 0.95→0.65 (×0.69) vs bar 0.72 — the stack decided
+23:04:03 |    ⚖️ C462-7 TUT: penalties 0.84→0.63 (×0.75) vs bar 0.72 — the stack decided
+23:04:55 | 📊 Step 3 result: 128 analyzed → 0 passed | low_confidence=22, low_score=69, pair_cap=8,
+    late_leg_no_forward=7, post_penalty_low=4, vol_fading=1, no_structural_room=2,
+    flat_projection=7, micro_exhaustion=1, poor_reward_risk=2, leg_exhausted=2, vol_floor=2,
+    capitulation=1
+23:04:55 |    📌 Nearest miss: MET score=1.312 conf=0.914 quality=1.198/0.26 reason=vol_floor
+  .. 23:06  flat  $254.98  $+4.98 +1.99%  24W 50L 32%  128 analysed
+23:14:27 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +83%[#8] | CHR +42%[#61] | 龙虾
+    -42%[Live=0.20<cut] | MINA +32%[#43] | MARSCOIN +30%[#25]
+23:16:27 | 📊 Step 3 result: 81 analyzed (+47 cached) → 3 viable → Step 4 DRI/DSI
+23:16:28 |    🎲 C378 odds-size: orderliness 0.12 -> risk x0.77 ($0.671)
+23:16:29 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.674)
+  .. 23:16  flat  $254.98  $+4.98 +1.99%  24W 50L 32%  81 analysed
