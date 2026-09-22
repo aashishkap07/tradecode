@@ -7664,3 +7664,78 @@
 
   .. 19:06  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  72 analysed
   .. 19:14  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  1 analysed
+  .. 19:22  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  71 analysed
+
+
+  19:30  up 56h03m  scan 442 ---------------------------------------------------------------------
+  EQUITY    $255.17
+  SESSION   $+5.17 +2.07%  peak $257.44  dd 0.88%
+  CURVE     ..........______._--=++==++*#*#*#**++++=++#@@@@###@@@#@@@@@@@#####*############*******
+  DAY       real $-1.54  loss room $1.40 (0.54%)  111% used  vol x0.80  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      flat  free $255.17
+  FEES      $1.28  mk110/tk53  0.503% of eq
+  SCAN      802 > 72 > 2 passed  top MVLL 0.85 (viable)  442 scans, 18622 analysed
+  MARKET    MIXED  bias +0.15  breadth +0.25  taker flow -0.10
+  NEWS      65 articles  + tone +0.14  LUNA +0.50  FORM -0.38  BASED +0.34
+  INFO      2 tilted  flow/fund/news/oi on 354
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +55% #10  NIL +33% cut  龙虾 -31% cut  UAI -29% #60
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+
+  .. 19:38  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  131 analysed
+  .. 19:46  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  28 analysed
+  .. 19:54  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  131 analysed
+  >> 20:04  OPEN   MVLL LONG @35.6600  x1 $5.00
+       target +12.7%  stop -3.3%  entry score 0.80  maker
+
+
+  20:04  up 56h37m  scan 447 ---------------------------------------------------------------------
+  EQUITY    $255.17
+  SESSION   $+5.17 +2.07%  peak $257.44  dd 0.88%
+  CURVE     .........._______---+++==++#@####**+++++=+#@@@@##@@@@@@@@@@@@@@################***####
+  DAY       real $-1.54  loss room $1.58 (0.61%)  98% used  vol x0.90  trust x1.00
+            #########################.
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $303.68
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 130 > 4 passed  top MVLL 0.80 (viable)  447 scans, 19069 analysed
+  MARKET    MIXED  bias +0.11  breadth +0.41  taker flow +0.24
+  NEWS      65 articles  + tone +0.18  TRX +0.75  LUNA +0.50  DOT +0.43
+  INFO      4 tilted  flow/fund/news/oi on 359
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +42% #17  UAI -35% cut  NIL +31% cut  FLOCK +29% #48
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   35.6700  +0.03%   -0.00    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  20:12  up 56h45m  scan 447 ---------------------------------------------------------------------
+  EQUITY    $255.10  unreal $-0.07
+  SESSION   $+5.10 +2.04%  peak $257.44  dd 0.91%
+  CURVE     .........._______---+++==++####*#*++++++=+#@@@@##@@@@@@@@@@@@@#################***##**
+  DAY       real $-1.54  loss room $1.58 (0.61%)  98% used  vol x0.90  trust x1.00
+            #########################.
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $250.17
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 130 > 4 passed  top MVLL 0.80 (viable)  447 scans, 19069 analysed
+  MARKET    MIXED  bias +0.11  breadth +0.41  taker flow +0.15
+  NEWS      65 articles  + tone +0.18  TRX +0.75  LUNA +0.50  DOT +0.43
+  INFO      4 tilted  flow/fund/news/oi on 359
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +42% #17  UAI -35% cut  NIL +31% cut  FLOCK +29% #48
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   35.2100  -1.26%   -0.07    8m  - 58% left
+  ------------------------------------------------------------------------------------------------
+
