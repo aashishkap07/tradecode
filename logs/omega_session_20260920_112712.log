@@ -2704,3 +2704,107 @@
     reversal shows in price)
   << 13:15  CLOSE  MARSCOIN LONG @0.104920  -0.07% $-0.03  LOSS
        held 24m  C399_CONVICTION_COLLAPSE  round trip from +1.03%  -0.02R  TAKER
+ 
+ 
+  13:23  up 49h56m  scan 397 ---------------------------------------------------------------------
+  EQUITY    $255.65
+  SESSION   $+5.65 +2.26%  peak $257.44  dd 0.70%
+  CURVE     ..__........____-___--=+++==++*+@##*#**++++++=+@@@@@@##@@@@@@@@@@@@@@@@###############
+  DAY       real $-1.07  loss room $1.62 (0.63%)  66% used  vol x0.92  trust x1.00
+            #################.........
+  RECORD    64 closed  22W 42L  win 34%  payoff 1.61  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.65
+  FEES      $1.25  mk101/tk47  0.489% of eq
+  SCAN      801 > 3 > 0 passed  397 scans, 16637 analysed
+  MARKET    TRENDING  bias -0.18  breadth +0.00  taker flow +0.06
+  NEWS      65 articles  + tone +0.21  PROVE +0.70  RAY +0.53  LUNA +0.50
+  INFO      1 tilted  flow/fund/news/oi on 342
+            info>0 44tr $-0.02 win 39%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +58% #7  AKE +46% #8  KERNEL +42% #13  龙虾 -34% cut
+  TAPE      - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+ 
+13:24:07 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +63%[#12] | AKE +44%[#14] | KERNEL
+    +42%[#20] | 龙虾 -31%[Live=0.27<cut] | PEPE +28%[#5]
+13:25:13 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=8, low_score=7,
+    ct_noisy_block=28, flat_projection=9, pair_cap=5, poor_reward_risk=3, no_structural_room=8,
+    regime_blip=3
+13:25:13 |    📌 Nearest miss: ONE score=0.522 conf=0.708 quality=0.370/0.26 reason=score 0.522 <
+    0.595
+13:30:56 |    ⚖️ C462-7 ONE: penalties 0.64→0.49 (×0.76) vs bar 0.59 — the stack decided
+13:31:35 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=8, low_score=8,
+    news_tech_conflict=1, ct_noisy_block=31, pair_cap=4, poor_reward_risk=3, flat_projection=5,
+    no_structural_room=3, regime_blip=5, micro_exhaustion=1, proj_confirms_trend=1, capitulation=1
+13:31:35 |    📌 Nearest miss: ONE score=0.486 (pre-pen 0.64) conf=0.609 quality=0.296/0.26
+    reason=score 0.486 < 0.595
+  .. 13:31  flat  $255.65  $+5.65 +2.26%  22W 42L 34%  71 analysed
+13:36:42 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +64%[#9] | AKE +42%[#11] | KERNEL
+    +40%[#22] | 龙虾 -32%[Live=0.32<cut] | PEPE +27%[#4]
+13:37:06 | 📊 Step 3 result: 11 analyzed (+60 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=8, news_tech_conflict=1, ct_noisy_block=33, pair_cap=4, poor_reward_risk=3,
+    flat_projection=4, no_structural_room=3, regime_blip=6, micro_exhaustion=1,
+    proj_confirms_trend=2, fee_floor=1
+13:37:06 |    📌 Nearest miss: LDO score=0.117 conf=0.473 quality=0.055/0.26 reason=score 0.117 <
+    0.595
+  .. 13:39  flat  $255.65  $+5.65 +2.26%  22W 42L 34%  11 analysed
+13:47:27 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +64%[#9] | AKE +39%[#12] | KERNEL
+    +37%[#23] | 龙虾 -34%[Live=0.15<cut] | PEPE +27%[#5]
+13:47:53 |    🎢→⚖️ AKE: C292 stands down — parabola BROKEN (range 19×ATR, 5.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+13:48:37 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=9, low_score=33,
+    flat_projection=10, news_tech_conflict=3, pair_cap=2, no_structural_room=6, poor_reward_risk=2,
+    proj_confirms_trend=2, post_penalty_low=1, capitulation=1, fee_floor=1, leg_exhausted=1
+13:48:37 |    📌 Nearest miss: AKT score=0.544 conf=0.595 quality=0.324/0.26 reason=OF-exhaustion
+    OI=weak_rally
+  .. 13:48  flat  $255.65  $+5.65 +2.26%  22W 42L 34%  71 analysed
+ 
+ 
+  13:56  up 50h29m  scan 401 ---------------------------------------------------------------------
+  EQUITY    $255.65
+  SESSION   $+5.65 +2.26%  peak $257.44  dd 0.70%
+  CURVE     ..__......._____-__---=++====+*#****#*+++++++=+#@#@@###@@@@@@@@@@@@#@#################
+  DAY       real $-1.07  loss room $1.57 (0.61%)  68% used  vol x0.90  trust x1.00
+            ##################........
+  RECORD    64 closed  22W 42L  win 34%  payoff 1.61  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.65
+  FEES      $1.25  mk101/tk47  0.489% of eq
+  SCAN      801 > 71 > 0 passed  top AKT 0.54 (OF-exhaustion OI=w)  401 scans, 16861 analysed
+  MARKET    TRENDING  bias -0.05  breadth +0.07  taker flow -0.34
+  NEWS      65 articles  + tone +0.54  PEPE +0.85  PROVE +0.70  RAY +0.53
+  INFO      1 tilted  flow/fund/news/oi on 342
+            info>0 44tr $-0.02 win 39%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +64% #9  AKE +39% #12  KERNEL +37% #23  龙虾 -34% cut
+  TAPE      - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+ 
+13:59:01 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +63%[#9] | AKE +40%[#12] | KERNEL
+    +36%[#24] | 龙虾 -34%[Live=0.15<cut] | UAI -27%[#43]
+13:59:20 | 📊 Step 3 result: 2 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=32, flat_projection=10, news_tech_conflict=3, pair_cap=3, no_structural_room=6,
+    poor_reward_risk=2, proj_confirms_trend=2, post_penalty_low=1, capitulation=1, leg_exhausted=1,
+    fee_floor=1
+13:59:20 |    📌 Nearest miss: SKY score=0.161 (pre-pen 0.27) conf=0.412 quality=0.066/0.26
+    reason=score 0.161 < 0.720
+14:04:46 |    🎢→⚖️ AKE: C292 stands down — parabola BROKEN (range 20×ATR, 5.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:05:40 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=11, low_score=3,
+    flat_projection=7, ct_noisy_block=34, news_tech_conflict=3, micro_exhaustion=2,
+    poor_reward_risk=5, proj_confirms_trend=2, pair_cap=3, fee_floor=1
+14:05:40 |    📌 Nearest miss: ZAMA score=0.266 (pre-pen 0.46) conf=0.454 quality=0.120/0.26
+    reason=score 0.199 < 0.600
+  .. 14:05  flat  $255.65  $+5.65 +2.26%  22W 42L 34%  71 analysed
+14:10:47 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +60%[Live=0.26<cut] | AKE
+    +39%[#11] | KERNEL +38%[#22] | 龙虾 -36%[Live=0.30<cut] | UAI -27%[#43]
+14:11:14 | 📊 Step 3 result: 13 analyzed (+58 cached this 15m candle) → 0 passed | low_confidence=11,
+    low_score=4, flat_projection=6, ct_noisy_block=35, no_structural_room=1, news_tech_conflict=2,
+    proj_confirms_trend=2, micro_exhaustion=1, poor_reward_risk=6, pair_cap=2, fee_floor=1
+14:11:14 |    📌 Nearest miss: WLFI score=0.131 (pre-pen 0.23) conf=0.524 quality=0.069/0.26
+    reason=score 0.131 < 0.600
+  .. 14:13  flat  $255.65  $+5.65 +2.26%  22W 42L 34%  13 analysed
+14:16:36 |    🎢→⚖️ PEPE: C292 stands down — parabola BROKEN (range 15×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
