@@ -3996,3 +3996,198 @@
     extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
     path [C299]
 20:16:51 |    ⚖️ C462-7 BTW: penalties 0.82→0.61 (×0.75) vs bar 0.72 — the stack decided
+20:17:30 |    ⚖️ C462-7 AAOI: penalties 0.42→0.28 (×0.65) vs bar 0.40 — the stack decided
+20:17:32 |    ⚖️ C462-7 USAR: penalties 0.55→0.36 (×0.65) vs bar 0.40 — the stack decided
+20:17:46 | 📊 Step 3 result: 129 analyzed → 2 viable → Step 4 DRI/DSI
+20:17:50 |    🎲 C378 odds-size: orderliness 0.07 -> risk x0.74 ($0.644)
+ 
+  20:20  up 56h53m  scan 448 ---------------------------------------------------------------------
+  EQUITY    $255.13  unreal $-0.04
+  SESSION   $+5.13 +2.05%  peak $257.44  dd 0.90%
+  CURVE     ..........______.---++===+*####*#*++++++=+@@@@@##@@@@@@@@@@@@@################***##***
+  DAY       real $-1.54  loss room $1.38 (0.54%)  112% used  vol x0.79  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $293.95
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 129 > 2 passed  top META 0.73 (viable)  448 scans, 19198 analysed
+  MARKET    MIXED  bias -0.02  breadth +0.28  taker flow +0.05
+  NEWS      65 articles  + tone +0.18  TRX +0.75  XRP +0.75  BNB +0.75
+  INFO      2 tilted  flow/fund/news/oi on 361
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +39% #17  UAI -36% #60  龙虾 -29% #52  FLOCK +28% #53
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   35.4000  -0.73%   -0.04   16m  - 42% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:20:31 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $293.9521 → $250.1721 (equity
+    $255.1721 − locked $5.0000 = $250.1721); discrepancy $+43.7800. Money that does not exist would
+    have been sized against [correction #18]
+20:22:53 | 📉 C112-N1: 1h DECAYING 3 scans (+0.42→-0.56 Δ=-0.98)
+20:23:28 | 📊 Step 3 result: 2 analyzed (+127 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=72, mtf_disagree=1, flat_projection=8, micro_exhaustion=10, pair_cap=6,
+    low_agreement=2, crowding=1, proj_confirms_trend=1, no_structural_room=11, h1_decay=2,
+    post_penalty_low=3, poor_reward_risk=5, capitulation=2, vol_floor=2
+20:23:28 |    📌 Nearest miss: BROCCOLI score=1.378 conf=0.913 quality=1.258/0.26 reason=h1_decay
+20:28:38 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +46%[#13] | 龙虾 -41%[#49] | UAI
+    -35%[Live=0.42<cut] | FLOCK +31%[#41] | BROCCOLI +27%[#59]
+20:29:21 |    ⚖️ C462-7 ETHFI: penalties 0.44→0.35 (×0.79) vs bar 0.40 — the stack decided
+20:29:24 |    ⚖️ C462-7 CELR: penalties 0.44→0.26 (×0.59) vs bar 0.40 — the stack decided
+20:29:26 |    ⚖️ C462-7 LIT: penalties 0.43→0.34 (×0.79) vs bar 0.40 — the stack decided
+20:29:29 |    ⚖️ C462-7 EIGEN: penalties 0.59→0.35 (×0.59) vs bar 0.40 — the stack decided
+20:29:31 |    ⚖️ C462-7 BEAT: penalties 0.43→0.25 (×0.59) vs bar 0.40 — the stack decided
+20:29:36 | 📊 Step 3 result: 27 analyzed (+101 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=73, mtf_disagree=1, flat_projection=5, micro_exhaustion=9, pair_cap=4,
+    proj_confirms_trend=2, low_agreement=2, crowding=1, no_structural_room=10, h1_decay=2,
+    post_penalty_low=2, poor_reward_risk=5, leg_exhausted=1, reward_conviction=1, vol_floor=2,
+    capitulation=3
+20:29:36 |    📌 Nearest miss: BR score=0.644 (pre-pen 1.07) conf=0.606 quality=0.391/0.26
+    reason=reward_conviction needs 65%
+ 
+  20:29  up 57h02m  scan 450 ---------------------------------------------------------------------
+  EQUITY    $255.16  unreal $-0.01
+  SESSION   $+5.16 +2.06%  peak $257.44  dd 0.89%
+  CURVE     ..........______.---++===+*###**#*++++++=+@@@@@##@@@@@@@@@@@@@################***##***
+  DAY       real $-1.54  loss room $1.33 (0.52%)  116% used  vol x0.76  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $250.17
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 27 > 0 passed  top BR 0.64 (reward_conviction )  450 scans, 19227 analysed
+  MARKET    MIXED  bias -0.12  breadth +0.00  taker flow -0.09
+  NEWS      65 articles  + tone +0.26  TRX +0.75  XRP +0.75  BNB +0.75
+  INFO      2 tilted  flow/fund/news/oi on 361
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +46% #13  龙虾 -41% #49  UAI -35% cut  FLOCK +31% #41
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   35.6200  -0.11%   -0.01   25m  - 59% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:34:38 | ⚠️ C79 WEAK-RESULTANT: R=-0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+20:35:40 |    ⚖️ C462-7 SNXX: penalties 0.73→0.66 (×0.90) vs bar 0.72 — the stack decided
+20:36:24 |    ⚖️ C462-7 PONS: penalties 0.45→0.39 (×0.86) vs bar 0.40 — the stack decided
+20:36:37 |    ⚖️ C462-7 ARM: penalties 0.76→0.57 (×0.75) vs bar 0.72 — the stack decided
+20:37:22 |    ⚖️ C462-7 MSTU: penalties 0.80→0.60 (×0.75) vs bar 0.72 — the stack decided
+20:37:31 |    ⚖️ C462-7 LITE: penalties 0.42→0.39 (×0.92) vs bar 0.40 — the stack decided
+20:37:34 |    ⚖️ C462-7 EIGEN: penalties 0.53→0.34 (×0.65) vs bar 0.40 — the stack decided
+20:37:44 |    ⚖️ C462-7 BANK: penalties 0.45→0.29 (×0.65) vs bar 0.40 — the stack decided
+20:38:00 |    ⚖️ C462-7 WDC: penalties 0.80→0.60 (×0.75) vs bar 0.72 — the stack decided
+20:38:07 | 📊 Step 3 result: 128 analyzed → 2 viable → Step 4 DRI/DSI
+ 
+  20:38  up 57h10m  scan 451 ---------------------------------------------------------------------
+  EQUITY    $255.19  unreal $+0.02
+  SESSION   $+5.19 +2.08%  peak $257.44  dd 0.87%
+  CURVE     .........._______---++===+**##**#*++++++=*@@@@@#@@@@#@@@@@@@##################********
+  DAY       real $-1.54  loss room $1.54 (0.60%)  100% used  vol x0.88  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $250.17
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 128 > 2 passed  top SOXL 0.95 (viable)  451 scans, 19355 analysed
+  MARKET    MIXED  bias +0.07  breadth +0.04  taker flow -0.21
+  NEWS      65 articles  + tone +0.26  TRX +0.75  XRP +0.75  BNB +0.75
+  INFO      2 tilted  flow/fund/news/oi on 361
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +46% #13  龙虾 -41% #49  UAI -35% cut  FLOCK +31% #41
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   35.8200  +0.45%   +0.02   33m  + 47% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:45:19 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -45%[#43] | MUBARAK +45%[#10] | UAI
+    -30%[Live=0.13<cut] | FLOCK +29%[#42] | BROCCOLI +26%[#63]
+20:45:20 | ⚠️ C79 WEAK-RESULTANT: R=+0.06 mag=0.06 < 0.08 — direction unclear, higher bar applied
+20:46:14 |    ⚖️ C462-7 ARB: penalties 0.39→0.34 (×0.85) vs bar 0.38 — the stack decided
+20:46:25 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 20×ATR, 9.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+20:46:32 |    ⚖️ C462-7 FLOCK: penalties 0.78→0.70 (×0.90) vs bar 0.72 — the stack decided
+20:46:44 |    ⚖️ C462-7 PUMP: penalties 0.40→0.25 (×0.64) vs bar 0.40 — the stack decided
+20:47:07 |    ⚖️ C462-7 ZAMA: penalties 0.38→0.24 (×0.64) vs bar 0.38 — the stack decided
+20:48:04 |    ⚖️ C462-7 BE: penalties 0.75→0.69 (×0.92) vs bar 0.72 — the stack decided
+20:48:17 |    ⚖️ C462-7 STXSTOCK: penalties 0.85→0.64 (×0.75) vs bar 0.72 — the stack decided
+20:48:20 | 📊 Step 3 result: 129 analyzed → 4 viable → Step 4 DRI/DSI
+ 
+  20:48  up 57h21m  scan 452 ---------------------------------------------------------------------
+  EQUITY    $255.21  unreal $+0.04
+  SESSION   $+5.21 +2.08%  peak $257.44  dd 0.87%
+  CURVE     .........._______---++===+**##**#*+++++++*@@@@##@@@@#@@@@@@@@#################********
+  DAY       real $-1.54  loss room $1.55 (0.60%)  99% used  vol x0.89  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $250.17
+  FEES      $1.28  mk111/tk53  0.503% of eq
+  SCAN      802 > 129 > 4 passed  top BSV 0.77 (viable)  452 scans, 19484 analysed
+  MARKET    MIXED  bias +0.10  breadth +0.20  taker flow -0.20
+  NEWS      65 articles  + tone +0.26  TRX +0.75  LUNA +0.50  LTC +0.43
+  INFO      4 tilted  flow/fund/news/oi on 363
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    龙虾 -45% #43  MUBARAK +45% #10  UAI -30% cut  FLOCK +29% #42
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MVLL     LONG     35.6600   36.0000  +0.95%   +0.04   43m  + 56% left
+  ------------------------------------------------------------------------------------------------
+ 
+20:53:28 | 🎯 EXIT SIGNAL: MVLL/USDT:USDT - PEAK_FLOOR: peaked at +1.4%(0.7PRU) now=+0.0% — profit
+    fully erased, protecting capital
+  << 20:53  CLOSE  MVLL LONG @35.6700  +0.03% $-0.00  LOSS
+       held 49m  PEAK_FLOOR: peaked at +1  kept 2% of a +1.43% peak  +0.01R  TAKER
+20:53:31 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +50%[#10] | 龙虾 -46%[#45] | FLOCK
+    +32%[#38] | BROCCOLI +29%[#57] | MINA +26%[#47]
+20:53:32 | ⚠️ C79 WEAK-RESULTANT: R=+0.06 mag=0.06 < 0.08 — direction unclear, higher bar applied
+ 
+ 
+  20:56  up 57h29m  scan 452 ---------------------------------------------------------------------
+  EQUITY    $255.17
+  SESSION   $+5.17 +2.07%  peak $257.44  dd 0.88%
+  CURVE     ..........____-__---++===+*++#****+++++++*@@@@#@@@@@@@@@@@@@@@################**###***
+  DAY       real $-1.54  loss room $1.58 (0.62%)  98% used  vol x0.90  trust x1.00
+            #########################.
+  RECORD    72 closed  24W 48L  win 33%  payoff 1.62  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.17
+  FEES      $1.29  mk111/tk54  0.504% of eq
+  SCAN      802 > 129 > 4 passed  top BSV 0.77 (viable)  452 scans, 19484 analysed
+  MARKET    MIXED  bias +0.07  breadth +0.20  taker flow +0.19
+  NEWS      35 articles  ~ tone +0.00  TRX +0.75  LUNA +0.50  LTC +0.43
+  INFO      4 tilted  flow/fund/news/oi on 363
+            info>0 52tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +50% #10  龙虾 -46% #45  FLOCK +32% #38  BROCCOLI +29% #57
+  TAPE      - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+20:58:48 | ⚠️ C79 WEAK-RESULTANT: R=+0.06 mag=0.06 < 0.08 — direction unclear, higher bar applied
+20:59:28 | 📊 Step 3 result: 11 analyzed (+118 cached) → 1 viable → Step 4 DRI/DSI
+  .. 21:04  flat  $255.17  $+5.17 +2.07%  24W 48L 33%  11 analysed
+21:04:21 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $299.8195 → $255.1695 (equity
+    $255.1695 − locked $0.0000 = $255.1695); discrepancy $+44.6500. Money that does not exist would
+    have been sized against [correction #19]
+21:04:39 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +50%[#13] | 龙虾 -43%[#44] | FLOCK
+    +30%[Live=0.50<cut] | MINA +29%[#43] | BROCCOLI +27%[#59]
+21:05:50 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 21×ATR, 9.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:06:02 |    🎢→⚖️ GRASS: C292 stands down — parabola BROKEN (range 20×ATR, 7.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+21:06:53 |    ⚖️ C462-7 TWLO: penalties 0.77→0.58 (×0.75) vs bar 0.72 — the stack decided
+21:07:14 | 📊 Step 3 result: 129 analyzed → 1 viable → Step 4 DRI/DSI
+21:07:16 |    🎲 C378 odds-size: orderliness 0.08 -> risk x0.75 ($0.649)
+21:12:41 | 📊 Step 3 result: 1 analyzed (+128 cached this 15m candle) → 0 passed | score_zero=1,
+    low_confidence=7, low_score=55, mtf_disagree=3, pair_cap=3, ct_noisy_block=32,
+    micro_exhaustion=3, post_penalty_low=7, absorption_at_extreme=3, flat_projection=7,
+    capitulation=1, late_leg_no_forward=1, dir_proj_conflict=1, no_structural_room=2,
+    leg_exhausted=1, vol_floor=1, proj_confirms_trend=1
+21:12:41 |    📌 Nearest miss: BROCCOLI score=0.671 conf=0.659 quality=0.442/0.26 reason=score 0.604
+    < 0.720
+  .. 21:12  flat  $255.17  $+5.17 +2.07%  24W 48L 33%  1 analysed
