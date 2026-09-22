@@ -3670,3 +3670,193 @@
   FORM     LONG    0.321200  0.331000  +3.05%   +0.15 1h03m  + 33% left
   ------------------------------------------------------------------------------------------------
  
+18:22:03 | 📊 Step 3 result: 4 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=32, h1_regime_shock=15, pair_cap=6, capitulation=4, flat_projection=2,
+    dir_proj_conflict=2, late_leg_no_forward=2, post_penalty_low=1, regime_blip=3,
+    absorption_at_extreme=1
+18:22:03 |    📌 Nearest miss: NEAR score=1.048 (pre-pen 1.16) conf=0.485 quality=0.508/0.26
+    reason=h1_regime_shock
+18:23:07 |    🎯 C462-6 MAKER half filled FORM @$0.328200 — saved ~0.04% of the half notional (19
+    this session)
+  -> 18:23  HALF   FORM LONG @0.328200  +2.18% $+0.05
+       win half banked  maker  $2.50 rides on
+ 
+ 
+  18:24  up 54h57m  scan 433 ---------------------------------------------------------------------
+  EQUITY    $255.37  unreal $+0.21
+  SESSION   $+5.37 +2.15%  peak $257.44  dd 0.80%
+  CURVE     ..........._____..---++===+**###*#**++++==+#@@@@###@@@#@@@@@@@@@#################****#
+  DAY       real $-1.55  loss room $1.70 (0.66%)  91% used  vol x0.97  trust x1.00
+            ########################..
+  RECORD    69 closed  23W 46L  win 33%  payoff 1.62  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      2 pos $7.50 (3%)  free $247.66
+  FEES      $1.28  mk109/tk52  0.501% of eq
+  SCAN      801 > 4 > 0 passed  top NEAR 1.05 (h1_regime_shock)  433 scans, 18245 analysed
+  MARKET    MIXED  bias -0.03  breadth +0.11  taker flow -0.11
+  NEWS      65 articles  ~ tone +0.05  LUNA +0.50  BASED +0.34  ETH +0.32
+  INFO      4 tilted  flow/fund/news/oi on 347
+            info>0 49tr $-0.03 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +54% #10  UAI -28% #40  龙虾 -27% cut  KERNEL +26% #25
+  TAPE      - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  USELESS  LONG    0.309490  0.320030  +3.41%   +0.17 1h22m  + 11% left
+  FORM     LONG    0.321200  0.327700  +2.02%   +0.05 1h11m  + 3% left
+  ------------------------------------------------------------------------------------------------
+ 
+18:27:11 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +65%[#9] | 龙虾 -29%[Live=0.39<cut]
+    | UAI -28%[#41] | KERNEL +28%[#26] | FORM +22%[#71]
+18:27:40 | 📊 Step 3 result: 15 analyzed (+56 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=28, h1_regime_shock=23, pair_cap=4, capitulation=3, flat_projection=3,
+    dir_proj_conflict=2, poor_reward_risk=2, late_leg_no_forward=1, regime_blip=1,
+    absorption_at_extreme=1
+18:27:40 |    📌 Nearest miss: BTW score=0.599 conf=0.773 quality=0.463/0.26 reason=h1_regime_shock
+18:32:43 | ⚠️ C79 WEAK-RESULTANT: R=+0.04 mag=0.04 < 0.08 — direction unclear, higher bar applied
+18:33:21 |    ⚖️ C462-7 ZETA: penalties 0.48→0.36 (×0.75) vs bar 0.40 — the stack decided
+18:33:27 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 19×ATR, 6.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:34:07 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=2, low_score=4,
+    h1_regime_shock=41, no_structural_room=9, pair_cap=4, poor_reward_risk=3, flat_projection=6,
+    fee_floor=1, proj_confirms_trend=1
+18:34:07 |    📌 Nearest miss: FORM score=0.977 conf=0.601 quality=0.587/0.26 reason=h1_regime_shock
+ 
+  18:34  up 55h06m  scan 435 ---------------------------------------------------------------------
+  EQUITY    $255.35  unreal $+0.19
+  SESSION   $+5.35 +2.14%  peak $257.44  dd 0.81%
+  CURVE     ...........____.._---++===+**##**#*+++++==+@@#@@###@@@#@@@@@@@@####*#############*****
+  DAY       real $-1.55  loss room $1.23 (0.48%)  127% used  vol x0.70  trust x1.00
+            ##########################
+  RECORD    69 closed  23W 46L  win 33%  payoff 1.62  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      2 pos $7.50 (3%)  free $247.66
+  FEES      $1.28  mk109/tk52  0.501% of eq
+  SCAN      801 > 71 > 0 passed  top FORM 0.98 (h1_regime_shock)  435 scans, 18331 analysed
+  MARKET    MIXED  bias +0.04  breadth +0.33  taker flow +0.74
+  NEWS      65 articles  ~ tone +0.05  LUNA +0.50  BASED +0.34  ETH +0.32
+  INFO      4 tilted  flow/fund/news/oi on 347
+            info>0 49tr $-0.03 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +65% #9  龙虾 -29% cut  UAI -28% #41  KERNEL +28% #26
+  TAPE      - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  USELESS  LONG    0.309490  0.318420  +2.89%   +0.14 1h31m  + 12% left
+  FORM     LONG    0.321200  0.328500  +2.27%   +0.05 1h20m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  18:42  up 55h15m  scan 435 ---------------------------------------------------------------------
+  EQUITY    $255.32  unreal $+0.16
+  SESSION   $+5.32 +2.13%  peak $257.44  dd 0.82%
+  CURVE     ..........._____._---++===+**##**#*++++++=+@@#@@##@@@@@@@@@@@@@@#################*****
+  DAY       real $-1.55  loss room $1.23 (0.48%)  127% used  vol x0.70  trust x1.00
+            ##########################
+  RECORD    69 closed  23W 46L  win 33%  payoff 1.62  avg $-0.04/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      2 pos $7.50 (3%)  free $247.66
+  FEES      $1.28  mk109/tk52  0.501% of eq
+  SCAN      801 > 71 > 0 passed  top FORM 0.98 (h1_regime_shock)  435 scans, 18331 analysed
+  MARKET    MIXED  bias +0.04  breadth +0.33  taker flow -0.29
+  NEWS      65 articles  ~ tone +0.05  LUNA +0.50  BASED +0.34  ETH +0.32
+  INFO      4 tilted  flow/fund/news/oi on 347
+            info>0 49tr $-0.03 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +65% #9  龙虾 -29% cut  UAI -28% #41  KERNEL +28% #26
+  TAPE      - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  USELESS  LONG    0.309490  0.315700  +2.01%   +0.10 1h39m  + 5% left
+  FORM     LONG    0.321200  0.329600  +2.62%   +0.06 1h28m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+18:45:36 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +61%[#9] | 龙虾 -25%[#36] | KERNEL
+    +24%[#28] | UAI -24%[#40] | MARSCOIN +23%[Live=0.42<cut]
+18:46:28 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 19×ATR, 7.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:47:08 | 📊 Step 3 result: 73 analyzed → 1 viable → Step 4 DRI/DSI
+18:48:50 |    🎯 C376 MAKER exit filled FORM @$0.324400 — saved ~0.04%% of notional (20 this session)
+  << 18:48  CLOSE  FORM LONG @0.324400  +1.00% $+0.02  WIN
+       held 1h35m  TRAILING_TP: peak=+3.7%   kept 27% of a +3.74% peak  +0.19R  maker
+ 
+ 
+  18:50  up 55h23m  scan 436 ---------------------------------------------------------------------
+  EQUITY    $255.28  unreal $+0.09
+  SESSION   $+5.28 +2.11%  peak $257.44  dd 0.84%
+  CURVE     ..........._____._--+++==++*++#**#*++++++=+#@@@@##@@@@@@@@@@@@@@################***###
+  DAY       real $-1.53  loss room $1.35 (0.53%)  113% used  vol x0.77  trust x1.00
+            ##########################
+  RECORD    70 closed  24W 46L  win 34%  payoff 1.55  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      1 pos $5.00 (2%)  free $250.19
+  FEES      $1.28  mk110/tk52  0.501% of eq
+  SCAN      802 > 73 > 1 passed  top TUT 0.66 (viable)  436 scans, 18404 analysed
+  MARKET    MIXED  bias +0.35  breadth +0.30  taker flow -0.20
+  NEWS      65 articles  + tone +0.31  LUNA +0.50  BASED +0.34  ETH +0.32
+  INFO      1 tilted  flow/fund/news/oi on 347
+            info>0 50tr $-0.02 win 38%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +61% #9  龙虾 -25% #36  KERNEL +24% #28  UAI -24% #40
+  TAPE      - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + +
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  USELESS  LONG    0.309490  0.315420  +1.92%   +0.09 1h47m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+18:52:33 | 📊 Step 3 result: 1 analyzed (+72 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=6, ct_noisy_block=6, h1_regime_shock=37, pair_cap=5, poor_reward_risk=4,
+    no_structural_room=3, capitulation=2, absorption_at_extreme=2, late_leg_no_forward=2,
+    micro_exhaustion=1, fee_floor=2, post_penalty_quality=1, post_penalty_low=1
+18:52:33 |    📌 Nearest miss: TUT score=0.465 (pre-pen 1.03) conf=0.388 quality=0.180/0.26
+    reason=post-penalty 0.465 < 0.47
+18:55:09 | 🎯 EXIT SIGNAL: USELESS/USDT:USDT - PEAK_FLOOR: peaked at +3.9%(1.4PRU) now=-0.1% — profit
+    fully erased, protecting capital
+  << 18:55  CLOSE  USELESS LONG @0.308830  -0.21% $-0.01  LOSS
+       held 1h52m  PEAK_FLOOR: peaked at +3  round trip from +3.88%  -0.07R  TAKER
+ 
+ 
+  18:58  up 55h31m  scan 437 ---------------------------------------------------------------------
+  EQUITY    $255.17
+  SESSION   $+5.17 +2.07%  peak $257.44  dd 0.88%
+  CURVE     ..........________--+++==++*#+#****++++++=*@@@@@##@@@@@@@@@@@@@@################***##*
+  DAY       real $-1.54  loss room $1.31 (0.51%)  118% used  vol x0.75  trust x1.00
+            ##########################
+  RECORD    71 closed  24W 47L  win 34%  payoff 1.59  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 39%
+  OPEN      flat  free $255.17
+  FEES      $1.28  mk110/tk53  0.503% of eq
+  SCAN      802 > 1 > 0 passed  top TUT 0.46 (post-penalty 0.465)  437 scans, 18405 analysed
+  MARKET    MIXED  bias +0.35  breadth +0.37  taker flow -0.08
+  NEWS      65 articles  + tone +0.31  LUNA +0.50  FORM -0.38  ETH +0.37
+  INFO      1 tilted  flow/fund/news/oi on 347
+            info>0 51tr $-0.02 win 37%  info≤0 20tr $-0.06 win 25%
+  MOVERS    MUBARAK +61% #9  龙虾 -25% #36  KERNEL +24% #28  UAI -24% #40
+  TAPE      - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - + + - - - - - + + -
+  ------------------------------------------------------------------------------------------------
+ 
+19:02:40 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +67%[#8] | KERNEL +26%[#28] | NIL
+    +26%[Live=0.44<cut] | 龙虾 -25%[#37] | UAI -25%[#39]
+19:02:41 | ⚠️ C79 WEAK-RESULTANT: R=-0.08 mag=0.08 < 0.08 — direction unclear, higher bar applied
+19:03:18 |    🎢→⚖️ KERNEL: C292 stands down — parabola BROKEN (range 20×ATR, 7.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:03:33 |    ⚖️ C462-7 ZAMA: penalties 0.44→0.33 (×0.75) vs bar 0.40 — the stack decided
+19:04:09 | 📊 Step 3 result: 72 analyzed → 1 viable → Step 4 DRI/DSI
+19:04:11 |    🎲 C378 odds-size: orderliness 0.08 -> risk x0.75 ($0.651)
+  .. 19:06  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  72 analysed
+19:09:13 | ⚠️ C79 WEAK-RESULTANT: R=-0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+19:09:27 | 📊 Step 3 result: 1 analyzed (+71 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=39, mtf_disagree=1, flat_projection=11, pair_cap=5, capitulation=2, low_agreement=1,
+    post_penalty_low=2, regime_blip=1, leg_exhausted=1, proj_confirms_trend=1, no_structural_room=1,
+    vol_floor=1, poor_reward_risk=1
+19:09:27 |    📌 Nearest miss: TUT score=1.018 (pre-pen 1.15) conf=0.454 quality=0.462/0.26
+    reason=mtf_disagree
+  .. 19:14  flat  $255.17  $+5.17 +2.07%  24W 47L 34%  1 analysed
+19:14:34 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +63%[#7] | UAI -29%[#36] | NIL
+    +28%[Live=0.46<cut] | 龙虾 -28%[#35] | KERNEL +26%[#27]
+19:14:35 | ⚠️ C79 WEAK-RESULTANT: R=-0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+19:14:53 | 📊 Step 3 result: 1 analyzed (+70 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=39, mtf_disagree=1, flat_projection=11, pair_cap=5, capitulation=2, low_agreement=1,
+    leg_exhausted=1, post_penalty_low=1, regime_blip=1, no_structural_room=1, poor_reward_risk=1,
+    proj_confirms_trend=1, vol_floor=1
+19:14:53 |    📌 Nearest miss: RUNE score=0.570 (pre-pen 0.64) conf=0.507 quality=0.289/0.26
+    reason=score 0.570 < 0.720
