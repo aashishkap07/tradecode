@@ -1508,3 +1508,147 @@
 06:12:42 |    🎯 C376 MAKER exit filled EGLD @$4.4530 — saved ~0.04%% of notional (18 this session)
   << 06:12  CLOSE  EGLD LONG @4.4530  +1.41% $+0.07  WIN
        held 17m  TRAILING_TP: peak=+3.3%   kept 85% of a +1.66% peak  +0.81R  maker
+06:24:04 |    🪞 C266 board-parity (top movers vs screen): ZETA +47%[#7] | EVAA +40%[#41] | PHA
+    +37%[#24] | FORM +37%[#38] | ALCH +34%[Live=0.11<cut]
+06:24:05 | ⚠️ C79 WEAK-RESULTANT: R=-0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+06:24:25 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 24×ATR, 6.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:24:42 |    ⚖️ C462-7 SHIB: penalties 0.78→0.70 (×0.90) vs bar 0.72 — the stack decided
+06:24:49 |    🎢→⚖️ FORM: C292 stands down — parabola BROKEN (range 26×ATR, 7.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:24:51 |    ⚖️ C462-7 EVAA: penalties 1.05→0.71 (×0.68) vs bar 0.72 — the stack decided
+06:25:19 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=1, low_score=28, pair_cap=5,
+    no_structural_room=14, ct_noisy_block=6, flat_projection=9, capitulation=2, post_penalty_low=2,
+    micro_exhaustion=1, proj_confirms_trend=1, vol_floor=1, poor_reward_risk=1
+06:25:19 |    📌 Nearest miss: EVAA score=0.951 (pre-pen 1.05) conf=0.728 quality=0.692/0.26
+    reason=score 0.713 < 0.720
+ 
+ 
+  06:25  up 42h58m  scan 347 ---------------------------------------------------------------------
+  EQUITY    $255.55
+  SESSION   $+5.55 +2.22%  peak $257.44  dd 0.73%
+  CURVE     ............._________----+++===++**@****#**++++++=+++#@@@@@###@@@@@@@@@@@@@@#@@######
+  DAY       real $-1.17  loss room $1.42 (0.55%)  82% used  vol x0.81  trust x1.00
+            #####################.....
+  RECORD    62 closed  21W 41L  win 34%  payoff 1.64  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.55
+  FEES      $1.23  mk97/tk46  0.481% of eq
+  SCAN      803 > 71 > 0 passed  top EVAA 0.95 (score 0.713 < 0.72)  347 scans, 14283 analysed
+  MARKET    TRENDING  bias +0.29  breadth +0.39  taker flow -0.19
+  NEWS      65 articles  + tone +0.28  ETH +0.51  LUNA +0.50  OP +0.43
+  INFO      3 tilted  flow/fund/news/oi on 324
+            info>0 43tr $-0.02 win 40%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +47% #7  EVAA +40% #41  PHA +37% #24  FORM +37% #38
+  TAPE      - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+ 
+06:30:44 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 23×ATR, 6.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:30:51 |    ⚖️ C462-7 FARTCOIN: penalties 0.89→0.60 (×0.68) vs bar 0.72 — the stack decided
+06:30:52 |    ⚖️ C462-7 ONDO: penalties 0.43→0.28 (×0.64) vs bar 0.40 — the stack decided
+06:31:03 |    🎢→⚖️ SEI: C292 stands down — parabola BROKEN (range 19×ATR, 8.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:31:08 |    🎢→⚖️ FORM: C292 stands down — parabola BROKEN (range 27×ATR, 7.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:31:11 |    ⚖️ C462-7 EVAA: penalties 0.98→0.59 (×0.60) vs bar 0.72 — the stack decided
+06:31:33 |    ⚖️ C462-7 CELR: penalties 0.44→0.34 (×0.77) vs bar 0.40 — the stack decided
+06:31:33 |    🎢→⚖️ FLOCK: C292 stands down — parabola BROKEN (range 40×ATR, 8.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:31:36 |    ⚖️ C462-7 RUNE: penalties 0.91→0.61 (×0.67) vs bar 0.72 — the stack decided
+06:31:39 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=23, low_score=20,
+    late_leg_no_forward=2, proj_confirms_trend=3, pair_cap=6, micro_exhaustion=1,
+    no_structural_room=3, flat_projection=9, capitulation=3, post_penalty_low=1
+06:31:39 |    📌 Nearest miss: EVAA score=0.587 (pre-pen 0.98) conf=0.509 quality=0.298/0.26
+    reason=score 0.587 < 0.720
+  .. 06:33  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  71 analysed
+06:36:45 |    🪞 C266 board-parity (top movers vs screen): ZETA +44%[#8] | FORM +35%[Live=0.60<cut] |
+    PHA +34%[#25] | MUBARAK +33%[#26] | ALCH +32%[Live=0.27<cut]
+06:37:13 | 📊 Step 3 result: 18 analyzed (+53 cached this 15m candle) → 0 passed | low_confidence=22,
+    low_score=16, late_leg_no_forward=2, proj_confirms_trend=3, pair_cap=5, flat_projection=9,
+    micro_exhaustion=1, no_structural_room=3, capitulation=5, ct_noisy_block=4, leg_exhausted=1
+06:37:13 |    📌 Nearest miss: UAI score=0.690 conf=0.602 quality=0.416/0.26 reason=OF-exhaustion
+    OI=capitulation
+  .. 06:41  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  18 analysed
+06:47:38 |    🪞 C266 board-parity (top movers vs screen): ZETA +48%[#9] | KERNEL +41%[#30] | FORM
+    +36%[Live=0.61<cut] | PHA +34%[#23] | MUBARAK +31%[#33]
+06:48:07 |    ⚖️ C462-7 FARTCOIN: penalties 0.73→0.44 (×0.60) vs bar 0.72 — the stack decided
+06:48:18 |    🎢→⚖️ FET: C292 stands down — parabola BROKEN (range 16×ATR, 3.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:48:49 |    ⚖️ C462-7 SPX: penalties 0.41→0.25 (×0.60) vs bar 0.40 — the stack decided
+06:48:49 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=25, low_score=17, pair_cap=5,
+    proj_confirms_trend=2, flat_projection=10, low_quality=1, late_leg_no_forward=3, capitulation=3,
+    no_structural_room=3, low_agreement=1, final_gate=1, vol_floor=1
+06:48:49 |    📌 Nearest miss: AR score=0.469 (pre-pen 0.78) conf=0.490 quality=0.230/0.26
+    reason=low_agreement 51%<53%
+  .. 06:49  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  72 analysed
+ 
+ 
+  06:57  up 43h30m  scan 350 ---------------------------------------------------------------------
+  EQUITY    $255.55
+  SESSION   $+5.55 +2.22%  peak $257.44  dd 0.73%
+  CURVE     ............._____-___---++++===++*#@##**#**+++++++=+@@@@@@@##@@@@@@@@@@@@@@@@@@######
+  DAY       real $-1.17  loss room $1.54 (0.60%)  76% used  vol x0.88  trust x1.00
+            ####################......
+  RECORD    62 closed  21W 41L  win 34%  payoff 1.64  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.55
+  FEES      $1.23  mk97/tk46  0.481% of eq
+  SCAN      803 > 72 > 0 passed  top AR 0.47 (low_agreement 51%<)  350 scans, 14444 analysed
+  MARKET    TRENDING  bias -0.12  breadth +0.08  taker flow +0.22
+  NEWS      65 articles  + tone +0.40  HBAR +0.53  LUNA +0.50  NEAR +0.42
+  INFO      3 tilted  flow/fund/news/oi on 324
+            info>0 43tr $-0.02 win 40%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +48% #9  KERNEL +41% #30  FORM +36% cut  PHA +34% #23
+  TAPE      - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+ 
+06:59:08 |    🪞 C266 board-parity (top movers vs screen): KERNEL +52%[#29] | ZETA +46%[#8] | FORM
+    +37%[Live=0.63<cut] | PHA +32%[#25] | ALCH +32%[Live=0.22<cut]
+06:59:29 | 📊 Step 3 result: 4 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=25,
+    low_score=18, pair_cap=5, proj_confirms_trend=2, flat_projection=10, low_quality=1,
+    late_leg_no_forward=3, no_structural_room=3, capitulation=3, low_agreement=1, final_gate=1
+06:59:29 |    📌 Nearest miss: LDO score=0.173 conf=0.452 quality=0.078/0.26 reason=score 0.173 <
+    0.397
+07:04:52 |    ⚖️ C462-7 PEPE: penalties 0.79→0.47 (×0.60) vs bar 0.72 — the stack decided
+07:04:54 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 19×ATR, 4.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:05:07 |    ⚖️ C462-7 FARTCOIN: penalties 0.72→0.43 (×0.60) vs bar 0.72 — the stack decided
+07:05:23 |    🎢→⚖️ USELESS: C292 stands down — parabola BROKEN (range 13×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:05:43 |    🎢→⚖️ EVAA: C292 stands down — parabola BROKEN (range 12×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:05:45 |    🎢→⚖️ FLOKI: C292 stands down — parabola BROKEN (range 14×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:05:51 |    🎢→⚖️ FLOCK: C292 stands down — parabola BROKEN (range 39×ATR, 7.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:05:53 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=31, low_score=21, pair_cap=5,
+    flat_projection=7, poor_reward_risk=3, no_structural_room=2, final_gate=1, micro_exhaustion=1,
+    late_leg_no_forward=1
+07:05:53 |    📌 Nearest miss: LSK score=0.321 (pre-pen 0.39) conf=0.668 quality=0.214/0.26
+    reason=final_gate
+  .. 07:05  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  72 analysed
+07:11:00 |    🪞 C266 board-parity (top movers vs screen): KERNEL +54%[#29] | ZETA +49%[#10] | FORM
+    +36%[Live=0.58<cut] | ALCH +32%[Live=0.34<cut] | PHA +31%[#31]
+07:11:32 | 📊 Step 3 result: 17 analyzed (+55 cached this 15m candle) → 0 passed | low_confidence=23,
+    low_score=27, pair_cap=3, flat_projection=9, poor_reward_risk=3, post_penalty_quality=1,
+    no_structural_room=2, final_gate=1, late_leg_no_forward=2, leg_exhausted=1
+07:11:32 |    📌 Nearest miss: G score=0.608 conf=0.677 quality=0.412/0.26
+    reason=post_penalty_quality
+  .. 07:13  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  17 analysed
+07:16:54 |    ⚖️ C462-7 PEPE: penalties 0.78→0.35 (×0.45) vs bar 0.72 — the stack decided
+07:16:57 |    🎢→⚖️ ZETA: C292 stands down — parabola BROKEN (range 19×ATR, 4.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
