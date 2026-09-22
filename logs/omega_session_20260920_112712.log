@@ -1803,3 +1803,143 @@
 08:09:19 |    📌 Nearest miss: WAL score=0.613 (pre-pen 1.02) conf=0.564 quality=0.346/0.26
     reason=score 0.613 < 0.720
   .. 08:11  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  13 analysed
+08:19:41 |    🪞 C266 board-parity (top movers vs screen): ZETA +65%[#9] | KERNEL +54%[#27] | PHA
+    +44%[#20] | ONE +38%[#15] | MUBARAK +35%[#33]
+08:20:55 |    🎢→⚖️ EVAA: C292 stands down — parabola BROKEN (range 8×ATR, 4.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:21:03 |    🧭 C458-17: exploration is due but the best refusal (vol_floor) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+08:21:03 | 📊 Step 3 result: 80 analyzed → 0 passed | low_confidence=14, low_score=38,
+    mtf_disagree=1, flat_projection=10, pair_cap=4, proj_confirms_trend=2, poor_reward_risk=3,
+    no_structural_room=4, leg_exhausted=1, flow_veto=1, vol_floor=2
+08:21:03 |    📌 Nearest miss: WAL score=1.075 conf=0.806 quality=0.867/0.26 reason=vol_floor
+  .. 08:21  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  80 analysed
+  .. 08:29  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  80 analysed
+08:31:28 |    🪞 C266 board-parity (top movers vs screen): ZETA +61%[#9] | KERNEL +53%[#22] | PHA
+    +41%[#20] | ONE +39%[#15] | MUBARAK +34%[#33]
+08:32:13 |    🎢→⚖️ FORM: C292 stands down — parabola BROKEN (range 21×ATR, 8.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:32:19 |    ⚖️ C462-7 UAI: penalties 0.57→0.43 (×0.76) vs bar 0.47 — the stack decided
+08:32:23 |    ⚖️ C462-7 COTI: penalties 0.83→0.48 (×0.57) vs bar 0.48 — the stack decided
+08:32:23 |    🎢→⚖️ CHIP: C292 stands down — parabola BROKEN (range 16×ATR, 5.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:32:31 |    ⚖️ C462-7 PYTH: penalties 0.56→0.24 (×0.42) vs bar 0.48 — the stack decided
+08:32:38 |    🧭 C458-17: exploration is due but the best refusal (score 0.475 < 0.484) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+08:32:38 | 📊 Step 3 result: 80 analyzed → 0 passed | low_confidence=34, low_score=19,
+    mtf_disagree=1, flat_projection=9, pair_cap=4, capitulation=3, no_structural_room=1,
+    absorption_at_extreme=3, late_leg_no_forward=3, leg_exhausted=2, micro_exhaustion=1
+08:32:38 |    📌 Nearest miss: COTI score=0.633 (pre-pen 0.83) conf=0.482 quality=0.305/0.26
+    reason=score 0.475 < 0.484
+ 
+ 
+  08:37  up 45h09m  scan 362 ---------------------------------------------------------------------
+  EQUITY    $255.55
+  SESSION   $+5.55 +2.22%  peak $257.44  dd 0.73%
+  CURVE     .............________---=+++===++*#+##*#**+++++++++*@@@@@@###@@@@@@@@@@@@@@@@#########
+  DAY       real $-1.17  loss room $1.75 (0.68%)  67% used  vol x1.05  trust x1.00  month guard
+            #################.........
+  RECORD    62 closed  21W 41L  win 34%  payoff 1.64  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.55
+  FEES      $1.23  mk97/tk46  0.481% of eq
+  SCAN      803 > 80 > 0 passed  top COTI 0.63 (score 0.475 < 0.48)  362 scans, 15046 analysed
+  MARKET    TRENDING  bias -0.12  breadth +0.00  taker flow -0.25
+  NEWS      65 articles  + tone +0.47  SUI +0.70  HBAR +0.53  PEOPLE +0.53
+  INFO      3 tilted  flow/fund/news/oi on 324
+            info>0 43tr $-0.02 win 40%  info≤0 19tr $-0.07 win 21%
+  MOVERS    ZETA +61% #9  KERNEL +53% #22  PHA +41% #20  ONE +39% #15
+  TAPE      - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+ 
+08:43:01 |    🪞 C266 board-parity (top movers vs screen): ZETA +60%[#9] | KERNEL +53%[#24] | PHA
+    +43%[#18] | ONE +36%[#15] | MUBARAK +35%[#30]
+08:43:22 |    🧭 C458-17: exploration is due but the best refusal (confidence 0.331 <
+    0.42250000000000004) is a RISK gate, not a measurement gate — standing down. Exploration is a
+    reason to accept UNCERTAINTY, never DANGER.
+08:43:22 | 📊 Step 3 result: 1 analyzed (+79 cached this 15m candle) → 0 passed | low_confidence=35,
+    low_score=18, mtf_disagree=1, flat_projection=9, pair_cap=4, capitulation=3,
+    no_structural_room=1, absorption_at_extreme=3, late_leg_no_forward=3, leg_exhausted=2,
+    micro_exhaustion=1
+08:43:22 |    📌 Nearest miss: SHIB score=0.057 (pre-pen 0.12) conf=0.331 quality=0.019/0.26
+    reason=confidence 0.331 < 0.42250000000000004
+  .. 08:45  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  1 analysed
+08:49:06 |    ⚖️ C462-7 TRUMP: penalties 0.56→0.35 (×0.63) vs bar 0.48 — the stack decided
+08:49:15 |    🎢→⚖️ FORM: C292 stands down — parabola BROKEN (range 21×ATR, 9.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:49:26 |    ⚖️ C462-7 COTI: penalties 0.52→0.34 (×0.65) vs bar 0.48 — the stack decided
+08:49:45 |    🧭 C458-17: exploration is due but the best refusal (mtf_disagree) is a RISK gate, not
+    a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+08:49:45 | 📊 Step 3 result: 80 analyzed → 0 passed | low_confidence=19, low_score=10,
+    mtf_disagree=1, ct_noisy_block=22, pair_cap=4, capitulation=1, proj_confirms_trend=2,
+    absorption_at_extreme=2, flat_projection=5, poor_reward_risk=1, no_structural_room=2,
+    late_leg_no_forward=4, session_short=7
+08:49:45 |    📌 Nearest miss: UAI score=0.607 (pre-pen 0.70) conf=0.564 quality=0.342/0.26
+    reason=mtf_disagree
+  .. 08:53  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  80 analysed
+08:54:53 |    🪞 C266 board-parity (top movers vs screen): KERNEL +54%[#17] | ZETA +52%[#8] | PHA
+    +39%[#18] | MUBARAK +37%[#23] | PEPE +27%[#5]
+08:55:14 |    ⚖️ C462-7 LSK: penalties 0.71→0.41 (×0.58) vs bar 0.48 — the stack decided
+08:55:16 |    🎢→⚖️ EVAA: C292 stands down — parabola BROKEN (range 8×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:55:17 |    ⚖️ C462-7 EVAA: penalties 0.63→0.24 (×0.39) vs bar 0.48 — the stack decided
+08:55:19 |    🧭 C458-17: exploration is due but the best refusal (late-leg F=-0.06) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+08:55:19 | 📊 Step 3 result: 12 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=15,
+    low_score=12, mtf_disagree=1, ct_noisy_block=21, pair_cap=4, capitulation=3,
+    proj_confirms_trend=2, absorption_at_extreme=2, flat_projection=6, no_structural_room=3,
+    poor_reward_risk=1, late_leg_no_forward=3, session_short=7
+08:55:19 |    📌 Nearest miss: 牛来 score=0.574 conf=0.615 quality=0.353/0.26 reason=late-leg F=-0.06
+09:01:09 |    🎢→⚖️ FORM: C292 stands down — parabola BROKEN (range 20×ATR, 9.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:01:11 |    ⚖️ C462-7 APT: penalties 0.57→0.26 (×0.45) vs bar 0.48 — the stack decided
+09:01:44 |    🧭 C458-17: exploration is due but the best refusal (low_agreement 50%<53%) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+09:01:44 | 📊 Step 3 result: 80 analyzed → 0 passed | low_confidence=16, low_score=8,
+    ct_noisy_block=26, no_structural_room=3, pair_cap=5, micro_exhaustion=2, flat_projection=4,
+    proj_confirms_trend=2, capitulation=1, absorption_at_extreme=2, late_leg_no_forward=1,
+    poor_reward_risk=1, session_short=7, low_agreement=1, leg_exhausted=1
+09:01:44 |    📌 Nearest miss: MARSCOIN score=0.422 (pre-pen 0.63) conf=0.654 quality=0.276/0.26
+    reason=low_agreement 50%<53%
+  .. 09:01  flat  $255.55  $+5.55 +2.22%  21W 41L 34%  80 analysed
+09:06:53 |    🪞 C266 board-parity (top movers vs screen): KERNEL +49%[Live=0.43<cut] | ZETA +45%[#9]
+    | PHA +39%[#22] | CARV +37%[Live=0.46<cut] | MUBARAK +35%[#29]
+09:07:21 |    🧭 C458-17: exploration is due but the best refusal (score 0.186 < 0.486) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+09:07:21 | 📊 Step 3 result: 14 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=18,
+    low_score=8, ct_noisy_block=26, no_structural_room=3, pair_cap=4, micro_exhaustion=2,
+    flat_projection=4, capitulation=3, absorption_at_extreme=1, late_leg_no_forward=1,
+    session_short=6, poor_reward_risk=1, low_agreement=1, proj_confirms_trend=1, leg_exhausted=1
+09:07:21 |    📌 Nearest miss: COPPER score=0.186 (pre-pen 0.26) conf=0.448 quality=0.083/0.26
+    reason=score 0.186 < 0.486
+ 
+ 
+  09:09  up 45h42m  scan 367 ---------------------------------------------------------------------
+  EQUITY    $255.55
+  SESSION   $+5.55 +2.22%  peak $257.44  dd 0.73%
+  CURVE     ............_______..---=++===++*#@****#**+++++++=+#@@@@@###@@@@#@@@@@@@@@@@##########
+  DAY       real $-1.17  loss room $1.75 (0.68%)  67% used  vol x1.25  trust x1.00  month guard
+            #################.........
+  RECORD    62 closed  21W 41L  win 34%  payoff 1.64  avg $-0.03/tr  best $+1.36  worst $-1.64
+            break-even 38%
+  OPEN      flat  free $255.55
+  FEES      $1.23  mk97/tk46  0.481% of eq
+  SCAN      803 > 14 > 0 passed  top COPPER 0.19 (score 0.186 < 0.48)  367 scans, 15233 analysed
+  MARKET    TRENDING  bias -0.17  breadth -0.07  taker flow +0.09
+  NEWS      65 articles  + tone +0.46  PEOPLE +0.53  LUNA +0.50  BASED +0.34
+  INFO      3 tilted  flow/fund/news/oi on 324
+            info>0 43tr $-0.02 win 40%  info≤0 19tr $-0.07 win 21%
+  MOVERS    KERNEL +49% cut  ZETA +45% #9  PHA +39% #22  CARV +37% cut
+  TAPE      - + - + - + + - - - - - - - - + + + - - - - - + - - - + - - + - - - - - + - - - - - +
+  ------------------------------------------------------------------------------------------------
+ 
