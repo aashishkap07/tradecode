@@ -546,3 +546,86 @@
   TAPE      + + + + +
   ------------------------------------------------------------------------------------------------
 
+  -> 22:17  HALF   SPX SHORT @0.448500  +3.38% $+0.45
+       win half banked  maker  $13.41 rides on
+
+
+  22:22  up 3h45m  scan 34 -----------------------------------------------------------------------
+  EQUITY    $256.37  unreal $+0.55
+  OPEN      2 pos $34.73 (14%)  free $221.09
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  SPX      SHORT   0.464200  0.445700  +3.99%   +0.52 1h18m  + 6% left
+  TAO      SHORT     292.38    291.76  +0.21%   +0.03   17m  + 38% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+3.56 +1.41%  peak $256.39  dd 0.01%
+  CURVE     ==========+++++++++++++++++++++++
+  DAY       real $+0.84  limit $9.48 (3.72%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  5W 0L  win 100%  avg $+0.51/tr  best $+1.26  worst $+0.01
+  LIFETIME  92tr 30W 62L 33%  $+5.82
+  FEES      $0.07  mk12/tk2  0.028% of eq
+  SCAN      805 > 24 > 0 passed  top FARTCOIN 1.29 (pending)  34 scans, 2163 analysed
+  MARKET    MIXED  bias -0.59  breadth -0.44  taker flow -0.02
+  NEWS      65 articles  + tone +0.30  FORM +0.50  XAUT +0.25  COIN +0.25
+  INFO      1 tilted  flow/fund/news/oi on 240
+            info>0 1tr $+0.68 win 100%  info≤0 1tr $+0.01 win 100%
+  MOVERS    MUBARAK -34% #15  FIGHT +24% #95  ONE -23% cut  FLOCK -19% #70
+  TAPE      + + + + +
+  ------------------------------------------------------------------------------------------------
+
+  << 22:31  CLOSE  SPX SHORT @0.448500  +3.38% $+0.90  WIN
+       held 1h26m  EARLY_PEAK_CAPTURE: peak  kept 73% of a +4.63% peak  +0.94R  maker
+  << 22:31  CLOSE  TAO SHORT @294.04  -0.57% $-0.14  LOSS
+       held 26m  C399_CONVICTION_FADING:   round trip from +0.52%  -0.14R  TAKER
+
+
+  22:32  up 3h54m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $256.13
+  OPEN      flat  free $256.13
+  SESSION   $+3.32 +1.31%  peak $256.39  dd 0.10%
+  CURVE     ==========++++++++++++++++++++++++++
+  DAY       real $+1.16  limit $9.48 (3.72%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    7 closed  6W 1L  win 86%  payoff 4.18  avg $+0.48/tr  best $+1.26  worst $-0.14
+            break-even 19%
+  LIFETIME  94tr 31W 63L 33%  $+6.13
+  FEES      $0.09  mk13/tk3  0.034% of eq
+  SCAN      805 > 130 > 0 passed  top MINA 0.74 (mtf_disagree)  35 scans, 2293 analysed
+  MARKET    TRENDING  bias -0.59  breadth +0.00  taker flow +0.00
+  NEWS      65 articles  + tone +0.30  FORM +0.50  XAUT +0.25  ZEC +0.23
+  INFO      1 tilted  flow/fund/news/oi on 240
+            info>0 2tr $+0.79 win 100%  info≤0 2tr $-0.07 win 50%
+  MOVERS    MUBARAK -34% #15  FIGHT +24% #95  ONE -23% cut  FLOCK -19% #70
+  TAPE      + + + + + + -
+  ------------------------------------------------------------------------------------------------
+
+  .. 22:40  flat  $256.13  $+3.32 +1.31%  6W 1L 86%  14 analysed
+  .. 22:48  flat  $256.13  $+3.32 +1.31%  6W 1L 86%  14 analysed
+  .. 22:56  flat  $256.13  $+3.32 +1.31%  6W 1L 86%  2 analysed
+
+
+  23:04  up 4h26m  scan 39 -----------------------------------------------------------------------
+  EQUITY    $256.13
+  OPEN      flat  free $256.13
+  SESSION   $+3.32 +1.31%  peak $256.39  dd 0.10%
+  CURVE     ==========++++++++++++++++++++++++++++++
+  DAY       real $+1.16  limit $9.48 (3.72%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    7 closed  6W 1L  win 86%  payoff 4.18  avg $+0.48/tr  best $+1.26  worst $-0.14
+            break-even 19%
+  LIFETIME  94tr 31W 63L 33%  $+6.13
+  FEES      $0.09  mk13/tk3  0.034% of eq
+  SCAN      805 > 130 > 0 passed  top FARTCOIN 0.55 (low_agreement 51%<)  39 scans, 2570 analysed
+  MARKET    TRENDING  bias -0.61  breadth +0.00  taker flow +0.10
+  NEWS      65 articles  + tone +0.35  ETH +0.71  ONE +0.52  FORM +0.50
+  INFO      1 tilted  flow/fund/news/oi on 244
+            info>0 2tr $+0.79 win 100%  info≤0 2tr $-0.07 win 50%
+  MOVERS    MUBARAK -32% #14  FIGHT +24% #88  CHR -19% cut  ONE -19% #35
+  TAPE      + + + + + + -
+  ------------------------------------------------------------------------------------------------
+
+  .. 23:12  flat  $256.13  $+3.32 +1.31%  6W 1L 86%  130 analysed
