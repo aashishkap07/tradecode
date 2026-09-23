@@ -690,3 +690,187 @@
 04:16:24 |    ⚖️ C462-7 EGLD: penalties 0.48→0.36 (×0.75) vs bar 0.44 — the stack decided
 04:16:28 | 📊 Step 3 result: 70 analyzed → 1 viable → Step 4 DRI/DSI
   .. 04:16  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
+04:21:43 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=44, mtf_disagree=1, flat_projection=12, capitulation=2, poor_reward_risk=3,
+    no_structural_room=1, micro_exhaustion=1, post_penalty_quality=1, vol_floor=1
+04:21:43 |    📌 Nearest miss: LSK score=0.795 (pre-pen 0.94) conf=0.442 quality=0.351/0.26
+    reason=mtf_disagree
+ 
+ 
+  04:24  up 3h47m  scan 30 -----------------------------------------------------------------------
+  EQUITY    $255.65
+  OPEN      flat  free $255.65
+  SESSION   $-0.45 -0.18%  peak $256.10  dd 0.18%
+  CURVE     ++++++=========++===============
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk2/tk3  0.042% of eq
+  SCAN      805 > 1 > 0 passed  top LSK 0.79 (mtf_disagree)  30 scans, 1464 analysed
+  MARKET    TRENDING  bias -0.11  breadth +0.03  taker flow -0.23
+  NEWS      65 articles  + tone +0.50  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      1 tilted  flow/fund/news/oi on 225
+  MOVERS    NIL +42% #9  MUBARAK -34% #16  FLOCK -22% #46  SPX -19% #52
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:26:50 |    🪞 C266 board-parity (top movers vs screen): NIL +46%[#8] | MUBARAK -34%[#16] | FLOCK
+    -22%[#47] | ONE -19%[Live=0.17<cut] | SPX -19%[#53]
+04:27:07 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=44, mtf_disagree=1, flat_projection=12, capitulation=2, poor_reward_risk=3,
+    no_structural_room=1, micro_exhaustion=1, post_penalty_quality=1, vol_floor=1
+04:27:07 |    📌 Nearest miss: PENDLE score=0.234 conf=0.542 quality=0.127/0.26 reason=score 0.234 <
+    0.704
+04:32:29 |    ⚖️ C462-7 NIL: penalties 0.81→0.55 (×0.68) vs bar 0.72 — the stack decided
+04:32:36 |    ⚖️ C462-7 MUBARAK: penalties 0.42→0.32 (×0.75) vs bar 0.41 — the stack decided
+04:33:11 |    ⚖️ C462-7 ZEST: penalties 0.77→0.70 (×0.91) vs bar 0.71 — the stack decided
+04:33:21 | 📊 Step 3 result: 70 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 04:33  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
+04:38:30 |    🪞 C266 board-parity (top movers vs screen): NIL +48%[#7] | MUBARAK -33%[#16] | ONE
+    -21%[Live=0.29<cut] | FLOCK -20%[#51] | SPX -20%[#54]
+04:39:01 |    🎢→⚖️ FIGHT: C292 stands down — parabola BROKEN (range 32×ATR, 22.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:39:01 | 📊 Step 3 result: 15 analyzed (+55 cached) → 1 viable → Step 4 DRI/DSI
+  .. 04:41  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  15 analysed
+04:41:21 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $300.3892 → $255.6492 (equity
+    $255.6492 − locked $0.0000 = $255.6492); discrepancy $+44.7400. Money that does not exist would
+    have been sized against [correction #1]
+04:44:16 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=50, mtf_disagree=1, flat_projection=11, low_quality=2, capitulation=1,
+    poor_reward_risk=1, micro_exhaustion=1
+04:44:16 |    📌 Nearest miss: LSK score=1.318 (pre-pen 1.45) conf=0.532 quality=0.701/0.26
+    reason=mtf_disagree
+04:49:24 |    🪞 C266 board-parity (top movers vs screen): NIL +60%[#7] | MUBARAK -32%[#15] | SPX
+    -19%[#55] | FLOCK -19%[Live=0.14<cut] | ONE -18%[Live=0.18<cut]
+04:49:25 | ⚠️ C79 WEAK-RESULTANT: R=-0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+04:50:05 |    ⚖️ C462-7 INJ: penalties 0.60→0.27 (×0.45) vs bar 0.48 — the stack decided
+04:50:07 |    ⚖️ C462-7 BTW: penalties 0.55→0.41 (×0.75) vs bar 0.50 — the stack decided
+04:50:30 |    🎢→⚖️ FIGHT: C292 stands down — parabola BROKEN (range 33×ATR, 22.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:50:31 |    ⚖️ C462-7 FIGHT: penalties 0.36→0.22 (×0.60) vs bar 0.34 — the stack decided
+04:50:36 | 📊 Step 3 result: 70 analyzed → 3 viable → Step 4 DRI/DSI
+04:50:37 |    🎲 C378 odds-size: orderliness 0.20 -> risk x0.82 ($0.714)
+04:50:37 |    🔒 C378 stop level $0.163175 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 04:50  OPEN   龙虾 LONG @0.166847  x1 $32.21
+       target +7.6%  stop -2.2%  entry score 0.84  maker
+ 
+ 
+  04:50  up 4h13m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $255.62  unreal $-0.03
+  OPEN      1 pos $32.21 (13%)  free $223.44
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.166847  0.166820  -0.02%   -0.03    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.48 -0.19%  peak $256.10  dd 0.19%
+  CURVE     ++++++=========+++=================
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk3/tk3  0.044% of eq
+  SCAN      805 > 70 > 3 passed  top 龙虾 0.84 (viable)  35 scans, 1621 analysed
+  MARKET    TRENDING  bias -0.04  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      3 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #7  MUBARAK -32% #15  SPX -19% #55  FLOCK -19% cut
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:55:40 | ⚠️ C79 WEAK-RESULTANT: R=-0.08 mag=0.08 < 0.08 — direction unclear, higher bar applied
+04:56:05 | 📊 Step 3 result: 3 analyzed (+67 cached) → 2 viable → Step 4 DRI/DSI
+ 
+  04:58  up 4h21m  scan 36 -----------------------------------------------------------------------
+  EQUITY    $256.24  unreal $+0.59
+  OPEN      1 pos $32.21 (13%)  free $279.30
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.166847  0.170041  +1.91%   +0.59    8m  + 41% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.14 +0.06%
+  CURVE     ++++++=========+===================+
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk3/tk3  0.044% of eq
+  SCAN      805 > 3 > 2 passed  top 龙虾 0.93 (viable)  36 scans, 1624 analysed
+  MARKET    MIXED  bias -0.04  breadth +0.14  taker flow +0.53
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      2 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #7  MUBARAK -32% #15  SPX -19% #55  FLOCK -19% cut
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:58:39 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $279.2990 → $223.4392 (equity
+    $255.6492 − locked $32.2100 = $223.4392); discrepancy $+55.8598. Money that does not exist would
+    have been sized against [correction #2]
+05:01:08 | 🎯 EXIT SIGNAL: 龙虾/USDT:USDT - PEAK_FLOOR: peaked at +1.9%(1.3PRU) now=-0.3% — profit
+    fully erased, protecting capital
+  << 05:01  CLOSE  龙虾 LONG @0.166395  -0.27% $-0.11  LOSS
+       held 10m  PEAK_FLOOR: peaked at +1  round trip from +1.91%  -0.09R  TAKER
+05:01:15 |    🪞 C266 board-parity (top movers vs screen): NIL +60%[#8] | MUBARAK -31%[#16] | 龙虾
+    +20%[#38] | FOLKS -19%[#45] | SPX -19%[#53]
+05:01:15 | ⚠️ C79 WEAK-RESULTANT: R=-0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+ 
+ 
+  05:06  up 4h29m  scan 36 -----------------------------------------------------------------------
+  EQUITY    $255.54
+  OPEN      flat  free $255.54
+  SESSION   $-0.56 -0.22%  peak $256.24  dd 0.27%
+  CURVE     ++++++=========++==================+==
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.13  mk3/tk4  0.052% of eq
+  SCAN      805 > 3 > 2 passed  top 龙虾 0.93 (viable)  36 scans, 1624 analysed
+  MARKET    MIXED  bias -0.04  breadth +0.14  taker flow +0.33
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      2 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #8  MUBARAK -31% #16  龙虾 +20% #38  FOLKS -19% #45
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+05:11:26 |    🪞 C266 board-parity (top movers vs screen): NIL +52%[#8] | MUBARAK -32%[#16] | FOLKS
+    -20%[#44] | 龙虾 +20%[#39] | ONE -19%[Live=0.30<cut]
+05:11:27 | ⚠️ C79 WEAK-RESULTANT: R=-0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+05:12:30 | 📊 Step 3 result: 70 analyzed → 3 viable → Step 4 DRI/DSI
+05:12:30 |    🎲 C378 odds-size: orderliness 0.22 -> risk x0.83 ($0.725)
+05:12:31 |    🔒 C378 stop level $0.163574 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 05:12  OPEN   龙虾 LONG @0.167446  x1 $22.09
+       target +7.9%  stop -2.3%  entry score 0.70  maker
+ 
+ 
+  05:14  up 4h37m  scan 37 -----------------------------------------------------------------------
+  EQUITY    $255.54
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167614  +0.10%   +0.00    2m  + 38% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.56 -0.22%  peak $256.24  dd 0.27%
+  CURVE     ++++++=========++==================+===
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 70 > 3 passed  top 龙虾 0.70 (viable)  37 scans, 1694 analysed
+  MARKET    MIXED  bias -0.05  breadth +0.00  taker flow +0.30
+  NEWS      65 articles  + tone +0.29  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +52% #8  MUBARAK -32% #16  FOLKS -20% #44  龙虾 +20% #39
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+ 

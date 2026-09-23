@@ -392,3 +392,128 @@
   .. 04:00  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  16 analysed
   .. 04:08  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
   .. 04:16  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
+
+
+  04:24  up 3h47m  scan 30 -----------------------------------------------------------------------
+  EQUITY    $255.65
+  OPEN      flat  free $255.65
+  SESSION   $-0.45 -0.18%  peak $256.10  dd 0.18%
+  CURVE     ++++++=========++===============
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk2/tk3  0.042% of eq
+  SCAN      805 > 1 > 0 passed  top LSK 0.79 (mtf_disagree)  30 scans, 1464 analysed
+  MARKET    TRENDING  bias -0.11  breadth +0.03  taker flow -0.23
+  NEWS      65 articles  + tone +0.50  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      1 tilted  flow/fund/news/oi on 225
+  MOVERS    NIL +42% #9  MUBARAK -34% #16  FLOCK -22% #46  SPX -19% #52
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 04:33  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
+  .. 04:41  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  15 analysed
+  >> 04:50  OPEN   龙虾 LONG @0.166847  x1 $32.21
+       target +7.6%  stop -2.2%  entry score 0.84  maker
+
+
+  04:50  up 4h13m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $255.62  unreal $-0.03
+  OPEN      1 pos $32.21 (13%)  free $223.44
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.166847  0.166820  -0.02%   -0.03    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.48 -0.19%  peak $256.10  dd 0.19%
+  CURVE     ++++++=========+++=================
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk3/tk3  0.044% of eq
+  SCAN      805 > 70 > 3 passed  top 龙虾 0.84 (viable)  35 scans, 1621 analysed
+  MARKET    TRENDING  bias -0.04  breadth +0.00  taker flow -0.10
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      3 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #7  MUBARAK -32% #15  SPX -19% #55  FLOCK -19% cut
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  04:58  up 4h21m  scan 36 -----------------------------------------------------------------------
+  EQUITY    $256.24  unreal $+0.59
+  OPEN      1 pos $32.21 (13%)  free $279.30
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.166847  0.170041  +1.91%   +0.59    8m  + 41% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.14 +0.06%
+  CURVE     ++++++=========+===================+
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk3/tk3  0.044% of eq
+  SCAN      805 > 3 > 2 passed  top 龙虾 0.93 (viable)  36 scans, 1624 analysed
+  MARKET    MIXED  bias -0.04  breadth +0.14  taker flow +0.53
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      2 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #7  MUBARAK -32% #15  SPX -19% #55  FLOCK -19% cut
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+
+  << 05:01  CLOSE  龙虾 LONG @0.166395  -0.27% $-0.11  LOSS
+       held 10m  PEAK_FLOOR: peaked at +1  round trip from +1.91%  -0.09R  TAKER
+
+
+  05:06  up 4h29m  scan 36 -----------------------------------------------------------------------
+  EQUITY    $255.54
+  OPEN      flat  free $255.54
+  SESSION   $-0.56 -0.22%  peak $256.24  dd 0.27%
+  CURVE     ++++++=========++==================+==
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.13  mk3/tk4  0.052% of eq
+  SCAN      805 > 3 > 2 passed  top 龙虾 0.93 (viable)  36 scans, 1624 analysed
+  MARKET    MIXED  bias -0.04  breadth +0.14  taker flow +0.33
+  NEWS      65 articles  + tone +0.33  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      2 tilted  flow/fund/news/oi on 226
+  MOVERS    NIL +60% #8  MUBARAK -31% #16  龙虾 +20% #38  FOLKS -19% #45
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+
+  >> 05:12  OPEN   龙虾 LONG @0.167446  x1 $22.09
+       target +7.9%  stop -2.3%  entry score 0.70  maker
+
+
+  05:14  up 4h37m  scan 37 -----------------------------------------------------------------------
+  EQUITY    $255.54
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167614  +0.10%   +0.00    2m  + 38% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.56 -0.22%  peak $256.24  dd 0.27%
+  CURVE     ++++++=========++==================+===
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 70 > 3 passed  top 龙虾 0.70 (viable)  37 scans, 1694 analysed
+  MARKET    MIXED  bias -0.05  breadth +0.00  taker flow +0.30
+  NEWS      65 articles  + tone +0.29  SHIB +0.25  XRP +0.21  FORM +0.21
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +52% #8  MUBARAK -32% #16  FOLKS -20% #44  龙虾 +20% #39
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+
