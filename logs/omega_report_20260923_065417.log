@@ -274,3 +274,78 @@
 
   .. 09:28  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  21 analysed
   .. 09:36  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  17 analysed
+  .. 09:44  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  3 analysed
+
+
+  09:52  up 2h58m  scan 28 -----------------------------------------------------------------------
+  EQUITY    $253.01
+  SESSION   $-1.09 -0.43%  peak $254.10  dd 0.43%
+  CURVE     *++==----------------------
+  DAY       real $-1.97  loss room $1.67 (0.65%)  118% used  vol x0.96  trust x1.00
+            ##########################
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      flat  free $253.01
+  FEES      $0.03  mk3/tk4  0.014% of eq
+  SCAN      802 > 73 > 5 passed  top EVAA 1.08 (viable)  28 scans, 1140 analysed
+  MARKET    TRENDING  bias +0.62  breadth +0.00  taker flow +0.22
+  NEWS      64 articles  + tone +0.30  OP +0.80  ONE +0.48  NEAR +0.45
+  INFO      5 tilted  flow/fund/news/oi on 159
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +70% #5  MARSCOIN +39% cut  NIL +39% #18  USELESS +33% #16
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+
+  >> 10:02  OPEN   EVAA LONG @0.837200  x1 $5.00
+       target +16.3%  stop -3.4%  entry score 1.01  maker
+
+
+  10:02  up 3h08m  scan 30 -----------------------------------------------------------------------
+  EQUITY    $253.01
+  SESSION   $-1.09 -0.43%  peak $254.10  dd 0.43%
+  CURVE     *++===========--------------
+  DAY       real $-1.97  loss room $2.01 (0.79%)  98% used  vol x1.16  trust x1.00
+            ##########################
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      1 pos $5.00 (2%)  free $248.01
+  FEES      $0.04  mk4/tk4  0.014% of eq
+  SCAN      802 > 73 > 6 passed  top MET 1.08 (viable)  30 scans, 1218 analysed
+  MARKET    TRENDING  bias +0.68  breadth +0.00  taker flow +0.13
+  NEWS      64 articles  + tone +0.30  ETH +0.29  ONDO +0.23  ZEC +0.22
+  INFO      6 tilted  flow/fund/news/oi on 162
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +56% #5  NIL +40% #17  MARSCOIN +36% #13  USELESS +34% #16
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.837500  +0.04%   -0.00    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+
+  >> 10:09  OPEN   MET LONG @0.356000  x1 $9.05
+       target +11.5%  stop -2.4%  entry score 1.01  maker
+
+
+  10:10  up 3h16m  scan 32 -----------------------------------------------------------------------
+  EQUITY    $253.00  unreal $-0.01
+  SESSION   $-1.10 -0.43%  peak $254.10  dd 0.43%
+  CURVE     +++==========================
+  DAY       real $-1.97  loss room $2.45 (0.96%)  81% used  vol x1.41  trust x1.00
+            #####################.....
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      2 pos $14.05 (6%)  free $238.96
+  FEES      $0.04  mk5/tk4  0.015% of eq
+  SCAN      802 > 5 > 2 passed  top MET 1.01 (viable)  32 scans, 1229 analysed
+  MARKET    TRENDING  bias +0.65  breadth +0.00  taker flow +0.41
+  NEWS      65 articles  + tone +0.10  ETH +0.29  ONDO +0.23  ZEC +0.22
+  INFO      2 tilted  flow/fund/news/oi on 162
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +58% #5  MARSCOIN +38% #14  NIL +35% #22  USELESS +34% #15
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.838900  +0.20%   +0.01    8m  + 61% left
+  MET      LONG    0.356000  0.355600  -0.11%   -0.02    0m  - 87% left
+  ------------------------------------------------------------------------------------------------
+
