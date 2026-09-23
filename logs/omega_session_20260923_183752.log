@@ -1,0 +1,207 @@
+18:37:52 | 📊 Paper Mode
+18:37:54 | ✅ Connected | 802 futures markets
+18:37:54 | 📐 RISK @ $252.81: monthly dial 15% = $37.92/month  |  per-trade risk 0.341% = $0.86  |
+    break-even win rate 73% at the measured 0.36 payoff [C482]
+18:37:54 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C483  PAPER  Bitget perps
+  23 Sep 2026   18:37
+  start $252.81  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $252.81  802 markets
+  MONTH     dial 15% = $37.92 this month  used $0.00
+  DAY       limit $9.48  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      -0.0258 blended  25W 62L realised
+  NEED      73% win at 0.36 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+18:37:54 |    🔒 C378 stop level $0.11118 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+18:37:54 |    🔒 C378 stop level $0.05746 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+18:37:54 |    🔒 C378 stop level $10.963 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+18:37:54 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+18:37:54 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+18:37:54 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+18:37:54 |        See deploy/DEPLOY.md — one command, no open ports, free.
+18:37:54 |    → C458-17 exploration will take up to 4 MINIMUM-SIZE trades/day after 10 empty scans,
+    purely to rebuild the sample. Worst case ≈ $0.60/day.
+18:37:55 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+18:37:55 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left
+    (C482)
+18:37:55 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+18:37:55 | 💡 Press Ctrl+C to stop safely
+18:38:02 |    🪞 C266 board-parity (top movers vs screen): FIGHT +39%[#47] | ALLO +31%[Live=0.42<cut]
+    | MET +28%[#27] | SENT +24%[#45] | ZEST +22%[#51]
+18:38:51 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 15×ATR, 7.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:39:22 | 📊 Step 3 result: 70 analyzed → 0 passed | corr_cap=28, ct_noisy_block=25,
+    flat_projection=4, micro_exhaustion=1, poor_reward_risk=1, proj_confirms_trend=4,
+    news_tech_conflict=1, no_structural_room=1, capitulation=2, regime_blip=1,
+    absorption_at_extreme=1, fee_floor=1
+18:39:22 |    📌 Nearest miss: 牛来 score=0.961 conf=0.615 quality=0.592/0.26 reason=corr_cap
+ 
+  18:45  up 0h08m  scan 1 ------------------------------------------------------------------------
+  EQUITY    $254.05  unreal $+1.24
+  OPEN      3 pos $102.06 (40%)  free $150.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  牛来       SHORT   0.108840  0.107660  +1.08%   +0.32 1h08m  + 20% left
+  KERNEL   SHORT   0.056370  0.055450  +1.63%   +0.54 1h08m  + 20% left
+  AVAX     SHORT    10.7570   10.6330  +1.15%   +0.38   56m  + 36% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+1.24 +0.49%
+  DAY       real $-2.17  limit $9.48 (3.72%)  23% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  FEES      no fills yet this run
+  SCAN      802 > 70 > 0 passed  top 牛来 0.96 (corr_cap)  1 scan, 70 analysed
+  MARKET    MIXED  bias -0.19  breadth -0.29  taker flow +0.15
+  NEWS      35 articles  + tone +0.58  ONE +0.32  PEPE +0.25  ETH +0.22
+  MOVERS    FIGHT +39% #47  ALLO +31% cut  MET +28% #27  SENT +24% #45
+  ------------------------------------------------------------------------------------------------
+ 
+18:47:01 |    🎯 C462-6 MAKER half filled 牛来 @$0.107770 — saved ~0.04% of the half notional (1 this
+    session)
+  -> 18:47  HALF   牛来 SHORT @0.107770  +0.98% $+0.15
+       win half banked  maker  $15.89 rides on
+18:49:48 |    🪞 C266 board-parity (top movers vs screen): FIGHT +38%[#50] | ALLO +31%[Live=0.47<cut]
+    | MET +30%[Live=0.52<cut] | SENT +24%[#48] | ONE -22%[Live=0.50<cut]
+18:50:25 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 14×ATR, 8.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:50:31 |    🎢→⚖️ TIA: C292 stands down — parabola BROKEN (range 11×ATR, 3.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:50:45 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 18×ATR, 10.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:50:55 |    🎢→⚖️ ZEST: C292 stands down — parabola BROKEN (range 11×ATR, 5.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:50:56 |    🎯 C376 MAKER exit filled 牛来 @$0.107970 — saved ~0.04%% of notional (1 this session)
+18:50:56 |    ✂️ C482-A split trade: banked $+0.15 + remainder $+0.12 = whole idea $+0.27 — every
+    record below uses the whole idea
+  << 18:50  CLOSE  牛来 SHORT @0.107970  +0.80% $+0.27  WIN
+       held 1h13m  TRAILING_TP: peak=+1.5%   kept 54% of a +1.49% peak  +0.28R  maker
+18:50:57 | 📊 Step 3 result: 70 analyzed → 0 passed | corr_cap=40, ct_noisy_block=13, regime_blip=3,
+    late_leg_no_forward=8, absorption_at_extreme=3, flat_projection=3
+18:50:57 |    📌 Nearest miss: KERNEL score=1.114 (pre-pen 1.27) conf=0.700 quality=0.779/0.26
+    reason=corr_cap
+18:51:24 |    🎯 C462-6 MAKER half filled AVAX @$10.6440 — saved ~0.04% of the half notional (2 this
+    session)
+  -> 18:51  HALF   AVAX SHORT @10.6440  +1.05% $+0.18
+       win half banked  maker  $17.65 rides on
+18:51:54 | 🎯 EXIT SIGNAL: AVAX/USDT:USDT - REL_DSI+DRI DIVERGE: dsi_d=-0.256 dri_d=+0.142
+    thresh=0.13 shift=0.7 μ=-0.27
+18:51:54 |    ✂️ C482-A split trade: banked $+0.18 + remainder $+0.18 = whole idea $+0.36 — every
+    record below uses the whole idea
+  << 18:51  CLOSE  AVAX SHORT @10.6370  +1.12% $+0.36  WIN
+       held 1h02m  REL_DSI+DRI DIVERGE: dsi  kept 78% of a +1.43% peak  +0.44R  TAKER
+ 
+ 
+  18:53  up 0h16m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $253.68  unreal $+0.24
+  OPEN      1 pos $34.98 (14%)  free $218.46
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KERNEL   SHORT   0.056370  0.055940  +0.76%   +0.24 1h16m  + 0% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.87 +0.35%  peak $254.05  dd 0.15%
+  DAY       real $-1.54  limit $9.48 (3.72%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+0.32/tr  best $+0.36  worst $+0.27
+  LIFETIME  89tr 27W 62L 30%  $+3.44
+  FEES      $0.02  mk3/tk1  0.008% of eq
+  SCAN      802 > 70 > 0 passed  top KERNEL 1.11 (corr_cap)  2 scans, 140 analysed
+  MARKET    MIXED  bias -0.35  breadth +0.00  taker flow +0.26
+  NEWS      35 articles  + tone +0.58  ONE +0.32  PEPE +0.25  ETH +0.22
+  MOVERS    FIGHT +38% #50  ALLO +31% cut  MET +30% cut  SENT +24% #48
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+19:01:21 |    🪞 C266 board-parity (top movers vs screen): ALLO +34%[#20] | MET +31%[Live=0.45<cut] |
+    FIGHT +30%[Live=0.47<cut] | SENT +25%[#45] | ONE -22%[Live=0.44<cut]
+19:01:51 |    ⚖️ C462-7 UNI: penalties 0.53→0.24 (×0.46) vs bar 0.46 — the stack decided
+19:02:10 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 14×ATR, 8.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:02:11 |    ⚖️ C462-7 NIL: penalties 0.89→0.36 (×0.40) vs bar 0.36 — the stack decided
+19:02:16 |    ⚖️ C462-7 WLD: penalties 0.66→0.30 (×0.46) vs bar 0.37 — the stack decided
+19:02:37 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 18×ATR, 10.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:02:37 |    ⚖️ C462-7 CHR: penalties 0.58→0.23 (×0.40) vs bar 0.38 — the stack decided
+19:02:43 |    🎢→⚖️ ZEST: C292 stands down — parabola BROKEN (range 11×ATR, 3.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:02:43 |    ⚖️ C462-7 ZEST: penalties 0.44→0.16 (×0.37) vs bar 0.42 — the stack decided
+19:02:52 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=5, low_score=20, mtf_disagree=3,
+    regime_blip=11, ct_noisy_block=12, poor_reward_risk=2, flat_projection=5, flow_veto=1,
+    low_quality=4, absorption_at_extreme=4, post_penalty_quality=1, proj_confirms_trend=1,
+    reward_conviction=1
+19:02:52 |    📌 Nearest miss: KERNEL score=0.755 (pre-pen 1.26) conf=0.522 quality=0.394/0.26
+    reason=reward_conviction needs 58%
+ 
+  19:02  up 0h25m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $253.78  unreal $+0.34
+  OPEN      1 pos $34.98 (14%)  free $218.46
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KERNEL   SHORT   0.056370  0.055780  +1.05%   +0.34 1h25m  + 0% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.97 +0.39%  peak $254.05  dd 0.11%
+  CURVE     =+=+++
+  DAY       real $-1.54  limit $9.48 (3.72%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+0.32/tr  best $+0.36  worst $+0.27
+  LIFETIME  89tr 27W 62L 30%  $+3.44
+  FEES      $0.02  mk3/tk1  0.008% of eq
+  SCAN      802 > 70 > 0 passed  top KERNEL 0.75 (reward_conviction )  3 scans, 210 analysed
+  MARKET    MIXED  bias -0.25  breadth +0.00  taker flow -0.02
+  NEWS      35 articles  + tone +0.58  ONE +0.32  PEPE +0.25  ADA +0.25
+  MOVERS    ALLO +34% #20  MET +31% cut  FIGHT +30% cut  SENT +25% #45
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  19:10  up 0h33m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $253.61  unreal $+0.17
+  OPEN      1 pos $34.98 (14%)  free $218.46
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KERNEL   SHORT   0.056370  0.056050  +0.57%   +0.17 1h33m  + 0% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.80 +0.32%  peak $254.05  dd 0.17%
+  CURVE     =+=++++
+  DAY       real $-1.54  limit $9.48 (3.72%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+0.32/tr  best $+0.36  worst $+0.27
+  LIFETIME  89tr 27W 62L 30%  $+3.44
+  FEES      $0.02  mk3/tk1  0.008% of eq
+  SCAN      802 > 70 > 0 passed  top KERNEL 0.75 (reward_conviction )  3 scans, 210 analysed
+  MARKET    MIXED  bias -0.25  breadth -0.20  taker flow -0.60
+  NEWS      35 articles  + tone +0.58  ONE +0.32  PEPE +0.25  ADA +0.25
+  MOVERS    ALLO +34% #20  MET +31% cut  FIGHT +30% cut  SENT +25% #45
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+19:13:21 |    🪞 C266 board-parity (top movers vs screen): ALLO +36%[#21] | MET +32%[Live=0.44<cut] |
+    FIGHT +27%[Live=0.45<cut] | SENT +25%[#44] | MUBARAK -24%[#9]
+19:13:45 | 📊 Step 3 result: 3 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=21, mtf_disagree=3, regime_blip=10, ct_noisy_block=11, poor_reward_risk=2,
+    flat_projection=5, flow_veto=1, absorption_at_extreme=4, post_penalty_quality=1, low_quality=4,
+    proj_confirms_trend=1, reward_conviction=1
+19:13:45 |    📌 Nearest miss: ATOM score=0.064 (pre-pen 0.16) conf=0.239 quality=0.015/0.26
+    reason=confidence 0.239 < 0.3
