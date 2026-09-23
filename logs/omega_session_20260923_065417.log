@@ -833,3 +833,45 @@
   EVAA     LONG    0.837200  0.848900  +1.40%   +0.07 1h04m  + 32% left
   ------------------------------------------------------------------------------------------------
  
+ 
+  11:14  up 4h20m  scan 38 -----------------------------------------------------------------------
+  EQUITY    $252.91  unreal $+0.09
+  SESSION   $-1.19 -0.47%  peak $254.10  dd 0.47%
+  CURVE     *++============================-------
+  DAY       real $-2.16  loss room $1.96 (0.77%)  111% used  vol x1.13  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 20 > 0 passed  top 0G 0.70 (h1_regime_shock)  38 scans, 1427 analysed
+  MARKET    MIXED  bias +0.29  breadth +0.33  taker flow +0.05
+  NEWS      65 articles  + tone +0.14  MET -0.25  ONDO +0.23  ETH +0.21
+  INFO      4 tilted  flow/fund/news/oi on 164
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    NIL +45% #13  MARSCOIN +38% #16  MUBARAK +31% #11  USELESS +31% #21
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.853000  +1.89%   +0.09 1h12m  + 0% left
+  ------------------------------------------------------------------------------------------------
+ 
+11:15:05 |    🪞 C266 board-parity (top movers vs screen): NIL +47%[#13] | MARSCOIN
+    +34%[Live=0.37<cut] | MET +30%[#45] | MUBARAK +28%[#10] | BCH +28%[#6]
+11:15:06 | ⊥ C97 TF-CONFLICT: 1h=-0.91×4h=+0.57=d14=-0.52 — only shorts allowed (1h dominant)
+11:15:35 |    🎢→⚖️ MUBARAK: C292 stands down — parabola BROKEN (range 11×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:15:53 |    🎢→⚖️ FLOCK: C292 stands down — parabola BROKEN (range 27×ATR, 10.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:15:56 |    🎢→⚖️ TUT: C292 stands down — parabola BROKEN (range 13×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:16:02 |    🎢→⚖️ BROCCOLI: C292 stands down — parabola BROKEN (range 13×ATR, 5.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:16:18 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=1, flat_projection=8,
+    ct_noisy_block=20, h1_regime_shock=38, session_short=2, no_structural_room=6, capitulation=1,
+    micro_exhaustion=1, poor_reward_risk=1
+11:16:18 |    📌 Nearest miss: SUPER score=1.047 conf=0.843 quality=0.882/0.26 reason=h1_regime_shock
