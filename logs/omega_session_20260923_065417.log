@@ -462,3 +462,55 @@
 09:11:27 |    🎲 C378 odds-size: orderliness 0.12 -> risk x0.77 ($0.666)
 09:11:28 |    🎲 C378 odds-size: orderliness 0.04 -> risk x0.72 ($0.623)
   .. 09:12  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  14 analysed
+09:18:18 |    🔭 C456: 1000BONK exited on C377_RISK_STOP: -2.12% = — at its OWN thesis horizon
+    (120min) the price is +2.57% (+1.03R) FURTHER IN OUR FAVOUR — held would have been better
+09:18:30 |    ⚖️ C462-7 龙虾: penalties 0.51→0.23 (×0.45) vs bar 0.49 — the stack decided
+09:19:20 |    ⚖️ C462-7 哈基米: penalties 0.69→0.52 (×0.75) vs bar 0.54 — the stack decided
+09:19:41 | 📊 Step 3 result: 78 analyzed → 7 viable → Step 4 DRI/DSI
+09:19:42 |    🎲 C378 odds-size: orderliness 0.11 -> risk x0.77 ($0.660)
+09:19:43 |    🎲 C378 odds-size: orderliness 0.20 -> risk x0.82 ($0.707)
+ 
+ 
+  09:20  up 2h26m  scan 23 -----------------------------------------------------------------------
+  EQUITY    $253.01
+  SESSION   $-1.09 -0.43%  peak $254.10  dd 0.43%
+  CURVE     *++==------------------
+  DAY       real $-1.97  loss room $1.67 (0.65%)  118% used  vol x0.96  trust x1.00
+            ##########################
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      flat  free $253.01
+  FEES      $0.03  mk3/tk4  0.014% of eq
+  SCAN      802 > 78 > 7 passed  top ARB 1.00 (viable)  23 scans, 953 analysed
+  MARKET    TRENDING  bias +0.66  breadth +0.14  taker flow -0.12
+  NEWS      65 articles  + tone +0.53  ETH +0.32  ZEC +0.22  ETHFI +0.20
+  INFO      7 tilted  flow/fund/news/oi on 152
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +66% #6  NIL +50% #15  MARSCOIN +38% #16  USELESS +35% cut
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+09:22:52 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +68%[#5] | NIL +42%[#20] |
+    MARSCOIN +39%[#12] | USELESS +34%[#18] | 龙虾 -29%[#37]
+09:23:53 | 📊 Step 3 result: 21 analyzed (+52 cached) → 8 viable → Step 4 DRI/DSI
+09:23:54 |    🎲 C378 odds-size: orderliness 0.06 -> risk x0.73 ($0.634)
+09:23:55 |    🎲 C378 odds-size: orderliness 0.11 -> risk x0.77 ($0.660)
+  .. 09:28  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  21 analysed
+09:30:16 |    ⚖️ C462-7 XRP: penalties 0.60→0.45 (×0.75) vs bar 0.49 — the stack decided
+09:30:45 |    ⚖️ C462-7 LTC: penalties 0.56→0.42 (×0.75) vs bar 0.49 — the stack decided
+09:31:01 |    ⚖️ C462-7 龙虾: penalties 0.60→0.36 (×0.60) vs bar 0.49 — the stack decided
+09:31:10 |    ⚖️ C462-7 VIRTUAL: penalties 0.55→0.47 (×0.86) vs bar 0.49 — the stack decided
+09:31:21 |    🎢→⚖️ KITE: C292 stands down — parabola BROKEN (range 17×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:32:01 | 📊 Step 3 result: 73 analyzed → 7 viable → Step 4 DRI/DSI
+09:32:03 |    🎲 C378 odds-size: orderliness 0.07 -> risk x0.74 ($0.639)
+09:32:04 |    🎲 C378 odds-size: orderliness 0.03 -> risk x0.72 ($0.619)
+09:35:10 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +71%[#5] | NIL +38%[#21] |
+    MARSCOIN +37%[#13] | USELESS +33%[#19] | 龙虾 -29%[#32]
+09:35:38 |    🎢→⚖️ MINA: C292 stands down — parabola BROKEN (range 18×ATR, 4.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+09:36:05 | 📊 Step 3 result: 17 analyzed (+56 cached) → 3 viable → Step 4 DRI/DSI
+09:36:06 |    🎲 C378 odds-size: orderliness 0.03 -> risk x0.72 ($0.619)
+  .. 09:36  flat  $253.01  $-1.09 -0.43%  0W 4L 0%  17 analysed
