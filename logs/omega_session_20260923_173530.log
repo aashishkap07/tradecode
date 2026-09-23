@@ -1,0 +1,187 @@
+17:35:30 |    day cap 0.91%  |  per-trade risk 0.455%  |  break-even WR 50.0% AT 1:1 PAYOFF — no
+    R-denominated payoff measured yet, so the honest break-even is the 1:1 figure above and nothing
+    better [C406/C463-10]
+17:35:30 | 📊 Paper Mode
+17:35:35 | ✅ Connected | 802 futures markets
+17:35:35 |    day cap 0.68%  |  per-trade risk 0.341%  |  break-even WR 50.0% AT 1:1 PAYOFF — at the
+    measured 0.36 payoff (5W/5L in R) it is 73%, which is the number that matters [C406/C463-10]
+ 
+  ================================================================================================
+  OMEGA C482  PAPER  Bitget perps
+  23 Sep 2026   17:35
+  start $252.81  day -0.68% loss
+  ================================================================================================
+ 
+17:35:35 | ⚠️ Flask not available - web dashboard disabled
+17:35:35 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+17:35:35 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+17:35:35 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+17:35:35 |        See deploy/DEPLOY.md — one command, no open ports, free.
+17:35:35 |    → C458-17 exploration will take up to 4 MINIMUM-SIZE trades/day after 10 empty scans,
+    purely to rebuild the sample. Worst case ≈ $0.60/day.
+17:35:35 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+17:35:35 | 💡 Press Ctrl+C to stop safely
+17:35:35 |    📅 C482 month anchor 2026-09: $252.81 (budget 15% = $37.92)
+17:35:42 |    🪞 C266 board-parity (top movers vs screen): FIGHT +45%[#48] | MET +37%[#22] | ALLO
+    +30%[Live=0.52<cut] | ZEST +30%[#40] | BCH +27%[Live=0.44<cut]
+17:36:35 |    🎢→⚖️ 1000BONK: C292 stands down — parabola BROKEN (range 9×ATR, 3.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:36:54 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 44×ATR, 29.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:36:56 |    ⚖️ C462-7 RENDER: penalties 0.50→0.37 (×0.75) vs bar 0.43 — the stack decided
+17:36:57 |    ⚖️ C462-7 XPL: penalties 0.48→0.30 (×0.62) vs bar 0.42 — the stack decided
+17:37:16 | 📊 Step 3 result: 70 analyzed → 2 viable → Step 4 DRI/DSI
+17:37:16 |    🎲 C378 odds-size: orderliness 0.16 -> risk x0.80 ($0.686)
+17:37:17 |    🔒 C378 stop level $0.11118 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 17:37  OPEN   牛来 SHORT @0.108840  x1 $31.78
+       target +10.6%  stop -2.2%  entry score 0.62  maker
+17:37:18 |    🎲 C378 odds-size: orderliness 0.15 -> risk x0.79 ($0.679)
+17:37:19 |    🔒 C378 stop level $0.05746 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 17:37  OPEN   KERNEL SHORT @0.056370  x1 $34.98
+       target +9.6%  stop -1.9%  entry score 0.51  maker
+17:38:22 |    day cap 0.68%  |  per-trade risk 0.341%  |  break-even WR 50.0% AT 1:1 PAYOFF — at the
+    measured 0.36 payoff (5W/5L in R) it is 73%, which is the number that matters [C406/C463-10]
+17:38:22 | 🎚️ C482 MONTHLY RISK DIAL 15% -> 15% (control panel). Month budget $37.92, used $0.00;
+    today may lose $9.48; per-trade risk 0.341%
+17:42:37 | 📊 Step 3 result: 2 analyzed (+68 cached) → 2 viable → Step 4 DRI/DSI
+ 
+ 
+  17:43  up 0h08m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $252.53  unreal $-0.28
+  OPEN      2 pos $66.76 (26%)  free $186.05
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  牛来       SHORT   0.108840  0.109730  -0.82%   -0.29    6m  - 50% left
+  KERNEL   SHORT   0.056370  0.056320  +0.09%   +0.00    6m  + 52% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.28 -0.11%  peak $252.81  dd 0.11%
+  DAY       real $-2.17  limit $9.48 (3.72%)  23% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  FEES      $0.01  mk2/tk0  0.005% of eq
+  SCAN      802 > 2 > 2 passed  top KERNEL 0.48 (viable)  2 scans, 72 analysed
+  MARKET    TRENDING  bias -0.30  breadth -0.27  taker flow +0.23
+  NEWS      64 articles  + tone +0.40  PEPE +0.53  MET +0.50  FET +0.44
+  INFO      2 tilted  flow/fund/news on 70
+  MOVERS    FIGHT +45% #48  MET +37% #22  ALLO +30% cut  ZEST +30% #40
+  ------------------------------------------------------------------------------------------------
+ 
+17:47:49 |    🪞 C266 board-parity (top movers vs screen): FIGHT +47%[#47] | MET +37%[Live=0.57<cut]
+    | ALLO +33%[Live=0.53<cut] | BCH +27%[#5] | ZEST +24%[#56]
+17:48:40 |    🎢→⚖️ 1000BONK: C292 stands down — parabola BROKEN (range 9×ATR, 4.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:49:00 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 42×ATR, 29.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:49:13 | 📊 Step 3 result: 70 analyzed → 2 viable → Step 4 DRI/DSI
+17:49:14 |    🎲 C378 odds-size: orderliness 0.14 -> risk x0.79 ($0.677)
+17:49:15 |    🔒 C378 stop level $10.963 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 17:49  OPEN   AVAX SHORT @10.7570  x1 $35.30
+       target +9.7%  stop -1.9%  entry score 1.34  maker
+ 
+ 
+  17:51  up 0h16m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $252.73  unreal $-0.08
+  OPEN      3 pos $102.06 (40%)  free $150.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  牛来       SHORT   0.108840  0.108720  +0.11%   +0.01   14m  + 52% left
+  KERNEL   SHORT   0.056370  0.056400  -0.05%   -0.05   14m  - 44% left
+  AVAX     SHORT    10.7570   10.7620  -0.05%   -0.04    2m  - 9% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.08 -0.03%  peak $252.81  dd 0.03%
+  DAY       real $-2.17  limit $9.48 (3.72%)  23% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  FEES      $0.02  mk3/tk0  0.008% of eq
+  SCAN      802 > 70 > 2 passed  top AVAX 1.34 (viable)  3 scans, 142 analysed
+  MARKET    TRENDING  bias -0.34  breadth +0.00  taker flow +0.35
+  NEWS      64 articles  + tone +0.40  PEPE +0.53  MET +0.50  FET +0.44
+  INFO      2 tilted  flow/fund/news on 79
+  MOVERS    FIGHT +47% #47  MET +37% cut  ALLO +33% cut  BCH +27% #5
+  ------------------------------------------------------------------------------------------------
+ 
+17:54:37 | 📊 Step 3 result: 2 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=13, regime_blip=10, ct_noisy_block=19, capitulation=7, news_tech_conflict=1,
+    low_quality=1, flat_projection=6, late_leg_no_forward=2, corr_cap=2, absorption_at_extreme=1,
+    proj_confirms_trend=2, micro_exhaustion=1, low_agreement=1
+17:54:37 |    📌 Nearest miss: AVAX score=1.773 conf=0.928 quality=1.646/0.26 reason=corr_cap
+17:59:47 |    🪞 C266 board-parity (top movers vs screen): FIGHT +43%[#52] | ALLO +32%[Live=0.53<cut]
+    | MET +30%[Live=0.54<cut] | BCH +27%[#5] | SENT +23%[Live=0.60<cut]
+18:00:43 |    🎢→⚖️ 1000BONK: C292 stands down — parabola BROKEN (range 9×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:01:03 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 43×ATR, 30.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:01:21 | 📊 Step 3 result: 70 analyzed → 0 passed | regime_blip=15, corr_cap=26, ct_noisy_block=17,
+    flat_projection=4, news_tech_conflict=1, proj_confirms_trend=2, no_structural_room=1,
+    h1_regime_shock=3, fee_floor=1
+18:01:21 |    📌 Nearest miss: 牛来 score=1.043 conf=0.672 quality=0.700/0.26 reason=corr_cap
+ 
+  18:01  up 0h25m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $252.80  unreal $-0.01
+  OPEN      3 pos $102.06 (40%)  free $150.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  牛来       SHORT   0.108840  0.108570  +0.25%   +0.05   24m  + 54% left
+  KERNEL   SHORT   0.056370  0.056100  +0.48%   +0.14   24m  + 42% left
+  AVAX     SHORT    10.7570   10.8110  -0.50%   -0.21   12m  - 7% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.01 -0.00%  peak $252.81
+  DAY       real $-2.17  limit $9.48 (3.72%)  23% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  FEES      $0.02  mk3/tk0  0.008% of eq
+  SCAN      802 > 70 > 0 passed  top 牛来 1.04 (corr_cap)  5 scans, 214 analysed
+  MARKET    TRENDING  bias -0.37  breadth +0.00  taker flow -0.00
+  NEWS      64 articles  + tone +0.40  PEPE +0.53  MET +0.50  FET +0.44
+  INFO      2 tilted  flow/fund/news on 79
+  MOVERS    FIGHT +43% #52  ALLO +32% cut  MET +30% cut  BCH +27% #5
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  18:09  up 0h33m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $252.69  unreal $-0.12
+  OPEN      3 pos $102.06 (40%)  free $150.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  牛来       SHORT   0.108840  0.109180  -0.31%   -0.12   32m  - 49% left
+  KERNEL   SHORT   0.056370  0.056340  +0.05%   -0.01   32m  - 51% left
+  AVAX     SHORT    10.7570   10.7430  +0.13%   +0.02   20m  + 15% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.12 -0.05%  peak $252.81  dd 0.05%
+  DAY       real $-2.17  limit $9.48 (3.72%)  23% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  FEES      $0.02  mk3/tk0  0.008% of eq
+  SCAN      802 > 70 > 0 passed  top 牛来 1.04 (corr_cap)  5 scans, 214 analysed
+  MARKET    TRENDING  bias -0.24  breadth -0.09  taker flow +0.17
+  NEWS      65 articles  + tone +0.43  PEPE +0.53  MET +0.50  FET +0.44
+  INFO      2 tilted  flow/fund/news on 79
+  MOVERS    FIGHT +43% #52  ALLO +32% cut  MET +30% cut  BCH +27% #5
+  ------------------------------------------------------------------------------------------------
+ 
+18:11:51 |    🪞 C266 board-parity (top movers vs screen): FIGHT +39%[#50] | ALLO +33%[Live=0.44<cut]
+    | MET +26%[#33] | SENT +24%[#52] | CHR +23%[Live=0.37<cut]
+18:12:20 |    🎢→⚖️ 0G: C292 stands down — parabola BROKEN (range 10×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:12:25 | 📊 Step 3 result: 14 analyzed (+56 cached this 15m candle) → 0 passed | regime_blip=14,
+    corr_cap=21, ct_noisy_block=23, flat_projection=2, news_tech_conflict=1, h1_regime_shock=4,
+    proj_confirms_trend=2, capitulation=1, no_structural_room=1, fee_floor=1
+18:12:25 |    📌 Nearest miss: 0G score=0.558 conf=0.570 quality=0.318/0.26 reason=h1_regime_shock

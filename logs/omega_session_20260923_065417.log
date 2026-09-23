@@ -1685,3 +1685,109 @@
 17:13:03 | 📊 Step 3 result: 16 analyzed (+53 cached) → 1 viable → Step 4 DRI/DSI
 17:13:05 |    🎲 C378 odds-size: orderliness 0.17 -> risk x0.80 ($0.689)
   .. 17:13  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  16 analysed
+17:19:33 |    ⚖️ C462-7 UNI: penalties 0.47→0.28 (×0.60) vs bar 0.40 — the stack decided
+17:19:47 |    🎢→⚖️ PENGU: C292 stands down — parabola BROKEN (range 12×ATR, 4.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:19:55 |    ⚖️ C462-7 AAVE: penalties 0.41→0.25 (×0.60) vs bar 0.40 — the stack decided
+17:20:07 |    🎢→⚖️ 1000BONK: C292 stands down — parabola BROKEN (range 9×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:20:24 |    🎢→⚖️ APE: C292 stands down — parabola BROKEN (range 15×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:20:24 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 18×ATR, 8.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:20:27 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 43×ATR, 29.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:20:34 |    ⚖️ C462-7 XPL: penalties 0.49→0.22 (×0.45) vs bar 0.37 — the stack decided
+17:20:47 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=10, low_score=19,
+    ct_noisy_block=16, absorption_at_extreme=6, capitulation=5, late_leg_no_forward=3,
+    low_quality=2, micro_exhaustion=3, flat_projection=1, reward_conviction=1, no_structural_room=1,
+    vol_floor=1, proj_confirms_trend=1
+17:20:47 |    📌 Nearest miss: WIF score=0.499 (pre-pen 0.81) conf=0.659 quality=0.329/0.26
+    reason=reward_conviction needs 63%
+ 
+ 
+  17:21  up 10h26m  scan 89 ----------------------------------------------------------------------
+  EQUITY    $252.81
+  SESSION   $-1.29 -0.51%  peak $254.10  dd 0.51%
+  CURVE     *++===========---------------=------------------------------------------------------
+  DAY       real $-2.17  loss room $1.69 (0.66%)  129% used  vol x0.97  trust x1.00
+            ##########################
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.22/tr  best $-0.01  worst $-0.50
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  OPEN      flat  free $252.81
+  FEES      $0.05  mk5/tk6  0.018% of eq
+  SCAN      802 > 69 > 0 passed  top WIF 0.50 (reward_conviction )  89 scans, 3444 analysed
+  MARKET    TRENDING  bias -0.35  breadth -0.31  taker flow +0.19
+  NEWS      65 articles  + tone +0.69  ARB +0.85  UNI +0.78  PEPE +0.70
+  INFO      1 tilted  flow/fund/news/oi on 193
+            info>0 3tr $-0.19 win 0%  info≤0 2tr $-0.11 win 0%
+  MOVERS    FIGHT +47% #57  MET +38% #24  BCH +29% cut  ALLO +28% #35
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+17:25:54 |    🪞 C266 board-parity (top movers vs screen): FIGHT +50%[#45] | MET +38%[#24] | ALLO
+    +30%[#31] | BCH +28%[Live=0.32<cut] | ZRO +26%[#23]
+17:26:29 |    ⚖️ C462-7 CAKE: penalties 0.43→0.19 (×0.45) vs bar 0.38 — the stack decided
+17:26:29 |    🎢→⚖️ PLUME: C292 stands down — parabola BROKEN (range 17×ATR, 4.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:26:32 | 📊 Step 3 result: 15 analyzed (+55 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=19, ct_noisy_block=15, absorption_at_extreme=8, capitulation=7, late_leg_no_forward=5,
+    micro_exhaustion=2, flat_projection=1, reward_conviction=1, low_quality=1, no_structural_room=1,
+    post_penalty_quality=1
+17:26:32 |    📌 Nearest miss: FLOCK score=0.535 conf=0.633 quality=0.339/0.26
+    reason=post_penalty_quality
+  .. 17:29  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  15 analysed
+17:32:11 |    ⚖️ C462-7 TAO: penalties 0.40→0.30 (×0.75) vs bar 0.40 — the stack decided
+17:32:22 |    ⚖️ C462-7 TRUMP: penalties 0.42→0.31 (×0.75) vs bar 0.40 — the stack decided
+17:32:32 |    🎢→⚖️ 1000BONK: C292 stands down — parabola BROKEN (range 9×ATR, 3.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:32:44 |    🎢→⚖️ APE: C292 stands down — parabola BROKEN (range 15×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:32:50 |    ⚖️ C462-7 XPL: penalties 0.47→0.21 (×0.45) vs bar 0.38 — the stack decided
+17:32:50 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 44×ATR, 29.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:33:22 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=15, low_score=17,
+    mtf_disagree=1, flat_projection=5, ct_noisy_block=19, post_penalty_low=1, micro_exhaustion=2,
+    absorption_at_extreme=3, poor_reward_risk=2, capitulation=2, low_agreement=2, fee_floor=1
+17:33:22 |    📌 Nearest miss: FLOCK score=0.511 (pre-pen 0.82) conf=0.581 quality=0.297/0.26
+    reason=low_agreement 48%<53%
+
+============================================================
+📝 Log saved: 2026-09-23 17:35:28
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       10h41m  91 scans  3529 pair-analyses  6 closed trades
+  P&L       $-1.29 (-0.51%)  $254.10 > $252.81  maxDD 0.51%
+  CURVE     @++==__________________________......................................................
+  RECORD    0W 6L  win 0%  payoff n/a  profit factor n/a  avg win n/a  avg loss $-0.22
+            break-even n/a  expectancy $-0.22/tr  gross $0.00 won  $1.30 lost
+  HOLD      median 40m  range 7-79m
+  COST      fees $0.05  maker 5 / taker 6 fills  4% of gross  45% of fills maker  maker $0.01
+            taker $0.04
+  INFO A/B  agreed 3tr $-0.19/tr win 0%  disagreed 2tr $-0.11/tr win 0%  gap $-0.08/tr
+  EXITS     C399_CONVICTION_COLL 1  C377_RISK_STOP: -4.0 1  C377_RISK_STOP: -2.1 1
+            REGIME_EXIT: ranging 1  REL_HARD_STOP: PnL=- 1  PEAK_FLOOR: peaked a 1
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE      MOVE      NET   HELD  EXIT
+  TIA      LONG    -2.25%   $-0.50    41m  C399_CONVICTION_COLL [L]
+  BROCCOLI LONG    -4.23%   $-0.22     6m  C377_RISK_STOP: -4.0 [L]
+  1000BONK LONG    -2.17%   $-0.30    14m  C377_RISK_STOP: -2.1 [L]
+  GRT      LONG    -0.71%   $-0.07    39m  REGIME_EXIT: ranging [L]
+  MET      LONG    -2.05%   $-0.19    19m  REL_HARD_STOP: PnL=- [L]
+  EVAA     LONG    -0.11%   $-0.01  1h18m  PEAK_FLOOR: peaked a [L]
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-23 17:35:28
+============================================================
