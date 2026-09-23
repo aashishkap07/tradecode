@@ -121,18 +121,23 @@ def _usable(p):
             return sum(1 for l in fh if '|' in l) >= 50
     except Exception:
         return False
-det = sorted([p for p in glob.glob('/home/user/tradecode/omega_detail_*.log') if _usable(p)],
-             key=lambda p: -os.path.getsize(p)) \
-      or sorted([p for p in glob.glob('/home/user/tradecode/recovered_logs/*/omega_session_*.log')
-                 if _usable(p)], key=lambda p: -os.path.getsize(p))
+# The replay must use UNFILTERED input -- a DETAIL log. A session log is the
+# filter's own OUTPUT, so replaying one measures nothing (C483: the fallback to
+# recovered session logs did exactly that and reported 52%). A real 800-line
+# detail slice from 22 Sep is committed so the check never depends on what
+# happens to be lying around.
+det = ['/home/user/tradecode/test_fixtures/detail_sample.log'] \
+      + sorted([p for p in glob.glob('/home/user/tradecode/omega_detail_*.log') if _usable(p)],
+               key=lambda p: -os.path.getsize(p))
+det = [p for p in det if os.path.exists(p)]
 if det:
-    lines = io.open(det[-1], encoding='utf-8', errors='replace').read().splitlines()
+    lines = io.open(det[0], encoding='utf-8', errors='replace').read().splitlines()
     body = [l.split('|', 1)[1].strip() for l in lines if '|' in l]
     if body:
         passed = sum(1 for l in body if F.filter(rec(l, logging.INFO)))
         pct = 100.0 * passed / len(body)
         ok(f"replaying {len(body)} real INFO lines, the screen still takes a minority",
-           pct < 50.0, f"{pct:.0f}% would print ({os.path.basename(det[-1])})")
+           pct < 50.0, f"{pct:.0f}% would print ({os.path.basename(det[0])})")
     else:
         ok("a real detail log could be replayed", False, "no parseable lines")
 else:

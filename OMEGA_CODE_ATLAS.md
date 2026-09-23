@@ -1,12 +1,99 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-23 (night) — C483: THE DASHBOARD NEVER SHOWED A POSITION; A WHOLE-CODE AUDIT
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C483.** No entry, exit or sizing rule changed. Everything here is
+about what the operator sees, what the code claims to do, and one real race.
+
+---
+
+## 🪟 THE PANEL HAS NEVER SHOWN AN OPEN POSITION
+
+At 18:03 on 23 Sep the dashboard said **"none — flat", 0W 0L**. The bot's own
+report at the same minute said **"OPEN 3 pos $102.06 (40%)"** — 牛来, KERNEL and
+AVAX shorts. `_get_positions` read `getattr(positions, '_positions', {})`;
+`PositionsManager` keeps them in `self.positions`, so the empty default came back
+**every time since the panel was built**. The status count read the same field.
+
+Two more defects were queued behind it: age was `time.time() − entry_time` with
+`entry_time` a datetime (TypeError → the whole call errors), and margin read
+`pos.margin`, which Position does not have. All three fixed; the panel now shows
+entry → mark, move, P&L (the report table's formula), banked half, age, thesis.
+An endpoint error is now **shown**, never rendered as "flat".
+
+**Why no test caught it:** the panel harness used a stub container whose
+`get_all()` returned `{}`, and my C482 browser test ran on a flat bot, where
+"none" was right by coincidence. `omega_c483_positions_test.py` uses REAL
+`Position` objects in the REAL `PositionsManager`; its negative control rebuilds
+the pre-C483 endpoint from git and shows it returns `[]` for a three-position book.
+
+> **→ Standing Rule 45: A TEST THAT CAN ONLY SEE AN EMPTY WORLD CANNOT FAIL ON
+> A FULL ONE.** Stub the network, never the thing under test. A panel test with no
+> positions in it proves the panel can say "none".
+
+This was the operator's "open positions not at the top" complaint, twice. The
+layout was a symptom; the panel was blind.
+
+---
+
+## 🧮 THE AUDIT — FOUND, VERIFIED, AND WHAT WAS DONE
+
+Method: a **typed** wrong-object sweep (`omega_typed_object_sweep.py`, kept) that
+infers the class of every assignment receiver — the C464-6 sweep had absorbed the
+Guardian's `_guardian_peak_mult` into its accepted baseline — plus sweeps for
+settings read-but-undefined and defined-but-unread, attributes written-but-never-
+read, uncalled functions, and per-object scratch on the shared `cfg`. **Every
+finding was read in context before being called a bug; two were not.**
+
+| finding | what it did | action |
+|---|---|---|
+| **dashboard reads `_positions`** | never showed a position | **fixed** (above) |
+| **budget stop parked on the shared `cfg`** | computed from ONE position's margin, read by that position's exit check — but two threads run the loop (C258's own note), so P could read Q's stop. Save/restore always used `pos._budget_stop_pct`; nothing set it | **fixed**: lives on the position |
+| **resume-path risk frame inside the header's `except`** | on every normal restart the RISK FRAME never printed | **fixed**: dedented |
+| **"Day: +1.1%" on a −$2.17 day** | read `normal_start_equity` (last NORMAL-mode start, days ago) and called it Day; still named "barrier ±0.68%" | **fixed**: reads the C482 guard |
+| **boot banner, header, risk frame, fresh-start text** | still described the retired day cap ("day −0.68% loss", "DD / 22", "projected month @60% daily WR") | **fixed**: all read the dial / guard |
+| **first boot line used the 20% default** | printed "per-trade risk 0.455%" before the saved 15% loaded | **fixed**: waits for settled state |
+| **`_should_exit_dri_raw` ignored its `cfg` argument** | read `self.cfg` (Position has none) → C404_DD_HARD_MULT hard-wired at 1.35. Equal to Config today, so latent | **fixed** |
+| `_macro_dir` read from the bot | a `+macro` log tag never appeared | **fixed** |
+| "Flask not available — web dashboard disabled" | a WARNING on every boot saying the working dashboard was off | **fixed**: info, reworded |
+| **38 settings nothing reads** | e.g. PROFIT_LOCK_ENABLED, DRI_SMOOTHING, MTF_AGREEMENT_THRESHOLD — tuning them did nothing | **removed** |
+| eval-window odometer | counted entries toward a phone-era "stop at 100"; nothing read it | **removed** (operator asked) |
+| `is_dri_indecisive` | never called; read `dri_history`, which nothing assigns — would raise if wired | **removed** |
+| `_apply_penalty` (C114 cap) | never called — **but the 45% floor IS enforced later**, once, at cascade end | removed as a misleading duplicate; **not a live bug** |
+| `_quick_exit_check`, `get_gde_exit`, `meta_learn`, `check_timeout` | never called | noted; the monitor thread covers the first |
+| recovery-mode caps, `_c265_last_entry_ts`, `_c378_stop_price`, entropy/GARCH on every tick | written, never read | noted; harmless |
+
+### ⚖️ LEFT FOR THE OPERATOR — dead TRADING logic, not silently switched on
+
+Both have **never run**, so every result on record (+$5.01, payoff 2.33) was
+earned without them. Wiring them would add scoring and vetoes with no measured
+skill (Rule 25). Left exactly as they behave; listed so the choice is conscious.
+
+1. **Tier-1 macro boost/penalty** (TechnicalAnalysis) reads the market bias from
+   itself; it lives on the bot. Always 0 → the ±0.20/0.25 tier adjustment for
+   major coins has never fired.
+2. **Fading-volume leg of two entry vetoes** (cooldown re-entry and C287) —
+   `_vol_exhaustion_ratio` exists only on OPEN positions, never on the analysis
+   at entry, so that leg always reads "volume OK".
+
+Also latent, noted: the Guardian's PEAK-tightening and TF-patience actions are
+dead (moot while it is report-only); `_c423_note_guard`'s on/off switch cannot
+switch; the month anchor's first month starts at deploy time, not the 1st.
+
+---
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # ✅ 2026-09-23 (late) — C482: THE BOT WAS PROFITABLE, AND FOUR CONTROLS SAID OTHERWISE
 # ═══════════════════════════════════════════════════════════════════════════
 
 ## ⏩ RESUME STATE
 
-**Shipped: C482.** Branch `claude/trading-system-analysis-tsvzj4`. Three
+**Superseded by C483 above.** Was: shipped C482. Branch `claude/trading-system-analysis-tsvzj4`. Three
 changes, all about what the operator sees and controls; **no entry, exit or
 sizing rule moved.**
 

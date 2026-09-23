@@ -1274,7 +1274,9 @@ class _C462Report:
             # reads better as well.
             parts = [f"start {_c462_money(equity)}"]
             if day_barrier:
-                parts.append(f"day -{float(day_barrier):.2f}% loss")   # C468
+                # C483: day_barrier is now the MONTHLY RISK DIAL (C482). The old
+                # "day -0.68% loss" described a limit C482 retired.
+                parts.append(f"risk dial {float(day_barrier):.0f}%/month")
             if pairs:
                 parts.append(f"{pairs} pairs")
             self._raw(self.g['sep'].join(parts))
@@ -1393,7 +1395,7 @@ class _C462Report:
             except Exception:
                 pass
 
-    def risk_frame(self, plan, edge=None, markets=None, wr=None, payoff=None):
+    def risk_frame(self, plan, edge=None, markets=None, wr=None, payoff=None, guard=None):
         """C463-6: the boot banner as a BLOCK, not eleven rows of prose.
 
         Everything an operator needs before the first scan: what the account
@@ -1414,8 +1416,19 @@ class _C462Report:
             # barrier LOSS-SIDE ONLY. A banner is the only description of the
             # system the operator ever reads; when it is stale it is not
             # decoration, it is misinformation (C405's rule, on C405's own row).
-            self._pack('DAY', [f"-{cap:.2f}% = {_c462_money(eq * cap / 100.0)} loss room"]
-                       + ([f"({dd:.0f}% DD / 22)"] if dd else []))
+            # C483: the DAY and MONTH rows come from the ONE loss control
+            # (_c482_risk_guard). "(DD / 22)" described the C467-B limit C482
+            # retired -- a stale banner is misinformation (C468's own words).
+            g = guard or {}
+            if g.get('month_budget'):
+                self._pack('MONTH', [f"dial {float(g.get('pct', 0)):.0f}% = "
+                                     f"{_c462_money(float(g['month_budget']))} this month",
+                                     f"used {_c462_money(float(g.get('month_used', 0)))}"])
+                self._pack('DAY', [f"limit {_c462_money(float(g.get('day_cap', 0)))}",
+                                   "25% of what the month has left, fixed at midnight"])
+            else:
+                self._pack('MONTH', [f"dial {dd:.0f}%" if dd else "dial not set",
+                                     "day limit set once the month is anchored"])
             self._pack('RISK', [
                 f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}% = "
                 f"{_c462_money(eq * float((plan or {}).get('per_trade_pct', 0.0) or 0.0) / 100.0)}/trade",
@@ -2066,7 +2079,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C482'
+_OMEGA_VERSION = 'C483'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2814,8 +2827,6 @@ class Config:
         # C81: Base volume threshold — will be overridden by market median
         self.MIN_24H_VOLUME = 1_500_000  # C123: harmonized with Step 3 Normal floor ($1.5M)
         # This prevents Step 1 letting in pairs that Step 3 will always reject
-        self.VOLUME_MOMENTUM_THRESHOLD = 1.15
-        self.VOLUME_BREAKOUT_THRESHOLD = 1.8
         # ═══ C398b: THE REAL UNIVERSE CAP WAS HERE, NOT IN C391 ══════════════
         # C391 raised C391_UNIVERSE_CAP to 150 and the handoff recorded "206
         # pairs clear the volume floor". THE OPERATOR'S LOG SAYS OTHERWISE, in
@@ -2903,7 +2914,6 @@ class Config:
         # ═══ C434: THE ADMISSION GATE COUNTS, IT DOES NOT TAKE A FRACTION ════
         # C430's widening (29 -> 129 pairs) multiplied entries 11x because the
         # C405 gate was a percentile. 5 entries in 107 minutes, 0 wins, -$1.24.
-        self.C434_COUNT_GATE       = False  # RETIRED C435 — read by nothing; see C435-2
         self.C434_ADMIT_SLACK      = 60.0   # candidates admitted per trade actually taken
         # ═══ C435: THE COUNT CAP BELONGS ON THE SCORE, NOT ON EXPECTANCY ═════
         # E is strictly monotone in R, so ranking by E ranks by proj/stop —
@@ -2955,7 +2965,6 @@ class Config:
         # ═══ C442: A HORIZON IS AN ESTIMATE, NOT AN EXPIRY ═══════════════════
         # C440-3 revived a clock that had been dead 18 versions. Five of six
         # exits that session would have been better held; ENA ran +11.4% after.
-        self.C442_CLOCK_RELEASE_X  = 3.0    # RETIRED C443 — superseded by the index
         # ═══ C443: ONE UNIFIED EXIT INDEX, NOT A CLOCK (operator directive) ══
         # DSI already decays with time, so the clock was counting time twice.
         # UEI = direction health x fuel health, both against this position's own
@@ -3509,7 +3518,6 @@ class Config:
         # reasonably believe a 60-sample warm-up is still in force, and a
         # deleted name is how a live reference gets broken (C407's judgement,
         # which stands).
-        self.C405_E_MIN_SAMPLES   = 60      # RETIRED C420-3b — read by nothing
 
         # ═══ C420: THE ENTRY FUNNEL, REPAIRED ════════════════════════════════
         # Seven defects on one causal path -- candidate to position -- all
@@ -3949,23 +3957,18 @@ class Config:
         self.TAKER_FEE_PCT = 0.06
 
         # === DRI Parameters ===
-        self.DRI_SMOOTHING = 5
-        self.DRI_NOISE_FILTER = 0.05  # Reduced: let small signals through
         # C81: Base DRI threshold — scaled per-position by ATR in monitoring
         # Low-ATR pairs (BTC 0.3%) get tighter threshold (0.25)
         # High-ATR pairs (MOVR 2%) get wider threshold (0.40)
         self.DRI_REVERSAL_THRESHOLD = 0.30  # Base; actual = 0.30 * (0.8 + ATR_ratio * 0.4)
         self.DRI_HARD_THRESHOLD = 0.50  # R10: Signed DRI. Hard exit at +0.50
-        self.DRI_MIN_PROFIT_PCT = -999  # DISABLED: DRI exits winning AND losing
 
         # ── V60: DSI-DRI GAP SYSTEM ─────────────────────────────────
         self.MIN_ENTRY_QUALITY = 0.26    # C50: was 0.18 — all 4 losses in C49 had quality >0.35 but still lost
         self.GAP_EXIT_VELOCITY = -0.018  # C7: more sensitive (primary exit mechanism now)
-        self.GAP_EXIT_ACCEL = -0.005     # C7: more sensitive
         self.GAP_NOISE_BAND = 0.02       # C7: tighter — GDE is primary exit, must be sensitive — 0.03 is meaningful now
         self.GAP_PERSIST = 5             # C11: 5 readings (10s) — more confirmation with regression velocity (8s) to confirm — reduces noise exits
         self.GAP_HISTORY_SIZE = 30       # C11: 60s history for regression-based velocity for better velocity
-        self.PROFIT_LOCK_ENABLED = False # V60: DISABLED
         self.DSI_DECAY_START_MIN = 30    # decay starts at 30min hold
         self.DSI_DECAY_RATE = 0.001      # per 2s after decay start
         self.DSI_PNL_SENSITIVITY = 0.15  # PnL decay multiplier
@@ -4004,9 +4007,7 @@ class Config:
         # believing they had changed the risk posture. The ONE dial that
         # actually sets the daily barrier is C380_MAX_MONTHLY_DD_PCT.
         self.C369_TARGET_CEILING = 0.35     # RETIRED C380 — read by nothing
-        self.C369_TARGET_FLOOR = 0.20       # RETIRED C380 — read by nothing
         self.C369_CAP_RATIO = 0.57          # live: still read by _c369_derive_budget
-        self.C369_LOSING_TRADES = 3.0       # RETIRED C380 — read by nothing
         # C372: a profit-taking exit may not fire below this multiple of R
         # (R = 2*ATR, the stop the sizing already assumes). 1.0 makes the bet
         # symmetric; at the observed 67%% win rate EV moves -0.22R -> +0.34R.
@@ -4228,7 +4229,6 @@ class Config:
         # 9,383 settlements and indistinguishable from the null, while carrying
         # a persistent anti-long sign. Set True to restore pre-C464 behaviour.
         self.C464_FUNDING_DIRECTION = False
-        self.C376_WAIT_S = 8
         # ═══ C377: THE RISK BUDGET MUST BE REAL, NOT ASPIRATIONAL ═══════
         # Every stop in this bot has been VIRTUAL — evaluated only when the
         # monitor loop happened to look. Grepping the whole file for stopLoss /
@@ -4365,8 +4365,6 @@ class Config:
         self.CYCLE_TARGETS = {'normal': [self.PROFIT_TARGET_NORMAL_PCT],
                               'hp': [self.PROFIT_TARGET_HP_PCT]}
 
-        self.HP_MAX_LOSS_PCT = 5.0           # C14: 3→5% (3% triggered on normal noise at 4x leverage) — bot lost 13.7% in HP! Must protect Normal gains — GDE/DSI+DRI dictate exit, not loss % — too tight at any leverage (0.5% price move = kill)
-        self.HP_MAX_LOSS_OF_NORMAL_GAIN = 0.35  # C27: was 0.50 — HP was eating 57% of Normal gains
         self.MAX_HP_ATTEMPTS = 99             # C13: Unlimited per user (was 2 — blocked profitable 3rd HP)
         self.MODE_TIMEOUT_HOURS = 48
 
@@ -4378,7 +4376,6 @@ class Config:
         # Log3 lost -5.7% from cascading longs — this would have stopped at -5%
         self.SESSION_DRAWDOWN_STOP_PCT = -5.0
         self.SESSION_DRAWDOWN_PAUSE_SECONDS = 900   # C89: 15 min
-        self.SESSION_DRAWDOWN_STOP_SECONDS = 1800   # R3: 30 min (was 60)
 
         # === Emergency (15% unrealized loss → observe → then decide) ===
         self.EMERGENCY_LOSS_PCT = -20.0  # C7: Per user — ONLY emergency exit, bot stops for day
@@ -4389,43 +4386,30 @@ class Config:
 
         # === Confidence Thresholds (calibrated to V51-style scoring) ===
         self.CONFIDENCE_NORMAL_START = 0.25  # C18: 0.33→0.25 (new weighted confidence range)
-        self.CONFIDENCE_NORMAL_RELAXED = 0.35
         self.CONFIDENCE_HP_START = 0.50      # C27: was 0.40 — HP needs higher conviction
-        self.CONFIDENCE_HP_RELAXED = 0.48  # C3: HP relaxed after CONFLUENCE_RELAX_MINUTES
         # C73: Raised from 0.30 to 0.40 — DASH (0.238) and THETA (0.118)
         # passed at 0.30 and both lost. 0.40 prevents low-quality entries.
         self.MIN_SCORE_NORMAL = 0.32  # C288: recalibrated for the sensitivity/specificity rescale (was 0.45 on the old flat-tanh scale; the C288 sharpened scale runs ~0.71× lower for the SAME real conviction — 0.45×0.71≈0.32 — so this is the SAME selectivity, not looser). Losers (PI/EVAA/PEPE) land 0.17-0.31 below it; winners (0G 0.68, VIRTUAL 0.47) above.
         self.MIN_SCORE_HP = 0.36       # C288: was 0.50; 0.50×0.71≈0.36 (HP still stricter than Normal)
         self.PAYOFF_TRIGGER_SCORE = 0.50  # C288: score at/above which the payoff machinery (1.5× leverage, ride-mode) engages. Was an implicit 0.60 on the old scale; 0.60×0.71≈0.43, set to 0.50 to keep leverage for genuinely strong setups only (0G-class clears it, marginal setups don't). Single tunable knob for the whole payoff-gate.
-        self.MIN_CONFLUENCE_NORMAL = 0.35
-        self.MIN_CONFLUENCE_HP = 0.50
-        self.CONFLUENCE_RELAX_MINUTES = 20
 
         # === ML ===
-        self.ML_LOOKBACK = 100
-        self.ML_TIMEFRAMES = ['15m', '1h', '4h']
-        self.SUPPORT_RESISTANCE_LOOKBACK = 50
 
         # === News ===
         self.NEWS_API_KEY = "pub_94c834e30f944f6b8ce252f30184c594"
         self.NEWS_CACHE_MINUTES = 30
 
         # === Cooldowns ===
-        self.COUNTER_TREND_BIAS_BLOCK = 0.50  # C11: 0.70→0.50 — AGLD LONG at -0.88 bias was catastrophic (altcoins decouple)
         self.REENTRY_COOLDOWN_MINUTES = 30  # C11: 10→30min — bot re-entered AGLD 3x, ANKR 3x, lost every time (crypto moves fast)
         self.WIN_REENTRY_COOLDOWN_MINUTES = 8  # C221: a WINNING pair is back in play fast — the leg-maturity gates (C220) prevent chasing an exhausted move, so a long blanket cooldown just forfeits good re-trades. Losses keep the full 30min (revenge-trade guard).
-        self.MAX_COOLDOWN_MINUTES = 30  # C3: 60→30min (was blocking good setups)
 
         # === Planned Trades ===
-        self.PLANNED_TRADE_TIMEOUT = 60
-        self.PLANNED_TRADE_TOLERANCE_PCT = 0.3
 
         # === Self-Learning ===
         self.LEARN_MIN_TRADES = 5   # C3: was 8, too late for early optimization
         self.LEARN_EVAL_TRADES = 3  # C3: was 5, evaluate sooner
         self.LEARN_TARGET_WINRATE = 0.55
         self.LEARN_COOLDOWN = 600
-        self.MAX_LEARN_ADJUSTMENTS = 5
         self.MIN_DRI_THRESHOLD = 0.20  # R10: Signed DRI min threshold
         self.MAX_DRI_THRESHOLD = 0.50  # R10: Signed DRI max threshold
 
@@ -4433,7 +4417,6 @@ class Config:
         # C81: Lowered from 0.05% to 0.01% — Bitget typical rates are 0.005-0.02%
         # Old threshold meant funding NEVER triggered (always below 0.05)
         self.FUNDING_EXTREME_THRESHOLD = 0.01  # C81: was 0.05%
-        self.FUNDING_WEIGHT = 0.15
 
         # === Novel: Multi-Timeframe ===
         self.MTF_TIMEFRAMES = ['15m', '1h', '4h']
@@ -4450,18 +4433,10 @@ class Config:
             '1m': 0.30, '3m': 0.25, '5m': 0.20, '15m': 0.15,
             '30m': 0.12, '1h': 0.10, '2h': 0.08, '4h': 0.06
         }
-        self.DRI_MAX_HOLD_MIN = 360
-        self.DRI_PRESSURE_START_MIN = 240
-        self.MTF_AGREEMENT_THRESHOLD = 0.6  # 60% TF agreement
 
         # === Novel: Volatility Regime ===
-        self.VOL_COMPRESSION_THRESHOLD = 0.5
-        self.VOL_TRENDING_THRESHOLD = 1.5
-        self.VOL_REGIME_LOOKBACK = 20
 
         # === Novel: Hurst / Entropy ===
-        self.HURST_LOOKBACK = 100
-        self.ENTROPY_LOOKBACK = 50
 
         # === Web / Telegram ===
         self.WEB_HOST = '0.0.0.0'
@@ -4476,7 +4451,7 @@ class Config:
         self.MODE_FILE = os.path.join(BASE_PATH, 'mode_v60.json')
         self.LEARNING_FILE = os.path.join(BASE_PATH, 'learning_v60.json')
         self.PROFILE_FILE = os.path.join(BASE_PATH, 'pair_profiles_v60.json')  # C233: persistent per-pair behavioral baseline (survives Fresh Start)
-        self.EVAL_FILE = os.path.join(BASE_PATH, 'eval_window_v60.json')  # C282: 100-trade eval-window odometer (freeze); survives Fresh Start + restarts
+        # C483: EVAL_FILE removed with the eval-window odometer it served.
         self.DB_FILE = os.path.join(BASE_PATH, 'data', 'omega_v60.db')
 
 # ======================== POSITION ========================
@@ -4664,20 +4639,9 @@ class Position:
         slope_second = np.polyfit(range(len(recent)-mid), recent[mid:], 1)[0]
         return float(slope_second - slope_first)
 
-    def is_dri_indecisive(self, window_sec: float = 300.0) -> bool:
-        """C3 NOVEL: Detect DRI oscillating in narrow band (±0.05)
-        for extended period → position stuck in indecision zone."""
-        if len(self.dri_history) < 10:
-            return False
-        recent = list(self.dri_history)[-30:]  # last ~60s at 2s interval
-        if len(recent) < 10:
-            return False
-        vals = [x[1] for x in recent]
-        band = max(vals) - min(vals)
-        avg = sum(vals) / len(vals)
-        # Indecisive: narrow band AND near zero (neither hold nor exit)
-        return band < 0.10 and abs(avg) < 0.08
-
+    # C483: is_dri_indecisive removed. Never called, and it read
+    # self.dri_history, which nothing ever assigns -- it would have raised the
+    # first time anyone wired it in.
     def get_dri_short(self) -> float:
         """R16: Short-window DRI (last 5 readings/10s) for fast move detection."""
         if not self.dri_values:
@@ -5730,7 +5694,7 @@ class Position:
         # C174-F2b: budget bound — tighter of (relativistic PRU stop, half the
         # remaining day budget). max() of negatives = the tighter stop. Floor
         # at -1.0% so the budget bound never strangles a position at open.
-        _bstop = getattr(cfg, '_budget_stop_pct', None)
+        _bstop = getattr(self, '_budget_stop_pct', None)     # C483: this position's own
         if _bstop is not None and _bstop < 0:
             _max_loss_pct = max(_max_loss_pct, _bstop)
         # C201: NOISE-CLEARING FLOOR. The C174 budget bound can tighten the stop
@@ -6993,7 +6957,7 @@ class Position:
                 # trade) but its patience is now capped.
                 _m404 = 1.35
                 try:
-                    _m404 = float(getattr(getattr(self, 'cfg', None), 'C404_DD_HARD_MULT', 1.35))
+                    _m404 = float(getattr(cfg, 'C404_DD_HARD_MULT', 1.35))   # C483: the cfg this method is GIVEN; Position has no self.cfg
                 except Exception:
                     _m404 = 1.35
                 _hard404 = _soft_pru * _m404
@@ -18514,21 +18478,12 @@ class TradingBot:
         logger.info("      • funding: charged per 8h settlement crossed")
         logger.info("      NOT modelled: partial fills, API outages, queue position.")
         logger.info("=" * 60)
-        # C282: EVAL-WINDOW ODOMETER (code freeze, operator-agreed 2026-07-10).
-        # 100 trades = one evaluation window; verdict criteria pre-agreed
-        # (WR ≥55% AND payoff ≥1.2). Counter persists across sessions and
-        # restarts in its own file so the operator always knows when to stop.
-        self._eval_count = 0
-        self._eval_window = 1
-        try:
-            with open(self.cfg.EVAL_FILE, 'r') as _ef282:
-                _ej282 = json.load(_ef282)
-                self._eval_count = int(_ej282.get('count', 0))
-                self._eval_window = int(_ej282.get('window', 1))
-        except Exception:
-            pass  # first run: fresh window W1 at 0/100
-        logger.info(f"🧮 EVAL WINDOW W{self._eval_window}: {self._eval_count}/100 trades "
-                   f"completed so far — PAYOFF BUILD (C284: winners ride, weak lifts blocked)")
+        # C483: the C282 eval-window odometer ("EVAL TRADE #n/100") is removed. It
+        # counted ENTRIES toward "stop at 100 and upload the logs" -- a phone-era
+        # workflow. Nothing in the bot ever read it to decide anything, logs now
+        # push to GitHub on their own, and the record lives on the dashboard.
+        # The operator asked for it to go. eval_window_v60.json is simply no
+        # longer read or written; an existing one is harmless and can be deleted.
         # C126-F46b: RESET score floors at every startup to enforce constant baseline
         # Prevents persistent state from prior runs (where mutation may have eroded the floor)
         # C125 log: GOAT/PENDLE entered at 0.34/0.29 because floor was 0.30 (not 0.45)
@@ -18748,9 +18703,11 @@ class TradingBot:
         logger.info(f"   📊 Position Sizing: Dynamic allocation, min ${p.MIN_MARGIN_PER_TRADE} | {p.MIN_POSITIONS}-{p.MAX_POSITIONS} positions")
         logger.info(f"   🎲 Leverage: {p.MIN_LEVERAGE}x-{p.MAX_LEVERAGE_NORMAL}x  (single mode — HP retired, C403-3)")
         logger.info(f"   📋 Limit Orders: {'ON' if p.USE_LIMIT_ORDERS else 'OFF'} | Maker {p.MAKER_FEE_PCT}% Taker {p.TAKER_FEE_PCT}%")
-        logger.info(f"   🎯 Day target: {p.PROFIT_TARGET_NORMAL_PCT + p.PROFIT_TARGET_HP_PCT:.3f}% "
-                    f"(one budget, governed by the day cap — no phase ladder)")
-        logger.info(f"   🛡️ Drawdown: Warn {p.SESSION_DRAWDOWN_WARN_PCT}% | Pause {p.SESSION_DRAWDOWN_PAUSE_PCT}% | Stop {p.SESSION_DRAWDOWN_STOP_PCT}% | Emergency {p.EMERGENCY_LOSS_PCT}%")
+        logger.info(f"   🎚️ Loss control: monthly risk dial {float(getattr(p, 'C380_MAX_MONTHLY_DD_PCT', 0) or 0):.0f}% "
+                    f"— today may lose 25% of what the month has left (C482)")
+        logger.info(f"   🛡️ Session drawdown breaker: "
+                    f"{'ON' if bool(getattr(p, 'C482_SESSION_BREAKER', False)) else 'off'} | Guardian: "
+                    f"{'acts' if bool(getattr(p, 'C482_GUARDIAN_ACT', False)) else 'report only'} (C482)")
         logger.info(f"   ⏱️ Prices {p.POSITION_CHECK_INTERVAL}s | DRI {float(getattr(p,'C397_DRI_REFRESH_SEC',20)):.0f}s "
                     f"| Summary {p.SUMMARY_INTERVAL}s | Min age {p.MIN_POSITION_AGE//60}min")
         logger.info(f"   🧠 Shared learning ON (Markov chains, calibration). "
@@ -19988,9 +19945,15 @@ class TradingBot:
                         _used_usd = max(0.0, _ds_eq - self.portfolio.equity)
                     _remaining_usd = max(0.10, _day_cap_usd - _used_usd)
                     _m_usd = max(getattr(pos, 'initial_margin', 1.0), 1.0)
-                    self.cfg._budget_stop_pct = -max(1.0, (_remaining_usd * 0.5) / _m_usd * 100.0)
+                    # C483: on the POSITION, not on the shared cfg. This is computed
+                    # from THIS position's margin, and two threads run this loop
+                    # (C258's own note), so a value parked on the one shared cfg
+                    # could be overwritten by another position's between the set
+                    # and the read below. The save/restore code always stored it
+                    # per position (pos._budget_stop_pct) -- nothing ever set it.
+                    pos._budget_stop_pct = -max(1.0, (_remaining_usd * 0.5) / _m_usd * 100.0)
                 except Exception:
-                    self.cfg._budget_stop_pct = None
+                    pos._budget_stop_pct = None
 
                 # Check DRI exit
                 # C258: CLOSING LATCH — two evaluators run concurrently (the 1s
@@ -24271,62 +24234,37 @@ class TradingBot:
             # over, identical to the cent. Derive always; announce only when the
             # numbers actually changed. A log that repeats itself trains the
             # reader to skim, which is how the stale HP line below survived.
-            _key406 = (round(p['equity'], 2), round(p['target_pct'], 4),
-                       round(p['cap_pct'], 4), round(p['per_trade_pct'], 4))
+            # C483: NOT BEFORE THE SAVED DIAL HAS LOADED. The first derivation runs
+            # inside __init__ on the Config default (20%), so on a resume the
+            # screen opened with "per-trade risk 0.455%" and only then the real
+            # 0.341% -- the operator's first line was wrong. The key is checked
+            # AFTER this, so the settled announcement is never suppressed by a
+            # provisional one that happened to match.
+            if not bool(getattr(self, '_c462_state_settled', False)):
+                return
+            _key406 = (round(p['equity'], 2), round(p['per_trade_pct'], 4),
+                       round(float(getattr(c, 'C380_MAX_MONTHLY_DD_PCT', 0) or 0), 2))
             if getattr(self, '_c406_budget_key', None) == _key406:
                 return
             self._c406_budget_key = _key406
-            # C462-3: the FIRST time this runs we are inside __init__, before
-            # load_state has read the saved equity off disk, so p['equity'] is
-            # the constructor default. It printed "@ $50.00" on an account
-            # holding $249.36 and every figure beneath it was wrong by the same
-            # 5x. Say so on the line itself rather than leaving the operator to
-            # discover it four screens later.
-            _boot462 = not bool(getattr(self, '_c462_state_settled', False))
-            logger.info(f"\U0001f4d0 C369 DAILY BUDGET @ ${p['equity']:.2f}"
-                        + (f"  [{self._c462_boot_budget_note()}]" if _boot462 else ""))
-            logger.info(f"   smallest orderable trade risks {p['min_orderable_pct']:.3f}% of equity"
-                        f"{'  <-- BINDING, day is one-trade' if p['binding'] else ''}")
-            # C406: the HP half of this sentence describes a phase ladder C403-3
-            # retired. One budget, one mode, governed by the day cap.
-            # ═══ C426-2: THIS IS A BARRIER, NOT A TARGET ═══════════════════
-            # THE OPERATOR ASKED WHETHER 0.4%/DAY IS RIGHT FOR 2-4%/MONTH. IT
-            # IS NOT A DAILY RETURN AND NEVER WAS -- it is the DAY-END BARRIER
-            # and it sits on BOTH sides. cap = declared monthly drawdown / 22,
-            # target := cap so break-even lands exactly at 50%. At the shipped
-            # C380_MAX_MONTHLY_DD_PCT = 20: cap 0.909%/day; expected daily
-            # (2p-1)*cap for a DAILY win rate p -> p=0.55 gives +2.02%/month,
-            # p=0.60 gives +4.08%. SO THE DRAWDOWN DIAL IS THE MONTHLY TARGET
-            # DIAL. The arithmetic is sound; the LABEL was not -- 0.91%/day
-            # beside the word "target" reads as a sum to be EARNED when the
-            # expected daily return for 2-4%/month is 0.066-0.131%/day, five to
-            # seven times smaller. ONE HONEST GAP: "+2%/month at 60% daily WR"
-            # assumes days TERMINATE at +/-cap; the three sessions reviewed
-            # ended ON THE CLOCK at +0.1%, +0.5% and +0.8%.
-            logger.info(f"   day-end barrier +/-{p['target_pct']:.2f}% "
-                        f"(= {float(getattr(c, 'C380_MAX_MONTHLY_DD_PCT', 20.0)):.0f}% declared "
-                        f"monthly drawdown / 22) \u2014 NOT a daily earnings goal; "
-                        f"expected daily return {0.20 * p['target_pct']:+.3f}% at a 60% "
-                        f"DAILY win rate \u2192 "
-                        f"{((1 + 0.20 * p['target_pct'] / 100) ** 22 - 1) * 100:+.2f}%/month [C426-2]")
-            logger.info(f"   target {p['target_pct']:.2f}%/day — ONE budget, single mode "
-                        f"(HP ladder retired, C403-3); day ends on the cap")
-            # C463-10: READ the payoff, do not assert it.
-            _po463b, _pn463b = self._c463_realised_payoff()
-            if _po463b:
-                _pay463 = (f"at the measured {_po463b:.2f} payoff "
-                           f"({_pn463b}W/{_pn463b}L in R) it is "
-                           f"{100.0 / (1.0 + _po463b):.0f}%, which is the number that matters")
-            else:
-                _pay463 = ("no R-denominated payoff measured yet, so the honest "
-                           "break-even is the 1:1 figure above and nothing better")
-            logger.info(f"   day cap {p['cap_pct']:.2f}%  |  per-trade risk {p['per_trade_pct']:.3f}%"
-                        f"  |  break-even WR {p['breakeven_wr']:.1f}% AT 1:1 PAYOFF — "
-                        f"{_pay463} [C406/C463-10]")
-            logger.info(f"   projected month: {p['month_50']:+.2f}% @50%WR  "
-                        f"{p['month_60']:+.2f}% @60%WR  {p['month_70']:+.2f}% @70%WR")
-            logger.info(f"   ceiling: even a PERFECT month cannot exceed "
-                        f"{((1+p['target_pct']/100)**22-1)*100:.2f}% at this target")
+            # C483: the C369/C426 prose described the retired symmetric day
+            # barrier ("day-end barrier +/-x%", months projected as if every day
+            # ended AT that barrier). C482 replaced it with one guard set by the
+            # monthly dial; this is what the operator's settings actually mean.
+            _dd483 = float(getattr(c, 'C380_MAX_MONTHLY_DD_PCT', 0) or 0)
+            _eq483 = float(p['equity'] or 0.0)
+            try:
+                _po483, _pn483 = self._c463_realised_payoff()
+            except Exception:
+                _po483, _pn483 = 0.0, 0
+            _be483 = (f"break-even win rate {100.0 / (1.0 + _po483):.0f}% at the measured "
+                      f"{_po483:.2f} payoff" if _po483 else
+                      "break-even win rate 50% at 1:1 until a payoff is measured")
+            logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
+                        f"${_eq483 * _dd483 / 100.0:.2f}/month  |  per-trade risk "
+                        f"{p['per_trade_pct']:.3f}% = ${_eq483 * p['per_trade_pct'] / 100.0:.2f}  |  {_be483} [C482]")
+            logger.info("   today's loss limit is 25% of what the month has left, fixed at midnight (C482)"
+                        + ("  |  the $5 minimum order BINDS at this size" if p['binding'] else ""))
         except Exception as e:
             logger.warning(f"C369 budget derivation failed, keeping defaults: {e}")
 
@@ -28693,7 +28631,7 @@ class TradingBot:
                         _atr_o = analysis.get('atr_pct', 1.0) or 1.0
                         _opp_stop = max(2.0 * _atr_o, 0.5)
                         _opp_rr = (_opp_tgt / _opp_stop) if _opp_stop > 0 else 0.0
-                        _macro_o = getattr(self, '_macro_dir', 0) or 0
+                        _macro_o = analysis.get('_macro_dir', 0) or 0   # C483: lived on analysis, never on the bot
                         _macro_ok = (_macro_o < -0.1) if _opp == 'short' else (_macro_o > 0.1)
                         logger.info(f"   📉 {symbol.split('/')[0]}: SEVERE absorption -- would-be "
                                    f"{_opp.upper()} tgt {_opp_tgt:.1f}% vs stop ~{_opp_stop:.1f}% = R:R {_opp_rr:.2f}"
@@ -29443,22 +29381,10 @@ class TradingBot:
             _pre_penalty_score = analysis['score']  # Save before any penalty
             analysis['_pre_penalty_score'] = _pre_penalty_score  # C129: for F60 quality-adaptive floor
             _pre_penalty_conf = analysis['confidence']
-            _total_penalty_mult = 1.0  # Track cumulative multiplier
             
-            def _apply_penalty(score_mult, conf_mult=None):
-                """Apply penalty with cap tracking."""
-                nonlocal _total_penalty_mult
-                if conf_mult is None:
-                    conf_mult = score_mult * 0.6 + 0.4  # Default: softer conf penalty
-                _new_mult = _total_penalty_mult * score_mult
-                if _new_mult < 0.45:  # Cap: preserve at least 45% of original
-                    # Compute what multiplier would hit the floor
-                    score_mult = max(score_mult, 0.45 / _total_penalty_mult)
-                    conf_mult = max(conf_mult, 0.50)
-                _total_penalty_mult *= score_mult
-                analysis['score'] *= score_mult
-                analysis['confidence'] *= conf_mult
-            
+            # C483: _apply_penalty (the C114 cap as a helper) removed -- it was
+            # never called. The cap it describes IS enforced, once, at the end of
+            # the cascade: score >= 45% of _pre_penalty_score (search "* 0.45").
             _h1_vel = getattr(self, '_h1_velocity', 0)
             _proposed_dir = analysis.get('direction', '')
             _dir_sign = 1 if _proposed_dir == 'long' else -1
@@ -34661,32 +34587,6 @@ class TradingBot:
                 _pc[symbol] = _pc.get(symbol, 0) + 1
             except Exception:
                 pass
-            # C282: eval-window odometer — every real entry is one tick; loud
-            # banner at #100 tells the operator to stop and upload. Atomic
-            # persist each tick (PairProfileStore pattern) so a mid-session
-            # restart never loses the count. Fully fail-safe: any error here
-            # can never touch the trade itself.
-            try:
-                self._eval_count = getattr(self, '_eval_count', 0) + 1
-                _ew282 = getattr(self, '_eval_window', 1)
-                logger.info(f"   🧮 EVAL TRADE #{self._eval_count}/100 (window W{_ew282})")
-                if self._eval_count >= 100:
-                    logger.info("🏁" * 20)
-                    logger.info(f"🏁 EVAL WINDOW W{_ew282} COMPLETE — 100 trades reached.")
-                    logger.info("🏁 STOP the bot after this trade closes and upload the "
-                               "session logs for the verdict (WR ≥55% AND payoff ≥1.2).")
-                    logger.info(f"🏁 Counter auto-resets: next window is W{_ew282 + 1}.")
-                    logger.info("🏁" * 20)
-                    self._eval_count = 0
-                    self._eval_window = _ew282 + 1
-                _tmp282 = self.cfg.EVAL_FILE + '.tmp'
-                with open(_tmp282, 'w') as _ef282:
-                    json.dump({'count': self._eval_count,
-                               'window': self._eval_window,
-                               'updated': time.time()}, _ef282)
-                os.replace(_tmp282, self.cfg.EVAL_FILE)
-            except Exception as _e282:
-                logger.debug(f"C282 eval counter skipped: {_e282}")
             logger.info(f"   Leverage: {leverage}x | Margin: ${margin:.2f} | "
                        f"Conf: {analysis['confidence']:.3f}")
             logger.info(f"   Strategy: {analysis.get('strategy', 'confluence')} | "
@@ -35110,7 +35010,20 @@ class TradingBot:
         logger.info("=" * 60)
         # Mode info
         if self.mode_mgr.mode == TradingMode.NORMAL:
-            pnl = self.mode_mgr.get_normal_pnl_pct(stats['live_equity'])
+            # ═══ C483: "DAY" MEANS THE DAY ═══════════════════════════════════
+            # This read get_normal_pnl_pct -- equity against normal_start_equity,
+            # which is set when NORMAL mode last started (a fresh start, days
+            # ago) -- and printed it as "Day". On 23 Sep it said "Day: +1.4%"
+            # to "+1.1%" all day while the real day went -$1.38 to -$2.17. It
+            # also still named the retired "barrier ±0.68%". Now it reads the
+            # day from the ONE loss control, realised, against the day anchor.
+            try:
+                _g483 = self._c482_risk_guard()
+                _d0483 = float(_g483.get('day0', 0.0) or 0.0)
+                pnl = (100.0 * float(_g483.get('day_pnl', 0.0) or 0.0) / _d0483) if _d0483 > 0 else 0.0
+            except Exception:
+                _g483 = {}
+                pnl = 0.0
             _dot = "🔵" if pnl >= 0 else "🔻"
             _cyc = getattr(self.mode_mgr, '_session_cycles', 0)
             _cyc_lbl = f" (Cycle {_cyc + 1})" if _cyc > 0 else ""
@@ -35125,9 +35038,12 @@ class TradingBot:
             # five to seven times smaller. A progress bar toward a barrier reads as
             # a shortfall and invites over-trading toward a number that was never a
             # goal.
-            logger.info(f"{_dot} Day{_cyc_lbl}: {pnl:+.1f}% "
-                    f"(barrier \u00b1{_fmt_pct(_n_tgt)}%, not a target — "
-                    f"expected {_fmt_pct(0.20 * float(_n_tgt or 0))}%/day) [C429-3]")
+            _cap483 = float(_g483.get('day_cap', 0.0) or 0.0)
+            _used483 = float(_g483.get('day_used', 0.0) or 0.0)
+            logger.info(f"{_dot} Day: {pnl:+.2f}% realised"
+                        + (f" (loss limit ${_cap483:.2f}, {100.0 * _used483 / _cap483:.0f}% used"
+                           f" \u00b7 dial {float(_g483.get('pct', 0) or 0):.0f}%/month)" if _cap483 > 0 else "")
+                        + " [C483]")
         elif self.mode_mgr.mode == TradingMode.HIGH_PROFIT:
             pnl = self.mode_mgr.get_hp_pnl_pct(stats['live_equity'])
             _news_sent = 0.0
@@ -35547,7 +35463,10 @@ class WebDashboard:
 
     def start(self):
         if not FLASK_AVAILABLE:
-            logger.warning("⚠️ Flask not available - web dashboard disabled")
+            # C483: this is the OLD Flask page. The real dashboard is the control
+            # panel on :8138. "web dashboard disabled" as a WARNING, on every
+            # boot, told the operator their working dashboard was off.
+            logger.info("   (legacy Flask page not installed — the dashboard is the control panel)")
             return
 
         self.app = Flask(__name__)
@@ -35981,19 +35900,14 @@ def startup():
                    * cfg.C369_REF_STOP) / cfg.INITIAL_CAPITAL * 100.0
             _cap = max(_mo, cfg.C380_MAX_MONTHLY_DD_PCT / 22.0)   # C380
             _tgt = _cap
-            _be = _cap / (_cap + _tgt) * 100.0
-            _m60 = ((1 + (0.60 * _tgt - 0.40 * _cap) / 100) ** 22 - 1) * 100
-            _m70 = ((1 + (0.70 * _tgt - 0.30 * _cap) / 100) ** 22 - 1) * 100
             _riskpc = max(_mo, _cap / 2.0)
-            _notional = cfg.INITIAL_CAPITAL * _riskpc / 100.0 / 0.04
-            print(f"  \U0001f4d0 at ${cfg.INITIAL_CAPITAL:.2f} with {cfg.C380_MAX_MONTHLY_DD_PCT:.0f}% "
-                  f"max drawdown: target {_tgt:.2f}%/day, cap {_cap:.2f}%, "
-                  f"break-even daily WR {_be:.0f}%")
-            print(f"     per trade: risk ${cfg.INITIAL_CAPITAL*_riskpc/100:.2f} "
-                  f"({_riskpc:.3f}%), typical notional ${_notional:.2f} "
-                  f"({_notional/cfg.INITIAL_CAPITAL*100:.1f}% of book) — "
-                  f"a 7% move pays ${_notional*0.07:.2f}")
-            print(f"     projected month: {_m60:+.2f}% @60% daily WR, {_m70:+.2f}% @70%")
+            _mon = cfg.INITIAL_CAPITAL * cfg.C380_MAX_MONTHLY_DD_PCT / 100.0
+            # C483: what the dial means under C482 -- not the retired "target
+            # x%/day, cap y%" and months projected as if every day ended at it.
+            print(f"  \U0001f4d0 at ${cfg.INITIAL_CAPITAL:.2f} with a {cfg.C380_MAX_MONTHLY_DD_PCT:.0f}% "
+                  f"monthly dial: the month may lose ${_mon:.2f}; the first day may lose "
+                  f"${0.25 * _mon:.2f} (25% of what the month has left)")
+            print(f"     per trade: risk ${cfg.INITIAL_CAPITAL*_riskpc/100:.2f} ({_riskpc:.3f}%)")
             if _mo > cfg.C369_CAP_RATIO * _tgt:
                 print(f"     \u26a0\ufe0f  the $5 minimum order binds at this size "
                       f"({_mo:.2f}% per trade) — one loss ends the day, and the")
@@ -36051,8 +35965,8 @@ def startup():
                 print(f"  \U0001f4d0 risk dial carried forward: max monthly drawdown "
                       f"{_ddnow397:.0f}%"
                       f"{' (restored from your last session)' if _restored397 is not None else ' (DEFAULT — not found in saved state)'}")
-                print(f"     that sets day cap {max(_ddnow397/22.0, 0.0):.2f}%, "
-                      f"per-trade risk {_ddnow397/44.0:.3f}%, target {_ddnow397/22.0:.2f}%/day")
+                print(f"     per-trade risk {_ddnow397/44.0:.3f}%; each day may lose 25% of what "
+                      f"the month has left (C482). Change it any time from the dashboard.")
                 while True:
                     # C482-B: NO env here. In headless mode the unit file's
                     # OMEGA_MAX_DD answered this prompt on EVERY restart, so any
@@ -36101,43 +36015,46 @@ def startup():
                                       getattr(cfg, 'C466_PALETTE', 'classic'))
                 _c462_report.header(_OMEGA_VERSION, 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                     bot.portfolio.equity,
-                                    day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
+                                    day_barrier=float(getattr(cfg, 'C380_MAX_MONTHLY_DD_PCT', 0.0) or 0.0))
                 print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
                       f"({_c462_report.W} cols, colour {_why466})")
                 print(f"     width: C462_LOG_WIDTH in Config (or OMEGA_LOG_WIDTH) "
                       f"· glyphs: C465_GLYPHS · colour: C466_COLOR")
             except Exception as _e462h:
                 print(f"  \u26a0\ufe0f  report header failed: {type(_e462h).__name__}")
-                # ═══ C463-6: THE RISK FRAME, AS A BLOCK ═══════════════════
-                # Replaces eleven wrapped rows of boot prose with eight rows an
-                # operator can read at a glance. The prose still prints, in
-                # full, to omega_detail_<ts>.log.
+            # C483: this block sat INSIDE the header's `except`, one indent too deep,
+            # so on a RESUME the risk frame printed only when the header FAILED --
+            # i.e. never on a normal restart. Dedented to run after the header.
+            # ═══ C463-6: THE RISK FRAME, AS A BLOCK ═══════════════════
+            # Replaces eleven wrapped rows of boot prose with eight rows an
+            # operator can read at a glance. The prose still prints, in
+            # full, to omega_detail_<ts>.log.
+            try:
+                _pl463 = dict(getattr(bot, '_c369_plan', {}) or {})
+                _pl463['dd_pct'] = float(getattr(cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0))
+                _pl463['max_trades'] = int(getattr(cfg, 'C404_HARD_TRADES_DAY',
+                                                   getattr(cfg, 'MAX_TRADES_PER_DAY', 4)))
+                _w463 = int(getattr(bot.portfolio, 'lifetime_wins', 0) or 0)
+                _l463 = int(getattr(bot.portfolio, 'lifetime_losses', 0) or 0)
+                # C463-10: the real sources. My first draft of this call
+                # reached for bot._c420_payoff and bot._c458_blended_edge,
+                # NEITHER OF WHICH EXISTS -- the wrong-object family again,
+                # and with getattr defaults it would have printed a fallback
+                # forever and looked fine. The edge comes from _c421_edge()
+                # and the payoff from _c463_realised_payoff().
+                _po463, _pn463 = bot._c463_realised_payoff()
                 try:
-                    _pl463 = dict(getattr(bot, '_c369_plan', {}) or {})
-                    _pl463['dd_pct'] = float(getattr(cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0))
-                    _pl463['max_trades'] = int(getattr(cfg, 'C404_HARD_TRADES_DAY',
-                                                       getattr(cfg, 'MAX_TRADES_PER_DAY', 4)))
-                    _w463 = int(getattr(bot.portfolio, 'lifetime_wins', 0) or 0)
-                    _l463 = int(getattr(bot.portfolio, 'lifetime_losses', 0) or 0)
-                    # C463-10: the real sources. My first draft of this call
-                    # reached for bot._c420_payoff and bot._c458_blended_edge,
-                    # NEITHER OF WHICH EXISTS -- the wrong-object family again,
-                    # and with getattr defaults it would have printed a fallback
-                    # forever and looked fine. The edge comes from _c421_edge()
-                    # and the payoff from _c463_realised_payoff().
-                    _po463, _pn463 = bot._c463_realised_payoff()
-                    try:
-                        _ed463, _ = bot._c421_edge(None)
-                    except Exception:
-                        _ed463 = None
-                    _c462_report.risk_frame(
-                        _pl463,
-                        edge=_ed463,
-                        markets=len(getattr(bot.exchange, 'markets', {}) or {}) or None,
-                        wr=(f"{_w463}W {_l463}L realised" if (_w463 + _l463) else None),
-                        payoff=_po463)
-                except Exception as _e463r:
-                    print(f"  \u26a0\ufe0f  risk frame failed: {type(_e463r).__name__}")
+                    _ed463, _ = bot._c421_edge(None)
+                except Exception:
+                    _ed463 = None
+                _c462_report.risk_frame(
+                    _pl463,
+                    edge=_ed463,
+                    markets=len(getattr(bot.exchange, 'markets', {}) or {}) or None,
+                    wr=(f"{_w463}W {_l463}L realised" if (_w463 + _l463) else None),
+                    payoff=_po463, guard=bot._c482_risk_guard())
+            except Exception as _e463r:
+                print(f"  \u26a0\ufe0f  risk frame failed: {type(_e463r).__name__}")
 
             # ═══ C458-9: REPLAY THE GAP BEFORE ANYTHING ELSE TOUCHES THESE ══
             # Runs FIRST, ahead of the stop re-arm, because a position whose
@@ -36204,7 +36121,7 @@ def startup():
                                   getattr(cfg, 'C466_PALETTE', 'classic'))
             _c462_report.header(_OMEGA_VERSION, 'PAPER' if cfg.PAPER_MODE else 'LIVE',
                                 bot.portfolio.equity,
-                                day_barrier=float(getattr(cfg, 'DAY_RISK_CAP_PCT', 0.0) or 0.0) * 100.0)
+                                day_barrier=float(getattr(cfg, 'C380_MAX_MONTHLY_DD_PCT', 0.0) or 0.0))
             print(f"  \U0001f4c8 report: {os.path.basename(_C462_REPORT_PATH)} "
                   f"({_c462_report.W} cols, colour {_why466})")
         except Exception:
@@ -36236,7 +36153,7 @@ def startup():
                 edge=_ed463,
                 markets=len(getattr(bot.exchange, 'markets', {}) or {}) or None,
                 wr=(f"{_w463}W {_l463}L realised" if (_w463 + _l463) else None),
-                payoff=_po463)
+                payoff=_po463, guard=bot._c482_risk_guard())
         except Exception as _e463r:
             print(f"  \u26a0\ufe0f  risk frame failed: {type(_e463r).__name__}")
 
@@ -36273,8 +36190,8 @@ def startup():
         #                          eval_window_v60.json, pair_profiles_v60.json,
         #                          learning_v60.json (_recent_trades)
         # Money and knowledge are different ledgers; only money starts over.
-        print("  \U0001f9e0 Knowledge files preserved (Markov chains, calibration, "
-              "eval window) — only money/session state reset [C403]")
+        print("  \U0001f9e0 Knowledge files preserved (Markov chains, calibration) "
+              "— only money/session state reset [C403]")
         print(f"  🆕 Fresh start: ${cfg.INITIAL_CAPITAL:.2f}")
 
     # Set mode start equity if not set
@@ -36609,7 +36526,10 @@ class RemoteControl:
                         # C151: clean label — was showing raw 'TradingMode.PAUSED'
                         mode = getattr(_m, 'value', str(_m)).upper()
                         pnl = round(eq - getattr(bot_ref.mode_mgr, 'session_start_equity', eq), 2)
-                        n_pos = len(getattr(bot_ref.portfolio.positions, '_positions', {}))
+                        # C483: was getattr(positions, '_positions', {}) -- a field that
+                        # does not exist (PositionsManager keeps self.positions), so
+                        # this was ALWAYS 0. Ask through the public method.
+                        n_pos = len(bot_ref.portfolio.positions.get_all())
                         wr = 0
                         if hasattr(bot_ref.portfolio, 'session_trades') and bot_ref.portfolio.session_trades > 0:
                             wr = round(bot_ref.portfolio.session_wins / bot_ref.portfolio.session_trades * 100)
@@ -36701,24 +36621,65 @@ class RemoteControl:
                         return {'error': str(e)}
                 
                 def _get_positions(self):
+                    """C483: THE PANEL HAS NEVER SHOWN A SINGLE OPEN POSITION.
+
+                    It read getattr(positions, '_positions', {}). PositionsManager
+                    keeps them in self.positions, so the getattr default -- an empty
+                    dict -- came back every time and the page said "none -- flat".
+                    On 23 Sep it said exactly that at 18:03 while the bot held three
+                    shorts worth $102 (40% of the book). The operator asked twice
+                    for open positions "at the top"; the deeper problem was that
+                    they were not shown ANYWHERE. Wrong-object family, via a
+                    getattr default, again.
+
+                    Two more defects were queued behind it and would have surfaced
+                    the moment the first was fixed: age was time.time() minus
+                    entry_time, which is a datetime (TypeError, so the whole call
+                    returned an error), and margin read pos.margin, which Position
+                    does not have (initial_margin is the field).
+
+                    It now asks through the public API and returns what the text
+                    report's table shows -- entry, mark, move, P&L, age, thesis --
+                    computed the SAME way, so the two views cannot disagree.
+                    """
                     try:
                         positions = []
-                        # C159: list() snapshot — dashboard daemon thread iterates
-                        # continuously while the trading thread closes positions →
-                        # 'dict changed size during iteration' (C158 log 08:23 crash).
-                        for sym, pos in list(getattr(bot_ref.portfolio.positions, '_positions', {}).items()):
-                            positions.append({
-                                'symbol': sym.split('/')[0],
-                                'side': getattr(pos, 'side', '?'),
-                                'entry': round(getattr(pos, 'entry_price', 0), 6),
-                                'margin': round(getattr(pos, 'margin', 0), 2),
-                                'leverage': getattr(pos, 'leverage', 0),
-                                'age_min': round((time.time() - getattr(pos, 'entry_time', time.time())) / 60, 1),
-                            })
+                        _cfg483 = getattr(bot_ref, 'cfg', None)
+                        _tk483 = float(getattr(_cfg483, 'TAKER_FEE_PCT', 0.06) or 0.06)
+                        for sym, pos in list(bot_ref.portfolio.positions.get_all().items()):
+                            row = {'symbol': sym.split('/')[0].replace(':USDT', ''),
+                                   'side': str(getattr(pos, 'side', '?')),
+                                   'leverage': int(getattr(pos, 'leverage', 1) or 1),
+                                   'margin': round(float(getattr(pos, 'initial_margin', 0.0) or 0.0), 2),
+                                   'entry': float(getattr(pos, 'entry_price', 0.0) or 0.0),
+                                   'mark': None, 'move_pct': None, 'pnl': None, 'age_min': None,
+                                   'thesis': None,
+                                   'banked': round(float(getattr(pos, '_partial_booked_pnl', 0.0) or 0.0), 2)}
+                            try:
+                                row['age_min'] = round(pos.get_age_seconds() / 60.0, 1)
+                            except Exception:
+                                pass
+                            try:
+                                px = bot_ref.exchange.get_current_price(sym)
+                                if px:
+                                    mv = pos.get_price_move_pct(px)
+                                    val = pos.size * pos.entry_price
+                                    net = ((mv / 100.0) * val
+                                           - float(getattr(pos, 'entry_fee', 0.0) or 0.0)
+                                           - (pos.size * px) * (_tk483 / 100.0))
+                                    row.update(mark=float(px), move_pct=round(mv, 2), pnl=round(net, 2))
+                            except Exception:
+                                pass
+                            try:
+                                u, _ = pos._c443_uei(_cfg483)
+                                row['thesis'] = round(100.0 * float(u))
+                            except Exception:
+                                pass
+                            positions.append(row)
                         return {'positions': positions}
                     except Exception as e:
-                        return {'error': str(e)}
-                
+                        return {'error': f"{type(e).__name__}: {e}"}
+
                 def _dashboard_html(self):
                     """C469: the panel the operator actually reads.
 
@@ -37024,11 +36985,22 @@ async function pull(){
     drawCurve(d.curve);
 
     var p=await (await fetch('/api/positions'+Q)).json();
-    if(p.positions&&p.positions.length){
-      var h='<table>';p.positions.forEach(function(x){
-        h+='<tr><td>'+x.symbol.split('/')[0]+' '+x.side.toUpperCase()+
-           '</td><td>$'+x.margin+' · '+x.leverage+'x · '+x.age_min+'m</td></tr>'});
-      q('pos').innerHTML=h+'</table>';
+    /* C483: two lines per position, the same facts as the report's table.
+       An error is SHOWN, never rendered as "flat" -- that is how the panel
+       said "none" for three weeks while positions were open. */
+    if(p.error){q('pos').innerHTML='<span class="'+cls(-1)+'">positions unavailable: '+p.error+'</span>'}
+    else if(p.positions&&p.positions.length){
+      var tot=0,h='';p.positions.forEach(function(x){
+        var pn=(x.pnl===null||x.pnl===undefined)?null:x.pnl;if(pn!==null)tot+=pn;
+        h+='<div style="margin:6px 0"><b>'+x.symbol+'</b> '+x.side.toUpperCase()+'  '+
+           (x.move_pct===null?'':'<span class="'+cls(x.move_pct)+'">'+(x.move_pct>0?'+':'')+x.move_pct.toFixed(2)+'%</span>  ')+
+           (pn===null?'':'<span class="'+cls(pn)+'">'+sgn(pn)+'</span>')+
+           (x.banked?'  <span class="muted">(+ banked '+sgn(x.banked)+')</span>':'')+
+           '<div class="s muted">'+x.entry+(x.mark?' → '+x.mark:'')+' · x'+x.leverage+' '+money(x.margin)+
+           (x.age_min===null?'':' · '+x.age_min+'m')+(x.thesis===null?'':' · thesis '+x.thesis+'% left')+'</div></div>';
+      });
+      q('pos').innerHTML='<div class="s">'+p.positions.length+' open · unrealised <span class="'+cls(tot)+'">'+
+        sgn(tot)+'</span></div>'+h;
     }else{q('pos').innerHTML='<span class="muted">none — flat</span>'}
   }catch(e){q('err').textContent='connection error: '+e}
 }
