@@ -1,6 +1,177 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🧪 2026-09-24 — C484 + C485: TWO VOTES THAT READ THE FUTURE, AND AN ENGINE DEAD SINCE C432
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C485 (includes C484).** What changes live:
+
+- **Two direction votes cast nothing now** (`tier_model`, `score_accel`). Both were
+  reading the trade direction before it existed. On the 129 trades on record, the
+  only one on a tier-1 coin was one ADA long, so the practical effect is small.
+- **N52 is repaired but OFF** (`C485_N52_LIVE = False`). OFF hands the scan the
+  exact dict production has run on since C432, so **no decision changes**. The
+  test proves the two dicts are equal.
+- **The session equity curve is the original one.** It is now visible from the
+  first seconds of a new session, restart or reset, instead of after ~25–30 min.
+
+---
+
+## 📈 C484 — THE ORIGINAL CURVE, VISIBLE AT ONCE
+
+A first attempt (a persisted per-minute curve, never shipped) was withdrawn at the
+operator's request: *"the equity curve showed properly after sometime — undo the
+changes & keep as before but available immediately after reset/restart/new
+session"*. The cause of the delay was a single line in the page: `drawCurve`
+**hid the chart until the report's list held 4 points**, and points arrive one
+per status block (~8 min). The report header already records the starting equity
+(after the saved balance has loaded, on both paths), so there is a point from
+second 0. Now: 0 points hidden, 1 point a flat line at the start equity ("1
+sample"), then exactly as before. Status payload, decimation (80) and look are
+unchanged. Verified: `omega_c484_curve_test.py` runs the page's own JS in node;
+its negative control shows the pre-C484 page hiding the curve at 1 and 3 points.
+The real bot was also booted headless and opened in Chromium, fresh and after a
+graceful restart (RESUMING): the curve was visible on the first page load both
+times, with no JS errors.
+
+---
+
+## ⛔ CORRECTION TO C483 "LEFT FOR THE OPERATOR" #1
+
+C483 said the Tier-1 macro boost "reads the market bias from itself; always 0".
+**That was the dead copy in `full_analysis()`** (its docstring says it never runs).
+The LIVE copy, `_compute_skill_components`, reads the bot's R correctly, **and has a
+different, worse defect.** It runs before `result['direction']` is set (that
+happens at the `avg_sig` line, ~300 lines later), so `_ds` was −1 on every call,
+and `tier_model` sits in the signed direction-vote list. What reached `avg_sig`:
+
+| coin | market R | vote | meaning |
+|---|---|---|---|
+| BTC ETH SOL BNB XRP DOGE ADA | > +0.20 | **−0.25** | a SHORT vote in a rising tape |
+| same | < −0.20 | **+0.20** | a LONG vote in a falling tape |
+| every other coin | any | +0.05 | a constant long nudge |
+
+The same wrong-time read sits in **`score_accel` (N49)**: "bulls winning AND
+accelerating" cast −0.20, a SHORT.
+
+> **→ Standing Rule 46: A VALUE READ BEFORE IT IS WRITTEN IS A CONSTANT.**
+> Anything computed from `result['direction']` before the direction line runs
+> sees 0, and a "0 means short" default turns it into a fixed bias. Check the
+> ORDER of reads, not only the object (Rule 43's wrong-object family has a
+> wrong-time sibling).
+
+**Measured before choosing** (`omega_c485_tier1_bench.py`): R is rebuilt exactly
+as the scan builds it (BTC+ETH, 50×15m, C71/C93/C110 weights; the ±0.10 C270
+equity tilt is not reproducible offline). When |R| > 0.20, score = sign(R) ×
+the coin's forward move. Four-way split: time (corpusO Feb–Jun / corpusL
+May–Sep) × pair halves. t uses day-clustered errors.
+
+| horizon | tier-1 mean | t | continuation splits+ | reversal splits+ |
+|---|---|---|---|---|
+| 60 min (the bot's hold) | −0.008 % | −0.90 | 1/4 | 3/4 (two cells 0.000) |
+| 120 min | −0.034 % | −1.96 | **0/4** | 4/4 |
+| 240 min | −0.026 % | −0.78 | 1/4 | 3/4 |
+| alts control, 120 min | −0.057 % | −2.78 | 0/4 | 4/4 |
+
+- **Backing the majors WITH the tape**, which is what the code was *meant* to do,
+  loses: 0 of 4 splits at 2h. The "obvious fix" would have made the bot worse.
+- **Fading the tape** (the accidental live vote) has no edge at the 60-min hold,
+  and at 2h it is below the 0.04 % fee line and short of |t| ≥ 2.
+- **Decision:** neither sign earns a vote, so both are 0.
+- `score_accel` needs the bot's own scan-to-scan component history, which no
+  corpus holds, so it cannot be tested. An untestable inverted vote does not trade.
+
+**⚠️ RESEARCH LEAD, NOT ACTED ON.** Across all 32 coins, strong-tape continuation
+fails at 2h (alts 0/4, t = −2.78). C394's trend tilt and the counter-trend gate
+both *assume* continuation. That assumption needs a **trade-level** test (entries,
+the real exits, fees) before either rule is touched. A sign test on raw moves is
+not enough evidence to change a gate.
+
+---
+
+## 💀 C485 — N52 HAS CRASHED ON EVERY CALL SINCE C432
+
+`compute_pressure_exhaustion` (N52: leg fuel, exhaustion X, next-candle forecast).
+C432-3 added the zero-ATR floor **inside the nested `_zig()`**:
+`atr_abs = max(...)`. Assigning a name anywhere in a function makes it local to
+that function, so `_zig`'s first line, `thr = atr_abs * rev_mult`, read an
+unbound local → `UnboundLocalError` → the outer `except Exception: pass` →
+the all-default dict (`dir 0, x 0, next_pct 0, vel 1, decel False`). Every pair,
+every scan, since C432. About 130 lines of the entry pipeline read those fields:
+the leg_exhausted block, the climax veto, fuel-low and burning-hot penalties, the
+reversal bonus, the C285/C287/C291/C296 releases, and every reader of the forecast.
+**Every live session on record ran without N52.** This also makes C483 item #2
+(the fading-volume leg) moot: it lives inside release paths whose blocks never fire.
+
+> **→ Standing Rule 47: AN OUTPUT THAT EQUALS ITS DEFAULTS ON EVERY CALL IS A
+> CRASH UNTIL SHOWN OTHERWISE.** A broad `except` turns an exception into a
+> plausible answer. Probe a computation with an input that must produce a
+> non-default reading.
+
+**Measured before choosing** (`omega_c485_n52_bench.py`): the engine was repaired
+(floor hoisted, same value) and run on 665,000 bars (32 coins × 7 months). Same
+split and t as above.
+
+| test | result | verdict |
+|---|---|---|
+| F — next-candle forecast, sign × next move (1 and 4 bars) | t = −0.46 / −0.25, 2/4 | **no information** |
+| B — leg_exhausted: blocked vs fresh continuation | kept − blocked +0.002 %, t = +0.13, 2/4 | **removes no worse trades** |
+| C — climax veto | blocked −0.035 % vs kept −0.009 %, t ≈ +0.7…+1.1, 2/4 | leans right, not reliable |
+| V — fading-volume leg on the C287 release set | 1/4 and 2/4, t ≈ −0.2 | **no value** |
+
+This agrees with the 158,444-observation refutation of the "already-travelled"
+family (C382). **Decision:** the crash is repaired, and the fixed shipped engine
+matches the bench exactly (420 values, 0 mismatches). The engine stays **OFF**
+behind `C485_N52_LIVE`. Turning it on changes ~130 readers at once, so it only
+happens after a new test.
+
+**New tool: `omega_unbound_local_sweep.py`.** It walks every function scope and
+flags a read of a name before its local binding. On this file it finds exactly one
+such bug, the N52 one, now 0. One loop case (`_price_cache` in
+`_display_summary`) is guarded by `'_price_cache' in dir()` and is safe.
+
+---
+
+## 🔁 RE-CHECK BEFORE SHIPPING (24 Sep, logs to 00:17 IST)
+
+- **Logs:** three sessions on 23 Sep: 06:54 C479 (6 longs, 0W 6L, −$1.29),
+  17:35 C482 (no closes), 18:37 C483 (running). **0 tracebacks, 0 ERROR lines.**
+  Every "failed" hit is trading text. The 18:36 stop was graceful, and the three
+  open shorts carried into the 18:37 session with their stops re-recorded. The
+  20 Sep session log was re-rotated by the pipeline; `.part01.log` holds the full
+  23,565 lines, so nothing was lost.
+- **The C483 session so far:** 7 closed, 6W 1L, +$3.34 realised (the report says
+  +$3.54 including the two open shorts). All shorts, in a falling tape. Lifetime
+  counter: 94 closes, +$6.13.
+- **Trade study, whole-idea accounting** (HALF + CLOSE before C482, CLOSE alone
+  from C482 on; the C483 split rows check out as whole-idea):
+
+| slice | n | W / L | win | payoff | net |
+|---|---|---|---|---|---|
+| all, 19–23 Sep | 129 | 44 / 85 | 34.1 % | 2.50 | **+$7.06** |
+| longs | 112 | 34 / 78 | 30.4 % | 2.69 | +$3.80 |
+| shorts | 17 | 10 / 7 | 58.8 % | 1.88 | +$3.26 |
+| split (reached the rung) | 41 | 40 / 1 | 97.6 % | — | +$29.80 |
+| never split | 88 | 4 / 84 | 4.5 % | — | −$22.74 |
+
+  The split/no-split rows are selected on the outcome (Rule 40: a trade is split
+  *because* it went green first), so they describe the exit geometry, not skill.
+  The whole profit is made by trades that reach the rung. Shorts look better per
+  trade, but n = 17, almost all in one falling tape, so this is confounded with
+  regime and not acted on.
+- **Sweeps:** unbound-local clean. The wrong-object and typed sweeps are
+  unchanged except for two dormant reads, adjudicated rather than assumed:
+  `Position` reads `_guardian_peak_mult`, which the Guardian writes on the bot (it
+  never arrives), but the Guardian has been report-only since C482, so it is never
+  written; `Position.cfg` is absent, but its fallback (True) equals Config (True).
+
+**Verified:** `omega_c484_curve_test.py` (11/11) and `omega_c485_test.py` (14/14),
+each with a negative control rebuilt from git; the full battery; headless boot
+(fresh and resume); Chromium render; syntax OK.
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-23 (night) — C483: THE DASHBOARD NEVER SHOWED A POSITION; A WHOLE-CODE AUDIT
 # ═══════════════════════════════════════════════════════════════════════════
 

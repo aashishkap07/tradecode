@@ -2079,7 +2079,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C483'
+_OMEGA_VERSION = 'C485'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -4196,6 +4196,12 @@ class Config:
         self.C482_HALT_NOTE_MIN     = 60     # while halted, one reminder per hour
         self.C482_GUARDIAN_ACT      = False  # Guardian may REPORT; it may not act
         self.C482_SESSION_BREAKER   = False  # the -3%/-5% session breaker, retired
+        # ═══ C485: THE N52 EXHAUSTION ENGINE STAYS OFF, ON PURPOSE ═══════════
+        # It had been crashing silently since C432 (every live session ran
+        # without it). Repaired, then measured on 7 months x 32 coins: none of
+        # its readings earned authority (Atlas C485). True turns it back on --
+        # ~130 entry-side readers change at once, so only after a new test.
+        self.C485_N52_LIVE          = False
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -10981,6 +10987,17 @@ class TechnicalAnalysis:
 
         return result
 
+    @staticmethod
+    def _n52_defaults():
+        """The engine's 'no reading' answer. C485: this is ALSO exactly what
+        production has run on since C432-3 (see compute_pressure_exhaustion),
+        so C485_N52_LIVE = False hands the scan this dict and every decision
+        stays what the live record was made of."""
+        return {'dir': 0, 'travel_atr': 0.0, 'cap_atr': 2.5, 'x': 0.0,
+                'dir2': 0, 'travel2': 0.0, 'cap2': 5.0, 'x2': 0.0,
+                'age': 0, 'age2': 0, 'vel': 1.0, 'last_body_dir': 0.0, 'decel': False,
+                'next_atr': 0.0, 'next_pct': 0.0, 'absorb': 0.0, 'n_legs': 0}
+
     def compute_pressure_exhaustion(self, closes, highs, lows, volumes, atr_pct):
         """C174-N52: RELATIVISTIC PRESSURE & EXHAUSTION ENGINE.
         User mandate: 'innovative relativistic ways to find buying/selling
@@ -11008,10 +11025,7 @@ class TechnicalAnalysis:
         euphoric during a blow-off; only travel-vs-capacity knows the tank.
         Returns dict: dir(+1/-1), travel_atr, cap_atr, x, next_atr, next_pct,
         absorb (signed against current body direction), n_legs."""
-        out = {'dir': 0, 'travel_atr': 0.0, 'cap_atr': 2.5, 'x': 0.0,
-               'dir2': 0, 'travel2': 0.0, 'cap2': 5.0, 'x2': 0.0,
-               'age': 0, 'age2': 0, 'vel': 1.0, 'last_body_dir': 0.0, 'decel': False,
-               'next_atr': 0.0, 'next_pct': 0.0, 'absorb': 0.0, 'n_legs': 0}
+        out = self._n52_defaults()
         try:
             n = len(closes)
             if n < 30 or atr_pct <= 0:
@@ -11022,6 +11036,13 @@ class TechnicalAnalysis:
             atr_abs = px * (atr_pct / 100.0)
             if atr_abs <= 0:
                 return out
+            # C432-3's zero-ATR floor (one basis point of price, RELATIVE so it
+            # means the same on BTC and on a micro-cap). C485: it used to sit
+            # INSIDE _zig() below, and assigning atr_abs there made the name
+            # local to _zig -- so _zig's first line read an unbound variable,
+            # raised UnboundLocalError on EVERY call, and the except below
+            # returned the defaults. N52 was inert from C432 until C485.
+            atr_abs = max(float(atr_abs or 0.0), abs(float(px)) * 1e-4)
             seg = c[-96:] if n > 96 else c
 
             # C174b: DUAL-SCALE zigzag. The local (1.0×ATR) scale reads the
@@ -11055,11 +11076,9 @@ class TechnicalAnalysis:
                 # universe and C430 widened to full depth. This risk did not
                 # exist when the code was crypto-only; the universe work created
                 # it and nothing guarded it.
-                # Floored RELATIVELY -- one basis point of the price itself, not
-                # an absolute epsilon -- so the guard means the same thing on a
-                # $78,000 instrument and a $0.0000038 one.
-                atr_abs = max(float(atr_abs or 0.0),
-                              abs(float(px)) * 1e-4) if px else max(float(atr_abs or 0.0), 1e-12)
+                # Floored RELATIVELY -- one basis point of the price itself.
+                # C485: the floor is applied ONCE, before _zig is defined; it
+                # must never be re-assigned in here (see the note above seg).
                 legs = [abs(piv[i+1] - piv[i]) / atr_abs for i in range(len(piv)-1)]
                 legs = [l for l in legs if l > 0.2 * rev_mult][-12:]
                 anchor = piv[-1] if piv else float(seg[0])
@@ -11384,8 +11403,18 @@ class TechnicalAnalysis:
                                abs(highs[i] - closes[i-1]),
                                abs(lows[i] - closes[i-1])) for i in range(-14, 0)]
                 _n52_atr_pct = float(np.mean(_n52_tr)) / max(_cur_price, 1e-12) * 100
-                _n52 = self.compute_pressure_exhaustion(
-                    closes, highs, lows, volumes, max(_n52_atr_pct, 0.05))
+                # C485: OFF by default -- measured, not assumed. With the crash
+                # repaired, omega_c485_n52_bench.py ran the engine on 665k bars:
+                # its forecast carries nothing (t=-0.46), leg_exhausted removes
+                # no worse trades than it keeps (t=+0.13), the climax veto and
+                # the fading-volume fuel check hold in only 1-2 of 4 splits.
+                # OFF hands the scan the same defaults production has always
+                # run on, so switching the repair in changes no decision.
+                if getattr(self.cfg, 'C485_N52_LIVE', False):
+                    _n52 = self.compute_pressure_exhaustion(
+                        closes, highs, lows, volumes, max(_n52_atr_pct, 0.05))
+                else:
+                    _n52 = self._n52_defaults()
                 result['_n52_x'] = round(_n52['x'], 2)
                 result['_n52_dir'] = _n52['dir']
                 result['_n52_travel'] = round(_n52['travel_atr'], 2)
@@ -13546,15 +13575,18 @@ class TechnicalAnalysis:
             result['components']['wavelet_multiscale'] = ws
         except: result['components']['wavelet_multiscale'] = 0
 
-        # N31: Three-tier model
-        _s = symbol.split('/')[0]; _t1 = {'BTC','ETH','SOL','BNB','XRP','DOGE','ADA'}
-        _bot = getattr(self, '_bot_ref', None)
-        _mr = getattr(_bot, '_market_bias_resultant', 0) if _bot else 0
-        _ds = 1 if result.get('direction')=='long' else -1
-        if _s in _t1:
-            result['components']['tier_model'] = 0.20 if _mr*_ds > 0.20 else (-0.25 if _mr*_ds < -0.20 else 0)
-        else:
-            result['components']['tier_model'] = 0.05
+        # N31: Three-tier model -- C485: NEUTRALISED.  This runs before
+        # result['direction'] is set, so the 'alignment' read dir as -1 on
+        # every call and the vote reaching avg_sig was a SHORT in a rising
+        # tape and a LONG in a falling one on the majors (the opposite of its
+        # design), plus a constant +0.05 long nudge on every other coin.
+        # omega_c485_tier1_bench.py: backing the majors WITH R loses (0/4
+        # splits at 2h); fading R shows no edge at the 60-min hold (t=-0.9,
+        # two of four splits at 0.000; 2/4 in strong tapes).  Neither sign
+        # earns a vote, so none is cast.  The key stays
+        # so the family table and displays read a defined 0.
+        _bot = getattr(self, '_bot_ref', None)   # read below by PCA (N42) and N49
+        result['components']['tier_model'] = 0.0
 
         # N32: O-U mean reversion
         try:
@@ -13767,13 +13799,16 @@ class TechnicalAnalysis:
                     if len(dsh)>5: dsh = dsh[-5:]
                     _bot._delta_slopes_history[symbol] = dsh
                     if len(dsh)>=2:
-                        dd = dsh[-1]-dsh[-2]; ds = 1 if result.get('direction','')=='long' else -1
-                        if dsl*ds>0 and dd*ds>0: sa=0.25
-                        elif dsl*ds>0: sa=0.10
-                        elif dsl*ds<0 and dd*ds<0: sa=-0.20
-                        elif dsl*ds<0: sa=-0.10
-                        else: sa=0
-                        result['components']['score_accel'] = sa
+                        # C485: NEUTRALISED.  Same wrong-time read as N31 --
+                        # result['direction'] is still 0 here, so ds was -1 on
+                        # every call and 'bulls winning AND accelerating' cast
+                        # a -0.20 SHORT vote.  The inputs need the bot's own
+                        # scan-to-scan component history, which no offline
+                        # corpus holds, so neither sign can be tested; an
+                        # untestable inverted vote does not trade.  dW/d2W are
+                        # still measured and kept on the result.
+                        dd = dsh[-1]-dsh[-2]
+                        result['components']['score_accel'] = 0.0
                         result['_dW'] = round(float(dsl),4); result['_d2W'] = round(float(dd),4)
                     else: result['components']['score_accel'] = 0
                 else: result['components']['score_accel'] = 0
@@ -36907,7 +36942,13 @@ async function pullLog(){
 }
 
 function drawCurve(c){
-  if(!c||c.length<4){q('curvewrap').hidden=true;return}
+  /* C484: shown from the session's FIRST point. It used to wait for 4, and
+     points arrive once per status block (~8 min), so after every restart,
+     reset or new session the chart stayed hidden for ~25-30 min. The header
+     records the starting equity, so there is always one point to draw. */
+  if(!c||!c.length){q('curvewrap').hidden=true;return}
+  var n=c.length;
+  if(n===1)c=[c[0],c[0]];               /* one point draws as a flat line */
   q('curvewrap').hidden=false;
   var lo=Math.min.apply(null,c), hi=Math.max.apply(null,c), r=hi-lo;
   if(r<1e-9){lo-=0.5;hi+=0.5;r=hi-lo}
@@ -36923,7 +36964,7 @@ function drawCurve(c){
     '<circle cx="'+pts[pts.length-1][0].toFixed(1)+'" cy="'+
     pts[pts.length-1][1].toFixed(1)+'" r="3.5" fill="var(--accent)"/>';
   q('curvelab').textContent='low '+money(Math.min.apply(null,c))+
-    '   high '+money(Math.max.apply(null,c))+'   '+c.length+' samples';
+    '   high '+money(Math.max.apply(null,c))+'   '+n+(n===1?' sample':' samples');
 }
 
 async function pull(){
