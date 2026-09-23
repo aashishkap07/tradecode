@@ -18,7 +18,10 @@ set -uo pipefail
 
 REPO="${OMEGA_HOME:-/home/omega/omega}"
 BRANCH="${OMEGA_LOG_BRANCH:-logs}"
-PUSH_DETAIL="${PUSH_DETAIL:-0}"
+# C480: ON by default. The detail log is where per-trade margin, conviction,
+# ATR and the drawdown-pause events live, and without it the archive cannot
+# answer why a position was sized the way it was. Set PUSH_DETAIL=0 to skip it.
+PUSH_DETAIL="${PUSH_DETAIL:-1}"
 TOKEN_FILE="${OMEGA_TOKEN_FILE:-/etc/omega.token}"
 
 # C474: cron has no terminal. Without this git BLOCKS forever on
@@ -234,17 +237,82 @@ if [ ! -e "$WT/.git" ]; then
 fi
 
 mkdir -p "$WT/logs"
+
+# ═══ C480: THE ARCHIVE MUST NEVER SHRINK ═════════════════════════
+# This script used to `cp -f` the live log over whatever was on the branch.
+# That is correct only while a log file GROWS. logrotate runs `copytruncate`
+# DAILY on omega_session_* and omega_detail_*: it copies the file aside and
+# then truncates the original to ZERO BYTES. The next run of this script then
+# faithfully mirrored those zero bytes over the good copy on GitHub.
+#
+# MEASURED, not hypothetical: omega_session_20260919_003314.log was 90,149
+# bytes on the branch and became 0. All thirteen 19-Sep session logs were
+# destroyed the same way -- 323 KB of the only decision record for that day.
+# They were recoverable only because an older fetch still sat in a local
+# object store, and the branch is force-pushed, so its history could not help.
+#
+# Two rules now, and between them nothing can be lost:
+#   1. a file may only be overwritten by one AT LEAST AS LARGE. A smaller
+#      source means the live file was rotated, so the archived copy is
+#      preserved under a .partNN. name FIRST and the new (restarted) file is
+#      then stored alongside it.
+#   2. the rotated files logrotate leaves behind (.log.1, .log.N.gz) are
+#      pushed too, so the content that was moved aside also reaches GitHub.
+keep() {
+    # keep <source-file> -> copies into $WT/logs, never destroying bytes
+    local src="$1" base dst ssz dsz n
+    base="$(basename "$src")"
+    dst="$WT/logs/$base"
+    if [ ! -e "$dst" ]; then
+        cp -f "$src" "$dst" && copied=$((copied+1))
+        return
+    fi
+    ssz=$(stat -c %s "$src" 2>/dev/null || echo 0)
+    dsz=$(stat -c %s "$dst" 2>/dev/null || echo 0)
+    if [ "$ssz" -ge "$dsz" ]; then
+        cp -f "$src" "$dst" && copied=$((copied+1))
+        return
+    fi
+    # Source is SMALLER: the live file was rotated out from under us.
+    # Park what we already have before taking the new, shorter file.
+    n=1
+    while [ -e "$WT/logs/${base%.log}.part$(printf '%02d' $n).log" ]; do
+        n=$((n+1))
+        [ "$n" -gt 99 ] && { warn "too many parts for $base -- not overwriting"; return; }
+    done
+    mv "$dst" "$WT/logs/${base%.log}.part$(printf '%02d' $n).log"
+    logger -t omega-logpush "$base shrank ${dsz}->${ssz} (logrotate); preserved as part$(printf '%02d' $n)"
+    cp -f "$src" "$dst" && copied=$((copied+2))
+}
+
 copied=0
 for f in "$REPO"/omega_report_*.log "$REPO"/omega_session_*.log; do
     [ -e "$f" ] || continue
-    cp -f "$f" "$WT/logs/" && copied=$((copied+1))
+    keep "$f"
 done
 if [ "$PUSH_DETAIL" = "1" ]; then
+    # The detail log is the ONLY place per-trade sizing, margin, conviction and
+    # the drawdown-pause events are recorded, and none of it was reaching the
+    # archive -- which is why three separate questions about this bot's
+    # behaviour could not be answered from the pushed data.
+    #
+    # Stored UNCOMPRESSED on purpose. It is an append-only text file pushed
+    # once an hour, so git delta-compresses each new version against the last
+    # and stores only the lines that were added. Gzipping it first would defeat
+    # that completely: every hour would become a fresh incompressible blob.
     for f in "$REPO"/omega_detail_*.log; do
         [ -e "$f" ] || continue
-        cp -f "$f" "$WT/logs/" && copied=$((copied+1))
+        keep "$f"
     done
 fi
+# C480 rule 2: whatever logrotate moved aside.
+for f in "$REPO"/omega_*.log.1 "$REPO"/omega_*.log.*.gz; do
+    [ -e "$f" ] || continue
+    case "$f" in *.gz) cp -f "$f" "$WT/logs/$(basename "$f")" ;;
+                  *)   gzip -c "$f" > "$WT/logs/$(basename "$f").gz" ;;
+    esac
+    copied=$((copied+1))
+done
 for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done

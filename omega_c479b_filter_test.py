@@ -109,7 +109,12 @@ ok("a named decision still passes at INFO",
 
 # replay a real detail log: the suppression rate must not collapse
 import glob
-det = sorted(glob.glob('/home/user/tradecode/omega_detail_*.log'))
+# A live detail log if one happens to be on disk; otherwise the RECOVERED 19-Sep
+# session logs, which are committed and are real bot output. A fixture that only
+# exists after a manual run makes this check vanish silently (Rule 23).
+det = sorted(glob.glob('/home/user/tradecode/omega_detail_*.log')) \
+      or sorted(glob.glob('/home/user/tradecode/recovered_logs/*/omega_session_*.log'),
+                key=lambda p: -os.path.getsize(p))
 if det:
     lines = io.open(det[-1], encoding='utf-8', errors='replace').read().splitlines()
     body = [l.split('|', 1)[1].strip() for l in lines if '|' in l]

@@ -96,9 +96,15 @@ fi
 echo
 echo "6. NEGATIVE CONTROL: THE PREVIOUS WATCHDOG MUST FAIL THIS"
 OLD="$WORK/old-watchdog.sh"
-if git show HEAD:deploy/omega-watchdog.sh > "$OLD" 2>/dev/null && [ -s "$OLD" ]; then
+# Pin this to the commit BEFORE C479 touched the watchdog, not to HEAD. Once
+# C479 is committed HEAD *is* the fixed version, and a negative control that
+# reads HEAD quietly stops being a control -- it just fails forever, which is
+# how a test earns being ignored (Rule 23).
+INTRO="$(git log --format=%H -S 'C479' -- deploy/omega-watchdog.sh | tail -1)"
+PREV="$(git rev-parse "${INTRO}^" 2>/dev/null || echo '')"
+if [ -n "$PREV" ] && git show "$PREV:deploy/omega-watchdog.sh" > "$OLD" 2>/dev/null && [ -s "$OLD" ]; then
     if grep -q 'C479' "$OLD"; then
-        echo "  FAIL  HEAD already contains C479 -- this test can no longer fail"; FAIL=$((FAIL+1))
+        echo "  FAIL  $PREV still contains C479 -- the control is not pre-C479"; FAIL=$((FAIL+1))
     else
         ok "pre-C479 restarts the healthy bot (the bug)" \
            "$(run_case $OLD '' 60)" "RESTARTED"

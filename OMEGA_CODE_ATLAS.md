@@ -1,6 +1,217 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 💰 2026-09-23 — 116 TRADES: THE DIRECTION CALLS WON AND THE SIZING LOST
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C480.** Branch `claude/trading-system-analysis-tsvzj4`.
+Three days of continuous running, **116 closed trades** (35 on 19 Sep, 81 in one
+67-hour session 20→23 Sep). Net **−$7.04**. No trading logic changed this pass.
+
+---
+
+## 🔴 THE FINDING: THE BOT IS RIGHT ABOUT DIRECTION AND WRONG ABOUT SIZE
+
+One line, and it needs no model of anything:
+
+| | |
+|---|---|
+| sum of the raw % moves over 113 priced trades | **+40.92%** |
+| fees at 0.08% round trip | −9.04% |
+| so **any equal-sized book** earns | **+31.88% of one position** |
+| what the bot actually made | **−$7.04** |
+
+The percentages won. The money lost. **Only position sizing sits between those
+two numbers.**
+
+### Sized equally, the same trades make money
+
+Same 116 trades, same moves, same fees, every position the same size:
+
+| | net |
+|---|---|
+| actual | **−$7.04** |
+| every trade at the median $23 | **+$7.25** |
+| every trade at the mean $26 | **+$8.24** |
+
+A **$14.29 swing** on identical trades. The win rate is unchanged at 33.6% —
+nothing about selection improves. Only the money.
+
+### It is worse than random, and that is measured
+
+Permutation test: take the same position sizes and the same moves and re-pair
+them at random, 20,000 times.
+
+| | |
+|---|---|
+| actual net (the bot's own pairing) | **−$7.04** |
+| random pairing, mean | **+$8.16** |
+| random pairings at least as bad | **21 / 20,000 → p = 0.0010** |
+
+> **The bot's own size-to-trade assignment is worse than 99.9% of random
+> assignments.** Spearman ρ(size, move) = **−0.209**, p = 0.0135.
+
+**Checked against the obvious artefact.** Size here is derived as
+`N = pnl/(move/100 − F)`, so a small-move trade mechanically gets a big N and a
+negative pnl. Cutting the small moves out kills that artefact — and the effect
+survives every cut:
+
+| filter | n | actual | random mean | p |
+|---|---|---|---|---|
+| all | 113 | −$7.04 | +$8.23 | 0.0010 |
+| \|move\| ≥ 0.5% | 83 | −$5.24 | +$9.29 | 0.0011 |
+| \|move\| ≥ 1.0% | 64 | −$2.75 | +$8.93 | 0.0024 |
+| \|move\| ≥ 1.5% | 40 | +$3.30 | +$9.91 | 0.0152 |
+| \|move\| ≥ 2.0% | 28 | +$3.19 | +$8.77 | 0.0111 |
+
+### The shape of it: size buys no upside and all of the downside
+
+| size bucket | n | notional | win% | avg WIN | avg LOSS | net |
+|---|---|---|---|---|---|---|
+| smallest 25% | 28 | $8.1 | **53.6%** | +$0.356 | −$0.102 | **+$4.01** |
+| 2nd | 28 | $18.0 | 39.3% | +$0.395 | −$0.228 | +$0.47 |
+| 3rd | 28 | $26.5 | 28.6% | +$0.525 | −$0.286 | −$1.52 |
+| largest 25% | 29 | $50.0 | **13.8%** | +$0.305 | **−$0.449** | **−$10.00** |
+
+**The average WIN is flat across all four buckets** ($0.31–$0.53). **The average
+LOSS grows 4.4×.** Size is buying nothing on the upside and paying in full on
+the downside.
+
+### And the stated risk budget is not being honoured
+
+The dashboard prints `RISK 0.341% = $0.85/trade` to the operator. What the 18
+hard stops actually risked:
+
+| min | p25 | median | p75 | max |
+|---|---|---|---|---|
+| $0.09 | $0.27 | **$0.48** | $0.72 | **$1.61** |
+
+**A 19× spread against a budget that is displayed as a single number.** A
+risk-parity book would show every one of these at ~$0.85.
+
+> **→ Standing Rule 37: WHEN THE PERCENTAGES WIN AND THE MONEY LOSES, THE FAULT
+> IS IN THE SIZING, NOT THE SIGNAL.** Win rate, payoff and expectancy are all
+> computed per trade and are all blind to how much was on each one. A book can
+> have a positive edge in every one of them and still lose, and no per-trade
+> statistic will ever say so.
+
+> **→ Standing Rule 38: A RISK BUDGET THAT IS DISPLAYED BUT NEVER MEASURED IS
+> NOT A BUDGET.** `$0.85/trade` was on screen for three days while the real
+> figure ranged 19×. Nothing compared the two, so nothing could notice.
+
+### C385 predicted this and deferred it
+
+C385 wrote: *"volatility reaches position size through TWO paths — `_vol_adj =
+clamp(1/ATR, 0.55, 1.30)` in the Kelly allocator and `margin = risk/(2*ATR)` in
+the risk fit — which compounds to a **6.75x notional preference for a 0.7% ATR
+pair over a 2% one** where risk parity alone would give 2.9x… calm pairs went
+**0-for-4**… **Re-measure once a clean session exists.**"*
+
+This is that re-measurement. The 0-for-4 is now **4-for-29, −$10.00**, and the
+largest-size bucket is exactly the calm-pair bucket (median \|move\| 0.70% vs
+1.72% in the smallest). **C385's deferred concern replicates at n=116.**
+
+One correction to C385's reading: `_vol_adj` reads `_avg_atr_for_alloc`, the
+**basket** average, so it is the same multiplier for every candidate in a scan
+and cannot produce per-trade dispersion. The dispersion comes from further down
+the chain, and **the pushed logs cannot say where** — see below.
+
+---
+
+## 🧨 C480 — THE LOG PIPELINE WAS DESTROYING ITS OWN ARCHIVE
+
+`logrotate` runs `copytruncate` **daily** on `omega_session_*` and
+`omega_detail_*`: it copies the file aside and truncates the original to **zero
+bytes**. `omega-logpush.sh` then `cp -f`'d those zero bytes over the good copy
+on GitHub.
+
+**Measured:** `omega_session_20260919_003314.log` was **90,149 bytes** on the
+branch and is now **0**. All thirteen 19-Sep session logs went the same way —
+**323 KB, the only decision record for that day.** The branch carries a single
+commit, so its history could not help either.
+
+Recovered only because an earlier `git fetch` had left the old commit in this
+clone's object store. **That is luck, not a backup.** All 13 files are restored
+under `recovered_logs/20260919/`.
+
+> **→ Standing Rule 39: AN ARCHIVE THAT CAN SHRINK IS NOT AN ARCHIVE.** A
+> mirror faithfully reproduces a deletion. Two tools each correct alone —
+> logrotate truncates in place, logpush mirrors current state — combined to
+> delete the record neither was told to protect.
+
+**The fix.** A file may only be overwritten by one **at least as large**; a
+smaller source means rotation, so the archived copy is preserved as
+`.partNN.log` first and the restarted file is stored beside it. The rotated
+`.log.1` / `.gz` files are pushed too. Detail logs are now pushed by default,
+**uncompressed** — they are append-only text pushed hourly, so git deltas only
+the new lines; gzipping first would make every hour a fresh incompressible blob.
+
+Covered by `omega_c480_logpush_test.sh` (10 checks) including a negative control
+that proves the old `cp -f` destroys the data.
+
+---
+
+## ❓ WHAT THIS ANALYSIS COULD NOT ANSWER, AND WHY
+
+Three separate questions died on the same missing file — the detail log, which
+was never pushed:
+
+1. **Which cap produced each position size.** The sizing chain prints
+   `Kelly-Conv-Vol: base=… conv=… vol_adj=…(atr=…) → max=$…` and the per-trade
+   margin, only to the detail log. Without it the *mechanism* behind the −0.209
+   correlation is inference, not measurement.
+2. **How often the drawdown pause fires, and what it costs.** Zero events
+   appear in the pushed logs; the operator photographed one on 21 Sep.
+3. **The C464 information overlay's live A/B ledger.**
+
+This is why C480 turns detail pushing on. **The next three days will be able to
+answer all three.**
+
+---
+
+## 📉 THE EXIT LEDGER (116 trades)
+
+| exit | n | win% | net | avg |
+|---|---|---|---|---|
+| **C377_RISK_STOP** | 18 | 0% | **−$9.50** | −$0.528 |
+| C399_CONVICTION_COLL | 14 | 0% | −$2.73 | −$0.195 |
+| C399_CONVICTION_FADI | 7 | 0% | −$2.52 | −$0.360 |
+| PEAK_FLOOR | 19 | 10.5% | −$1.95 | −$0.103 |
+| TRAILING_TP | 21 | 100% | +$5.28 | +$0.251 |
+| EARLY_PEAK_CAPTURE | 8 | 100% | +$4.61 | +$0.576 |
+| PEAK_REVERSAL | 7 | 57.1% | +$3.77 | +$0.539 |
+
+**The 18 hard stops cost more than the entire net loss.** Without them the book
+is **+$2.46**. That is *not* an argument for removing the stop — it is where the
+sizing defect lands, because a stop is the one exit whose cost is set directly
+by position size.
+
+**Direction was not the problem.** 106 LONG / 10 SHORT, against a market the bot
+read as positively biased in **80% of 362 readings** (mean bias +0.280). The
+long tilt matched the tape.
+
+---
+
+## 🚧 NOT SHIPPED — THE SIZING FIX NEEDS THE OPERATOR'S CALL
+
+No sizing change ships on this pass. Two reasons, and only one of them is
+caution:
+
+1. The **mechanism** is not yet located (see above) — the detail log was not
+   being kept. Changing a chain whose binding constraint is unidentified is how
+   C420-1 happened.
+2. Standing Rule 32: three days agreeing is a reason to measure, not to ship.
+
+**But note the asymmetry.** This is not an edge claim needing a four-way
+out-of-sample harness. The bot *states* a per-trade risk of $0.85 and does not
+honour it. Bringing a control into line with its own displayed contract is a
+defect fix, like C377's guaranteed R — it needs a regression harness, not an
+edge harness.
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🎯 2026-09-19 — THE FIRST REAL SAMPLE: 31 TRADES, AND WHERE THE MONEY GOES
 # ═══════════════════════════════════════════════════════════════════════════
 
