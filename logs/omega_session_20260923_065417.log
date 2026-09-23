@@ -1307,3 +1307,134 @@
     late_leg_no_forward=1, poor_reward_risk=1, vol_floor=1
 14:16:39 |    📌 Nearest miss: ATH score=0.648 (pre-pen 0.76) conf=0.698 quality=0.452/0.26
     reason=vol_floor
+  .. 14:21  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  69 analysed
+14:21:42 | ⊥ C97 TF-CONFLICT: 1h=+0.23×4h=-0.89=d14=-0.20 — only shorts allowed (4h dominant)
+14:27:03 |    🪞 C266 board-parity (top movers vs screen): BCH +32%[#5] | MET +30%[#30] | SUPER
+    +29%[#38] | ZEST +25%[Live=0.18<cut] | CHR +24%[#47]
+14:27:04 | ⊥ C97 TF-CONFLICT: 1h=+0.23×4h=-0.89=d14=-0.20 — only shorts allowed (4h dominant)
+14:27:23 | 📊 Step 3 result: 2 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=24,
+    low_score=29, mtf_disagree=1, flat_projection=7, late_leg_no_forward=2, no_structural_room=1,
+    proj_confirms_trend=2, capitulation=1, vol_floor=1, poor_reward_risk=1
+14:27:23 |    📌 Nearest miss: MUBARAK score=0.221 conf=0.487 quality=0.108/0.26 reason=late-leg
+    F=-0.07
+  .. 14:29  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  2 analysed
+14:32:50 |    🎢→⚖️ UNI: C292 stands down — parabola BROKEN (range 20×ATR, 5.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:32:57 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 10×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:33:35 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 23×ATR, 9.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:33:42 |    ⚖️ C462-7 SPX: penalties 0.51→0.38 (×0.75) vs bar 0.39 — the stack decided
+14:33:44 |    🎢→⚖️ UAI: C292 stands down — parabola BROKEN (range 14×ATR, 4.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:33:49 |    🎢→⚖️ US: C292 stands down — parabola BROKEN (range 22×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:33:49 |    ⚖️ C462-7 US: penalties 0.41→0.25 (×0.60) vs bar 0.39 — the stack decided
+14:33:52 |    ⚖️ C462-7 CHZ: penalties 0.42→0.25 (×0.60) vs bar 0.37 — the stack decided
+14:33:53 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=8, low_score=28,
+    ct_noisy_block=16, flat_projection=8, capitulation=3, low_agreement=1, post_penalty_low=1,
+    no_structural_room=1, post_penalty_quality=1, final_gate=1, absorption_at_extreme=1
+14:33:53 |    📌 Nearest miss: ENA score=0.414 (pre-pen 0.46) conf=0.718 quality=0.297/0.26
+    reason=low_agreement 48%<53%
+ 
+ 
+  14:37  up 7h42m  scan 65 -----------------------------------------------------------------------
+  EQUITY    $252.81
+  SESSION   $-1.29 -0.51%  peak $254.10  dd 0.51%
+  CURVE     *++===========---------------=----------------------------------
+  DAY       real $-2.17  loss room $1.65 (0.65%)  132% used  vol x0.95  trust x1.00
+            ##########################
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.22/tr  best $-0.01  worst $-0.50
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  OPEN      flat  free $252.81
+  FEES      $0.05  mk5/tk6  0.018% of eq
+  SCAN      802 > 69 > 0 passed  top ENA 0.41 (low_agreement 48%<)  65 scans, 2564 analysed
+  MARKET    TRENDING  bias -0.35  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.52  FORM +0.51  XRP +0.50  ADA +0.38
+  INFO      1 tilted  flow/fund/news/oi on 181
+            info>0 3tr $-0.19 win 0%  info≤0 2tr $-0.11 win 0%
+  MOVERS    BCH +32% #5  MET +30% #30  SUPER +29% #38  ZEST +25% cut
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+14:39:00 |    🪞 C266 board-parity (top movers vs screen): MET +33%[#27] | BCH +32%[#5] | SUPER
+    +30%[#38] | NIL +28%[Live=0.55<cut] | ZEST +27%[#49]
+14:39:22 |    🎢→⚖️ TUT: C292 stands down — parabola BROKEN (range 11×ATR, 3.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:39:24 |    ⚖️ C462-7 XPL: penalties 0.41→0.19 (×0.46) vs bar 0.37 — the stack decided
+14:39:35 |    ⚖️ C462-7 MON: penalties 0.44→0.27 (×0.60) vs bar 0.37 — the stack decided
+14:39:36 | 📊 Step 3 result: 19 analyzed (+51 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=26, ct_noisy_block=15, flat_projection=8, capitulation=6, low_agreement=1,
+    post_penalty_low=1, no_structural_room=1, post_penalty_quality=2, proj_confirms_trend=2,
+    final_gate=1, absorption_at_extreme=1, leg_exhausted=1
+14:39:36 |    📌 Nearest miss: FORM score=0.637 conf=0.678 quality=0.432/0.26
+    reason=post_penalty_quality
+  .. 14:45  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  19 analysed
+14:50:02 |    🪞 C266 board-parity (top movers vs screen): MET +36%[#27] | BCH +32%[#5] | SUPER
+    +31%[#39] | NIL +27%[Live=0.34<cut] | CHR +27%[Live=0.41<cut]
+14:50:23 |    🎢→⚖️ UNI: C292 stands down — parabola BROKEN (range 19×ATR, 5.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:50:32 |    ⚖️ C462-7 TRUMP: penalties 0.52→0.36 (×0.70) vs bar 0.40 — the stack decided
+14:50:49 |    ⚖️ C462-7 KERNEL: penalties 0.43→0.36 (×0.84) vs bar 0.39 — the stack decided
+14:50:51 |    ⚖️ C462-7 SUPER: penalties 0.87→0.32 (×0.36) vs bar 0.72 — the stack decided
+14:51:06 |    ⚖️ C462-7 FLOCK: penalties 0.57→0.25 (×0.45) vs bar 0.39 — the stack decided
+14:51:16 |    🎢→⚖️ US: C292 stands down — parabola BROKEN (range 22×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:51:20 | 📊 Step 3 result: 70 analyzed → 1 viable → Step 4 DRI/DSI
+14:51:22 |    🎲 C378 odds-size: orderliness 0.17 -> risk x0.80 ($0.691)
+  .. 14:53  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  70 analysed
+14:56:37 |    ⚖️ C462-7 HBAR: penalties 0.64→0.35 (×0.55) vs bar 0.40 — the stack decided
+14:56:37 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=15,
+    low_score=19, ct_noisy_block=17, proj_confirms_trend=1, flat_projection=9, no_structural_room=3,
+    low_agreement=1, poor_reward_risk=1, final_gate=2, low_quality=1, post_penalty_low=1
+14:56:37 |    📌 Nearest miss: HBAR score=0.354 (pre-pen 0.64) conf=0.632 quality=0.224/0.26
+    reason=score 0.354 < 0.396
+  .. 15:01  flat  $252.81  $-1.29 -0.51%  0W 6L 0%  1 analysed
+15:01:45 |    🪞 C266 board-parity (top movers vs screen): MET +36%[#23] | BCH +34%[#5] | SUPER
+    +29%[#39] | CHR +28%[Live=0.40<cut] | ZEST +28%[#49]
+15:02:07 |    🎢→⚖️ UNI: C292 stands down — parabola BROKEN (range 21×ATR, 5.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+15:02:15 |    ⚖️ C462-7 TRUMP: penalties 0.54→0.37 (×0.68) vs bar 0.40 — the stack decided
+15:02:36 |    ⚖️ C462-7 SUPER: penalties 0.86→0.62 (×0.72) vs bar 0.72 — the stack decided
+15:02:50 |    ⚖️ C462-7 FLOCK: penalties 0.49→0.22 (×0.45) vs bar 0.37 — the stack decided
+15:03:00 |    ⚖️ C462-7 CAKE: penalties 0.45→0.20 (×0.45) vs bar 0.40 — the stack decided
+15:03:09 |    ⚖️ C462-7 HBAR: penalties 0.52→0.31 (×0.60) vs bar 0.37 — the stack decided
+15:03:09 | 📊 Step 3 result: 71 analyzed → 1 viable → Step 4 DRI/DSI
+15:03:10 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.671)
+15:08:31 | 📊 Step 3 result: 1 analyzed (+70 cached) → 1 viable → Step 4 DRI/DSI
+15:08:33 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.671)
+ 
+ 
+  15:09  up 8h14m  scan 70 -----------------------------------------------------------------------
+  EQUITY    $252.81
+  SESSION   $-1.29 -0.51%  peak $254.10  dd 0.51%
+  CURVE     *++=============-=============--------------------------------------
+  DAY       real $-2.17  loss room $1.93 (0.76%)  112% used  vol x1.11  trust x1.00
+            ##########################
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.22/tr  best $-0.01  worst $-0.50
+  LIFETIME  87tr 25W 62L 29%  $+2.81
+  OPEN      flat  free $252.81
+  FEES      $0.05  mk5/tk6  0.018% of eq
+  SCAN      802 > 1 > 1 passed  top FARTCOIN 0.50 (viable)  70 scans, 2726 analysed
+  MARKET    TRENDING  bias -0.28  breadth +0.03  taker flow -0.14
+  NEWS      65 articles  + tone +0.30  ONDO +0.50  BNB +0.40  XRP +0.38
+  INFO      1 tilted  flow/fund/news/oi on 184
+            info>0 3tr $-0.19 win 0%  info≤0 2tr $-0.11 win 0%
+  MOVERS    MET +36% #23  BCH +34% #5  SUPER +29% #39  CHR +28% cut
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+15:13:40 |    🪞 C266 board-parity (top movers vs screen): MET +34%[#24] | BCH +32%[#5] | SUPER
+    +29%[#42] | ZEST +28%[#48] | CHR +27%[Live=0.40<cut]
+15:14:06 |    ⚖️ C462-7 ZORA: penalties 0.78→0.32 (×0.41) vs bar 0.70 — the stack decided
+15:14:06 | 📊 Step 3 result: 5 analyzed (+66 cached) → 1 viable → Step 4 DRI/DSI
+15:14:08 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.671)
