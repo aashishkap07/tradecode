@@ -622,3 +622,214 @@
   ------------------------------------------------------------------------------------------------
  
 10:13:09 | 📊 Step 3 result: 2 analyzed (+71 cached) → 1 viable → Step 4 DRI/DSI
+10:17:09 |    ⚖️ C462-7 龙虾: penalties 0.70→0.42 (×0.60) vs bar 0.45 — the stack decided
+10:17:55 |    ⚖️ C462-7 EIGEN: penalties 0.69→0.51 (×0.75) vs bar 0.54 — the stack decided
+10:18:05 | 📊 Step 3 result: 73 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  10:18  up 3h24m  scan 34 -----------------------------------------------------------------------
+  EQUITY    $253.08  unreal $+0.07
+  SESSION   $-1.02 -0.40%  peak $254.10  dd 0.40%
+  CURVE     +++===========================
+  DAY       real $-1.97  loss room $2.59 (1.02%)  76% used  vol x1.49  trust x1.00
+            ####################......
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      2 pos $14.05 (6%)  free $238.96
+  FEES      $0.04  mk5/tk4  0.015% of eq
+  SCAN      802 > 73 > 1 passed  top PENGU 0.83 (viable)  34 scans, 1304 analysed
+  MARKET    TRENDING  bias +0.60  breadth +0.00  taker flow +0.05
+  NEWS      65 articles  + tone +0.10  ETH +0.29  ONDO +0.23  ZEC +0.22
+  INFO      1 tilted  flow/fund/news/oi on 162
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +58% #5  MARSCOIN +38% #14  NIL +35% #22  USELESS +34% #15
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.840000  +0.33%   +0.01   16m  + 58% left
+  MET      LONG    0.356000  0.358600  +0.73%   +0.06    8m  + 69% left
+  ------------------------------------------------------------------------------------------------
+ 
+10:21:13 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +57%[#6] | NIL +38%[#24] |
+    MARSCOIN +36%[#18] | USELESS +34%[#19] | MET +29%[#48]
+10:22:00 | 📊 Step 3 result: 14 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=24, crowding=2, regime_blip=10, micro_wave=1, late_leg_no_forward=1,
+    no_structural_room=2, flat_projection=4, capitulation=2, counter_trend_block=6, flow_veto=1,
+    proj_confirms_trend=1, dir_proj_conflict=3, absorption_at_extreme=2, post_penalty_low=2,
+    vol_floor=7, leg_exhausted=1
+10:22:00 |    📌 Nearest miss: SUPER score=0.956 conf=0.792 quality=0.757/0.26 reason=vol_floor
+ 
+  10:26  up 3h32m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $252.97  unreal $-0.04
+  SESSION   $-1.13 -0.45%  peak $254.10  dd 0.45%
+  CURVE     *++=============-=============-
+  DAY       real $-1.97  loss room $2.20 (0.86%)  90% used  vol x1.26  trust x1.00
+            #######################...
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.27/tr  best $-0.07  worst $-0.50
+  LIFETIME  85tr 25W 60L 29%  $+3.01
+  OPEN      2 pos $14.05 (6%)  free $238.96
+  FEES      $0.04  mk5/tk4  0.015% of eq
+  SCAN      802 > 14 > 0 passed  top SUPER 0.96 (vol_floor)  35 scans, 1318 analysed
+  MARKET    TRENDING  bias +0.62  breadth +0.36  taker flow +0.09
+  NEWS      65 articles  + tone +0.10  ETC +0.38  ETH +0.36  XAU +0.30
+  INFO      1 tilted  flow/fund/news/oi on 162
+            info>0 2tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +57% #6  NIL +38% #24  MARSCOIN +36% #18  USELESS +34% #19
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.844100  +0.82%   +0.04   24m  + 58% left
+  MET      LONG    0.356000  0.353100  -0.81%   -0.08   16m  - 64% left
+  ------------------------------------------------------------------------------------------------
+ 
+10:29:08 | 🎯 EXIT SIGNAL: MET/USDT:USDT - REL_HARD_STOP: PnL=-2.1% < -2.1% (-4.1×PRU=1.6% EQI=0.50
+    macro=✓100% +noisefloor)
+  << 10:29  CLOSE  MET LONG @0.348700  -2.05% $-0.19  LOSS
+       held 19m  REL_HARD_STOP: PnL=-2.1%  round trip from +0.73%  -0.65R  TAKER
+ 
+ 
+  10:34  up 3h40m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $252.86  unreal $+0.04
+  SESSION   $-1.24 -0.49%  peak $254.10  dd 0.49%
+  CURVE     *++============================--
+  DAY       real $-2.16  loss room $2.20 (0.86%)  98% used  vol x1.26  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 14 > 0 passed  top SUPER 0.96 (vol_floor)  35 scans, 1318 analysed
+  MARKET    TRENDING  bias +0.62  breadth +0.00  taker flow -0.36
+  NEWS      65 articles  + tone +0.10  ETC +0.38  ETH +0.36  XAU +0.30
+  INFO      1 tilted  flow/fund/news/oi on 162
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +57% #6  NIL +38% #24  MARSCOIN +36% #18  USELESS +34% #19
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.844400  +0.86%   +0.04   32m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  10:42  up 3h48m  scan 35 -----------------------------------------------------------------------
+  EQUITY    $252.90  unreal $+0.08
+  SESSION   $-1.20 -0.47%  peak $254.10  dd 0.47%
+  CURVE     *++============================---
+  DAY       real $-2.16  loss room $2.20 (0.86%)  98% used  vol x1.26  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 14 > 0 passed  top SUPER 0.96 (vol_floor)  35 scans, 1318 analysed
+  MARKET    TRENDING  bias +0.62  breadth +0.00  taker flow -0.34
+  NEWS      65 articles  + tone +0.10  ETC +0.38  ETH +0.36  XAU +0.30
+  INFO      1 tilted  flow/fund/news/oi on 162
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +57% #6  NIL +38% #24  MARSCOIN +36% #18  USELESS +34% #19
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.851300  +1.68%   +0.08   40m  + 68% left
+  ------------------------------------------------------------------------------------------------
+ 
+10:44:19 |    🪞 C266 board-parity (top movers vs screen): NIL +40%[#14] | MARSCOIN +35%[#17] |
+    USELESS +32%[#19] | MET +31%[#44] | BCH +29%[#6]
+10:44:50 |    🎢→⚖️ MUBARAK: C292 stands down — parabola BROKEN (range 13×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:44:52 |    ⚖️ C462-7 PEPE: penalties 0.63→0.47 (×0.75) vs bar 0.50 — the stack decided
+10:45:31 |    ⚖️ C462-7 WIF: penalties 0.71→0.53 (×0.75) vs bar 0.54 — the stack decided
+10:45:38 |    ⚖️ C462-7 龙虾: penalties 0.53→0.38 (×0.72) vs bar 0.52 — the stack decided
+10:45:44 |    ⚖️ C462-7 FLOCK: penalties 0.55→0.41 (×0.75) vs bar 0.54 — the stack decided
+10:46:01 |    🎢→⚖️ BROCCOLI: C292 stands down — parabola BROKEN (range 12×ATR, 5.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:46:22 | 📊 Step 3 result: 71 analyzed → 4 viable → Step 4 DRI/DSI
+10:46:24 |    🎲 C378 odds-size: orderliness 0.07 -> risk x0.74 ($0.638)
+10:46:25 |    🎲 C378 odds-size: orderliness 0.32 -> risk x0.89 ($0.768)
+10:49:49 |    🎢→⚖️ MUBARAK: C292 stands down — parabola BROKEN (range 11×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:49:55 | 📊 Step 3 result: 18 analyzed (+53 cached this 15m candle) → 0 passed | low_score=21,
+    h1_regime_shock=10, flat_projection=8, poor_reward_risk=2, regime_blip=7, ct_noisy_block=1,
+    post_penalty_low=2, counter_trend_block=7, capitulation=4, post_penalty_quality=2,
+    late_leg_no_forward=1, absorption_at_extreme=2, fee_floor=1, proj_confirms_trend=1, vol_floor=1,
+    dir_proj_conflict=1
+10:49:55 |    📌 Nearest miss: EVAA score=0.886 (pre-pen 1.19) conf=0.687 quality=0.609/0.26
+    reason=h1_regime_shock
+ 
+  10:50  up 3h56m  scan 37 -----------------------------------------------------------------------
+  EQUITY    $252.91  unreal $+0.09
+  SESSION   $-1.19 -0.47%  peak $254.10  dd 0.47%
+  CURVE     *++===========---------------=-----
+  DAY       real $-2.16  loss room $1.64 (0.64%)  132% used  vol x0.94  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 18 > 0 passed  top EVAA 0.89 (h1_regime_shock)  37 scans, 1407 analysed
+  MARKET    TRENDING  bias +0.34  breadth +0.17  taker flow -0.15
+  NEWS      65 articles  + tone +0.14  MET -0.25  ONDO +0.23  ETH +0.21
+  INFO      4 tilted  flow/fund/news/oi on 164
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    NIL +40% #14  MARSCOIN +35% #17  USELESS +32% #19  MET +31% #44
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.852800  +1.86%   +0.09   48m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+10:55:01 |    🪞 C266 board-parity (top movers vs screen): NIL +45%[#13] | MARSCOIN +38%[#16] |
+    MUBARAK +31%[#11] | USELESS +31%[#21] | MET +31%[#79]
+10:55:39 | 📊 Step 3 result: 20 analyzed (+58 cached this 15m candle) → 0 passed | low_score=13,
+    h1_regime_shock=19, flat_projection=9, poor_reward_risk=2, regime_blip=7, ct_noisy_block=2,
+    post_penalty_low=2, counter_trend_block=6, capitulation=6, no_structural_room=4,
+    post_penalty_quality=2, late_leg_no_forward=1, absorption_at_extreme=2, fee_floor=2, vol_floor=1
+10:55:39 |    📌 Nearest miss: 0G score=0.699 conf=0.662 quality=0.463/0.26 reason=h1_regime_shock
+ 
+  10:58  up 4h04m  scan 38 -----------------------------------------------------------------------
+  EQUITY    $252.88  unreal $+0.06
+  SESSION   $-1.22 -0.48%  peak $254.10  dd 0.48%
+  CURVE     *++============================-----
+  DAY       real $-2.16  loss room $1.96 (0.77%)  111% used  vol x1.13  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 20 > 0 passed  top 0G 0.70 (h1_regime_shock)  38 scans, 1427 analysed
+  MARKET    TRENDING  bias +0.29  breadth +0.33  taker flow -0.48
+  NEWS      65 articles  + tone +0.14  MET -0.25  ONDO +0.23  ETH +0.21
+  INFO      4 tilted  flow/fund/news/oi on 164
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    NIL +45% #13  MARSCOIN +38% #16  MUBARAK +31% #11  USELESS +31% #21
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.848000  +1.29%   +0.06   56m  + 66% left
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  11:06  up 4h12m  scan 38 -----------------------------------------------------------------------
+  EQUITY    $252.89  unreal $+0.07
+  SESSION   $-1.21 -0.48%  peak $254.10  dd 0.48%
+  CURVE     *++============================------
+  DAY       real $-2.16  loss room $1.96 (0.77%)  111% used  vol x1.13  trust x1.00
+            ##########################
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.26/tr  best $-0.07  worst $-0.50
+  LIFETIME  86tr 25W 61L 29%  $+2.82
+  OPEN      1 pos $5.00 (2%)  free $247.82
+  FEES      $0.04  mk5/tk5  0.017% of eq
+  SCAN      802 > 20 > 0 passed  top 0G 0.70 (h1_regime_shock)  38 scans, 1427 analysed
+  MARKET    MIXED  bias +0.29  breadth +0.33  taker flow +0.44
+  NEWS      65 articles  + tone +0.14  MET -0.25  ONDO +0.23  ETH +0.21
+  INFO      4 tilted  flow/fund/news/oi on 164
+            info>0 3tr $-0.19 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    NIL +45% #13  MARSCOIN +38% #16  MUBARAK +31% #11  USELESS +31% #21
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  EVAA     LONG    0.837200  0.848900  +1.40%   +0.07 1h04m  + 32% left
+  ------------------------------------------------------------------------------------------------
+ 
