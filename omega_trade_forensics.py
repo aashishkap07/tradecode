@@ -123,3 +123,9 @@ def main(d):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else '.'))
+
+# NOTE (C481): the size-vs-outcome section above derives notional from pnl and
+# move. That derivation is NOT safe to test against the outcome -- see Standing
+# Rule 40. Use the detail log's real `Margin:` and `x<lev>` figures instead;
+# omega_entry_forensics.py does that. The permutation test here is retained only
+# to show how the artefact looks, and its p-value means nothing.

@@ -12,111 +12,112 @@ Three days of continuous running, **116 closed trades** (35 on 19 Sep, 81 in one
 
 ---
 
-## 🔴 THE FINDING: THE BOT IS RIGHT ABOUT DIRECTION AND WRONG ABOUT SIZE
+## ⛔ RETRACTED SAME DAY: "THE SIZING IS ANTI-PREDICTIVE" WAS MY OWN ARTEFACT
 
-One line, and it needs no model of anything:
+**What I claimed, and it is wrong.** With position size derived as
+`N = pnl/(move/100 − F)`, the bot's size-to-trade pairing looked worse than
+99.9% of random pairings (p = 0.0010), with size quartiles running +$4.01 to
+−$10.00. I reported that as the headline.
+
+**C480 then pushed the detail logs, which carry the REAL margin and leverage on
+every entry. The effect disappears.**
+
+| test | derived size | **ground truth** |
+|---|---|---|
+| permutation p | 0.0010 | **0.5450** |
+| best bucket | smallest | **largest (+$1.00, 57% win)** |
+
+**Why the test was rigged, and it was my error.** The "actual" value in that
+permutation was `Σ pnl` — an algebraic **identity**, since N was defined from
+pnl. Every shuffled value was a genuinely different quantity. I was comparing an
+identity against non-identities and reading the difference as signal. The
+`|move|` cuts reduced the fee bias but could not touch that. Leverage made it
+worse: 17 of 81 entries ran at x2 or x3, so derived N recovered *notional* on
+some trades and *margin* on others.
+
+> **→ Standing Rule 40: A QUANTITY DERIVED FROM THE OUTCOME CANNOT BE TESTED
+> AGAINST THE OUTCOME.** If the null hypothesis has to break an algebraic
+> identity to be false, the test cannot fail. Permuting does not launder it.
+> This is Rule 4a in a new costume, and I walked into it after writing Rule 4a.
+
+---
+
+## 🔪 THE REAL FINDING: 72% OF WINNERS PAY OUT AT EXACTLY HALF SIZE
+
+Reconstructing each trade as `notional × move − fees` against the ledger:
+
+- **53 of 81 trades match to a median ratio of 0.9977** — the arithmetic is right.
+- **19 do not.** Their actual/predicted ratio is **0.5047 ± 0.0068**, range
+  0.4986–0.5244. Fourteen are within 1% of **exactly 0.5**.
+- **18 of those 19 are WINNERS.** Not one loser is halved.
 
 | | |
 |---|---|
-| sum of the raw % moves over 113 priced trades | **+40.92%** |
-| fees at 0.08% round trip | −9.04% |
-| so **any equal-sized book** earns | **+31.88% of one position** |
-| what the bot actually made | **−$7.04** |
+| winners in the session | 25 |
+| **winners paid at exactly half** | **18 (72%)** |
+| profit foregone on them | **−$9.49** |
+| session net | −$3.92 |
+| session net had they paid whole | +$5.57 |
 
-The percentages won. The money lost. **Only position sizing sits between those
-two numbers.**
+Exit reasons on the halved trades: TRAILING_TP ×10, EARLY_PEAK_CAPTURE ×4,
+PEAK_REVERSAL ×3, POSITION_CAPTURE ×1 — **the profit-taking family**. This is
+the C336/C338 partial-close machinery: it banks half at the target and the
+recorded result is half the move on the full position.
 
-### Sized equally, the same trades make money
+**This explains the one observation that survived the retraction.** The moves
+sum to **+40.92%** while the money is **negative**, because *the winning moves
+are collected on half the position and the losing moves are paid on the whole.*
+That is a structural payoff asymmetry, not a selection failure.
 
-Same 116 trades, same moves, same fees, every position the same size:
+> **→ Standing Rule 41: A RULE THAT ONLY EVER FIRES ON WINNERS IS A PAYOFF
+> DECISION, AND ITS PRICE MUST BE ON THE LEDGER.** Halving every working trade
+> cost $9.49 across one session — more than twice that session's whole loss —
+> and no line anywhere in the log states it.
 
-| | net |
-|---|---|
-| actual | **−$7.04** |
-| every trade at the median $23 | **+$7.25** |
-| every trade at the mean $26 | **+$8.24** |
+**NOT yet established, and it matters:** whether halving is net harmful. The
+half is banked deliberately to cap giveback, so "run whole" is not automatically
+better. There are two very different readings of the exact 0.50 and this pass
+cannot separate them:
+  1. the runner half is genuinely giving back to ~breakeven — a strategy result;
+  2. the ledger is recording only the banked half — an accounting defect.
 
-A **$14.29 swing** on identical trades. The win rate is unchanged at 33.6% —
-nothing about selection improves. Only the money.
+C397 already found this family once ("_c336_partial_close documents itself as
+'deliberately NOT fed to the ledgers' and then calls release_margin, which IS a
+ledger") and fixed the trade COUNT. **Whether it fixed the CASH is the next
+question, and it is now answerable from the detail logs.**
 
-### It is worse than random, and that is measured
+---
 
-Permutation test: take the same position sizes and the same moves and re-pair
-them at random, 20,000 times.
+## 📏 WHAT ELSE SURVIVES: THE RISK BUDGET IS NOT HONOURED
 
-| | |
-|---|---|
-| actual net (the bot's own pairing) | **−$7.04** |
-| random pairing, mean | **+$8.16** |
-| random pairings at least as bad | **21 / 20,000 → p = 0.0010** |
+Ground truth, `notional × stop distance` over 81 entries, against a dashboard
+that displays `RISK 0.341% = $0.85/trade` as a single number:
 
-> **The bot's own size-to-trade assignment is worse than 99.9% of random
-> assignments.** Spearman ρ(size, move) = **−0.209**, p = 0.0135.
+| min | p25 | median | p75 | max | spread |
+|---|---|---|---|---|---|
+| $0.07 | $0.27 | **$0.60** | $0.67 | $0.80 | **11×** |
 
-**Checked against the obvious artefact.** Size here is derived as
-`N = pnl/(move/100 − F)`, so a small-move trade mechanically gets a big N and a
-negative pnl. Cutting the small moves out kills that artefact — and the effect
-survives every cut:
+**0 of 81 ever reach the stated budget.** The bot systematically *under*-risks,
+by a factor that varies 11×. Note the sign: this is the opposite of the
+retracted claim.
 
-| filter | n | actual | random mean | p |
+The cause is visible directly — margin does not scale inversely with the stop,
+as risk parity requires:
+
+| stop band | n | median stop | median margin | margin needed for $0.85 |
 |---|---|---|---|---|
-| all | 113 | −$7.04 | +$8.23 | 0.0010 |
-| \|move\| ≥ 0.5% | 83 | −$5.24 | +$9.29 | 0.0011 |
-| \|move\| ≥ 1.0% | 64 | −$2.75 | +$8.93 | 0.0024 |
-| \|move\| ≥ 1.5% | 40 | +$3.30 | +$9.91 | 0.0152 |
-| \|move\| ≥ 2.0% | 28 | +$3.19 | +$8.77 | 0.0111 |
+| < 1% | 5 | 0.80% | $23.20 | **$106.25** |
+| 1–2% | 64 | 1.40% | $25.65 | **$60.71** |
+| 2–3% | 31 | 2.50% | $23.29 | $34.00 |
+| 3–5% | 20 | 3.55% | $16.98 | $23.94 |
+| > 5% | 2 | 6.15% | $7.30 | $13.82 |
 
-### The shape of it: size buys no upside and all of the downside
+Margin is nearly **flat** across every stop band, so dollar risk tracks the stop
+distance instead of being constant.
 
-| size bucket | n | notional | win% | avg WIN | avg LOSS | net |
-|---|---|---|---|---|---|---|
-| smallest 25% | 28 | $8.1 | **53.6%** | +$0.356 | −$0.102 | **+$4.01** |
-| 2nd | 28 | $18.0 | 39.3% | +$0.395 | −$0.228 | +$0.47 |
-| 3rd | 28 | $26.5 | 28.6% | +$0.525 | −$0.286 | −$1.52 |
-| largest 25% | 29 | $50.0 | **13.8%** | +$0.305 | **−$0.449** | **−$10.00** |
-
-**The average WIN is flat across all four buckets** ($0.31–$0.53). **The average
-LOSS grows 4.4×.** Size is buying nothing on the upside and paying in full on
-the downside.
-
-### And the stated risk budget is not being honoured
-
-The dashboard prints `RISK 0.341% = $0.85/trade` to the operator. What the 18
-hard stops actually risked:
-
-| min | p25 | median | p75 | max |
-|---|---|---|---|---|
-| $0.09 | $0.27 | **$0.48** | $0.72 | **$1.61** |
-
-**A 19× spread against a budget that is displayed as a single number.** A
-risk-parity book would show every one of these at ~$0.85.
-
-> **→ Standing Rule 37: WHEN THE PERCENTAGES WIN AND THE MONEY LOSES, THE FAULT
-> IS IN THE SIZING, NOT THE SIGNAL.** Win rate, payoff and expectancy are all
-> computed per trade and are all blind to how much was on each one. A book can
-> have a positive edge in every one of them and still lose, and no per-trade
-> statistic will ever say so.
-
-> **→ Standing Rule 38: A RISK BUDGET THAT IS DISPLAYED BUT NEVER MEASURED IS
-> NOT A BUDGET.** `$0.85/trade` was on screen for three days while the real
-> figure ranged 19×. Nothing compared the two, so nothing could notice.
-
-### C385 predicted this and deferred it
-
-C385 wrote: *"volatility reaches position size through TWO paths — `_vol_adj =
-clamp(1/ATR, 0.55, 1.30)` in the Kelly allocator and `margin = risk/(2*ATR)` in
-the risk fit — which compounds to a **6.75x notional preference for a 0.7% ATR
-pair over a 2% one** where risk parity alone would give 2.9x… calm pairs went
-**0-for-4**… **Re-measure once a clean session exists.**"*
-
-This is that re-measurement. The 0-for-4 is now **4-for-29, −$10.00**, and the
-largest-size bucket is exactly the calm-pair bucket (median \|move\| 0.70% vs
-1.72% in the smallest). **C385's deferred concern replicates at n=116.**
-
-One correction to C385's reading: `_vol_adj` reads `_avg_atr_for_alloc`, the
-**basket** average, so it is the same multiplier for every candidate in a scan
-and cannot produce per-trade dispersion. The dispersion comes from further down
-the chain, and **the pushed logs cannot say where** — see below.
+> **→ Standing Rule 38 (restated): A RISK BUDGET THAT IS DISPLAYED BUT NEVER
+> MEASURED IS NOT A BUDGET.** Three days on screen as `$0.85/trade`; the real
+> figure never once reached it.
 
 ---
 
