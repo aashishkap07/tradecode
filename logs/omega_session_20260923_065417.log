@@ -1,0 +1,119 @@
+06:54:17 |    day cap 0.91%  |  per-trade risk 0.455%  |  break-even WR 50.0% AT 1:1 PAYOFF — no
+    R-denominated payoff measured yet, so the honest break-even is the 1:1 figure above and nothing
+    better [C406/C463-10]
+06:54:17 | 📊 Paper Mode
+06:54:20 | ✅ Connected | 802 futures markets
+06:54:20 |    day cap 0.68%  |  per-trade risk 0.341%  |  break-even WR 50.0% AT 1:1 PAYOFF — at the
+    measured 0.92 payoff (7W/7L in R) it is 52%, which is the number that matters [C406/C463-10]
+ 
+  ================================================================================================
+  OMEGA C479  PAPER  Bitget perps
+  23 Sep 2026   06:54
+  start $254.10  day -0.68% loss
+  ================================================================================================
+ 
+06:54:20 |    🔒 C378 stop level $0.5003 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+06:54:20 | ⚠️ Flask not available - web dashboard disabled
+06:54:20 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+06:54:20 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+06:54:20 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+06:54:20 |        See deploy/DEPLOY.md — one command, no open ports, free.
+06:54:20 |    → C458-17 exploration will take up to 4 MINIMUM-SIZE trades/day after 10 empty scans,
+    purely to rebuild the sample. Worst case ≈ $0.60/day.
+06:54:21 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+06:54:21 | 💡 Press Ctrl+C to stop safely
+06:54:28 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +70%[#5] | 龙虾 -39%[Live=0.25<cut]
+    | MARSCOIN +33%[#13] | NIL +31%[#14] | BCH +30%[Live=0.45<cut]
+06:54:29 | 📈 C398: pack extended +2.01 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+06:55:24 |    ⚖️ C462-7 ZRO: penalties 0.52→0.39 (×0.75) vs bar 0.47 — the stack decided
+06:55:37 | 🎯 EXIT SIGNAL: TIA/USDT:USDT - C399_CONVICTION_COLLAPSE: only 14% of the entry thesis
+    left — DRI -0.115->-0.016 (14% left), DSI +0.405->+0.105 (26% left) | PnL=-2.0% (exiting BEFORE
+    the reversal shows in price)
+  << 06:55  CLOSE  TIA LONG @0.502900  -2.25% $-0.50  LOSS
+       held 41m  C399_CONVICTION_COLLAPSE  round trip from +0.49%  -0.61R  TAKER
+06:56:00 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 9×ATR, 4.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:56:17 |    🎢→⚖️ B: C292 stands down — parabola BROKEN (range 24×ATR, 3.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:56:18 |    ⚖️ C462-7 CELR: penalties 0.49→0.14 (×0.29) vs bar 0.47 — the stack decided
+06:56:18 |    🎢→⚖️ 哈基米: C292 stands down — parabola BROKEN (range 24×ATR, 6.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:56:26 | 📊 Step 3 result: 71 analyzed → 10 viable → Step 4 DRI/DSI
+ 
+ 
+  07:02  up 0h08m  scan 1 ------------------------------------------------------------------------
+  EQUITY    $253.60
+  SESSION   $-0.50 -0.20%  peak $254.10  dd 0.20%
+  DAY       real $-1.38  loss room $1.74 (0.68%)  79% used  vol x1.00  trust x1.00
+            #####################.....
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.50/tr
+  LIFETIME  82tr 25W 57L 30%  $+3.60
+  OPEN      flat  free $253.60
+  FEES      $0.01  mk0/tk1  0.005% of eq
+  SCAN      802 > 71 > 10 passed  top BSV 0.69 (viable)  1 scan, 71 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.00  taker flow +0.24
+  NEWS      65 articles  ~ tone -0.05
+  INFO      10 tilted  flow/fund/news on 71
+  MOVERS    MUBARAK +70% #5  龙虾 -39% cut  MARSCOIN +33% #13  NIL +31% #14
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+07:02:27 | 📈 C398: pack extended +2.01 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+07:03:40 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 10×ATR, 3.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:03:58 |    🎢→⚖️ 哈基米: C292 stands down — parabola BROKEN (range 24×ATR, 6.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:04:07 | 📊 Step 3 result: 71 analyzed → 5 viable → Step 4 DRI/DSI
+07:04:08 |    🎲 C378 odds-size: orderliness 0.24 -> risk x0.84 ($0.729)
+07:04:08 |    🔒 C378 stop level $0.003702 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 07:04  OPEN   1000BONK LONG @0.00377200  x1 $13.50
+       target +8.2%  stop -1.9%  entry score 0.64  maker
+07:04:10 |    🎲 C378 odds-size: orderliness 0.19 -> risk x0.82 ($0.705)
+07:04:10 |    🔒 C378 stop level $0.02537 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 07:04  OPEN   BROCCOLI LONG @0.026220  x1 $5.00
+       target +13.3%  stop -3.3%  entry score 0.51  maker
+07:07:18 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +68%[#5] | 龙虾 -38%[Live=0.41<cut]
+    | MARSCOIN +33%[Live=0.46<cut] | ONE -31%[Live=0.47<cut] | BSV +30%[#28]
+07:08:02 | 📊 Step 3 result: 21 analyzed (+52 cached) → 1 viable → Step 4 DRI/DSI
+ 
+ 
+  07:10  up 0h16m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $253.42  unreal $-0.18
+  SESSION   $-0.68 -0.27%  peak $254.10  dd 0.27%
+  DAY       real $-1.38  loss room $2.05 (0.80%)  67% used  vol x1.18  trust x1.00
+            #################.........
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.50/tr
+  LIFETIME  82tr 25W 57L 30%  $+3.60
+  OPEN      2 pos $18.50 (7%)  free $235.10
+  FEES      $0.02  mk2/tk1  0.006% of eq
+  SCAN      802 > 21 > 1 passed  top ETC 0.83 (viable)  3 scans, 163 analysed
+  MARKET    TRENDING  bias +0.46  breadth +0.23  taker flow -0.24
+  NEWS      65 articles  ~ tone -0.05  ETH +0.39  NEAR +0.14
+  INFO      1 tilted  flow/fund/news on 88
+  MOVERS    MUBARAK +68% #5  龙虾 -38% cut  MARSCOIN +33% cut  ONE -31% cut
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  1000BONK LONG  0.003772000.00377800  +0.16%   +0.01    6m  + 63% left
+  BROCCOLI LONG    0.026220  0.025240  -3.74%   -0.19    6m  - 63% left
+  ------------------------------------------------------------------------------------------------
+ 
+07:10:42 |    🛑 C377 HARD STOP BROCCOLI: -4.00% <= -3.28% (0.8R, R=4.37%) — arithmetic, not opinion
+07:10:42 | ❌ LOSS: BROCCOLI/USDT:USDT | C377_RISK_STOP: -4.00% = -0.92R
+  << 07:10  CLOSE  BROCCOLI LONG @0.025110  -4.23% $-0.22  LOSS
+       held 6m  C377_RISK_STOP: -4.00% =  round trip from +0.46%  -0.97R  TAKER
+07:11:21 | 📊 Step 3 result: 1 analyzed (+71 cached this 15m candle) → 0 passed | low_confidence=10,
+    low_score=29, mtf_disagree=3, flat_projection=6, crowding=1, no_structural_room=5,
+    regime_blip=2, late_leg_no_forward=4, post_penalty_quality=1, micro_exhaustion=2,
+    post_penalty_low=2, capitulation=2, absorption_at_extreme=1, proj_confirms_trend=2, vol_floor=2
+07:11:21 |    📌 Nearest miss: ETC score=1.408 conf=0.521 quality=0.734/0.26 reason=mtf_disagree
