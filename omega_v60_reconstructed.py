@@ -36706,14 +36706,17 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
     <div class="v" id="scan">&mdash;</div><div class="s" id="scans"></div></div>
 </div>
 
+<!-- C480: what the bot is HOLDING RIGHT NOW goes above the equity chart.
+     The operator asked for this: the chart is history, the book is the thing
+     you might have to act on, and it was below the fold on a phone. -->
+<section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
+
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
   <svg id="curve" viewBox="0 0 300 56" preserveAspectRatio="none"
        role="img" aria-label="Equity over this session"></svg>
   <div class="s muted" id="curvelab"></div>
 </section>
-
-<section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
 
 <section><h2>Controls</h2>
   <div class="row">
