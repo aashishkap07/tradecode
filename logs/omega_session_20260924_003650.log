@@ -565,3 +565,128 @@
     reason=post_penalty_quality
   .. 03:12  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  18 analysed
 03:12:58 | ⚠️ C79 WEAK-RESULTANT: R=+0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+03:18:16 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -30%[#9] | NIL +24%[Live=0.41<cut]
+    | ONE -19%[#23] | FLOCK -18%[#46] | 龙虾 +18%[#42]
+03:18:17 | ⚠️ C79 WEAK-RESULTANT: R=-0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+03:19:13 | 📊 Step 3 result: 60 analyzed → 0 passed | low_score=6, poor_reward_risk=2,
+    ct_noisy_block=36, flat_projection=8, low_quality=2, news_tech_conflict=1, no_structural_room=3,
+    capitulation=1, post_penalty_quality=1
+03:19:13 |    📌 Nearest miss: LSK score=0.650 conf=0.768 quality=0.499/0.26 reason=capitulation rej
+    vs RSI78
+ 
+ 
+  03:20  up 2h43m  scan 21 -----------------------------------------------------------------------
+  EQUITY    $255.65
+  OPEN      flat  free $255.65
+  SESSION   $-0.45 -0.18%  peak $256.10  dd 0.18%
+  CURVE     ++++++=========++=======
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk2/tk3  0.042% of eq
+  SCAN      805 > 60 > 0 passed  top LSK 0.65 (capitulation rej v)  21 scans, 1148 analysed
+  MARKET    TRENDING  bias -0.15  breadth +0.00  taker flow +0.18
+  NEWS      65 articles  + tone +0.43  XRP +0.70  NEAR +0.47  ETHFI +0.34
+  INFO      1 tilted  flow/fund/news/oi on 189
+  MOVERS    MUBARAK -30% #9  NIL +24% cut  ONE -19% #23  FLOCK -18% #46
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+03:24:15 | ⚠️ C79 WEAK-RESULTANT: R=-0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+  .. 03:28  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  60 analysed
+03:29:36 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -32%[#9] | NIL +26%[Live=0.42<cut]
+    | FLOCK -20%[#44] | ONE -19%[#21] | SPX -18%[Live=0.55<cut]
+03:29:37 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+03:29:55 | 📊 Step 3 result: 2 analyzed (+58 cached this 15m candle) → 0 passed | low_score=6,
+    poor_reward_risk=2, ct_noisy_block=36, flat_projection=8, low_quality=2, news_tech_conflict=1,
+    no_structural_room=3, capitulation=1, post_penalty_quality=1
+03:34:57 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+03:35:58 |    🧭 C458-17: exploration is due but the best refusal (quality 0.250 < 0.293) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+03:35:58 | 📊 Step 3 result: 60 analyzed → 0 passed | low_confidence=1, low_score=13,
+    ct_noisy_block=31, flat_projection=5, micro_exhaustion=2, leg_exhausted=1, capitulation=1,
+    no_structural_room=5, low_quality=1
+03:35:58 |    📌 Nearest miss: ZEN score=0.365 conf=0.685 quality=0.250/0.26 reason=quality 0.250 <
+    0.293
+  .. 03:36  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  60 analysed
+03:41:05 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -31%[#13] | NIL +29%[#14] | FLOCK
+    -20%[#49] | 龙虾 +19%[#43] | ONE -17%[Live=0.26<cut]
+03:41:06 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+03:41:32 |    🎢→⚖️ RAY: C292 stands down — parabola BROKEN (range 11×ATR, 3.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+03:41:40 |    🧭 C458-17: exploration is due but the best refusal (exhaustion_hard) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+03:41:40 | 📊 Step 3 result: 26 analyzed (+44 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=26, ct_noisy_block=22, flat_projection=9, micro_exhaustion=1, leg_exhausted=1,
+    exhaustion_hard=1, capitulation=2, no_structural_room=6, low_quality=1
+03:41:40 |    📌 Nearest miss: AKE score=0.746 conf=0.623 quality=0.465/0.26 reason=exhaustion_hard
+  .. 03:44  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  26 analysed
+03:47:09 |    ⚖️ C462-7 NIL: penalties 0.62→0.40 (×0.65) vs bar 0.54 — the stack decided
+03:47:35 |    ⚖️ C462-7 龙虾: penalties 0.80→0.52 (×0.65) vs bar 0.54 — the stack decided
+03:47:54 |    ⚖️ C462-7 PYTH: penalties 0.60→0.24 (×0.40) vs bar 0.54 — the stack decided
+03:47:56 |    🧭 C458-17: exploration is due but the best refusal (real-CVD veto -0.49) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+03:47:56 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=9, low_score=46,
+    flat_projection=7, no_structural_room=2, proj_confirms_trend=1, flow_veto=1, capitulation=2,
+    leg_exhausted=1, poor_reward_risk=1
+03:47:56 |    📌 Nearest miss: LSK score=0.607 (pre-pen 1.04) conf=0.676 quality=0.410/0.26
+    reason=real-CVD veto -0.49
+ 
+ 
+  03:52  up 3h15m  scan 25 -----------------------------------------------------------------------
+  EQUITY    $255.65
+  OPEN      flat  free $255.65
+  SESSION   $-0.45 -0.18%  peak $256.10  dd 0.18%
+  CURVE     ++++++=========++===========
+  DAY       real $-0.49  limit $9.48 (3.70%)  5% used
+            #.........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.15/tr  best $-0.08  worst $-0.25
+  LIFETIME  98tr 31W 67L 32%  $+5.65
+  FEES      $0.11  mk2/tk3  0.042% of eq
+  SCAN      805 > 70 > 0 passed  top LSK 0.61 (real-CVD veto -0.4)  25 scans, 1306 analysed
+  MARKET    TRENDING  bias +0.09  breadth -0.04  taker flow -0.03
+  NEWS      64 articles  + tone +0.38  SHIB +0.25  OPENAI +0.17  ETHFI +0.17
+  INFO      1 tilted  flow/fund/news/oi on 189
+  MOVERS    MUBARAK -31% #13  NIL +29% #14  FLOCK -20% #49  龙虾 +19% #43
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+03:53:03 |    🪞 C266 board-parity (top movers vs screen): NIL +44%[#7] | MUBARAK -32%[#13] | FLOCK
+    -20%[#51] | ONE -17%[Live=0.24<cut] | SPX -17%[#56]
+03:53:30 |    🧭 C458-17: exploration is due but the best refusal (OF-exhaustion OI=weak_rally) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+03:53:30 | 📊 Step 3 result: 16 analyzed (+54 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=48, flat_projection=7, no_structural_room=3, proj_confirms_trend=1, capitulation=1,
+    leg_exhausted=2, poor_reward_risk=1
+03:53:30 |    📌 Nearest miss: SUPER score=0.386 (pre-pen 0.59) conf=0.552 quality=0.213/0.26
+    reason=OF-exhaustion OI=weak_rally
+  .. 04:00  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  16 analysed
+04:03:53 |    🪞 C266 board-parity (top movers vs screen): NIL +50%[#7] | MUBARAK -33%[Live=0.31<cut]
+    | FLOCK -21%[#47] | ONE -19%[Live=0.33<cut] | SPX -19%[#52]
+04:04:34 |    ⚖️ C462-7 LSK: penalties 0.86→0.51 (×0.59) vs bar 0.59 — the stack decided
+04:04:40 |    ⚖️ C462-7 龙虾: penalties 0.85→0.38 (×0.45) vs bar 0.52 — the stack decided
+04:04:53 |    ⚖️ C462-7 PYTH: penalties 0.81→0.32 (×0.40) vs bar 0.52 — the stack decided
+04:04:57 |    ⚖️ C462-7 UAI: penalties 0.53→0.40 (×0.75) vs bar 0.44 — the stack decided
+04:04:58 | 📊 Step 3 result: 70 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 04:08  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
+04:10:13 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=49, mtf_disagree=3, flat_projection=7, leg_exhausted=1, poor_reward_risk=1,
+    no_structural_room=2, capitulation=1
+04:10:13 |    📌 Nearest miss: NIL score=0.707 (pre-pen 1.19) conf=0.543 quality=0.384/0.26
+    reason=mtf_disagree
+04:15:20 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[#9] | MUBARAK -34%[#16] | FLOCK
+    -22%[#46] | SPX -19%[#52] | ONE -19%[Live=0.18<cut]
+04:16:01 |    ⚖️ C462-7 INJ: penalties 0.89→0.57 (×0.64) vs bar 0.72 — the stack decided
+04:16:02 |    ⚖️ C462-7 ALLO: penalties 0.46→0.27 (×0.60) vs bar 0.41 — the stack decided
+04:16:23 |    ⚖️ C462-7 ZEST: penalties 0.73→0.47 (×0.64) vs bar 0.66 — the stack decided
+04:16:24 |    ⚖️ C462-7 EGLD: penalties 0.48→0.36 (×0.75) vs bar 0.44 — the stack decided
+04:16:28 | 📊 Step 3 result: 70 analyzed → 1 viable → Step 4 DRI/DSI
+  .. 04:16  flat  $255.65  $-0.45 -0.18%  0W 3L 0%  70 analysed
