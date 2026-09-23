@@ -117,3 +117,191 @@
     regime_blip=2, late_leg_no_forward=4, post_penalty_quality=1, micro_exhaustion=2,
     post_penalty_low=2, capitulation=2, absorption_at_extreme=1, proj_confirms_trend=2, vol_floor=2
 07:11:21 |    📌 Nearest miss: ETC score=1.408 conf=0.521 quality=0.734/0.26 reason=mtf_disagree
+07:17:47 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +66%[#6] | 龙虾 -36%[#28] | FOLKS
+    +33%[#45] | MARSCOIN +31%[#16] | BCH +29%[#7]
+07:17:48 | ⚠️ C79 WEAK-RESULTANT: R=+0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+07:18:11 |    🎢→⚖️ MUBARAK: C292 stands down — parabola BROKEN (range 22×ATR, 3.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:18:17 |    🛑 C377 HARD STOP 1000BONK: -2.12% <= -1.87% (0.8R, R=2.50%) — arithmetic, not opinion
+07:18:18 | ❌ LOSS: 1000BONK/USDT:USDT | C377_RISK_STOP: -2.12% = -0.85R
+  << 07:18  CLOSE  1000BONK LONG @0.00369000  -2.17% $-0.30  LOSS
+       held 14m  C377_RISK_STOP: -2.12% =  round trip from +0.45%  -0.87R  TAKER
+07:18:42 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 29×ATR, 14.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:18:43 |    ⚖️ C462-7 CHR: penalties 0.53→0.32 (×0.60) vs bar 0.49 — the stack decided
+07:18:57 | 📊 Step 3 result: 77 analyzed → 0 passed | low_confidence=1, low_score=8,
+    h1_regime_shock=37, flat_projection=13, regime_blip=9, poor_reward_risk=1, capitulation=2,
+    no_structural_room=5, vol_floor=1
+07:18:57 |    📌 Nearest miss: FARTCOIN score=0.837 conf=0.733 quality=0.613/0.26
+    reason=h1_regime_shock
+ 
+ 
+  07:18  up 0h24m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $253.08
+  SESSION   $-1.02 -0.40%  peak $254.10  dd 0.40%
+  CURVE     *++==--
+  DAY       real $-1.90  loss room $1.87 (0.73%)  101% used  vol x1.08  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      flat  free $253.08
+  FEES      $0.03  mk2/tk3  0.011% of eq
+  SCAN      802 > 77 > 0 passed  top FARTCOIN 0.84 (h1_regime_shock)  5 scans, 241 analysed
+  MARKET    MIXED  bias +0.05  breadth +0.00  taker flow +0.02
+  NEWS      65 articles  ~ tone -0.05  ETH +0.39  ZEC +0.24  NEAR +0.14
+  INFO      1 tilted  flow/fund/news on 88
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +66% #6  龙虾 -36% #28  FOLKS +33% #45  MARSCOIN +31% #16
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 07:26  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  77 analysed
+07:29:07 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +67%[#6] | 龙虾 -36%[#28] | FOLKS
+    +31%[#45] | BCH +29%[#7] | MARSCOIN +29%[#17]
+07:29:08 | ⚠️ C79 WEAK-RESULTANT: R=+0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+07:29:28 | 📊 Step 3 result: 1 analyzed (+76 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=7, h1_regime_shock=37, flat_projection=13, regime_blip=10, poor_reward_risk=1,
+    capitulation=2, no_structural_room=5, vol_floor=1
+07:34:30 | ⚠️ C79 WEAK-RESULTANT: R=+0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+07:34:51 |    🎢→⚖️ MUBARAK: C292 stands down — parabola BROKEN (range 22×ATR, 3.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:35:33 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 29×ATR, 15.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:35:49 | 📊 Step 3 result: 77 analyzed → 0 passed | low_confidence=1, low_score=11,
+    flat_projection=8, h1_regime_shock=34, regime_blip=11, poor_reward_risk=3, no_structural_room=7,
+    micro_exhaustion=1, proj_confirms_trend=1
+07:35:49 |    📌 Nearest miss: BSV score=0.891 conf=0.841 quality=0.749/0.26 reason=h1_regime_shock
+  .. 07:35  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  77 analysed
+07:40:43 |    📓 C444: BROCCOLI exited on C377_RISK_STOP: -4.00% = at index 0.57 — 30min later the
+    price is -0.60% (-0.14R) inside the noise band — the exit was neutral
+07:40:56 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +74%[#6] | FOLKS +37%[#40] | 龙虾
+    -37%[#30] | MARSCOIN +31%[#18] | BCH +30%[#7]
+07:40:57 | ⚠️ C79 WEAK-RESULTANT: R=+0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+07:41:20 |    ⚖️ C462-7 S: penalties 0.68→0.41 (×0.60) vs bar 0.49 — the stack decided
+07:41:21 | 📊 Step 3 result: 10 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=11, flat_projection=8, h1_regime_shock=31, regime_blip=12, poor_reward_risk=3,
+    no_structural_room=7, micro_exhaustion=1, capitulation=2
+07:41:21 |    📌 Nearest miss: S score=0.407 (pre-pen 0.68) conf=0.515 quality=0.210/0.26
+    reason=score 0.407 < 0.487
+  .. 07:43  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  10 analysed
+07:46:57 |    🎢→⚖️ PENGU: C292 stands down — parabola BROKEN (range 17×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:47:12 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 7×ATR, 3.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:47:23 |    🎢→⚖️ FLOCK: C292 stands down — parabola BROKEN (range 20×ATR, 8.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:47:52 | 📊 Step 3 result: 76 analyzed → 2 viable → Step 4 DRI/DSI
+07:47:54 |    🎲 C378 odds-size: orderliness 0.04 -> risk x0.72 ($0.625)
+07:48:18 |    📓 C444: 1000BONK exited on C377_RISK_STOP: -2.12% = at index 0.60 — 30min later the
+    price is -1.22% (-0.49R) lower — the exit protected capital
+ 
+ 
+  07:51  up 0h57m  scan 9 ------------------------------------------------------------------------
+  EQUITY    $253.08
+  SESSION   $-1.02 -0.40%  peak $254.10  dd 0.40%
+  CURVE     *++==------
+  DAY       real $-1.90  loss room $1.69 (0.66%)  112% used  vol x0.97  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      flat  free $253.08
+  FEES      $0.03  mk2/tk3  0.011% of eq
+  SCAN      802 > 76 > 2 passed  top IOST 0.72 (viable)  9 scans, 405 analysed
+  MARKET    MIXED  bias +0.15  breadth -0.20  taker flow +0.21
+  NEWS      65 articles  + tone +0.26  ETH +0.36  XRP +0.26  ZEC +0.24
+  INFO      2 tilted  flow/fund/news/oi on 111
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +74% #6  FOLKS +37% #40  龙虾 -37% #30  MARSCOIN +31% #18
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+ 
+07:53:00 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +72%[#6] | 龙虾 -36%[Live=0.17<cut]
+    | MARSCOIN +33%[#15] | NIL +33%[#16] | ONE -30%[Live=0.47<cut]
+07:53:34 |    🎢→⚖️ CHR: C292 stands down — parabola BROKEN (range 29×ATR, 15.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+07:53:40 | 📊 Step 3 result: 16 analyzed (+61 cached) → 2 viable → Step 4 DRI/DSI
+07:59:02 | 📊 Step 3 result: 2 analyzed (+75 cached) → 1 viable → Step 4 DRI/DSI
+  .. 07:59  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  2 analysed
+07:59:50 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $387.5413 → $253.0830 (equity
+    $253.0830 − locked $0.0000 = $253.0830); discrepancy $+134.4583. Money that does not exist would
+    have been sized against [correction #1]
+08:04:13 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +68%[#6] | MARSCOIN +36%[#15] | 龙虾
+    -36%[Live=0.22<cut] | NIL +32%[#17] | ONE -30%[#27]
+08:04:14 | ⊥ C97 TF-CONFLICT: 1h=-0.45×4h=+0.47=d14=-0.21 — only longs allowed (4h dominant)
+08:04:45 |    ⚖️ C462-7 ARB: penalties 0.73→0.55 (×0.75) vs bar 0.62 — the stack decided
+08:05:06 |    🎢→⚖️ FOLKS: C292 stands down — parabola BROKEN (range 7×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:05:27 |    🎢→⚖️ 哈基米: C292 stands down — parabola BROKEN (range 21×ATR, 7.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+08:05:38 | 📊 Step 3 result: 78 analyzed → 1 viable → Step 4 DRI/DSI
+08:05:39 |    🎲 C378 odds-size: orderliness 0.15 -> risk x0.79 ($0.684)
+08:05:40 |    🔒 C378 stop level $0.02619 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 08:05  OPEN   GRT LONG @0.026710  x1 $9.47
+       target +9.3%  stop -2.0%  entry score 0.78  maker
+ 
+ 
+  08:07  up 1h13m  scan 12 -----------------------------------------------------------------------
+  EQUITY    $253.05  unreal $-0.03
+  SESSION   $-1.05 -0.41%  peak $254.10  dd 0.41%
+  CURVE     +++==========
+  DAY       real $-1.90  loss room $2.16 (0.85%)  88% used  vol x1.24  trust x1.00
+            #######################...
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      1 pos $9.47 (4%)  free $243.61
+  FEES      $0.03  mk3/tk3  0.011% of eq
+  SCAN      802 > 78 > 1 passed  top GRT 0.78 (viable)  12 scans, 501 analysed
+  MARKET    TRENDING  bias +0.15  breadth +0.00  taker flow +0.25
+  NEWS      64 articles  ~ tone +0.00  ETH +0.36  XRP +0.26  ZEC +0.24
+  INFO      1 tilted  flow/fund/news/oi on 128
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +68% #6  MARSCOIN +36% #15  龙虾 -36% cut  NIL +32% #17
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  GRT      LONG    0.026710  0.026660  -0.19%   -0.03    2m  - 82% left
+  ------------------------------------------------------------------------------------------------
+ 
+08:10:42 | ⊥ C97 TF-CONFLICT: 1h=-0.45×4h=+0.47=d14=-0.21 — only longs allowed (4h dominant)
+08:10:59 | 📊 Step 3 result: 1 analyzed (+77 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=40, mtf_disagree=1, flat_projection=12, poor_reward_risk=2, post_penalty_low=1,
+    proj_confirms_trend=2, micro_exhaustion=5, no_structural_room=2, vol_floor=2, capitulation=1,
+    low_quality=2, reward_conviction=1
+08:10:59 |    📌 Nearest miss: GRT score=0.760 (pre-pen 1.27) conf=0.618 quality=0.470/0.26
+    reason=reward_conviction needs 72%
+ 
+  08:15  up 1h21m  scan 13 -----------------------------------------------------------------------
+  EQUITY    $253.06  unreal $-0.02
+  SESSION   $-1.04 -0.41%  peak $254.10  dd 0.41%
+  CURVE     *++==---------
+  DAY       real $-1.90  loss room $1.75 (0.69%)  109% used  vol x1.00  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      1 pos $9.47 (4%)  free $243.61
+  FEES      $0.03  mk3/tk3  0.011% of eq
+  SCAN      802 > 1 > 0 passed  top GRT 0.76 (reward_conviction )  13 scans, 502 analysed
+  MARKET    TRENDING  bias +0.15  breadth +0.00  taker flow +0.26
+  NEWS      64 articles  ~ tone +0.00  UNI +0.38  ETH +0.29  ZEC +0.24
+  INFO      1 tilted  flow/fund/news/oi on 128
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +68% #6  MARSCOIN +36% #15  龙虾 -36% cut  NIL +32% #17
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  GRT      LONG    0.026710  0.026670  -0.15%   -0.02   10m  - 85% left
+  ------------------------------------------------------------------------------------------------
+ 
+08:16:07 |    🪞 C266 board-parity (top movers vs screen): MUBARAK +74%[#5] | MARSCOIN +40%[#16] | 龙虾
+    -35%[Live=0.08<cut] | ONE -31%[#28] | NIL +28%[#24]

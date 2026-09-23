@@ -55,3 +55,101 @@
 
   << 07:10  CLOSE  BROCCOLI LONG @0.025110  -4.23% $-0.22  LOSS
        held 6m  C377_RISK_STOP: -4.00% =  round trip from +0.46%  -0.97R  TAKER
+  << 07:18  CLOSE  1000BONK LONG @0.00369000  -2.17% $-0.30  LOSS
+       held 14m  C377_RISK_STOP: -2.12% =  round trip from +0.45%  -0.87R  TAKER
+
+
+  07:18  up 0h24m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $253.08
+  SESSION   $-1.02 -0.40%  peak $254.10  dd 0.40%
+  CURVE     *++==--
+  DAY       real $-1.90  loss room $1.87 (0.73%)  101% used  vol x1.08  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      flat  free $253.08
+  FEES      $0.03  mk2/tk3  0.011% of eq
+  SCAN      802 > 77 > 0 passed  top FARTCOIN 0.84 (h1_regime_shock)  5 scans, 241 analysed
+  MARKET    MIXED  bias +0.05  breadth +0.00  taker flow +0.02
+  NEWS      65 articles  ~ tone -0.05  ETH +0.39  ZEC +0.24  NEAR +0.14
+  INFO      1 tilted  flow/fund/news on 88
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +66% #6  龙虾 -36% #28  FOLKS +33% #45  MARSCOIN +31% #16
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 07:26  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  77 analysed
+  .. 07:35  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  77 analysed
+  .. 07:43  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  10 analysed
+
+
+  07:51  up 0h57m  scan 9 ------------------------------------------------------------------------
+  EQUITY    $253.08
+  SESSION   $-1.02 -0.40%  peak $254.10  dd 0.40%
+  CURVE     *++==------
+  DAY       real $-1.90  loss room $1.69 (0.66%)  112% used  vol x0.97  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      flat  free $253.08
+  FEES      $0.03  mk2/tk3  0.011% of eq
+  SCAN      802 > 76 > 2 passed  top IOST 0.72 (viable)  9 scans, 405 analysed
+  MARKET    MIXED  bias +0.15  breadth -0.20  taker flow +0.21
+  NEWS      65 articles  + tone +0.26  ETH +0.36  XRP +0.26  ZEC +0.24
+  INFO      2 tilted  flow/fund/news/oi on 111
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +74% #6  FOLKS +37% #40  龙虾 -37% #30  MARSCOIN +31% #18
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 07:59  flat  $253.08  $-1.02 -0.40%  0W 3L 0%  2 analysed
+  >> 08:05  OPEN   GRT LONG @0.026710  x1 $9.47
+       target +9.3%  stop -2.0%  entry score 0.78  maker
+
+
+  08:07  up 1h13m  scan 12 -----------------------------------------------------------------------
+  EQUITY    $253.05  unreal $-0.03
+  SESSION   $-1.05 -0.41%  peak $254.10  dd 0.41%
+  CURVE     +++==========
+  DAY       real $-1.90  loss room $2.16 (0.85%)  88% used  vol x1.24  trust x1.00
+            #######################...
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      1 pos $9.47 (4%)  free $243.61
+  FEES      $0.03  mk3/tk3  0.011% of eq
+  SCAN      802 > 78 > 1 passed  top GRT 0.78 (viable)  12 scans, 501 analysed
+  MARKET    TRENDING  bias +0.15  breadth +0.00  taker flow +0.25
+  NEWS      64 articles  ~ tone +0.00  ETH +0.36  XRP +0.26  ZEC +0.24
+  INFO      1 tilted  flow/fund/news/oi on 128
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +68% #6  MARSCOIN +36% #15  龙虾 -36% cut  NIL +32% #17
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  GRT      LONG    0.026710  0.026660  -0.19%   -0.03    2m  - 82% left
+  ------------------------------------------------------------------------------------------------
+
+
+
+  08:15  up 1h21m  scan 13 -----------------------------------------------------------------------
+  EQUITY    $253.06  unreal $-0.02
+  SESSION   $-1.04 -0.41%  peak $254.10  dd 0.41%
+  CURVE     *++==---------
+  DAY       real $-1.90  loss room $1.75 (0.69%)  109% used  vol x1.00  trust x1.00
+            ##########################
+  RECORD    3 closed  0W 3L  win 0%  avg $-0.34/tr  best $-0.22  worst $-0.50
+  LIFETIME  84tr 25W 59L 30%  $+3.08
+  OPEN      1 pos $9.47 (4%)  free $243.61
+  FEES      $0.03  mk3/tk3  0.011% of eq
+  SCAN      802 > 1 > 0 passed  top GRT 0.76 (reward_conviction )  13 scans, 502 analysed
+  MARKET    TRENDING  bias +0.15  breadth +0.00  taker flow +0.26
+  NEWS      64 articles  ~ tone +0.00  UNI +0.38  ETH +0.29  ZEC +0.24
+  INFO      1 tilted  flow/fund/news/oi on 128
+            info>0 1tr $-0.30 win 0%  info≤0 1tr $-0.22 win 0%
+  MOVERS    MUBARAK +68% #6  MARSCOIN +36% #15  龙虾 -36% cut  NIL +32% #17
+  TAPE      - - -
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  GRT      LONG    0.026710  0.026670  -0.15%   -0.02   10m  - 85% left
+  ------------------------------------------------------------------------------------------------
+
