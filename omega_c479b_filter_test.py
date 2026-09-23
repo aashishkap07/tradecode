@@ -112,9 +112,19 @@ import glob
 # A live detail log if one happens to be on disk; otherwise the RECOVERED 19-Sep
 # session logs, which are committed and are real bot output. A fixture that only
 # exists after a manual run makes this check vanish silently (Rule 23).
-det = sorted(glob.glob('/home/user/tradecode/omega_detail_*.log')) \
-      or sorted(glob.glob('/home/user/tradecode/recovered_logs/*/omega_session_*.log'),
-                key=lambda p: -os.path.getsize(p))
+def _usable(p):
+    # Other tests import the bot, which opens (and leaves) an EMPTY detail log
+    # beside it. Picking "any detail log" then picked that one and failed for a
+    # reason unrelated to the filter. Only a log with real lines is a fixture.
+    try:
+        with open(p, encoding='utf-8', errors='replace') as fh:
+            return sum(1 for l in fh if '|' in l) >= 50
+    except Exception:
+        return False
+det = sorted([p for p in glob.glob('/home/user/tradecode/omega_detail_*.log') if _usable(p)],
+             key=lambda p: -os.path.getsize(p)) \
+      or sorted([p for p in glob.glob('/home/user/tradecode/recovered_logs/*/omega_session_*.log')
+                 if _usable(p)], key=lambda p: -os.path.getsize(p))
 if det:
     lines = io.open(det[-1], encoding='utf-8', errors='replace').read().splitlines()
     body = [l.split('|', 1)[1].strip() for l in lines if '|' in l]

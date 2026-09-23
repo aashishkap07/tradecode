@@ -288,6 +288,12 @@ class _C460ConsoleFilter(logging.Filter):
         'Cloudflare Tunnel in front',
         'See deploy/DEPLOY.md',
         'OMEGA_CTRL_TOKEN',         # why it is localhost-only, and how to change it
+        # C482: the loss control and the ledger fix are decisions the operator
+        # must see -- the dial moving, trading halting and resuming, a split
+        # trade being recorded whole. C479-B's lesson, applied at build time
+        # this time: found by driving the dashboard, not by reading the filter.
+        'C482',
+        'REMOTE:',                  # every button the operator pressed, on record
     )
 
     def filter(self, record):
@@ -1628,6 +1634,82 @@ class _C462Report:
             _un = float(st.get('unrealized', 0) or 0.0)
             self._pack('EQUITY', [_c462_money(live)]
                        + ([f"unreal {_c462_money(_un, sign=True)}"] if abs(_un) >= 0.005 else []))
+
+            # ═══ C482-C: WHAT THE BOT IS HOLDING GOES SECOND, NOT LAST ═══════
+            # The operator, twice: "the dashboard is not showing open positions
+            # at the top". The web page was fixed at C480-A; this is the same
+            # complaint about the TEXT block, which is what the Report and
+            # Latest-block views show. The table sat at the very bottom, after
+            # SCAN, MARKET, NEWS, INFO, MOVERS and TAPE -- fifteen rows down,
+            # below the fold on a phone, under the least urgent rows in the
+            # block. The book is the thing the operator might have to ACT on;
+            # everything else is context. Same order as the web page now:
+            # equity, then the positions, then the rest.
+            if open_pos:
+                expo = 100.0 * locked / live if live > 0 else 0.0
+                self._pack('OPEN', [f"{len(open_pos)} pos "
+                                    f"{_c462_money(locked)} ({expo:.0f}%)",
+                                    f"free {_c462_money(st.get('available', 0))}"])
+            else:
+                self._pack('OPEN', ['flat',
+                                    f"free {_c462_money(st.get('available', 0))}"])
+            # --- open-position table, one row each ---
+            if open_pos:
+                self._rule(mid=True)
+                # C462-8: a seven-column table needs ~66 characters. Below that
+                # it is not a table, it is seven columns of wrapped rubble — so
+                # a narrow screen gets a two-line STANZA per position instead,
+                # carrying exactly the same seven facts.
+                _wide = self.W >= 66
+                if _wide:
+                    self._raw(f"{'PAIR':<9}{'SIDE':<6}{'ENTRY':>10}{'MARK':>10}"
+                              f"{'MOVE':>8}{'P&L':>8}{'AGE':>6}  THESIS")
+                for sym, pos in list(open_pos.items()):
+                    try:
+                        px = bot.exchange.get_current_price(sym)
+                        if not px:
+                            continue
+                        short = sym.split('/')[0].replace(':USDT', '')
+                        mv = pos.get_price_move_pct(px)
+                        val = pos.size * pos.entry_price
+                        exit_fee = (pos.size * px) * (cfg.TAKER_FEE_PCT / 100.0)
+                        net = (mv / 100.0) * val - float(getattr(pos, 'entry_fee', 0.0) or 0.0) - exit_fee
+                        age = pos.get_age_seconds() / 60.0
+                        ag = f"{int(age // 60)}h{int(age % 60):02d}m" if age >= 60 else f"{int(age)}m"
+                        th = ''
+                        try:
+                            u, _ = pos._c443_uei(cfg)
+                            th = f"{100.0 * float(u):.0f}% left"
+                        except Exception:
+                            th = '—'
+                        mark = (self.g['up'] if net > 0 else
+                                (self.g['dn'] if net < 0 else self.g['flat']))
+                        if _wide:
+                            self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
+                                      f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
+                                      f"{mv:>+7.2f}%{net:>+8.2f}{ag:>6}  {mark} {th}")
+                        else:
+                            self._raw(f"{mark} {short[:9]} {pos.side.upper()}  "
+                                      f"{mv:+.2f}%  {_c462_money(net, sign=True)}")
+                            # C463-8: the thesis as a BAR. "78% left" is a
+                            # number to decode; a bar that is visibly more than
+                            # half full is read at a glance, and glancing is
+                            # what a status block is for.
+                            _tb = ''
+                            try:
+                                _tv, _ = pos._c443_uei(cfg)
+                                _tb = '  ' + _c462_bar(float(_tv), 8,
+                                                       self.g['bar_on'],
+                                                       self.g['bar_off'])
+                            except Exception:
+                                _tb = ''
+                            self._raw(f"   {_fmt_px(pos.entry_price)} {self.g['arrow']} "
+                                      f"{_fmt_px(px)}{self.g['sep']}{ag}"
+                                      f"{self.g['sep']}{th}{_tb}")
+                    except Exception:
+                        continue
+            if open_pos:
+                self._rule(mid=True)      # close the table before the context rows
             self._pack('SESSION', [f"{_c462_money(sess_pnl, sign=True)} {sess_pct:+.2f}%"]
                        + ([f"peak {_c462_money(self.peak_equity)}"]
                           if self.peak_equity > live + 0.005 else [])
@@ -1661,16 +1743,25 @@ class _C462Report:
                     _pnl_d = float(_b.get('pnl', 0.0))
                     used = float(_b.get('frac', 0.0))
                     _bw = min(self.W - self.LW - 4, 26)
-                    _vt = f"vol x{float(_b.get('vol', 1.0)):.2f}" \
-                          f"{self.g['sep']}trust x{float(_b.get('trust', 1.0)):.2f}"
+                    # C482-B: the day's cap is FIXED at the day's start from the
+                    # monthly dial; vol and trust no longer move it.
+                    _g = _b.get('guard') or {}
+                    _halt = {'dial': 'NOT TRADING: dial at 0%',
+                             'month': 'NOT TRADING: month budget spent',
+                             'day': 'NOT TRADING until midnight'}.get(_b.get('capped', ''), '')
                     self._pack('DAY', [
                         f"real {_c462_money(_pnl_d, sign=True)}",
-                        f"loss room {_c462_money(_lim)} ({_lim / day0 * 100.0:.2f}%)",
-                        f"{100.0 * used:.0f}% used", _vt]
-                        + (['month guard'] if _b.get('capped') == 'month' else []))
+                        f"limit {_c462_money(_lim)} ({_lim / day0 * 100.0:.2f}%)",
+                        f"{100.0 * used:.0f}% used"] + ([_halt] if _halt else []))
                     self._day_used = used     # C466: the gauge's colour level
                     self._row('', _c462_bar(used, _bw,
                                             self.g['bar_on'], self.g['bar_off']))
+                    if _g:
+                        self._pack('MONTH', [
+                            f"dial {float(_g.get('pct', 0.0)):.0f}%",
+                            f"used {_c462_money(float(_g.get('month_used', 0.0)))} of "
+                            f"{_c462_money(float(_g.get('month_budget', 0.0)))}",
+                            f"from {_c462_money(float(_g.get('month_eq0', 0.0)))}"])
                 else:
                     self._row('DAY', 'barrier not yet derived (no day anchor)')
             except Exception:
@@ -1717,16 +1808,6 @@ class _C462Report:
                     f"{int(getattr(pf, 'lifetime_losses', 0))}L "
                     f"{float(st.get('win_rate', 0)):.0f}%",
                     _c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)])
-
-            # --- exposure ---
-            if open_pos:
-                expo = 100.0 * locked / live if live > 0 else 0.0
-                self._pack('OPEN', [f"{len(open_pos)} pos "
-                                    f"{_c462_money(locked)} ({expo:.0f}%)",
-                                    f"free {_c462_money(st.get('available', 0))}"])
-            else:
-                self._pack('OPEN', ['flat',
-                                    f"free {_c462_money(st.get('available', 0))}"])
 
             # --- cost, which C461 made the headline number of this project ---
             tot_fee = self.fees_maker + self.fees_taker
@@ -1855,61 +1936,6 @@ class _C462Report:
             except Exception:
                 pass
 
-            # --- open-position table, one row each ---
-            if open_pos:
-                self._rule(mid=True)
-                # C462-8: a seven-column table needs ~66 characters. Below that
-                # it is not a table, it is seven columns of wrapped rubble — so
-                # a narrow screen gets a two-line STANZA per position instead,
-                # carrying exactly the same seven facts.
-                _wide = self.W >= 66
-                if _wide:
-                    self._raw(f"{'PAIR':<9}{'SIDE':<6}{'ENTRY':>10}{'MARK':>10}"
-                              f"{'MOVE':>8}{'P&L':>8}{'AGE':>6}  THESIS")
-                for sym, pos in list(open_pos.items()):
-                    try:
-                        px = bot.exchange.get_current_price(sym)
-                        if not px:
-                            continue
-                        short = sym.split('/')[0].replace(':USDT', '')
-                        mv = pos.get_price_move_pct(px)
-                        val = pos.size * pos.entry_price
-                        exit_fee = (pos.size * px) * (cfg.TAKER_FEE_PCT / 100.0)
-                        net = (mv / 100.0) * val - float(getattr(pos, 'entry_fee', 0.0) or 0.0) - exit_fee
-                        age = pos.get_age_seconds() / 60.0
-                        ag = f"{int(age // 60)}h{int(age % 60):02d}m" if age >= 60 else f"{int(age)}m"
-                        th = ''
-                        try:
-                            u, _ = pos._c443_uei(cfg)
-                            th = f"{100.0 * float(u):.0f}% left"
-                        except Exception:
-                            th = '—'
-                        mark = (self.g['up'] if net > 0 else
-                                (self.g['dn'] if net < 0 else self.g['flat']))
-                        if _wide:
-                            self._raw(f"{short[:8]:<9}{pos.side.upper():<6}"
-                                      f"{_fmt_px(pos.entry_price):>10}{_fmt_px(px):>10}"
-                                      f"{mv:>+7.2f}%{net:>+8.2f}{ag:>6}  {mark} {th}")
-                        else:
-                            self._raw(f"{mark} {short[:9]} {pos.side.upper()}  "
-                                      f"{mv:+.2f}%  {_c462_money(net, sign=True)}")
-                            # C463-8: the thesis as a BAR. "78% left" is a
-                            # number to decode; a bar that is visibly more than
-                            # half full is read at a glance, and glancing is
-                            # what a status block is for.
-                            _tb = ''
-                            try:
-                                _tv, _ = pos._c443_uei(cfg)
-                                _tb = '  ' + _c462_bar(float(_tv), 8,
-                                                       self.g['bar_on'],
-                                                       self.g['bar_off'])
-                            except Exception:
-                                _tb = ''
-                            self._raw(f"   {_fmt_px(pos.entry_price)} {self.g['arrow']} "
-                                      f"{_fmt_px(px)}{self.g['sep']}{ag}"
-                                      f"{self.g['sep']}{th}{_tb}")
-                    except Exception:
-                        continue
             self._rule(bottom=True)
             self._emit('')
         except Exception as e:
@@ -2040,7 +2066,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C480'
+_OMEGA_VERSION = 'C482'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -4115,15 +4141,12 @@ class Config:
         # from ever carrying cumulative realised drawdown past the declared
         # figure pro rata. A dynamic barrier that could outrun its own mandate
         # would not be a barrier.
-        self.C467_DYN_BARRIER       = True
-        self.C467_BARRIER_VOL_LO    = 0.70   # calmest tape: 70% of the base allowance
-        self.C467_BARRIER_VOL_HI    = 1.50   # wildest tape: 150%
-        self.C467_BARRIER_TRUST_LO  = 0.60   # worst realised record
-        self.C467_BARRIER_TRUST_HI  = 1.25   # best
-        self.C467_BARRIER_TRUST_N   = 8      # closes before trust may move at all
-        self.C467_BARRIER_REALISED  = True   # unrealised marks do not spend the day
+        # C482-B: RETIRED. The vol term was recomputed every scan against a loss
+        # already taken, so the limit could widen away from it -- on 23 Sep it
+        # read 101% used, then 81%, and three trades were opened on a breached
+        # day. The C467_BARRIER_* constants are removed with the code that read
+        # them; the loss control is now _c482_risk_guard, set by the dial.
         self.C467_DAY_PROFIT_HALT   = False  # never stop a day for winning
-        self.C467_BARRIER_VOL_HALFLIFE_H = 24.0   # memory of the volatility baseline
         # ═══ C467-C: THE SCREEN ═══════════════════════════════
         # "The display leaves almost half screen blank, there is no spacing
         # wherever it's required." Both had one mechanical cause each.
@@ -4158,6 +4181,20 @@ class Config:
         # few seconds; without a retry the bot trades on with no dashboard and no
         # remote stop button until a human notices. Seconds.
         self.C479_CTRL_RETRY_S      = 15
+        # ═══ C482-B: ONE LOSS CONTROL, SET BY ONE NUMBER ════════════════════
+        # The operator's MONTHLY risk dial (C380_MAX_MONTHLY_DD_PCT, 0-20%) is
+        # the only loss mandate. Everything below is derived from it and from
+        # two anchors that cannot move once set (month-start and day-start
+        # equity). See _c482_risk_guard for why the four controls it replaces
+        # were retired.
+        self.C482_DAY_SHARE         = 0.25   # a day may spend at most this share of
+                                             # what is LEFT of the month at the day's
+                                             # start: a runaway net, not a throttle
+        self.C482_MIN_ROOM_FRAC     = 0.30   # stop scanning when the room left is
+                                             # under this share of one trade's risk
+        self.C482_HALT_NOTE_MIN     = 60     # while halted, one reminder per hour
+        self.C482_GUARDIAN_ACT      = False  # Guardian may REPORT; it may not act
+        self.C482_SESSION_BREAKER   = False  # the -3%/-5% session breaker, retired
         # ═══ C464: THE INFORMATION OVERLAY ════════════════════════════════
         # After C463 measured that nothing derivable from PRICE is net positive
         # after fees -- 30 of 30 geometries, every entry condition, and funding
@@ -7231,6 +7268,7 @@ class PositionsManager:
                     '_c336_pnl_pru': getattr(pos, '_c336_pnl_pru', None),
                     '_partial_booked_pnl': getattr(pos, '_partial_booked_pnl', 0.0),
                     '_partial_booked_fees': getattr(pos, '_partial_booked_fees', 0.0),
+                    '_c482_orig_margin': getattr(pos, '_c482_orig_margin', 0.0),
                     # ═══ C458-8: WHEN WAS THIS POSITION LAST ACTUALLY SEEN ═══
                     # The operator stops and resumes the bot deliberately, so
                     # an unwatched gap is NORMAL OPERATION rather than a crash.
@@ -7312,6 +7350,7 @@ class PositionsManager:
                     pos._c336_pnl_pru = float(d['_c336_pnl_pru'])
                 pos._partial_booked_pnl = float(d.get('_partial_booked_pnl', 0.0) or 0.0)
                 pos._partial_booked_fees = float(d.get('_partial_booked_fees', 0.0) or 0.0)
+                pos._c482_orig_margin = float(d.get('_c482_orig_margin', 0.0) or 0.0)
                 pos._c458_rung1 = bool(d.get('_c458_rung1', False))
                 if d.get('_c458_be_move') is not None:
                     pos._c458_be_move = float(d['_c458_be_move'])
@@ -7827,6 +7866,9 @@ class Portfolio:
                 # position after the battery swap was sized 33% LARGER than the
                 # risk he had declared, mid-day, with nobody deciding it.
                 'c380_max_dd_pct': float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0)),
+                # C482-B: the month anchor must survive a restart, or a restart
+                # mid-month would forget the month's losses and hand back budget.
+                'c482_month': getattr(self, '_c482_month', None),
             }
             with open(self.cfg.STATE_FILE, 'w') as f:
                 json.dump(state, f, indent=2)
@@ -7857,9 +7899,16 @@ class Portfolio:
             # the resume silently re-sized every trade in the book.
             try:
                 _dd397 = s.get('c380_max_dd_pct', None)
-                if _dd397 is not None and 1.0 <= float(_dd397) <= 30.0:
-                    self.cfg.C380_MAX_MONTHLY_DD_PCT = float(_dd397)
-                    self._c397_dd_restored = float(_dd397)
+                if _dd397 is not None and 0.0 <= float(_dd397) <= 30.0:
+                    # C482-B: the dial is 0-20%; an older 20-30 is clamped, not lost
+                    self.cfg.C380_MAX_MONTHLY_DD_PCT = min(20.0, float(_dd397))
+                    self._c397_dd_restored = self.cfg.C380_MAX_MONTHLY_DD_PCT
+            except Exception:
+                pass
+            try:
+                _m482 = s.get('c482_month', None)
+                if isinstance(_m482, dict) and _m482.get('key') and float(_m482.get('eq0', 0) or 0) > 0:
+                    self._c482_month = {'key': str(_m482['key']), 'eq0': float(_m482['eq0'])}
             except Exception:
                 pass
 
@@ -18793,8 +18842,11 @@ class TradingBot:
 
                     # 6. C37: Profit targets checked by monitoring thread
 
-                    # 7. PHASE2: Check session drawdown
-                    self._check_session_drawdown()
+                    # 7. PHASE2: Check session drawdown -- C482-B: retired by default.
+                    # Never fired once in 34.6 MB of logs; the monthly dial is the
+                    # loss control and each position carries its own hard stop.
+                    if bool(getattr(self.cfg, 'C482_SESSION_BREAKER', False)):
+                        self._check_session_drawdown()
 
                     # 8. Check emergency (15% unrealized loss)
                     self._check_emergency()
@@ -18804,8 +18856,14 @@ class TradingBot:
                         self._display_summary()
                         self.last_summary = time.time()
 
+                    # C482-B: the panel is heard every tick, scan or no scan.
+                    self._c482_poll_commands()
+
                     # 10. Scan if balance available (min 15 USDT)
-                    if not self.is_scanning and not self.emergency_active and not self._drawdown_paused:
+                    # C482-B: nothing can be opened, so there is nothing to search
+                    # for. The monitor thread keeps watching open positions.
+                    if not self.is_scanning and not self.emergency_active and not self._drawdown_paused \
+                            and not self._c482_scan_halted():
                         free = self.portfolio.get_truly_free_balance()
                         # C4 #127: Adaptive scan frequency
                         _mb = abs(getattr(self, '_market_bias', 0))
@@ -22079,193 +22137,205 @@ class TradingBot:
 
 
     # ═══ C467-B: THE DAY BARRIER, MEASURED AGAINST THE MARKET'S OWN SELF ══
-    def _c467_note_stop(self, stop_pct):
-        """Collect this scan's stop distances.
+    def _c482_risk_guard(self):
+        """THE loss control. One number decides it: the monthly risk dial.
 
-        The stop IS the volatility reading — R = 2×ATR, so the median stop
-        across a scan is the median ATR of everything the bot looked at, in the
-        bot's own units, with no extra fetch and no second definition of
-        volatility to drift out of step with the first. Called once per
-        candidate from the expectancy gate, which every scored pair reaches.
+        WHAT IT REPLACES, AND WHY. Before C482 four separate controls decided
+        whether the bot could lose more, each measuring something different:
+
+          1. the C467-B day barrier -- (dial/22) x equity x vol x trust. The vol
+             term was recomputed EVERY SCAN and applied to a loss already taken,
+             so the limit could move away from the loss. On 23 Sep it read 101%
+             used at 07:18, then vol rose, the limit widened, "used" fell to 81%,
+             and GRT, EVAA and MET were opened on a day that had already hit its
+             limit. A control that can widen after the fact is no control
+             (standing rule 26 -- mine). Its month guard summed LOSSES only and
+             never subtracted wins, so it tracked gross losses, not drawdown.
+          2. the session drawdown breaker (-3% pause / -5% stop on LIVE equity).
+             It never fired once in 34.6 MB of logs.
+          3. the Guardian, which borrowed the drawdown-pause flag. 67
+             interventions in five days: blocked ALL longs for 30 min 53 times in
+             a tape read long-biased 80% of the time, where longs made +$5.09 and
+             shorts -$0.08; ratcheted the entry bar 0.32 -> 0.55 and left it;
+             force-closed losers at -0.5%, far inside their real stops. Two of
+             its four tuning actions never ran at all (PEAK set on the bot, read
+             from a Position; TF patience set and never read). And it diagnosed
+             from records that saw split winners at half value (C482-A).
+          4. the operator's own dial -- which the headless unit file overwrote
+             with OMEGA_MAX_DD=15 on every restart.
+
+        WHAT IT IS NOW. Two anchors that cannot move once set, and the dial:
+
+            month budget = month-start equity x dial%
+            month used   = max(0, month-start equity - realised equity)   NET
+            day cap      = DAY_SHARE x (month budget - month used AT DAY START)
+            day used     = max(0, day-start equity - realised equity)
+
+        The day cap is FIXED for the day -- it is computed from the two anchors,
+        not from anything that moves during the day -- so it cannot be outrun.
+        At 25% of what is left, one day cannot spend the month, and a run of bad
+        days paces itself geometrically: four maximal days in a row still leave
+        about a third of the month. At 15% on $254 that is ~$9.50 on day one --
+        a net for a broken day, not a throttle on an ordinary losing streak (at
+        a 35% win rate, four losses in a row happen on ~18% of four-trade runs).
+
+        Realised equity only: open risk is already counted by the C313
+        open-stop reservation in the budget fit, and every position has its own
+        hard stop. A loss limit that fires on paper money is not a limit (C467).
         """
+        out = {'pct': 0.0, 'month_eq0': 0.0, 'month_budget': 0.0, 'month_used': 0.0,
+               'month_left': 0.0, 'day0': 0.0, 'day_cap': 0.0, 'day_used': 0.0,
+               'day_left': 0.0, 'day_pnl': 0.0, 'min_room': 0.0, 'halt': ''}
         try:
-            v = float(stop_pct or 0.0)
-            if v > 0:
-                lst = getattr(self, '_c467_stop_scan', None)
-                if lst is None:
-                    lst = []
-                    self._c467_stop_scan = lst
-                if len(lst) < 400:
-                    lst.append(v)
-        except Exception:
-            pass
+            import datetime as _dt482
+            pct = max(0.0, min(20.0, float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 15.0) or 0.0)))
+            out['pct'] = pct
+            eq = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)
+            # --- the month anchor: set once per calendar month, persisted ------
+            key = _dt482.date.today().strftime('%Y-%m')
+            m = getattr(self.portfolio, '_c482_month', None)
+            if not isinstance(m, dict) or m.get('key') != key or float(m.get('eq0', 0) or 0) <= 0:
+                # Anchor ONLY once the saved state has loaded. Before that,
+                # equity is the INITIAL_CAPITAL placeholder, and a month anchored
+                # on it would be wrong by exactly the account's history -- the
+                # C462-3 provisional-banner defect in a new place. No save here:
+                # the portfolio persists on every open and close, and a save
+                # issued before load_state would overwrite the real state file.
+                if not bool(getattr(self, '_c462_state_settled', False)) or eq <= 0:
+                    return out
+                m = {'key': key, 'eq0': eq}
+                self.portfolio._c482_month = m
+                logger.info(f"   \U0001f4c5 C482 month anchor {key}: ${eq:.2f} "
+                            f"(budget {pct:.0f}% = ${eq * pct / 100.0:.2f})")
+            eq0 = float(m['eq0'])
+            d0 = float(getattr(getattr(self, 'mode_mgr', None), '_day_start_equity', 0.0) or 0.0) or eq
+            budget = eq0 * pct / 100.0
+            m_used = max(0.0, eq0 - eq)
+            m_used_d0 = max(0.0, eq0 - d0)
+            day_cap = float(getattr(self.cfg, 'C482_DAY_SHARE', 0.25)) * max(0.0, budget - m_used_d0)
+            d_used = max(0.0, d0 - eq)
+            per = float(getattr(self.cfg, 'PER_TRADE_RISK_PCT', 0.0) or 0.0) * eq
+            room_min = max(0.05, float(getattr(self.cfg, 'C482_MIN_ROOM_FRAC', 0.30)) * per)
+            out.update(month_eq0=eq0, month_budget=budget, month_used=m_used,
+                       month_left=max(0.0, budget - m_used), day0=d0, day_cap=day_cap,
+                       day_used=d_used, day_left=max(0.0, day_cap - d_used),
+                       day_pnl=eq - d0, min_room=room_min)
+            if pct <= 0.0:
+                out['halt'] = 'dial'
+            elif out['month_left'] < room_min:
+                out['halt'] = 'month'
+            elif out['day_left'] < room_min:
+                out['halt'] = 'day'
+        except Exception as _e482:
+            logger.warning(f"\u26a0\ufe0f C482 risk guard failed: {type(_e482).__name__}: {_e482}")
+        return out
 
-    def _c467_vol_roll(self):
-        """At each scan boundary: median this scan, age the baseline, publish
-        the ratio. Called from the ONE place that already marks a scan tick
-        (_c420_scan_seq), because a second tick would be C420-1 again."""
-        try:
-            lst = getattr(self, '_c467_stop_scan', None) or []
-            self._c467_stop_scan = []
-            if len(lst) < 5:
+    def _c482_poll_commands(self):
+        """Read the control panel's queue. Called EVERY main-loop tick, not
+        only from inside the scan.
+
+        C482-B, CAUGHT BEFORE SHIPPING: this block used to live at the top of
+        the scan function and nowhere else. So anything that kept the scan from
+        running also kept the panel from being heard -- the Guardian's 10-15
+        minute pauses already did, 67 times, and the C482 halt would have made
+        it permanent: a spent day would have left the STOP BUTTON dead until
+        midnight. A stop button must never depend on the thing it stops.
+        Popping is idempotent, so a second call in the same tick is harmless."""
+        _remote = getattr(self, '_remote', None)
+        if not _remote:
+            return
+        for _ in range(6):                      # drain, bounded
+            _cmd = _remote.check_commands()
+            if not _cmd:
                 return
-            srt = sorted(lst)
-            med = srt[len(srt) // 2] if len(srt) % 2 else \
-                  0.5 * (srt[len(srt) // 2 - 1] + srt[len(srt) // 2])
-            st = getattr(self, '_c467_vol_state', None)
-            if not isinstance(st, dict):
-                # First reading seeds the baseline AT itself, so the ratio opens
-                # at exactly 1.00 and the barrier opens at its base. A baseline
-                # seeded anywhere else would make the bot's first hour a lie
-                # about the market — that is the C420-1 defect, and it cost
-                # seven hours of lockout the last time it shipped.
-                st = {'base': med, 'last': time.time(), 'n': 0}
-                self._c467_vol_state = st
-            hl = max(1.0, float(getattr(self.cfg, 'C467_BARRIER_VOL_HALFLIFE_H', 24.0)))
-            now = time.time()
-            dt_h = max(0.0, (now - float(st.get('last', now))) / 3600.0)
-            # EWMA with a real half-life, decayed on the READ path as well as
-            # the write path — an estimator that only updates when something
-            # happens is a latch, not an estimator (C420-1).
-            a = 1.0 - 0.5 ** (dt_h / hl) if dt_h > 0 else 0.0
-            st['base'] = (1.0 - a) * float(st.get('base', med)) + a * med
-            st['last'] = now
-            st['n'] = int(st.get('n', 0)) + 1
-            st['med'] = med
-            st['ratio'] = med / max(float(st['base']), 1e-9)
-        except Exception:
-            pass
+            if _cmd == 'pause':
+                logger.info("⏸️ REMOTE: Pause requested")
+                self._remote_paused = True
+            elif _cmd == 'resume':
+                logger.info("▶️ REMOTE: Resume requested")
+                self._remote_paused = False
+            elif _cmd == 'stop':
+                logger.info("⏹️ REMOTE: Stop requested")
+                raise KeyboardInterrupt("Remote stop")
+            elif _cmd == 'force_scan':
+                logger.info("🔍 REMOTE: Force scan requested")
+                self._last_scan_time = 0  # Force immediate scan
+            elif isinstance(_cmd, tuple) and _cmd and _cmd[0] == 'risk':
+                self._c482_set_dial(_cmd[1], source='control panel')
 
-    def _c467_day_realised(self):
-        """The day's REALISED profit and loss, in dollars.
-
-        Deliberately NOT live equity. The old barrier read day_start minus LIVE
-        equity, so an open position temporarily underwater spent the day's
-        allowance and blocked new entries, then recovered and gave it back. A
-        protection that fires on paper money is not a protection (standing rule
-        #5). Open risk is still counted — by the C313 open-stop RESERVATION,
-        which is the correct, non-double-counting way to do it.
-        """
+    def _c482_set_dial(self, pct, source='control panel'):
+        """Set the monthly risk dial (0-20%), re-derive everything that hangs
+        off it, and persist it so a restart keeps it."""
         try:
-            d0 = float(getattr(getattr(self, 'mode_mgr', None), '_day_start_equity', 0.0) or 0.0)
-            if d0 <= 0:
-                return 0.0, 0.0
-            if not bool(getattr(self.cfg, 'C467_BARRIER_REALISED', True)):
-                # The pre-C467 behaviour, kept as ONE line so the change can be
-                # A/B'd against the next log without reverting the version --
-                # the C403 method, which has held for sixty-odd versions.
-                try:
-                    live = float(self.portfolio.get_live_equity(self.exchange) or 0.0)
-                except Exception:
-                    live = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)
-                return (live - d0), d0
-            cash = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)
-            return (cash - d0), d0
-        except Exception:
-            return 0.0, 0.0
-
-    def _c467_day_barrier(self):
-        """How many dollars this day may LOSE, right now.
-
-            limit = (declared monthly drawdown / 22) × day-start equity
-                    × vol_ratio × trust
-
-        vol_ratio is the market measured against its own recent self; trust is
-        this bot measured against its own recent record. Neither is an absolute
-        number, which is Principle #1 of this project and the one thing the old
-        fixed DD/22 barrier could never be.
-
-        The month guard is the discipline: whatever the two relative terms say,
-        cumulative realised drawdown may not run ahead of the declared monthly
-        figure pro rata. A dynamic barrier that could outrun its own mandate
-        would not be a barrier, it would be a ratchet pointed the wrong way.
-        """
-        out = {'limit': 0.0, 'base': 0.0, 'vol': 1.0, 'trust': 1.0,
-               'used': 0.0, 'frac': 0.0, 'pnl': 0.0, 'day0': 0.0, 'capped': ''}
-        try:
-            pnl, d0 = self._c467_day_realised()
-            out['pnl'], out['day0'] = pnl, d0
-            if d0 <= 0:
-                return out
-            base = d0 * float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.0045) or 0.0045)
-            out['base'] = base
-            if not bool(getattr(self.cfg, 'C467_DYN_BARRIER', True)):
-                out['limit'] = base
-                out['used'] = max(0.0, -pnl)
-                out['frac'] = out['used'] / max(base, 1e-9)
-                return out
-            # --- the market, against its own recent self ---
-            vst = getattr(self, '_c467_vol_state', None) or {}
-            vr = float(vst.get('ratio', 1.0) or 1.0)
-            vlo = float(getattr(self.cfg, 'C467_BARRIER_VOL_LO', 0.70))
-            vhi = float(getattr(self.cfg, 'C467_BARRIER_VOL_HI', 1.50))
-            vol = max(vlo, min(vhi, vr))
-            # --- this bot, against its own recent record ---
-            trust = 1.0
+            v = max(0.0, min(20.0, float(pct)))
+            old = float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 0.0) or 0.0)
+            self.cfg.C380_MAX_MONTHLY_DD_PCT = v
+            self._c406_budget_key = None
+            self._c369_apply_budget(float(getattr(self.portfolio, 'equity', 0.0) or 0.0))
             try:
-                tlo = float(getattr(self.cfg, 'C467_BARRIER_TRUST_LO', 0.60))
-                thi = float(getattr(self.cfg, 'C467_BARRIER_TRUST_HI', 1.25))
-                need = int(getattr(self.cfg, 'C467_BARRIER_TRUST_N', 8))
-                pay, n_pay = self._c463_realised_payoff()
-                if int(n_pay or 0) >= need:
-                    wr = float(self._c420_base_rate())
-                    # realised expectancy in R: wins pay `pay`, losses cost 1
-                    e_real = wr * float(pay) - (1.0 - wr)
-                    # map [-0.30R, +0.30R] onto [tlo, thi], clamped. 0 -> 1.00
-                    if e_real >= 0:
-                        trust = 1.0 + (thi - 1.0) * min(1.0, e_real / 0.30)
-                    else:
-                        trust = 1.0 - (1.0 - tlo) * min(1.0, -e_real / 0.30)
-                    trust = max(tlo, min(thi, trust))
-            except Exception:
-                trust = 1.0
-            out['vol'], out['trust'] = vol, trust
-            limit = base * vol * trust
-            # --- the month guard ---
-            try:
-                if limit > base:
-                    dd = float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0))
-                    mst = getattr(self, '_c467_month', None) or {}
-                    m_dd = float(mst.get('dd_usd', 0.0) or 0.0)      # realised, this month
-                    m_days = max(1.0, float(mst.get('days', 1.0) or 1.0))
-                    m_eq = float(mst.get('eq0', d0) or d0)
-                    allowed = m_eq * (dd / 100.0) * min(1.0, m_days / 22.0)
-                    if m_dd >= allowed > 0:
-                        limit = min(limit, base)
-                        out['capped'] = 'month'
+                self.portfolio.save_state()
             except Exception:
                 pass
-            out['limit'] = max(base * vlo * float(getattr(self.cfg,
-                               'C467_BARRIER_TRUST_LO', 0.60)), limit)
-            out['used'] = max(0.0, -pnl)
-            out['frac'] = out['used'] / max(out['limit'], 1e-9)
-            return out
-        except Exception:
-            return out
+            g = self._c482_risk_guard()
+            logger.info(f"\U0001f39a\ufe0f C482 MONTHLY RISK DIAL {old:.0f}% -> {v:.0f}% ({source}). "
+                        f"Month budget ${g['month_budget']:.2f}, used ${g['month_used']:.2f}; "
+                        f"today may lose ${g['day_cap']:.2f}; per-trade risk "
+                        f"{100.0 * float(getattr(self.cfg, 'PER_TRADE_RISK_PCT', 0.0) or 0.0):.3f}%"
+                        + (" \u2014 NO NEW TRADES at 0%" if v <= 0 else ""))
+        except Exception as _e:
+            logger.warning(f"\u26a0\ufe0f C482 dial change failed: {type(_e).__name__}: {_e}")
 
-    def _c467_month_note(self, realised_delta):
-        """Keep the month-to-date realised drawdown the month guard reads.
-        Written on every close, so the guard cannot be reading a number nobody
-        maintains — the orphan-attribute family this project keeps paying for.
-        """
+    def _c482_scan_halted(self):
+        """True when no new trade could be allowed, so there is nothing to scan
+        for. Open positions are still watched every tick by the monitor thread;
+        only the SEARCH for new ones stops. Says so once, then once an hour."""
         try:
-            import datetime as _dt467
-            st = getattr(self, '_c467_month', None)
-            key = _dt467.date.today().strftime('%Y-%m')
-            if not isinstance(st, dict) or st.get('key') != key:
-                st = {'key': key, 'dd_usd': 0.0, 'days': 1.0,
-                      'eq0': float(getattr(self.portfolio, 'equity', 0.0) or 0.0),
-                      'day': _dt467.date.today().toordinal()}
-                self._c467_month = st
-            d = _dt467.date.today().toordinal()
-            if d != int(st.get('day', d)):
-                st['days'] = float(st.get('days', 1.0)) + 1.0
-                st['day'] = d
-            v = float(realised_delta or 0.0)
-            if v < 0:
-                st['dd_usd'] = float(st.get('dd_usd', 0.0)) + abs(v)
+            g = self._c482_risk_guard()
+            why = g.get('halt', '')
+            prev = getattr(self, '_c482_halt_prev', '')
+            self._c482_halt_prev = why
+            if not why:
+                if prev:
+                    _why = {'dial': 'the risk dial is above 0% again',
+                            'month': "the month's loss budget has room again",
+                            'day': "a new day has started"}.get(prev, f'{prev} has room again')
+                    logger.info(f"\u25b6\ufe0f C482 trading resumes \u2014 {_why}")
+                return False
+            now = time.time()
+            last = float(getattr(self, '_c482_halt_note_t', 0.0) or 0.0)
+            gap = 60.0 * float(getattr(self.cfg, 'C482_HALT_NOTE_MIN', 60))
+            if why != prev or now - last >= gap:
+                self._c482_halt_note_t = now
+                if why == 'dial':
+                    msg = "the monthly risk dial is at 0% \u2014 no new trades until you raise it"
+                elif why == 'month':
+                    msg = (f"this month's loss budget is spent (${g['month_used']:.2f} of "
+                           f"${g['month_budget']:.2f} at {g['pct']:.0f}%) \u2014 no new trades "
+                           f"until the month turns or you raise the dial")
+                else:
+                    msg = (f"today's loss limit is spent (${g['day_used']:.2f} of "
+                           f"${g['day_cap']:.2f}) \u2014 no new trades until midnight")
+                logger.info(f"\u23f8\ufe0f C482 NOT SCANNING: {msg}. Open positions are still "
+                            f"watched every tick.")
+            return True
         except Exception:
-            pass
+            return False
+
+    def _c467_day_barrier(self):
+        """C482-B: now a VIEW of _c482_risk_guard, kept under the old name and
+        the old keys so every reader -- the budget fit, the open-position budget
+        stop, the report, the web dashboard -- sees ONE computation. Two places
+        that decide how much the day may lose must never compute it twice.
+        vol and trust are reported as 1.00: they no longer move the limit."""
+        g = self._c482_risk_guard()
+        cap = float(g.get('day_cap', 0.0) or 0.0)
+        if g.get('halt') == 'dial' or cap <= 0.0:
+            cap = 1e-6            # truthy, so no reader falls back to a stale default
+        used = float(g.get('day_used', 0.0) or 0.0)
+        return {'limit': cap, 'base': cap, 'vol': 1.0, 'trust': 1.0, 'used': used,
+                'frac': used / cap, 'pnl': float(g.get('day_pnl', 0.0) or 0.0),
+                'day0': float(g.get('day0', 0.0) or 0.0), 'capped': g.get('halt', ''),
+                'guard': g}
 
     def _c464_midrank(self, values, x):
         """Cross-sectional percentile with TIES SHARING THE AVERAGE POSITION.
@@ -23077,6 +23147,10 @@ class TradingBot:
                 pos._partial_booked_fees = float(getattr(pos, '_partial_booked_fees', 0.0) or 0.0) + _fees
             except Exception:
                 pass
+            # C482-A: the margin the IDEA started with, captured before the first
+            # split halves it, so the final close can state the whole idea's %.
+            if not float(getattr(pos, '_c482_orig_margin', 0.0) or 0.0):
+                pos._c482_orig_margin = float(pos.initial_margin)
             # mutate the survivor
             pos.size = pos.size - _half
             pos.initial_margin = pos.initial_margin / 2.0
@@ -23394,6 +23468,39 @@ class TradingBot:
             _whole397 = net_pnl + float(getattr(pos, '_partial_booked_pnl', 0.0) or 0.0)
             self.portfolio.release_margin(pos.initial_margin, net_pnl, total_fees,
                                           classify_pnl=_whole397)
+            # ═══ C482-A: C397-4 WAS APPLIED TO ONE LEDGER OUT OF ELEVEN ═════════
+            # C397-4 computed the whole idea above and handed it to exactly one
+            # consumer -- the win/loss counter inside release_margin. Everything
+            # below this line kept reading `net_pnl`, which is the REMAINDER's
+            # slice alone: the C462 session journal, the learning system, the
+            # S3 calibration ledger, component attribution, the pair-benching
+            # memory, the consecutive-loss cooldown, the Guardian, trade history,
+            # the C467-B month ledger, the session per-pair P&L.
+            #
+            # MEASURED on the 20-23 Sep session: 18 of 25 winners were recorded
+            # at EXACTLY half (ratio 0.5047 +/- 0.0068) and not one loser. The
+            # table summed to -$3.92 while equity went $250.00 -> $254.10, i.e.
+            # +$4.10. The account made money and every figure the operator reads
+            # said it lost. And the case C397-4's own comment describes -- a
+            # banked +$0.30 with a remainder closed at -$0.05 -- was still being
+            # taught to the learning system and the pair bench as a LOSS.
+            #
+            # The cash booking above is untouched and must stay the remainder's:
+            # the banked half's money reached equity when it was banked. From
+            # here on the name means what every reader already assumed it meant.
+            _banked482 = float(getattr(pos, '_partial_booked_pnl', 0.0) or 0.0)
+            _remainder_net482 = net_pnl
+            if _banked482 != 0.0:
+                _bfees482 = float(getattr(pos, '_partial_booked_fees', 0.0) or 0.0)
+                net_pnl = _whole397
+                gross_pnl = gross_pnl + _banked482 + _bfees482
+                total_fees = total_fees + _bfees482
+                _om482 = float(getattr(pos, '_c482_orig_margin', 0.0) or 0.0)
+                if _om482 > 0:
+                    pnl_pct = gross_pnl / _om482 * 100.0
+                logger.info(f"   \u2702\ufe0f C482-A split trade: banked ${_banked482:+.2f} "
+                            f"+ remainder ${_remainder_net482:+.2f} = whole idea "
+                            f"${net_pnl:+.2f} \u2014 every record below uses the whole idea")
             self.portfolio.positions.remove(symbol)
             # C145: Save state immediately after every position close
             try:
@@ -23817,7 +23924,9 @@ class TradingBot:
             try:   # C462-4: one dashboard line per exit
                 _held462 = pos.get_age_seconds() / 60.0
                 _R462 = float(getattr(pos, '_c372_R_pct', 0.0) or 0.0)
-                self._c467_month_note(net_pnl)     # C467-B month guard ledger
+                # C482-B: the C467-B month ledger summed LOSSES only and never
+                # subtracted wins -- gross losses, not drawdown. Retired; the
+                # month is now measured from equity against a persisted anchor.
                 _c462_report.note_close(
                     symbol, pos.side, pos.entry_price, exit_price,
                     price_move_pct, net_pnl, reason, _held462,
@@ -25666,21 +25775,7 @@ class TradingBot:
             return  # Cooling down after loss
         
         # C138: Check remote control commands
-        _remote = getattr(self, '_remote', None)
-        if _remote:
-            _cmd = _remote.check_commands()
-            if _cmd == 'pause':
-                logger.info("⏸️ REMOTE: Pause requested")
-                self._remote_paused = True
-            elif _cmd == 'resume':
-                logger.info("▶️ REMOTE: Resume requested")
-                self._remote_paused = False
-            elif _cmd == 'stop':
-                logger.info("⏹️ REMOTE: Stop requested")
-                raise KeyboardInterrupt("Remote stop")
-            elif _cmd == 'force_scan':
-                logger.info("🔍 REMOTE: Force scan requested")
-                self._last_scan_time = 0  # Force immediate scan
+        self._c482_poll_commands()
         if getattr(self, '_remote_paused', False):
             return  # Paused via remote control
         # C79: Enforce minimum scan gap when no positions open
@@ -26622,12 +26717,10 @@ class TradingBot:
             self._c420_scan_seq = int(getattr(self, '_c420_scan_seq', 0)) + 1
         except Exception:
             self._c420_scan_seq = 1
-        # C467-B: the same tick ages the volatility baseline the day barrier
-        # scales on. One tick, two consumers — never a second tick.
-        try:
-            self._c467_vol_roll()
-        except Exception:
-            pass
+        # C482-B: the C467-B volatility baseline was aged here for the day
+        # barrier to scale on. The barrier no longer scales on volatility (that
+        # scaling is what let it widen after a loss), so the estimator had no
+        # reader left and is removed rather than left computing for nobody.
         logger.info("📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair")
         # C98: Check if monitoring closed a position during scan → abort
         if getattr(self, '_monitor_triggered_close', False):
@@ -27862,7 +27955,6 @@ class TradingBot:
                             # would also miss per-instrument funding, which is
                             # 19% of a risk unit on QQQ and 0% on XAU.
                             _feeR467 = float(self._c408_fee_burden_r(symbol, _R404))
-                            self._c467_note_stop(_R404)   # C467-B volatility reading
                             _need467 = float(getattr(self.cfg, 'C467_FEE_COVER_MULT', 1.25))
                             if _rr404 * _cap467 < _need467 * _feeR467:
                                 _feeveto467 = True
@@ -35313,6 +35405,17 @@ class OmegaGuardian:
             return False
         diagnosis = self.check_health()
         if diagnosis.get('action') == 'intervene':
+            # C482-B: the Guardian keeps its health REPORT and loses its hands.
+            # 67 interventions in five days; see _c482_risk_guard for the ledger.
+            _cfg482 = getattr(self.bot, 'cfg', None)
+            if not bool(getattr(_cfg482, 'C482_GUARDIAN_ACT', False)):
+                _t = time.time()
+                if _t - float(getattr(self, '_c482_note_t', 0.0) or 0.0) >= 3600:
+                    self._c482_note_t = _t
+                    logger.info("   \U0001f6e1\ufe0f Guardian would intervene "
+                                f"({', '.join(diagnosis.get('patterns', []))}) \u2014 "
+                                "report only since C482; the monthly dial is the loss control")
+                return False
             self.intervene(diagnosis)
             return True
         return False
@@ -35865,9 +35968,9 @@ def startup():
             except ValueError:
                 print("  \u26a0\ufe0f  Enter a number, e.g. 10")
                 continue
-            if not (1.0 <= _ddv <= 30.0):
-                print("  \u26a0\ufe0f  Keep it between 1 and 30. Professional quant crypto "
-                      "runs a median -20.7%.")
+            if not (0.0 <= _ddv <= 20.0):
+                print("  \u26a0\ufe0f  Choose 0 to 20. 0 means no new trades; "
+                      "professional quant crypto runs a median -20.7%.")
                 continue
             cfg.C380_MAX_MONTHLY_DD_PCT = _ddv
             break
@@ -35951,9 +36054,13 @@ def startup():
                 print(f"     that sets day cap {max(_ddnow397/22.0, 0.0):.2f}%, "
                       f"per-trade risk {_ddnow397/44.0:.3f}%, target {_ddnow397/22.0:.2f}%/day")
                 while True:
+                    # C482-B: NO env here. In headless mode the unit file's
+                    # OMEGA_MAX_DD answered this prompt on EVERY restart, so any
+                    # dial the operator chose was silently overwritten by the
+                    # next restart. OMEGA_MAX_DD now seeds a FRESH start only;
+                    # afterwards the saved dial wins, and the dashboard sets it.
                     _r397 = _c468_input(f"  Keep it? Enter to keep, or a new % "
-                                        f"[{_ddnow397:.0f}]: ",
-                                        env='OMEGA_MAX_DD').strip()
+                                        f"[{_ddnow397:.0f}]: ").strip()
                     if not _r397:
                         break
                     try:
@@ -35961,9 +36068,8 @@ def startup():
                     except ValueError:
                         print("  \u26a0\ufe0f  Enter a number, e.g. 15")
                         continue
-                    if not (1.0 <= _v397 <= 30.0):
-                        print("  \u26a0\ufe0f  Keep it between 1 and 30. Professional quant crypto "
-                              "runs a median -20.7%.")
+                    if not (0.0 <= _v397 <= 20.0):
+                        print("  \u26a0\ufe0f  Choose 0 to 20. 0 means no new trades.")
                         continue
                     cfg.C380_MAX_MONTHLY_DD_PCT = _v397
                     print(f"  \u2705 risk dial set to {_v397:.0f}% for this session onward")
@@ -36459,6 +36565,23 @@ class RemoteControl:
                         cmd_ref['stop'] = True
                         self._send_json({'ok': True, 'msg': 'Restart requested'})
                         return
+                    if _route == '/api/risk':
+                        # C482-B: the monthly risk dial, 0-20%. Queued, not
+                        # applied here: this thread is the REQUEST, and the
+                        # budget is re-derived on the bot's own thread.
+                        try:
+                            from urllib.parse import urlparse as _up482, parse_qs as _pq482
+                            _pv482 = float((_pq482(_up482(self.path).query).get('pct') or [''])[0])
+                            if not (0.0 <= _pv482 <= 20.0):
+                                raise ValueError
+                        except Exception:
+                            self._send_json({'ok': False,
+                                             'error': 'pct must be a number from 0 to 20'})
+                            return
+                        cmd_ref['risk_pct'] = _pv482
+                        self._send_json({'ok': True,
+                                         'msg': f'Monthly risk dial set to {_pv482:.0f}%'})
+                        return
                     if _route == '/api/pause':
                         cmd_ref['pause'] = True
                         self._send_json({'ok': True, 'msg': 'Pause requested'})
@@ -36553,6 +36676,13 @@ class RemoteControl:
                                 'trust': round(float(_b469.get('trust', 1.0)), 2),
                                 'capped': _b469.get('capped', ''),
                             }
+                        except Exception:
+                            pass
+                        try:      # C482-B: the monthly dial and the one guard
+                            _g482 = bot_ref._c482_risk_guard()
+                            _out469['risk'] = {k: (round(float(v), 2) if isinstance(v, (int, float))
+                                                   and not isinstance(v, bool) else v)
+                                               for k, v in _g482.items()}
                         except Exception:
                             pass
                         try:      # the last scan, as the report saw it
@@ -36697,7 +36827,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <div class="grid">
   <div class="tile"><div class="k">Equity</div>
     <div class="v" id="eq">&mdash;</div><div class="s" id="eqs"></div></div>
-  <div class="tile"><div class="k">Day loss room</div>
+  <div class="tile"><div class="k">Risk &middot; monthly dial</div>
     <div class="v" id="day">&mdash;</div><div class="s" id="days"></div>
     <div class="meter"><i id="daybar" style="width:0%"></i></div></div>
   <div class="tile"><div class="k">Record</div>
@@ -36725,6 +36855,13 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
     <button onclick="cmd('scan')">Force scan</button>
     <button onclick="cmd('restart')">Restart</button>
     <button class="danger" onclick="cmd('stop')">STOP</button>
+  </div>
+  <!-- C482-B: the monthly risk dial, 0-20%. The ONE loss control: per-trade
+       risk and today's limit both follow from it. Saved, so a restart keeps it. -->
+  <div class="row" style="margin-top:9px;border-top:1px solid var(--line);padding-top:9px">
+    <span class="muted" style="align-self:center">Monthly risk</span>
+    <select id="dial" aria-label="Monthly risk dial"></select>
+    <button onclick="setDial()">Set</button>
   </div>
   <!-- C473: on its own row. It DISCARDS the ledger, so it must not sit a
        thumb's width from Resume on a phone. -->
@@ -36850,7 +36987,22 @@ async function pull(){
     q('eq').innerHTML=money(d.equity);
     q('eqs').innerHTML='session <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>';
 
-    if(d.day){
+    if(d.risk){
+      /* C482-B: one guard, set by the dial. The bar is the TIGHTER of the
+         month and the day, because either one stops new trades. */
+      var R=d.risk,fm=R.month_budget>0?R.month_used/R.month_budget:(R.pct>0?0:1),
+          fd=R.day_cap>0?R.day_used/R.day_cap:0,
+          fR=Math.max(0,Math.min(1,Math.max(fm,fd)));
+      q('day').innerHTML=R.pct+'% <span class="muted" style="font-size:.6em">/ month</span>';
+      var why={dial:'dial is at 0%',month:'month budget spent',day:'today\u2019s limit spent'};
+      q('days').innerHTML='month '+money(R.month_used)+' of '+money(R.month_budget)+
+        ' · today '+money(R.day_used)+' of '+money(R.day_cap)+
+        (R.halt?' · <span class="'+cls(-1)+'">NOT TRADING: '+(why[R.halt]||R.halt)+'</span>':'');
+      var bR=q('daybar');bR.style.width=(100*fR).toFixed(1)+'%';
+      bR.className=fR>0.8?'b':(fR>0.5?'w':'');
+      var sd=q('dial');fillDial();
+      if(sd&&document.activeElement!==sd)sd.value=String(Math.round(R.pct));
+    }else if(d.day){
       var f=Math.max(0,Math.min(1,d.day.frac));
       q('day').innerHTML=money(d.day.limit);
       q('days').innerHTML=(100*f).toFixed(0)+'% spent · realised <span class="'+
@@ -36881,6 +37033,25 @@ async function pull(){
   }catch(e){q('err').textContent='connection error: '+e}
 }
 
+function fillDial(){
+  var s=q('dial');if(!s||s.options.length)return;
+  for(var i=0;i<=20;i++){var o=document.createElement('option');o.value=String(i);
+    o.textContent=i+'%'+(i===0?' (no new trades)':'');s.appendChild(o);}
+}
+async function setDial(){
+  /* C482-B: say what the number means before it moves money. */
+  var v=q('dial').value;
+  if(!confirm('Set the MONTHLY risk dial to '+v+'%?\n\nThis is the most the bot may lose '+
+     'this calendar month, as a share of the month\u2019s starting equity. Per-trade '+
+     'risk and today\u2019s limit follow from it.'+
+     (v==='0'?'\n\n0% means NO NEW TRADES. Open positions keep their stops.':'')))return;
+  try{
+    var r=await fetch('/api/risk'+(Q?Q+'&':'?')+'pct='+v,{method:'POST'});
+    var d=await r.json();
+    q('err').textContent=d.msg||d.error||'';
+    setTimeout(pull,1500);
+  }catch(e){q('err').textContent='command failed: '+e}
+}
 async function cmd(c){
   /* C473: name what is lost. "Are you sure?" teaches people to tap yes. */
   if(c==='fresh'&&!confirm(
@@ -37071,6 +37242,8 @@ setInterval(pull,5000);setInterval(pullLog,8000);
         if self._commands.get('force_scan'):
             self._commands.pop('force_scan', None)
             return 'force_scan'
+        if 'risk_pct' in self._commands:              # C482-B
+            return ('risk', self._commands.pop('risk_pct'))
         # C467-D: 'restart' is delivered as a stop; the service manager brings
         # the process back. It is popped and ANNOUNCED here so the log records
         # that the operator asked for a restart rather than a shutdown -- two

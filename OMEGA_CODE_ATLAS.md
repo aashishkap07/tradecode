@@ -1,12 +1,114 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# ✅ 2026-09-23 (late) — C482: THE BOT WAS PROFITABLE, AND FOUR CONTROLS SAID OTHERWISE
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C482.** Branch `claude/trading-system-analysis-tsvzj4`. Three
+changes, all about what the operator sees and controls; **no entry, exit or
+sizing rule moved.**
+
+---
+
+## 💵 C482-A — THE ACCOUNT MADE MONEY AND EVERY RECORD SAID IT LOST
+
+C397-4 computed the whole idea for a split trade — banked half + remainder —
+and handed it to **one** consumer, the win/loss counter. Every other reader of
+`net_pnl` after the cash booking kept getting the **remainder alone**: the C462
+session journal (the table, win rate, payoff), the learning system, the S3
+calibration ledger, component attribution, the pair-benching memory, the
+consecutive-loss cooldown, the Guardian, trade history, the session per-pair
+P&L. C462 was written after C397 and never saw `_whole397`.
+
+**Reconciled to the cent:** table −$3.92 + banked halves +$7.96 = **+$4.04**;
+equity $250.00 → $254.10 = **+$4.10**.
+
+| 116 trades | as recorded | **whole idea (true)** |
+|---|---|---|
+| net | −$7.04 | **+$5.01** |
+| payoff | 1.40 | **2.33** |
+| win rate needed | 41.7% | **30.1%** |
+| win rate achieved | 32.8% | **34.5%** |
+| 19 Sep | −$3.12 | **+$0.97** |
+| 20–23 Sep | −$3.92 | **+$4.04** |
+
+**The bot has been above its break-even the whole time.** Fix: after the cash
+booking (which must stay the remainder's), `net_pnl`, `gross_pnl`, `total_fees`
+and `pnl_pct` are rebound to the whole idea for every record downstream. A trade
+that never split is byte-identical. `omega_c482_split_test.py`, with a negative
+control on the pre-C482 block.
+
+> **→ Standing Rule 43: WHEN A FIX CHANGES WHAT A VALUE MEANS, EVERY READER OF
+> THE OLD VALUE IS A BUG UNTIL SHOWN OTHERWISE.** C397-4 fixed one consumer of
+> eleven. The list of readers is the unit of work, not the line you changed.
+
+---
+
+## 🎚️ C482-B — FOUR LOSS CONTROLS BECOME ONE, SET BY THE OPERATOR'S DIAL
+
+| control | what the logs show |
+|---|---|
+| **C467-B day barrier** (mine) | recomputed vol ×0.70–1.50 **every scan** against a loss already taken. On 23 Sep: 101% used at 07:18 → vol rose → 81% → **GRT, EVAA, MET opened on a breached day**. Un-breached itself **11 times** across the logs. Held the bot out **72% of today** after −$1.90. Its month guard summed losses only — gross losses, not drawdown. |
+| **session drawdown breaker** | −3% pause / −5% stop on live equity. **Never fired once** in 34.6 MB. |
+| **Guardian** (borrowed the pause flag — this is the "Drawdown pause" on screen) | **67 interventions.** Blocked ALL longs for 30 min **53 times** (26.5 h) in a tape read long-biased 80% of the time, where longs made +$5.09 and shorts −$0.08. Ratcheted the score bar 0.32 → 0.55 and left it. Force-closed losers at −0.5%, far inside their stops, 15 times. **Two of its four tuning actions never ran**: PEAK set on the bot, read from `self` inside `class Position` (wrong-object family, again); TF patience set and never read. And it diagnosed from half-recorded winners (C482-A). |
+| **the operator's dial** | the headless unit file's `OMEGA_MAX_DD=15` answered the resume prompt **on every restart**, so any chosen value was silently reset. |
+
+**Now:** one guard, `_c482_risk_guard`, from the dial (0–20%) and two anchors
+that cannot move once set:
+
+```
+month budget = month-start equity × dial%
+month used   = max(0, month-start equity − realised equity)        NET
+day cap      = 0.25 × (month budget − month used at the day's start)
+```
+
+The day cap is **fixed for the day**. At 25% of what is left, a run of maximal
+days paces itself geometrically ($9.53, $7.15, $5.36, $4.02 — a third of the
+month still left after four). At 15% on $254 the day net is ~$9.50: a net for a
+broken day, not a throttle on an ordinary losing run.
+
+- **No scanning while halted** — open positions are still watched every tick.
+- The **dashboard sets the dial** (Controls → Monthly risk → Set); saved with
+  state; `OMEGA_MAX_DD` only seeds a fresh start.
+- The **Guardian reports, does not act** (`C482_GUARDIAN_ACT`); the session
+  breaker is off (`C482_SESSION_BREAKER`). Both one line to turn back on.
+- `_c467_day_barrier` is kept as a **view** of the guard so the budget fit, the
+  open-position budget stop, the report and the web page read ONE computation.
+
+**Found by driving it, not by reading it:** the panel's command queue was read
+only at the top of the scan function. Anything that stopped the scan stopped
+the panel — the Guardian's pauses already did, 67 times — and the halt would
+have left the **STOP button dead until midnight**. The queue is now polled every
+main-loop tick. And the new C482 log lines were being dropped by the console
+filter until `C482` joined `_DECISION` — C479-B's lesson, relearnt the same day.
+
+> **→ Standing Rule 44: A STOP BUTTON MUST NEVER DEPEND ON THE THING IT STOPS.**
+
+`omega_c482_guard_test.py` (33 checks), negative control rebuilt from git: the
+pre-C482 barrier reads the same $1.90 loss as **102% used at vol ×1.08 and 78%
+at ×1.41**. Also driven live: real bot, real browser, dial 15 → 0 → 12.
+
+---
+
+## 📋 C482-C — THE REPORT BLOCK SHOWS POSITIONS SECOND, NOT LAST
+
+The text block (Report / Latest-block views) printed the position table at the
+very bottom, after SCAN, MARKET, NEWS, INFO, MOVERS and TAPE — fifteen rows down.
+Now: header, EQUITY, **OPEN + table**, then the rest — the same order as the web
+page (C480-A). `omega_c482_layout_test.py`, wide and phone widths, and flat.
+
+---
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 💰 2026-09-23 — 116 TRADES: THE DIRECTION CALLS WON AND THE SIZING LOST
 # ═══════════════════════════════════════════════════════════════════════════
 
 ## ⏩ RESUME STATE
 
-**Shipped: C480.** Branch `claude/trading-system-analysis-tsvzj4`.
+**Superseded by C482 above.** Was: shipped C480. Branch `claude/trading-system-analysis-tsvzj4`.
 Three days of continuous running, **116 closed trades** (35 on 19 Sep, 81 in one
 67-hour session 20→23 Sep). Net **−$7.04**. No trading logic changed this pass.
 
@@ -43,6 +145,12 @@ some trades and *margin* on others.
 ---
 
 ## 🔪 THE REAL FINDING: 72% OF WINNERS PAY OUT AT EXACTLY HALF SIZE
+
+> **SETTLED AT C482 — it was the RECORD, not the money.** Table remainders
+> (−$3.92) + the 22 banked halves in the detail log (+$7.96) = **+$4.04**,
+> against a real equity change of **+$4.10**. The account made money; the
+> closed-trade record saw half of every split winner. Read the section below
+> as the symptom description it was, not as a payoff cost.
 
 Reconstructing each trade as `notional × move − fees` against the ledger:
 
@@ -129,13 +237,20 @@ bytes**. `omega-logpush.sh` then `cp -f`'d those zero bytes over the good copy
 on GitHub.
 
 **Measured:** `omega_session_20260919_003314.log` was **90,149 bytes** on the
-branch and is now **0**. All thirteen 19-Sep session logs went the same way —
-**323 KB, the only decision record for that day.** The branch carries a single
-commit, so its history could not help either.
+branch and its latest copy is now **0**. All thirteen 19-Sep session logs went
+the same way.
 
-Recovered only because an earlier `git fetch` had left the old commit in this
-clone's object store. **That is luck, not a backup.** All 13 files are restored
-under `recovered_logs/20260919/`.
+> **Corrected at C482.** This section first said the branch "carries a single
+> commit, so its history could not help" and that recovery was luck. Both wrong:
+> I had fetched with `--depth=1`, which *displays* one commit regardless. The
+> branch has full history (119 commits) and every good version is in it. The
+> real defect was narrower — the **latest** copies read as empty, so anything
+> reading current state, my own analysis included, saw zeros. C480's fix stands;
+> the severity was overstated. Flat copies kept under `recovered_logs/20260919/`.
+>
+> **→ Standing Rule 42: A SHALLOW VIEW CANNOT PROVE ABSENCE.** `--depth=1`, a
+> tail, a sample, a filtered log — each can show that something IS there, never
+> that it is not. Before saying "gone", look with a tool that could have found it.
 
 > **→ Standing Rule 39: AN ARCHIVE THAT CAN SHRINK IS NOT AN ARCHIVE.** A
 > mirror faithfully reproduces a deletion. Two tools each correct alone —

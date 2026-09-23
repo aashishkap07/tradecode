@@ -48,7 +48,12 @@ Environment=OMEGA_NONINTERACTIVE=1
 Environment=OMEGA_MODE=paper
 # Only read on a FRESH start. Ignored once there is saved state to resume.
 Environment=OMEGA_CAPITAL=250
-# The single dial that sets day cap, per-trade risk and daily target.
+# The MONTHLY RISK DIAL, 0-20%: the most the bot may lose in a calendar month,
+# as a share of the month's starting equity. Per-trade risk and today's limit
+# follow from it. C482: this line only SEEDS a fresh start. After that the dial
+# is saved with the bot's state and set from the dashboard (Controls ->
+# Monthly risk -> Set); a restart keeps what you chose. It used to answer the
+# restart prompt too, which silently put it back to 15 on every restart.
 Environment=OMEGA_MAX_DD=15
 
 # Where equity, learning state and pair profiles are written. MUST be inside

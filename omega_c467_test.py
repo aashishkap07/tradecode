@@ -189,20 +189,22 @@ ok("_emit no longer returns before logger on a blank",
 ok("blank runs are capped", "_blank_run" in src and 'C467_BLANK_MAX' in src)
 
 # ------------------------------------------------------- 5. the day barrier
-print("\n5. THE DYNAMIC DAY BARRIER")
-for fn in ('_c467_day_barrier', '_c467_day_realised', '_c467_vol_roll',
-           '_c467_note_stop', '_c467_month_note'):
-    ok(f"{fn} defined", f"def {fn}(" in src)
+print("\n5. THE DAY BARRIER -- since C482-B, a VIEW of the one monthly-dial guard")
+# C482-B retired the C467-B vol x trust barrier (it widened after losses on
+# 23 Sep) and its gross-loss month ledger. Their behaviour is tested, and shown
+# defective against the pre-C482 source, in omega_c482_guard_test.py. What must
+# still hold here is the WIRING: every reader goes through one computation.
+ok("_c482_risk_guard defined", "def _c482_risk_guard(" in src)
+ok("_c467_day_barrier is kept as a view of it",
+   "def _c467_day_barrier(" in src and "g = self._c482_risk_guard()" in src)
+for fn in ('_c467_day_realised', '_c467_vol_roll', '_c467_note_stop', '_c467_month_note'):
+    ok(f"retired {fn} is gone, not left computing for nobody", f"def {fn}(" not in src)
 ok("barrier is read by the sizing path", '_b467 = self._c467_day_barrier()' in src)
 ok("barrier is read by the per-trade stop", '_b467s = self._c467_day_barrier()' in src)
 ok("day usage is REALISED, not live equity",
-   "cash = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)" in src)
+   "eq = float(getattr(self.portfolio, 'equity', 0.0) or 0.0)" in src)
 ok("profit no longer halts the day",
    "C467_DAY_PROFIT_HALT" in src and "and not bool(" in src)
-ok("vol roll is ticked at the ONE existing scan boundary",
-   src.count('self._c467_vol_roll()') == 1)
-ok("month guard ledger is written on close",
-   src.count('self._c467_month_note(') == 1)
 
 # ------------------------------------------------------ 6. the entry gate
 print("\n6. THE ENTRY GATE")

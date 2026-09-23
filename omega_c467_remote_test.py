@@ -198,6 +198,19 @@ ok("  and check_commands consumes it as a stop", rc.check_commands() == 'stop')
 ok("  ...then pops the restart flag with a log line",
    rc.check_commands() is None and 'restart' not in rc._commands)
 
+# C482-B: the monthly risk dial
+rc._commands.clear()
+c, b = post(f'/api/risk?t={TOKEN}&pct=8')
+ok("/api/risk?pct=8 queues the dial change", c == 200 and rc._commands.get('risk_pct') == 8.0,
+   f"HTTP {c} {dict(rc._commands)}")
+ok("  and check_commands hands it over as ('risk', 8.0)", rc.check_commands() == ('risk', 8.0))
+rc._commands.clear()
+for bad in ('35', '-1', 'abc', ''):
+    c, b = post(f'/api/risk?t={TOKEN}&pct={bad}')
+    ok(f"  refuses pct={bad!r:6} and queues nothing", '"ok": false' in b and 'risk_pct' not in rc._commands,
+       f"HTTP {c}")
+c, b = post('/api/risk?pct=8')
+ok("  and a request with no token is refused", c == 401, f"HTTP {c}")
 c, b = post(f'/api/not-a-real-command?t={TOKEN}')
 ok("an unknown POST route is a 404, not a 200 with an error in it", c == 404,
    f"HTTP {c} {b[:50]}")

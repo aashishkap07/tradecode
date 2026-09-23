@@ -10,11 +10,16 @@ the file aside and truncates the original to zero bytes. `omega-logpush.sh`
 then mirrored those zero bytes over the good copy on GitHub.
 
 All thirteen 19-Sep session logs went to 0 bytes this way — 323 KB, the only
-decision record for that day. The `logs` branch carries a single commit, so its
-history could not help either.
+decision record for that day — **in the branch's latest copy.**
 
-Recovery was possible only because an earlier `git fetch` had left the old
-commit in this clone's object store. **That is luck, not a backup.**
+**Correction (C482):** the first version of this note said the branch "carries a
+single commit, so its history could not help". That was wrong, and it was an
+artefact of fetching with `--depth=1`, which shows one commit whatever the real
+depth. The `logs` branch has full history (119 commits at C482) and every good
+version of these files is in it. Nothing was lost from GitHub; what was broken
+was that the *current* copies read as empty, so anything reading the latest
+state — including my own analysis — saw zeros. C480 fixes that. These files are
+kept here as a convenient flat copy, not as the only surviving one.
 
 Fixed at **C480** (`deploy/omega-logpush.sh`): a file may only be overwritten
 by one at least as large; a smaller source means rotation, so the archived copy
