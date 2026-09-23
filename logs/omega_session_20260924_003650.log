@@ -1,0 +1,200 @@
+00:36:50 | 📊 Paper Mode
+00:36:52 | ✅ Connected | 805 futures markets
+00:36:52 | 📐 RISK @ $256.10: monthly dial 15% = $38.41/month  |  per-trade risk 0.341% = $0.87  |
+    break-even win rate 43% at the measured 1.31 payoff [C482]
+00:36:52 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C485  PAPER  Bitget perps
+  24 Sep 2026   00:36
+  start $256.10  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $256.10  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.00
+  DAY       limit $9.48  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.87/trade  trades/day NO CAP
+  EDGE      +0.0250 blended  31W 64L realised
+  NEED      43% win at 1.31 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+00:36:52 |    🔒 C378 stop level $0.004052 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+00:36:52 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+00:36:52 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+00:36:52 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+00:36:52 |        See deploy/DEPLOY.md — one command, no open ports, free.
+00:36:52 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+00:36:52 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left
+    (C482)
+00:36:52 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+00:36:52 | 💡 Press Ctrl+C to stop safely
+00:37:03 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -36%[#16] | DRIFT
+    -27%[Live=-0.17<cut] | NIL +23%[#22] | SPX -19%[#78] | RAY +18%[#34]
+00:37:41 |    ⚖️ C462-7 DOGE: penalties 0.73→0.38 (×0.53) vs bar 0.42 — the stack decided
+00:37:52 |    ⚖️ C462-7 UNI: penalties 0.51→0.36 (×0.70) vs bar 0.38 — the stack decided
+00:38:00 |    ⚖️ C462-7 RAY: penalties 0.89→0.36 (×0.40) vs bar 0.42 — the stack decided
+00:38:08 |    ⚖️ C462-7 FARTCOIN: penalties 0.49→0.34 (×0.70) vs bar 0.42 — the stack decided
+00:38:12 |    ⚖️ C462-7 PENGU: penalties 0.52→0.27 (×0.52) vs bar 0.42 — the stack decided
+00:38:14 |    ⚖️ C462-7 BTW: penalties 1.01→0.36 (×0.36) vs bar 0.49 — the stack decided
+00:38:16 |    ⚖️ C462-7 MARSCOIN: penalties 0.47→0.14 (×0.30) vs bar 0.42 — the stack decided
+00:38:27 |    ⚖️ C462-7 KAITO: penalties 0.63→0.33 (×0.53) vs bar 0.38 — the stack decided
+00:38:31 |    ⚖️ C462-7 LSK: penalties 0.52→0.21 (×0.40) vs bar 0.38 — the stack decided
+00:38:33 |    ⚖️ C462-7 SUPER: penalties 0.56→0.22 (×0.40) vs bar 0.38 — the stack decided
+00:38:35 |    ⚖️ C462-7 SPX: penalties 0.47→0.30 (×0.64) vs bar 0.42 — the stack decided
+00:38:47 |    ⚖️ C462-7 CHIP: penalties 0.42→0.29 (×0.70) vs bar 0.42 — the stack decided
+00:38:48 |    ⚖️ C462-7 GRASS: penalties 0.85→0.34 (×0.40) vs bar 0.36 — the stack decided
+00:38:51 |    ⚖️ C462-7 ATOM: penalties 0.60→0.32 (×0.53) vs bar 0.38 — the stack decided
+00:38:52 |    ⚖️ C462-7 MON: penalties 0.56→0.29 (×0.53) vs bar 0.42 — the stack decided
+00:39:11 | 📊 Step 3 result: 130 analyzed → 1 viable → Step 4 DRI/DSI
+00:39:13 |    🎲 C378 odds-size: orderliness 0.12 -> risk x0.77 ($0.673)
+00:39:13 |    🔒 C378 stop level $0.2236 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 00:39  OPEN   ARB SHORT @0.218900  x1 $31.30
+       target +7.6%  stop -2.2%  entry score 0.82  maker
+00:42:43 | 📊 Step 3 result: 1 analyzed (+129 cached this 15m candle) → 0 passed | score_zero=1,
+    low_confidence=5, low_score=44, mtf_disagree=3, session_short=54, absorption_at_extreme=3,
+    regime_blip=7, flat_projection=4, low_quality=1, fee_floor=4, low_agreement=1,
+    micro_exhaustion=3
+00:42:43 |    📌 Nearest miss: ARB score=0.736 (pre-pen 1.05) conf=0.595 quality=0.438/0.26
+    reason=mtf_disagree
+ 
+ 
+  00:44  up 0h08m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $256.02  unreal $-0.08
+  OPEN      2 pos $66.55 (26%)  free $189.55
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00396500  +0.30%   +0.08 1h08m  + 22% left
+  ARB      SHORT   0.218900  0.219800  -0.41%   -0.15    5m  - 66% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.08 -0.03%  peak $256.10  dd 0.03%
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.01  mk1/tk0  0.002% of eq
+  SCAN      805 > 1 > 0 passed  top ARB 0.74 (mtf_disagree)  2 scans, 131 analysed
+  MARKET    TRENDING  bias -0.43  breadth -0.35  taker flow -0.03
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  ZEC +0.20  OPENAI +0.17
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -36% #16  DRIFT -27% cut  NIL +23% #22  SPX -19% #78
+  ------------------------------------------------------------------------------------------------
+ 
+00:45:54 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -36%[#17] | DRIFT
+    -28%[Live=-0.18<cut] | NIL +23%[#23] | SPX -19%[#79] | FIGHT +18%[Live=-0.15<cut]
+00:46:41 |    ⚖️ C462-7 UNI: penalties 0.48→0.33 (×0.70) vs bar 0.45 — the stack decided
+00:46:42 |    ⚖️ C462-7 WLD: penalties 0.45→0.24 (×0.53) vs bar 0.42 — the stack decided
+00:47:00 |    ⚖️ C462-7 CRV: penalties 0.72→0.38 (×0.53) vs bar 0.39 — the stack decided
+00:47:06 |    ⚖️ C462-7 WLFI: penalties 0.73→0.38 (×0.53) vs bar 0.40 — the stack decided
+00:47:23 |    ⚖️ C462-7 SUPER: penalties 0.47→0.27 (×0.57) vs bar 0.42 — the stack decided
+00:47:29 |    ⚖️ C462-7 MON: penalties 0.53→0.28 (×0.53) vs bar 0.38 — the stack decided
+00:47:51 | 📊 Step 3 result: 130 analyzed → 0 passed | low_confidence=2, low_score=28,
+    mtf_disagree=3, regime_blip=11, session_short=53, flat_projection=12, ct_noisy_block=9,
+    micro_exhaustion=1, fee_floor=3, absorption_at_extreme=2, no_structural_room=1, capitulation=2,
+    low_agreement=1, low_quality=1, late_leg_no_forward=1
+00:47:51 |    📌 Nearest miss: TIA score=0.657 (pre-pen 1.09) conf=0.619 quality=0.406/0.26
+    reason=low_agreement 53%<53%
+ 
+  00:53  up 0h16m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $255.98  unreal $-0.12
+  OPEN      2 pos $66.55 (26%)  free $189.55
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00397300  +0.10%   +0.01 1h16m  + 5% left
+  ARB      SHORT   0.218900  0.219600  -0.32%   -0.13   14m  - 60% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.12 -0.05%  peak $256.10  dd 0.05%
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.01  mk1/tk0  0.002% of eq
+  SCAN      805 > 130 > 0 passed  top TIA 0.66 (low_agreement 53%<)  3 scans, 261 analysed
+  MARKET    TRENDING  bias -0.37  breadth -0.28  taker flow +0.06
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -36% #17  DRIFT -28% cut  NIL +23% #23  SPX -19% #79
+  ------------------------------------------------------------------------------------------------
+ 
+00:54:05 | 🎯 EXIT SIGNAL: PUMP/USDT:USDT - C399_CONVICTION_COLLAPSE: only 5% of the entry thesis
+    left — DRI -0.150->-0.143 (96% left), DSI +0.385->+0.019 (5% left) | PnL=-0.1% (exiting BEFORE
+    the reversal shows in price)
+  << 00:54  CLOSE  PUMP SHORT @0.00398300  -0.15% $-0.08  LOSS
+       held 1h17m  C399_CONVICTION_COLLAPSE  round trip from +0.78%  -0.06R  TAKER
+00:58:28 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -33%[#19] | DRIFT
+    -28%[Live=-0.18<cut] | NIL +22%[#24] | FIGHT +19%[Live=-0.15<cut] | SPX -19%[#78]
+00:59:02 |    ⚖️ C462-7 PNUT: penalties 0.49→0.34 (×0.70) vs bar 0.43 — the stack decided
+00:59:03 | 📊 Step 3 result: 4 analyzed (+126 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=29, mtf_disagree=3, regime_blip=11, session_short=53, flat_projection=11,
+    ct_noisy_block=9, micro_exhaustion=1, fee_floor=3, no_structural_room=1,
+    absorption_at_extreme=2, low_agreement=1, capitulation=2, low_quality=1, late_leg_no_forward=1
+00:59:03 |    📌 Nearest miss: PNUT score=0.343 (pre-pen 0.49) conf=0.594 quality=0.203/0.26
+    reason=score 0.343 < 0.426
+ 
+ 
+  01:01  up 0h24m  scan 4 ------------------------------------------------------------------------
+  EQUITY    $255.94  unreal $-0.08
+  OPEN      1 pos $31.30 (12%)  free $224.72
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARB      SHORT   0.218900  0.219300  -0.18%   -0.08   22m  - 56% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.16 -0.06%  peak $256.10  dd 0.06%
+  DAY       real $-0.12  limit $9.48 (3.70%)  1% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.08/tr
+  LIFETIME  96tr 31W 65L 32%  $+6.02
+  FEES      $0.03  mk1/tk1  0.011% of eq
+  SCAN      805 > 4 > 0 passed  top PNUT 0.34 (score 0.343 < 0.42)  4 scans, 265 analysed
+  MARKET    TRENDING  bias -0.38  breadth +0.00  taker flow -0.40
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -33% #19  DRIFT -28% cut  NIL +22% #24  FIGHT +19% cut
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+01:04:54 |    ⚖️ C462-7 WLD: penalties 0.50→0.35 (×0.70) vs bar 0.49 — the stack decided
+01:05:04 |    ⚖️ C462-7 ONE: penalties 0.73→0.38 (×0.52) vs bar 0.50 — the stack decided
+01:05:28 |    ⚖️ C462-7 JTO: penalties 0.75→0.39 (×0.52) vs bar 0.49 — the stack decided
+01:05:35 |    ⚖️ C462-7 WLFI: penalties 0.54→0.43 (×0.79) vs bar 0.48 — the stack decided
+01:06:15 | 📊 Step 3 result: 130 analyzed → 0 passed | low_score=26, mtf_disagree=1,
+    flat_projection=23, regime_blip=17, session_short=49, poor_reward_risk=2, ct_noisy_block=8,
+    no_structural_room=4
+01:06:15 |    📌 Nearest miss: ARB score=0.528 (pre-pen 0.75) conf=0.554 quality=0.293/0.26
+    reason=mtf_disagree
+ 
+  01:09  up 0h32m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $255.95  unreal $-0.07
+  OPEN      1 pos $31.30 (12%)  free $224.72
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARB      SHORT   0.218900  0.219200  -0.14%   -0.07   30m  - 71% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.15 -0.06%  peak $256.10  dd 0.06%
+  CURVE     +=====
+  DAY       real $-0.12  limit $9.48 (3.70%)  1% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.08/tr
+  LIFETIME  96tr 31W 65L 32%  $+6.02
+  FEES      $0.03  mk1/tk1  0.011% of eq
+  SCAN      805 > 130 > 0 passed  top ARB 0.53 (mtf_disagree)  5 scans, 395 analysed
+  MARKET    RANGING  bias -0.24  breadth +0.00  taker flow +0.21
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -33% #19  DRIFT -28% cut  NIL +22% #24  FIGHT +19% cut
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+01:11:29 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -31%[#18] | DRIFT
+    -23%[Live=-0.01<cut] | NIL +22%[#25] | ONE -21%[#34] | RAY +19%[#32]
+01:12:15 | 📊 Step 3 result: 23 analyzed (+108 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=26, mtf_disagree=1, flat_projection=28, regime_blip=15, session_short=47,
+    poor_reward_risk=2, ct_noisy_block=6, no_structural_room=4, capitulation=1
+01:12:15 |    📌 Nearest miss: AKE score=0.316 (pre-pen 0.45) conf=0.432 quality=0.136/0.26
+    reason=score 0.237 < 0.505

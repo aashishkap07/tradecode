@@ -1,0 +1,117 @@
+
+  ================================================================================================
+  OMEGA C485  PAPER  Bitget perps
+  24 Sep 2026   00:36
+  start $256.10  risk dial 15%/month
+  ================================================================================================
+
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $256.10  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.00
+  DAY       limit $9.48  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.87/trade  trades/day NO CAP
+  EDGE      +0.0250 blended  31W 64L realised
+  NEED      43% win at 1.31 payoff
+  ------------------------------------------------------------------------------------------------
+
+  >> 00:39  OPEN   ARB SHORT @0.218900  x1 $31.30
+       target +7.6%  stop -2.2%  entry score 0.82  maker
+
+
+  00:44  up 0h08m  scan 2 ------------------------------------------------------------------------
+  EQUITY    $256.02  unreal $-0.08
+  OPEN      2 pos $66.55 (26%)  free $189.55
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00396500  +0.30%   +0.08 1h08m  + 22% left
+  ARB      SHORT   0.218900  0.219800  -0.41%   -0.15    5m  - 66% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.08 -0.03%  peak $256.10  dd 0.03%
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.01  mk1/tk0  0.002% of eq
+  SCAN      805 > 1 > 0 passed  top ARB 0.74 (mtf_disagree)  2 scans, 131 analysed
+  MARKET    TRENDING  bias -0.43  breadth -0.35  taker flow -0.03
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  ZEC +0.20  OPENAI +0.17
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -36% #16  DRIFT -27% cut  NIL +23% #22  SPX -19% #78
+  ------------------------------------------------------------------------------------------------
+
+
+
+  00:53  up 0h16m  scan 3 ------------------------------------------------------------------------
+  EQUITY    $255.98  unreal $-0.12
+  OPEN      2 pos $66.55 (26%)  free $189.55
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00397300  +0.10%   +0.01 1h16m  + 5% left
+  ARB      SHORT   0.218900  0.219600  -0.32%   -0.13   14m  - 60% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.12 -0.05%  peak $256.10  dd 0.05%
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.01  mk1/tk0  0.002% of eq
+  SCAN      805 > 130 > 0 passed  top TIA 0.66 (low_agreement 53%<)  3 scans, 261 analysed
+  MARKET    TRENDING  bias -0.37  breadth -0.28  taker flow +0.06
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -36% #17  DRIFT -28% cut  NIL +23% #23  SPX -19% #79
+  ------------------------------------------------------------------------------------------------
+
+  << 00:54  CLOSE  PUMP SHORT @0.00398300  -0.15% $-0.08  LOSS
+       held 1h17m  C399_CONVICTION_COLLAPSE  round trip from +0.78%  -0.06R  TAKER
+
+
+  01:01  up 0h24m  scan 4 ------------------------------------------------------------------------
+  EQUITY    $255.94  unreal $-0.08
+  OPEN      1 pos $31.30 (12%)  free $224.72
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARB      SHORT   0.218900  0.219300  -0.18%   -0.08   22m  - 56% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.16 -0.06%  peak $256.10  dd 0.06%
+  DAY       real $-0.12  limit $9.48 (3.70%)  1% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.08/tr
+  LIFETIME  96tr 31W 65L 32%  $+6.02
+  FEES      $0.03  mk1/tk1  0.011% of eq
+  SCAN      805 > 4 > 0 passed  top PNUT 0.34 (score 0.343 < 0.42)  4 scans, 265 analysed
+  MARKET    TRENDING  bias -0.38  breadth +0.00  taker flow -0.40
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -33% #19  DRIFT -28% cut  NIL +22% #24  FIGHT +19% cut
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  01:09  up 0h32m  scan 5 ------------------------------------------------------------------------
+  EQUITY    $255.95  unreal $-0.07
+  OPEN      1 pos $31.30 (12%)  free $224.72
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARB      SHORT   0.218900  0.219200  -0.14%   -0.07   30m  - 71% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.15 -0.06%  peak $256.10  dd 0.06%
+  CURVE     +=====
+  DAY       real $-0.12  limit $9.48 (3.70%)  1% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.08/tr
+  LIFETIME  96tr 31W 65L 32%  $+6.02
+  FEES      $0.03  mk1/tk1  0.011% of eq
+  SCAN      805 > 130 > 0 passed  top ARB 0.53 (mtf_disagree)  5 scans, 395 analysed
+  MARKET    RANGING  bias -0.24  breadth +0.00  taker flow +0.21
+  NEWS      65 articles  + tone +0.09  ETHFI +0.34  SUI -0.25  ZEC +0.20
+  INFO      1 tilted  flow/fund/news on 130
+  MOVERS    MUBARAK -33% #19  DRIFT -28% cut  NIL +22% #24  FIGHT +19% cut
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+

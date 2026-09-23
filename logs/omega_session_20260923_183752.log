@@ -1381,3 +1381,152 @@
 00:16:43 |    ⚖️ C462-7 ETHFI: penalties 0.36→0.19 (×0.52) vs bar 0.23 — the stack decided
 00:16:54 |    ⚖️ C462-7 BILL: penalties 0.25→0.18 (×0.70) vs bar 0.23 — the stack decided
 00:16:57 |    ⚖️ C462-7 ASTS: penalties 0.30→0.21 (×0.70) vs bar 0.23 — the stack decided
+00:17:18 | 📊 Step 3 result: 130 analyzed → 0 passed | low_confidence=5, low_score=59,
+    flat_projection=7, regime_blip=30, low_quality=9, h1_regime_shock=12, absorption_at_extreme=3,
+    late_leg_no_forward=3, poor_reward_risk=1, micro_exhaustion=1
+00:17:18 |    📌 Nearest miss: BTW score=0.745 conf=0.721 quality=0.537/0.26 reason=h1_regime_shock
+ 
+  00:17  up 5h39m  scan 49 -----------------------------------------------------------------------
+  EQUITY    $256.40  unreal $+0.27
+  OPEN      2 pos $63.80 (25%)  free $192.33
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ZEC      SHORT    1524.27   1517.73  +0.43%   +0.10   54m  + 31% left
+  PUMP     SHORT 0.003977000.00395500  +0.55%   +0.17   40m  + 58% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+3.59 +1.42%
+  CURVE     ==========+++++++++++++++++++++++++++++++++++++++
+  DAY       real $+0.00  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    7 closed  6W 1L  win 86%  payoff 4.18  avg $+0.48/tr  best $+1.26  worst $-0.14
+            break-even 19%
+  LIFETIME  94tr 31W 63L 33%  $+6.13
+  FEES      $0.10  mk15/tk3  0.039% of eq
+  SCAN      805 > 130 > 0 passed  top BTW 0.74 (h1_regime_shock)  49 scans, 3324 analysed
+  MARKET    TRENDING  bias -0.41  breadth -0.41  taker flow -0.03
+  NEWS      65 articles  + tone +0.42  FORM +0.50  OP +0.49  NEAR +0.27
+  INFO      1 tilted  flow/fund/news/oi on 256
+            info>0 2tr $+0.79 win 100%  info≤0 2tr $-0.07 win 50%
+  MOVERS    MUBARAK -34% cut  DRIFT -25% cut  NIL +21% #27  CHR -20% #77
+  TAPE      + + + + + + -
+  ------------------------------------------------------------------------------------------------
+ 
+00:20:31 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -34%[Live=0.14<cut] | DRIFT
+    -26%[Live=-0.08<cut] | NIL +23%[#20] | FIGHT +19%[Live=0.04<cut] | RAY +18%[#30]
+00:21:09 |    ⚖️ C462-7 XPL: penalties 0.32→0.22 (×0.70) vs bar 0.23 — the stack decided
+00:21:17 |    ⚖️ C462-7 STONK: penalties 0.27→0.19 (×0.70) vs bar 0.23 — the stack decided
+00:21:18 | 📊 Step 3 result: 24 analyzed (+106 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=64, flat_projection=4, regime_blip=22, low_quality=10, h1_regime_shock=15,
+    absorption_at_extreme=3, late_leg_no_forward=3, poor_reward_risk=1, capitulation=2,
+    micro_exhaustion=1, no_structural_room=2
+00:21:18 |    📌 Nearest miss: RAY score=0.499 conf=0.678 quality=0.338/0.26 reason=h1_regime_shock
+00:25:00 | 🎯 EXIT SIGNAL: ZEC/USDT:USDT - C399_CONVICTION_FADING: 18% left and falling -5.7%/reading
+    for 3 readings — DRI -0.112->-0.092 (82% left), DSI +0.276->+0.051 (18% left) | PnL=-0.0%
+  << 00:25  CLOSE  ZEC SHORT @1524.98  -0.05% $-0.04  LOSS
+       held 1h02m  C399_CONVICTION_FADING:   round trip from +0.73%  -0.01R  TAKER
+ 
+ 
+  00:25  up 5h47m  scan 50 -----------------------------------------------------------------------
+  EQUITY    $256.12  unreal $+0.02
+  OPEN      1 pos $35.25 (14%)  free $220.85
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00397200  +0.13%   +0.02   48m  + 49% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+3.31 +1.31%  peak $256.40  dd 0.11%
+  CURVE     ==========+++++++++++++++++++++++++++++++++++++++++
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  6W 2L  win 75%  payoff 6.63  avg $+0.41/tr  best $+1.26  worst $-0.14
+            break-even 13%
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.12  mk15/tk4  0.046% of eq
+  SCAN      805 > 24 > 0 passed  top RAY 0.50 (h1_regime_shock)  50 scans, 3348 analysed
+  MARKET    MIXED  bias -0.36  breadth -0.39  taker flow -0.10
+  NEWS      65 articles  + tone +0.42  FORM +0.50  OP +0.49  NEAR +0.27
+  INFO      1 tilted  flow/fund/news/oi on 256
+            info>0 2tr $+0.79 win 100%  info≤0 3tr $-0.06 win 33%
+  MOVERS    MUBARAK -34% cut  DRIFT -26% cut  NIL +23% #20  FIGHT +19% cut
+  TAPE      + + + + + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+00:31:58 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -37%[#16] | DRIFT
+    -26%[Live=-0.17<cut] | NIL +22%[#24] | RAY +19%[#31] | FIGHT +18%[Live=-0.17<cut]
+00:32:32 |    ⚖️ C462-7 XRP: penalties 0.27→0.19 (×0.70) vs bar 0.23 — the stack decided
+00:32:35 |    ⚖️ C462-7 ZEC: penalties 0.35→0.24 (×0.70) vs bar 0.29 — the stack decided
+00:32:38 |    ⚖️ C462-7 NEAR: penalties 0.28→0.19 (×0.70) vs bar 0.26 — the stack decided
+00:32:44 |    ⚖️ C462-7 UNI: penalties 0.30→0.21 (×0.70) vs bar 0.23 — the stack decided
+00:32:46 |    ⚖️ C462-7 TRUMP: penalties 0.30→0.21 (×0.70) vs bar 0.23 — the stack decided
+00:32:53 |    ⚖️ C462-7 FIL: penalties 0.41→0.21 (×0.52) vs bar 0.23 — the stack decided
+00:33:24 |    ⚖️ C462-7 SPX: penalties 0.36→0.23 (×0.64) vs bar 0.23 — the stack decided
+00:33:27 |    ⚖️ C462-7 MINA: penalties 0.33→0.23 (×0.70) vs bar 0.23 — the stack decided
+00:33:30 |    ⚖️ C462-7 ETHFI: penalties 0.32→0.23 (×0.70) vs bar 0.23 — the stack decided
+00:33:31 |    ⚖️ C462-7 CHR: penalties 0.32→0.22 (×0.70) vs bar 0.23 — the stack decided
+00:33:40 |    ⚖️ C462-7 FOLKS: penalties 0.24→0.17 (×0.70) vs bar 0.23 — the stack decided
+00:33:54 |    ⚖️ C462-7 BNC: penalties 0.25→0.17 (×0.70) vs bar 0.23 — the stack decided
+00:33:58 | 📊 Step 3 result: 130 analyzed → 0 passed | low_confidence=2, low_score=58,
+    mtf_disagree=3, poor_reward_risk=1, low_quality=14, regime_blip=18, ct_noisy_block=18,
+    flat_projection=3, no_structural_room=6, fee_floor=3, micro_exhaustion=4
+00:33:58 |    📌 Nearest miss: JTO score=0.790 (pre-pen 1.13) conf=0.559 quality=0.442/0.26
+    reason=mtf_disagree
+ 
+  00:33  up 5h56m  scan 51 -----------------------------------------------------------------------
+  EQUITY    $256.22  unreal $+0.12
+  OPEN      1 pos $35.25 (14%)  free $220.85
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  PUMP     SHORT 0.003977000.00396000  +0.43%   +0.12   57m  + 46% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+3.41 +1.35%  peak $256.40  dd 0.07%
+  CURVE     ==========++++++++++++++++++++++++++++++++++++++++++
+  DAY       real $-0.04  limit $9.48 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  6W 2L  win 75%  payoff 6.63  avg $+0.41/tr  best $+1.26  worst $-0.14
+            break-even 13%
+  LIFETIME  95tr 31W 64L 33%  $+6.10
+  FEES      $0.12  mk15/tk4  0.046% of eq
+  SCAN      805 > 130 > 0 passed  top JTO 0.79 (mtf_disagree)  51 scans, 3478 analysed
+  MARKET    TRENDING  bias -0.32  breadth +0.00  taker flow -0.59
+  NEWS      65 articles  + tone +0.33  FORM +0.50  OP +0.49  NEAR +0.27
+  INFO      1 tilted  flow/fund/news/oi on 256
+            info>0 2tr $+0.79 win 100%  info≤0 3tr $-0.06 win 33%
+  MOVERS    MUBARAK -37% #16  DRIFT -26% cut  NIL +22% #24  RAY +19% #31
+  TAPE      + + + + + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-24 00:36:47
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       5h58m  51 scans  3478 pair-analyses  8 closed trades
+  P&L       $+3.41 (+1.35%)  $252.81 > $256.22  maxDD 0.40%
+  CURVE     .-.__-_--_+++++++++++**#@**###@@@@@@@@@@@@@@@@@@@@@@
+  RECORD    6W 2L  win 75%  payoff 6.63  profit factor 19.89  avg win $+0.58  avg loss $-0.09
+            break-even 13%  expectancy $+0.41/tr  gross $3.47 won  $0.17 lost
+  HOLD      median 63m  range 15-127m
+  COST      fees $0.12  maker 15 / taker 4 fills  3% of gross  79% of fills maker  maker $0.06
+            taker $0.06
+  INFO A/B  agreed 2tr $+0.79/tr win 100%  disagreed 3tr $-0.06/tr win 33%  gap $+0.84/tr
+  EXITS     TRAILING_TP: peak=+1 1  REL_DSI+DRI DIVERGE: 1  PEAK_REVERSAL: peak= 1
+            TRAILING_TP: peak=+3 1  PEAK_FLOOR: peaked a 1  EARLY_PEAK_CAPTURE:  1
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE      MOVE      NET   HELD  EXIT
+  牛来       SHORT   +0.80%   $+0.27  1h13m  TRAILING_TP: peak=+1 [W]
+  AVAX     SHORT   +1.12%   $+0.36  1h02m  REL_DSI+DRI DIVERGE: [W]
+  KERNEL   SHORT   +5.77%   $+1.26  2h06m  PEAK_REVERSAL: peak= [W]
+  PEPE     SHORT   +2.44%   $+0.68    43m  TRAILING_TP: peak=+3 [W]
+  AVAX     SHORT   +0.10%   $+0.01    14m  PEAK_FLOOR: peaked a [W]
+  SPX      SHORT   +3.38%   $+0.90  1h26m  EARLY_PEAK_CAPTURE:  [W]
+  TAO      SHORT   -0.57%   $-0.14    26m  C399_CONVICTION_FADI [L]
+  ZEC      SHORT   -0.05%   $-0.04  1h02m  C399_CONVICTION_FADI [L]
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-24 00:36:47
+============================================================
