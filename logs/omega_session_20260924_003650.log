@@ -2571,3 +2571,125 @@
 17:14:19 |    📌 Nearest miss: TRUMP score=0.251 conf=0.543 quality=0.136/0.26 reason=score 0.188 <
     0.582
   .. 17:15  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  3 analysed
+17:19:20 | ⊥ C97 TF-CONFLICT: 1h=+0.42×4h=-0.94=d14=-0.40 — only shorts allowed (4h dominant)
+17:20:36 |    🧭 C458-17: exploration is due but the best refusal (capitulation rej vs RSI23) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+17:20:36 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=7, low_score=24, mtf_disagree=1,
+    ct_noisy_block=30, late_leg_no_forward=1, absorption_at_extreme=1, pair_cap=1, capitulation=2,
+    no_structural_room=1, flat_projection=1
+17:20:36 |    📌 Nearest miss: 牛来 score=1.029 conf=0.604 quality=0.621/0.26 reason=capitulation rej
+    vs RSI23
+ 
+ 
+  17:24  up 16h47m  scan 125 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++============+++++++++++======================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 69 > 0 passed  top 牛来 1.03 (capitulation rej v)  125 scans, 5577 analysed
+  MARKET    TRENDING  bias -0.31  breadth +0.00  taker flow -0.00
+  NEWS      65 articles  + tone +0.48  PEPE +0.70  ETH +0.63  OP +0.49
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    NIL +34% #10  LSK +26% cut  FIGHT -25% #53  BROCCOLI +22% #39
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+17:25:46 |    🪞 C266 board-parity (top movers vs screen): NIL +30%[#11] | FIGHT -26%[#51] | LSK
+    +25%[Live=0.31<cut] | BROCCOLI +21%[#36] | 龙虾 -21%[#37]
+17:25:48 | ⊥ C97 TF-CONFLICT: 1h=+0.42×4h=-0.94=d14=-0.40 — only shorts allowed (4h dominant)
+17:26:15 |    🧭 C458-17: exploration is due but the best refusal (absorption cvd=+0.45) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+17:26:15 | 📊 Step 3 result: 16 analyzed (+53 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=23, ct_noisy_block=30, late_leg_no_forward=1, absorption_at_extreme=2, pair_cap=1,
+    flat_projection=2, capitulation=2, fee_floor=2
+17:26:15 |    📌 Nearest miss: MARSCOIN score=0.593 conf=0.650 quality=0.385/0.26 reason=absorption
+    cvd=+0.45
+17:31:48 |    ⚖️ C462-7 PUMP: penalties 0.58→0.39 (×0.68) vs bar 0.44 — the stack decided
+17:32:25 |    🎢→⚖️ SPX: C292 stands down — parabola BROKEN (range 25×ATR, 4.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+17:32:29 |    🧭 C458-17: exploration is due but the best refusal (capitulation rej vs RSI24) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+17:32:29 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=4, low_score=15,
+    counter_trend_block=34, flat_projection=10, capitulation=4, pair_cap=1, absorption_at_extreme=1
+17:32:29 |    📌 Nearest miss: MARSCOIN score=0.611 conf=0.630 quality=0.385/0.26 reason=capitulation
+    rej vs RSI24
+  .. 17:32  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+17:38:36 |    🪞 C266 board-parity (top movers vs screen): NIL +27%[#9] | LSK +26%[Live=0.37<cut] |
+    FIGHT -25%[#56] | BROCCOLI +24%[#34] | ONE -19%[#25]
+17:39:10 |    🧭 C458-17: exploration is due but the best refusal (post-penalty 0.261 < 0.31) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+17:39:10 | 📊 Step 3 result: 17 analyzed (+52 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=15, counter_trend_block=34, capitulation=5, flat_projection=8,
+    absorption_at_extreme=1, pair_cap=1, post_penalty_low=1, no_structural_room=1
+17:39:10 |    📌 Nearest miss: LIT score=0.261 (pre-pen 0.54) conf=0.702 quality=0.183/0.26
+    reason=post-penalty 0.261 < 0.31
+  .. 17:40  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  17 analysed
+17:45:36 |    ⚖️ C462-7 NIL: penalties 0.53→0.32 (×0.60) vs bar 0.48 — the stack decided
+17:46:29 |    🧭 C458-17: exploration is due but the best refusal (final_gate) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+17:46:29 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=5, low_score=8, mtf_disagree=1,
+    counter_trend_block=36, flat_projection=12, absorption_at_extreme=2, post_penalty_quality=1,
+    pair_cap=1, capitulation=1, final_gate=1, late_leg_no_forward=1
+17:46:29 |    📌 Nearest miss: LIT score=0.382 (pre-pen 0.54) conf=0.629 quality=0.240/0.26
+    reason=final_gate
+  .. 17:48  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+17:52:35 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +27%[#29] | NIL +24%[#10] | LSK
+    +24%[Live=0.37<cut] | FIGHT -24%[Live=0.41<cut] | ONE -20%[#28]
+17:53:09 |    🧭 C458-17: exploration is due but the best refusal (low_agreement 50%<53%) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+17:53:09 | 📊 Step 3 result: 16 analyzed (+53 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=6, counter_trend_block=41, flat_projection=7, fee_floor=1, absorption_at_extreme=3,
+    post_penalty_quality=1, low_agreement=1, pair_cap=1, capitulation=2, late_leg_no_forward=1,
+    no_structural_room=1
+17:53:09 |    📌 Nearest miss: MARSCOIN score=0.511 (pre-pen 0.85) conf=0.529 quality=0.270/0.26
+    reason=low_agreement 50%<53%
+ 
+ 
+  17:56  up 17h19m  scan 130 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++============+++++++++=========================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 16 > 0 passed  top MARSCOIN 0.51 (low_agreement 50%<)  130 scans, 5764 analysed
+  MARKET    TRENDING  bias -0.64  breadth -0.09  taker flow +0.23
+  NEWS      65 articles  + tone +0.10  PEPE +0.70  ZEC +0.64  BCH +0.55
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    BROCCOLI +27% #29  NIL +24% #10  LSK +24% cut  FIGHT -24% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 18:04  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  16 analysed
+18:05:34 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +26%[#32] | LSK +25%[#13] | NIL
+    +25%[#10] | AKE -22%[Live=0.08<cut] | FIGHT -21%[Live=0.36<cut]
+18:05:58 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 18×ATR, 5.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:06:05 |    ⚖️ C462-7 ONDO: penalties 0.51→0.20 (×0.40) vs bar 0.44 — the stack decided
+18:06:35 |    🧭 C458-17: exploration is due but the best refusal (late-leg F=+0.00) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+18:06:35 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=31, low_score=23,
+    flat_projection=9, late_leg_no_forward=2, no_structural_room=1, capitulation=1,
+    micro_exhaustion=1, pair_cap=1
+18:06:35 |    📌 Nearest miss: NIL score=0.385 conf=0.619 quality=0.238/0.26 reason=late-leg F=+0.00
+  .. 18:12  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
