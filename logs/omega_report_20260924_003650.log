@@ -2731,3 +2731,229 @@
   TAPE      - - - - - - + - - - - - + - - - - + + - + - + + -
   ------------------------------------------------------------------------------------------------
 
+
+
+  01:17  up 24h40m  scan 189 ---------------------------------------------------------------------
+  EQUITY    $252.00  unreal $+0.25
+  OPEN      2 pos $39.49 (16%)  free $212.26
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XAI      LONG    0.011821  0.011110  -6.01%   -0.39   56m  - 31% left
+  LDO      LONG    0.430800  0.435300  +1.04%   +0.64   27m  + 55% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.10 -1.60%  peak $256.24  dd 1.65%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++==================+=======================
+  DAY       real $-0.88  limit $9.44 (3.74%)  9% used
+            ##........................
+  MONTH     dial 15%  used $1.05 of $37.92  from $252.81
+  RECORD    25 closed  7W 18L  win 28%  payoff 1.00  avg $-0.17/tr  best $+0.91  worst $-0.90
+            break-even 50%
+  LIFETIME  120tr 38W 82L 32%  $+1.75
+  FEES      $0.65  mk32/tk23  0.258% of eq
+  SCAN      805 > 127 > 4 passed  top CHIP 0.83 (viable)  189 scans, 9704 analysed
+  MARKET    TRENDING  bias +0.38  breadth +0.16  taker flow -0.20
+  NEWS      65 articles  + tone +0.26  UNI +0.75  HYPE +0.75  XRP +0.44
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 20tr $-0.19 win 25%  info≤0 4tr $-0.14 win 50%
+  MOVERS    XAI +42% #38  LSK +37% #8  BROCCOLI +35% cut  ONDO +25% #6
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + -
+  ------------------------------------------------------------------------------------------------
+
+  << 01:22  CLOSE  XAI LONG @0.010855  -8.17% $-0.53  LOSS
+       held 1h00m  C399_CONVICTION_COLLAPSE  -0.54R  TAKER
+
+
+  01:25  up 24h49m  scan 190 ---------------------------------------------------------------------
+  EQUITY    $251.95  unreal $+0.73
+  OPEN      1 pos $33.07 (13%)  free $218.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  LDO      LONG    0.430800  0.435900  +1.18%   +0.73   35m  + 58% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.15 -1.62%  peak $256.24  dd 1.67%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++=+==============++=+=====================
+  DAY       real $-1.41  limit $9.44 (3.74%)  15% used
+            ####......................
+  MONTH     dial 15%  used $1.58 of $37.92  from $252.81
+  RECORD    26 closed  7W 19L  win 27%  payoff 0.98  avg $-0.19/tr  best $+0.91  worst $-0.90
+            break-even 50%
+  LIFETIME  121tr 38W 83L 31%  $+1.22
+  FEES      $0.65  mk32/tk24  0.259% of eq
+  SCAN      805 > 14 > 3 passed  top AAVE 0.80 (viable)  190 scans, 9718 analysed
+  MARKET    TRENDING  bias +0.26  breadth +0.28  taker flow +0.44
+  NEWS      65 articles  + tone +0.26  UNI +0.75  HYPE +0.75  XRP +0.44
+  INFO      3 tilted  flow/news/oi on 333
+            info>0 20tr $-0.19 win 25%  info≤0 5tr $-0.21 win 40%
+  MOVERS    XAI +38% #26  LSK +37% #7  BROCCOLI +36% cut  ONDO +25% #6
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  01:33  up 24h57m  scan 191 ---------------------------------------------------------------------
+  EQUITY    $251.41  unreal $+0.19
+  OPEN      1 pos $33.07 (13%)  free $218.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  LDO      LONG    0.430800  0.432400  +0.37%   +0.19   43m  + 54% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.69 -1.83%  peak $256.24  dd 1.88%
+  CURVE     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++===================-=
+  DAY       real $-1.41  limit $9.44 (3.74%)  15% used
+            ####......................
+  MONTH     dial 15%  used $1.58 of $37.92  from $252.81
+  RECORD    26 closed  7W 19L  win 27%  payoff 0.98  avg $-0.19/tr  best $+0.91  worst $-0.90
+            break-even 50%
+  LIFETIME  121tr 38W 83L 31%  $+1.22
+  FEES      $0.65  mk32/tk24  0.260% of eq
+  SCAN      805 > 3 > 0 passed  top LDO 1.00 (mtf_disagree)  191 scans, 9721 analysed
+  MARKET    TRENDING  bias +0.26  breadth +0.29  taker flow -0.34
+  NEWS      65 articles  + tone +0.26  UNI +0.75  HYPE +0.75  XRP +0.44
+  INFO      3 tilted  flow/news/oi on 333
+            info>0 20tr $-0.19 win 25%  info≤0 5tr $-0.21 win 40%
+  MOVERS    XAI +38% #26  LSK +37% #7  BROCCOLI +36% cut  ONDO +25% #6
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  >> 01:35  OPEN   XPL LONG @0.107030  x1 $20.95
+       target +11.8%  stop -3.4%  entry score 0.79  maker
+
+
+  01:41  up 25h05m  scan 193 ---------------------------------------------------------------------
+  EQUITY    $251.70  unreal $+0.48
+  OPEN      2 pos $54.02 (21%)  free $197.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  LDO      LONG    0.430800  0.434600  +0.88%   +0.53   51m  + 51% left
+  XPL      LONG    0.107030  0.106850  -0.17%   -0.05    5m  - 66% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.40 -1.72%  peak $256.24  dd 1.77%
+  CURVE     ++++++++++++++*++++++++++++++++++++++++++++++++==============+=+======-============-==
+  DAY       real $-1.41  limit $9.44 (3.74%)  15% used
+            ####......................
+  MONTH     dial 15%  used $1.58 of $37.92  from $252.81
+  RECORD    26 closed  7W 19L  win 27%  payoff 0.98  avg $-0.19/tr  best $+0.91  worst $-0.90
+            break-even 50%
+  LIFETIME  121tr 38W 83L 31%  $+1.22
+  FEES      $0.66  mk33/tk24  0.261% of eq
+  SCAN      805 > 4 > 0 passed  top RIVER 1.19 (mtf_disagree)  193 scans, 9792 analysed
+  MARKET    TRENDING  bias +0.16  breadth +0.00  taker flow -0.04
+  NEWS      65 articles  + tone +0.28  ZEC +0.81  DOT +0.70  XRP +0.44
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 20tr $-0.19 win 25%  info≤0 5tr $-0.21 win 40%
+  MOVERS    LSK +39% #5  XAI +39% cut  BROCCOLI +36% cut  龙虾 -25% #31
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  -> 01:48  HALF   LDO LONG @0.436200  +1.25% $+0.40
+       win half banked  maker  $16.54 rides on
+  << 01:48  CLOSE  LDO LONG @0.434900  +0.95% $+0.70  WIN
+       held 58m  TRAILING_TP: peak=+3.2%   kept 60% of a +1.58% peak  +0.67R  maker
+
+
+  01:49  up 25h13m  scan 194 ---------------------------------------------------------------------
+  EQUITY    $251.94  unreal $+0.02
+  OPEN      1 pos $20.95 (8%)  free $230.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XPL      LONG    0.107030  0.107230  +0.19%   +0.02   14m  + 52% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.16 -1.62%  peak $256.24  dd 1.68%
+  CURVE     *+++++++++++++*+++++++++++++++++++++++++++++++==============++++==================--==
+  DAY       real $-0.71  limit $9.44 (3.74%)  8% used
+            ##........................
+  MONTH     dial 15%  used $0.88 of $37.92  from $252.81
+  RECORD    27 closed  8W 19L  win 30%  payoff 1.08  avg $-0.15/tr  best $+0.91  worst $-0.90
+            break-even 48%
+  LIFETIME  122tr 39W 83L 32%  $+1.92
+  FEES      $0.67  mk35/tk24  0.266% of eq
+  SCAN      805 > 68 > 0 passed  top XPL 1.07 (h1_regime_shock)  194 scans, 9860 analysed
+  MARKET    TRENDING  bias +0.13  breadth +0.00  taker flow -0.59
+  NEWS      65 articles  + tone +0.28  ZEC +0.81  DOT +0.70  XRP +0.44
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 21tr $-0.14 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    LSK +40% #6  BROCCOLI +38% cut  XAI +36% #28  龙虾 -27% #33
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
+
+
+  01:58  up 25h21m  scan 195 ---------------------------------------------------------------------
+  EQUITY    $252.00  unreal $+0.08
+  OPEN      1 pos $20.95 (8%)  free $230.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XPL      LONG    0.107030  0.107500  +0.44%   +0.08   22m  + 61% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.10 -1.60%  peak $256.24  dd 1.65%
+  CURVE     ++++++++++++++*+++++++++++++++++++++++++++++++==============+========-============-===
+  DAY       real $-0.71  limit $9.44 (3.74%)  8% used
+            ##........................
+  MONTH     dial 15%  used $0.88 of $37.92  from $252.81
+  RECORD    27 closed  8W 19L  win 30%  payoff 1.08  avg $-0.15/tr  best $+0.91  worst $-0.90
+            break-even 48%
+  LIFETIME  122tr 39W 83L 32%  $+1.92
+  FEES      $0.67  mk35/tk24  0.266% of eq
+  SCAN      805 > 2 > 0 passed  top LIT 0.32 (quality 0.122 < 0.)  195 scans, 9862 analysed
+  MARKET    TRENDING  bias +0.12  breadth +0.00  taker flow -0.31
+  NEWS      65 articles  + tone +0.28  ZEC +0.81  DOT +0.70  ONE +0.35
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 21tr $-0.14 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    LSK +49% #6  XAI +37% #28  BROCCOLI +36% cut  龙虾 -28% #32
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
+
+
+  02:06  up 25h29m  scan 196 ---------------------------------------------------------------------
+  EQUITY    $252.15  unreal $+0.23
+  OPEN      1 pos $20.95 (8%)  free $230.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XPL      LONG    0.107030  0.108310  +1.20%   +0.23   30m  + 74% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.95 -1.54%  peak $256.24  dd 1.60%
+  CURVE     ++++++++++++++*+++++++++++++++++++++++++++++=+=============++=+====================-==
+  DAY       real $-0.71  limit $9.44 (3.74%)  8% used
+            ##........................
+  MONTH     dial 15%  used $0.88 of $37.92  from $252.81
+  RECORD    27 closed  8W 19L  win 30%  payoff 1.08  avg $-0.15/tr  best $+0.91  worst $-0.90
+            break-even 48%
+  LIFETIME  122tr 39W 83L 32%  $+1.92
+  FEES      $0.67  mk35/tk24  0.266% of eq
+  SCAN      805 > 68 > 0 passed  top ARK 1.02 (h1_regime_shock)  196 scans, 9930 analysed
+  MARKET    MIXED  bias -0.09  breadth +0.00  taker flow +0.38
+  NEWS      65 articles  + tone +0.28  ZEC +0.81  DOT +0.70  ONE +0.35
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 21tr $-0.14 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    LSK +49% #6  XAI +37% #28  BROCCOLI +36% cut  龙虾 -28% #32
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
+
+
+  02:14  up 25h37m  scan 197 ---------------------------------------------------------------------
+  EQUITY    $252.00  unreal $+0.08
+  OPEN      1 pos $20.95 (8%)  free $230.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  XPL      LONG    0.107030  0.107520  +0.46%   +0.08   38m  + 69% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.10 -1.60%  peak $256.24  dd 1.65%
+  CURVE     *+++++++++++++*+++++++++++++++++++++++++++++++=============++++==================--===
+  DAY       real $-0.71  limit $9.44 (3.74%)  8% used
+            ##........................
+  MONTH     dial 15%  used $0.88 of $37.92  from $252.81
+  RECORD    27 closed  8W 19L  win 30%  payoff 1.08  avg $-0.15/tr  best $+0.91  worst $-0.90
+            break-even 48%
+  LIFETIME  122tr 39W 83L 32%  $+1.92
+  FEES      $0.67  mk35/tk24  0.266% of eq
+  SCAN      805 > 13 > 0 passed  top BEAT 0.81 (h1_regime_shock)  197 scans, 9943 analysed
+  MARKET    TRENDING  bias -0.06  breadth -0.06  taker flow +0.35
+  NEWS      65 articles  + tone +0.31  ZEC +0.81  DOT +0.70  ONE +0.35
+  INFO      4 tilted  flow/news/oi on 333
+            info>0 21tr $-0.14 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    LSK +46% #6  XAI +39% #24  BROCCOLI +35% cut  龙虾 -30% #29
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - +
+  ------------------------------------------------------------------------------------------------
+
