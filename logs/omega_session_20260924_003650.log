@@ -2363,3 +2363,83 @@
   TAPE      - - - - - - + - - - - -
   ------------------------------------------------------------------------------------------------
  
+15:19:42 |    🪞 C266 board-parity (top movers vs screen): NIL +41%[Live=0.30<cut] | 龙虾
+    -32%[Live=0.36<cut] | LSK +30%[Live=0.76<cut] | ONE -24%[Live=0.56<cut] | UAI
+    -17%[Live=0.81<cut]
+15:21:24 | 📊 Step 3 result: 70 analyzed → 0 passed | low_score=31, mtf_disagree=2,
+    counter_trend_block=6, capitulation=13, capitulation_short=8, flat_projection=2,
+    late_leg_no_forward=2, absorption_at_extreme=3, low_quality=1, micro_exhaustion=1,
+    leg_exhausted=1
+15:21:24 |    📌 Nearest miss: MARSCOIN score=0.922 conf=0.728 quality=0.671/0.26 reason=pending
+  .. 15:23  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+  .. 15:31  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+15:33:52 |    🪞 C266 board-parity (top movers vs screen): NIL +46%[Live=0.63<cut] | 龙虾
+    -28%[Live=0.34<cut] | LSK +28%[Live=0.59<cut] | ONE -22%[Live=0.49<cut] | UAI
+    -18%[Live=0.72<cut]
+15:34:46 |    ⚖️ C462-7 USELESS: penalties 0.51→0.38 (×0.75) vs bar 0.46 — the stack decided
+15:35:25 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=1, low_score=36, mtf_disagree=4,
+    counter_trend_block=6, absorption_at_extreme=8, micro_exhaustion=1, capitulation_short=5,
+    low_quality=2, late_leg_no_forward=2, flat_projection=3, capitulation=1, no_structural_room=1
+15:35:25 |    📌 Nearest miss: MELANIA score=0.900 conf=0.606 quality=0.545/0.26 reason=pending
+  .. 15:39  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+ 
+ 
+  15:47  up 15h10m  scan 113 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++=============++++++++++++================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 70 > 0 passed  top MELANIA 0.90 (pending)  113 scans, 5053 analysed
+  MARKET    TRENDING  bias -0.67  breadth -0.80  taker flow +0.04
+  NEWS      65 articles  + tone +0.36  PEOPLE +0.44  CHIP +0.35  NEAR +0.34
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    NIL +46% cut  龙虾 -28% cut  LSK +28% cut  ONE -22% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+15:47:49 |    🪞 C266 board-parity (top movers vs screen): NIL +48%[Live=0.67<cut] | 龙虾
+    -31%[Live=0.26<cut] | LSK +22%[Live=0.58<cut] | ONE -22%[Live=0.37<cut] | UAI -17%[#57]
+15:49:05 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=2, low_score=40, mtf_disagree=1,
+    absorption_at_extreme=6, low_quality=1, counter_trend_block=10, late_leg_no_forward=2,
+    micro_exhaustion=4, capitulation_short=1, no_structural_room=1, flat_projection=1
+15:49:05 |    📌 Nearest miss: UNI score=0.763 (pre-pen 0.83) conf=0.450 quality=0.343/0.26
+    reason=quality 0.257 < 0.312
+15:51:48 |    🔭 C456: RAY exited on C377_RISK_STOP: -2.96% = — at its OWN thesis horizon (120min)
+    the price is -5.71% (-1.62R) lower — the exit protected capital
+15:55:25 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=40, mtf_disagree=1, absorption_at_extreme=7, low_quality=1, counter_trend_block=10,
+    late_leg_no_forward=2, micro_exhaustion=4, capitulation_short=1, no_structural_room=1,
+    flat_projection=1
+15:55:25 |    📌 Nearest miss: RAY score=0.095 conf=0.308 quality=0.029/0.26 reason=absorption
+    cvd=+0.60
+  .. 15:55  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  1 analysed
+16:01:32 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[Live=0.61<cut] | 龙虾
+    -31%[Live=0.20<cut] | ONE -24%[Live=0.27<cut] | LSK +18%[#26] | EPIC -18%[Live=0.44<cut]
+16:01:56 |    ⚖️ C462-7 HYPE: penalties 0.56→0.43 (×0.78) vs bar 0.45 — the stack decided
+16:02:04 |    ⚖️ C462-7 WLD: penalties 0.52→0.35 (×0.66) vs bar 0.50 — the stack decided
+16:02:13 |    ⚖️ C462-7 ONDO: penalties 0.52→0.34 (×0.66) vs bar 0.45 — the stack decided
+16:02:43 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=5, low_score=36, mtf_disagree=2,
+    absorption_at_extreme=5, late_leg_no_forward=5, flat_projection=2, counter_trend_block=7,
+    capitulation_short=2, fee_floor=1, no_structural_room=3, leg_exhausted=1, capitulation=1
+16:02:43 |    📌 Nearest miss: TAO score=0.760 (pre-pen 0.86) conf=0.672 quality=0.510/0.26
+    reason=pending
+  .. 16:03  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+  .. 16:11  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+16:15:08 |    🪞 C266 board-parity (top movers vs screen): NIL +34%[#13] | 龙虾 -30%[#46] | ONE
+    -24%[Live=0.12<cut] | LSK +20%[#25] | BROCCOLI +18%[#62]
+16:15:09 | ⊥ C97 TF-CONFLICT: 1h=+0.52×4h=-0.91=d14=-0.47 — only shorts allowed (4h dominant)
+16:15:33 |    ⚖️ C462-7 UNI: penalties 0.93→0.59 (×0.64) vs bar 0.61 — the stack decided
+16:16:11 |    🧭 C458-17: exploration is due but the best refusal (mtf_disagree) is a RISK gate, not
+    a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+16:16:11 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=15, low_score=36,
+    mtf_disagree=1, flat_projection=7, capitulation=3, absorption_at_extreme=4, leg_exhausted=1,
+    pair_cap=1, late_leg_no_forward=1, fee_floor=1
+16:16:11 |    📌 Nearest miss: AKE score=0.822 (pre-pen 0.97) conf=0.596 quality=0.490/0.26
+    reason=mtf_disagree
