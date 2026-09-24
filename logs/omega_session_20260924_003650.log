@@ -2693,3 +2693,188 @@
     micro_exhaustion=1, pair_cap=1
 18:06:35 |    📌 Nearest miss: NIL score=0.385 conf=0.619 quality=0.238/0.26 reason=late-leg F=+0.00
   .. 18:12  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+18:18:56 |    🪞 C266 board-parity (top movers vs screen): LSK +29%[Live=0.53<cut] | BROCCOLI
+    +27%[#30] | NIL +25%[Live=0.59<cut] | AKE -21%[Live=0.36<cut] | FIGHT -20%[Live=0.44<cut]
+18:19:53 |    ⚖️ C462-7 BERA: penalties 0.47→0.28 (×0.60) vs bar 0.47 — the stack decided
+18:19:56 |    🧭 C458-17: exploration is due but the best refusal (absorption cvd=+0.60) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+18:19:56 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=8, low_score=9,
+    counter_trend_block=43, flat_projection=3, absorption_at_extreme=2, pair_cap=1,
+    late_leg_no_forward=1, low_quality=1, capitulation=1
+18:19:56 |    📌 Nearest miss: FLOCK score=0.472 conf=0.543 quality=0.256/0.26 reason=absorption
+    cvd=+0.60
+  .. 18:20  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+ 
+ 
+  18:28  up 17h51m  scan 132 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++==========++++++++++++========================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 69 > 0 passed  top FLOCK 0.47 (absorption cvd=+0.)  132 scans, 5902 analysed
+  MARKET    TRENDING  bias -0.55  breadth +0.06  taker flow +0.08
+  NEWS      65 articles  ~ tone -0.03  ZEC +0.64  BCH +0.55  UNI +0.53
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    LSK +29% cut  BROCCOLI +27% #30  NIL +25% cut  AKE -21% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+18:32:16 |    🪞 C266 board-parity (top movers vs screen): NIL +32%[#10] | BROCCOLI +29%[#31] | LSK
+    +27%[#14] | AKE -20%[Live=0.17<cut] | FIGHT -19%[Live=0.21<cut]
+18:32:39 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 19×ATR, 5.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:32:58 |    ⚖️ C462-7 ARX: penalties 0.54→0.25 (×0.47) vs bar 0.44 — the stack decided
+18:33:06 |    ⚖️ C462-7 ACE: penalties 0.75→0.36 (×0.49) vs bar 0.40 — the stack decided
+18:33:18 |    🧭 C458-17: exploration is due but the best refusal (score 0.362 < 0.395) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+18:33:18 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=29, low_score=30,
+    flat_projection=2, micro_exhaustion=1, capitulation=1, poor_reward_risk=1, no_structural_room=3,
+    pair_cap=1, late_leg_no_forward=1
+18:33:18 |    📌 Nearest miss: ACE score=0.483 (pre-pen 0.75) conf=0.506 quality=0.244/0.26
+    reason=score 0.362 < 0.395
+  .. 18:36  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+  .. 18:44  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+18:45:44 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[#8] | BROCCOLI +32%[#28] | LSK
+    +23%[#17] | AKE -21%[Live=0.26<cut] | FIGHT -21%[Live=0.04<cut]
+18:46:06 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 19×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:46:16 |    🎢→⚖️ LSK: C292 stands down — parabola BROKEN (range 15×ATR, 3.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:46:32 |    ⚖️ C462-7 ARX: penalties 0.55→0.41 (×0.75) vs bar 0.53 — the stack decided
+18:46:38 |    ⚖️ C462-7 ACE: penalties 0.49→0.37 (×0.75) vs bar 0.47 — the stack decided
+18:46:56 | 📊 Step 3 result: 69 analyzed → 3 viable → Step 4 DRI/DSI
+18:52:14 | 📊 Step 3 result: 3 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=49, no_structural_room=10, flat_projection=5, pair_cap=1, capitulation=2
+18:52:14 |    📌 Nearest miss: ENA score=0.404 conf=0.755 quality=0.305/0.26 reason=score 0.404 <
+    0.546
+  .. 18:52  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  3 analysed
+18:52:34 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $317.1452 → $253.7162 (equity
+    $253.7162 − locked $0.0000 = $253.7162); discrepancy $+63.4290. Money that does not exist would
+    have been sized against [correction #6]
+18:57:20 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +34%[#26] | NIL +27%[#12] | LSK
+    +25%[#17] | AKE -17%[Live=0.25<cut] | FIGHT -16%[Live=0.04<cut]
+18:57:21 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+18:57:38 |    🎢→⚖️ PROS: C292 stands down — parabola BROKEN (range 15×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+18:57:39 | 📊 Step 3 result: 2 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=47, flat_projection=5, no_structural_room=11, pair_cap=1, capitulation=2,
+    leg_exhausted=1
+18:57:39 |    📌 Nearest miss: GPS score=0.782 conf=0.594 quality=0.465/0.26 reason=OF-exhaustion
+    OI=capitulation
+ 
+ 
+  19:00  up 18h23m  scan 136 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     ++++++++++++++++++++++++++++++++++++++===========+++++++++++==========================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 2 > 0 passed  top GPS 0.78 (OF-exhaustion OI=c)  136 scans, 6045 analysed
+  MARKET    TRENDING  bias -0.07  breadth +0.00  taker flow +0.23
+  NEWS      65 articles  ~ tone +0.04  BCH +0.55  UNI +0.53  PEOPLE +0.44
+  INFO      3 tilted  flow/news/oi on 283
+  MOVERS    BROCCOLI +34% #26  NIL +27% #12  LSK +25% #17  AKE -17% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+19:03:09 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 15×ATR, 6.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:03:15 |    🎢→⚖️ LSK: C292 stands down — parabola BROKEN (range 16×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:03:27 |    ⚖️ C462-7 FIL: penalties 0.60→0.36 (×0.60) vs bar 0.44 — the stack decided
+19:03:32 |    ⚖️ C462-7 USELESS: penalties 0.49→0.29 (×0.60) vs bar 0.48 — the stack decided
+19:03:57 |    ⚖️ C462-7 DASH: penalties 0.49→0.30 (×0.60) vs bar 0.48 — the stack decided
+19:04:15 |    🎢→⚖️ PROS: C292 stands down — parabola BROKEN (range 14×ATR, 3.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:04:17 | 📊 Step 3 result: 69 analyzed → 1 viable → Step 4 DRI/DSI
+19:04:18 |    🎲 C378 odds-size: orderliness 0.13 -> risk x0.78 ($0.675)
+19:04:18 |    🔒 C378 stop level $2.8172 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 19:04  OPEN   MORPHO LONG @2.8629  x1 $35.52
+       target +5.7%  stop -1.6%  entry score 0.94  maker
+19:04:34 |    🛡️ Guardian would intervene (LOSS_STREAK, LOW_WR, EXCESSIVE_GIVEBACK) — report only
+    since C482; the monthly dial is the loss control
+ 
+ 
+  19:08  up 18h31m  scan 137 ---------------------------------------------------------------------
+  EQUITY    $253.93  unreal $+0.21
+  OPEN      1 pos $35.52 (14%)  free $218.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MORPHO   LONG      2.8629    2.8822  +0.67%   +0.21    4m  + 58% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-2.17 -0.85%  peak $256.24  dd 0.90%
+  CURVE     ++++++++++++++++++++++++++++++++++++++===========++++++++==+==========================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.35  mk14/tk12  0.138% of eq
+  SCAN      805 > 69 > 1 passed  top MORPHO 0.94 (viable)  137 scans, 6114 analysed
+  MARKET    TRENDING  bias +0.10  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  ~ tone +0.04  BCH +0.55  UNI +0.53  PEOPLE +0.44
+  INFO      1 tilted  flow/news/oi on 283
+  MOVERS    BROCCOLI +34% #26  NIL +27% #12  LSK +25% #17  AKE -17% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+19:09:27 |    🪞 C266 board-parity (top movers vs screen): LSK +31%[#9] | BROCCOLI +30%[#27] | NIL
+    +19%[#15] | ONE -18%[Live=0.56<cut] | ALLO -17%[Live=0.46<cut]
+19:09:59 | 📊 Step 3 result: 12 analyzed (+57 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=38, mtf_disagree=1, capitulation=4, flat_projection=3, crowding=1,
+    no_structural_room=4, absorption_at_extreme=6, post_penalty_low=1, post_penalty_quality=1,
+    late_leg_no_forward=3, fee_floor=1
+19:09:59 |    📌 Nearest miss: MORPHO score=1.348 conf=0.567 quality=0.764/0.26 reason=mtf_disagree
+19:15:41 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 14×ATR, 6.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+19:16:30 | 📊 Step 3 result: 69 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  19:16  up 18h39m  scan 139 ---------------------------------------------------------------------
+  EQUITY    $254.11  unreal $+0.39
+  OPEN      1 pos $35.52 (14%)  free $218.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  MORPHO   LONG      2.8629    2.8967  +1.18%   +0.39   12m  + 56% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.99 -0.78%  peak $256.24  dd 0.83%
+  CURVE     ++++++++++++++++++++++++++++++++++++++==========++++++++++============================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.35  mk14/tk12  0.138% of eq
+  SCAN      805 > 69 > 1 passed  top MORPHO 0.61 (viable)  139 scans, 6195 analysed
+  MARKET    MIXED  bias +0.24  breadth +0.83  taker flow -0.20
+  NEWS      65 articles  + tone +0.15  BCH +0.55  UNI +0.53  PEOPLE +0.44
+  INFO      1 tilted  flow/news/oi on 283
+  MOVERS    LSK +31% #9  BROCCOLI +30% #27  NIL +19% #15  ONE -18% cut
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
