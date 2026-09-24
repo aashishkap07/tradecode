@@ -2443,3 +2443,131 @@
     pair_cap=1, late_leg_no_forward=1, fee_floor=1
 16:16:11 |    📌 Nearest miss: AKE score=0.822 (pre-pen 0.97) conf=0.596 quality=0.490/0.26
     reason=mtf_disagree
+ 
+ 
+  16:19  up 15h42m  scan 117 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++=============+++++++++++==================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 70 > 0 passed  top AKE 0.82 (mtf_disagree)  117 scans, 5263 analysed
+  MARKET    TRENDING  bias -0.41  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  - tone -0.10  PEOPLE +0.44  ONE +0.26  STRK +0.25
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    NIL +34% #13  龙虾 -30% #46  ONE -24% cut  LSK +20% #25
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+16:22:13 | ⊥ C97 TF-CONFLICT: 1h=+0.52×4h=-0.91=d14=-0.47 — only shorts allowed (4h dominant)
+  .. 16:27  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+16:27:35 |    🪞 C266 board-parity (top movers vs screen): NIL +34%[#13] | 龙虾 -25%[#48] | ONE
+    -24%[Live=0.12<cut] | LSK +20%[#23] | BROCCOLI +18%[#58]
+16:27:36 | ⊥ C97 TF-CONFLICT: 1h=+0.52×4h=-0.91=d14=-0.47 — only shorts allowed (4h dominant)
+16:27:54 |    🧭 C458-17: exploration is due but the best refusal (score 0.201 < 0.530) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+16:27:54 | 📊 Step 3 result: 2 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=15,
+    low_score=36, mtf_disagree=1, flat_projection=7, capitulation=3, absorption_at_extreme=4,
+    leg_exhausted=1, pair_cap=1, late_leg_no_forward=1, ct_noisy_block=1
+16:27:54 |    📌 Nearest miss: SHIB score=0.268 conf=0.460 quality=0.123/0.26 reason=score 0.201 <
+    0.530
+16:32:55 | ⊥ C97 TF-CONFLICT: 1h=+0.74×4h=-0.84=d14=-0.62 — only shorts allowed (4h dominant)
+16:34:18 |    🧭 C458-17: exploration is due but the best refusal (mtf_disagree) is a RISK gate, not
+    a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+16:34:18 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=4, low_score=25, mtf_disagree=1,
+    flat_projection=3, ct_noisy_block=25, news_tech_conflict=2, micro_exhaustion=2,
+    absorption_at_extreme=3, late_leg_no_forward=1, fee_floor=1, capitulation_short=1, pair_cap=1,
+    poor_reward_risk=1
+16:34:18 |    📌 Nearest miss: AKE score=0.709 conf=0.586 quality=0.416/0.26 reason=mtf_disagree
+  .. 16:35  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  70 analysed
+16:39:25 |    🪞 C266 board-parity (top movers vs screen): NIL +34%[#11] | 龙虾 -29%[#42] | ONE
+    -24%[#29] | BROCCOLI +20%[#46] | LSK +17%[#25]
+16:39:26 | ⊥ C97 TF-CONFLICT: 1h=+0.74×4h=-0.84=d14=-0.62 — only shorts allowed (4h dominant)
+16:39:56 |    🧭 C458-17: exploration is due but the best refusal (OF-exhaustion OI=weak_rally) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+16:39:56 | 📊 Step 3 result: 17 analyzed (+53 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=25, mtf_disagree=1, flat_projection=2, ct_noisy_block=23, absorption_at_extreme=3,
+    micro_exhaustion=2, news_tech_conflict=2, late_leg_no_forward=3, pair_cap=1,
+    capitulation_short=1, poor_reward_risk=2, leg_exhausted=1
+16:39:56 |    📌 Nearest miss: FLOCK score=0.470 conf=0.432 quality=0.203/0.26 reason=OF-exhaustion
+    OI=weak_rally
+  .. 16:43  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  17 analysed
+16:44:58 | ⊥ C97 TF-CONFLICT: 1h=+0.74×4h=-0.84=d14=-0.62 — only shorts allowed (4h dominant)
+16:45:23 |    🎢→⚖️ NIL: C292 stands down — parabola BROKEN (range 14×ATR, 3.2 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+16:46:22 |    🧭 C458-17: exploration is due but the best refusal (pending) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+16:46:22 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=5, low_score=14,
+    ct_noisy_block=37, flat_projection=6, micro_exhaustion=1, news_tech_conflict=2,
+    absorption_at_extreme=1, low_quality=1, pair_cap=1, capitulation_short=1, no_structural_room=1
+16:46:22 |    📌 Nearest miss: 牛来 score=0.604 conf=0.615 quality=0.372/0.26 reason=pending
+16:51:31 |    🪞 C266 board-parity (top movers vs screen): NIL +35%[#10] | BROCCOLI +26%[#41] | ONE
+    -25%[#26] | LSK +22%[#17] | 龙虾 -21%[#47]
+16:51:32 | ⊥ C97 TF-CONFLICT: 1h=+0.86×4h=-0.79=d14=-0.68 — only longs allowed (1h dominant)
+16:51:57 |    🧭 C458-17: exploration is due but the best refusal (score 0.398 < 0.594) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+16:51:57 | 📊 Step 3 result: 14 analyzed (+56 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=10, ct_noisy_block=36, flat_projection=8, news_tech_conflict=3, micro_exhaustion=1,
+    absorption_at_extreme=1, low_quality=1, pair_cap=1, capitulation=1, capitulation_short=1,
+    no_structural_room=1
+16:51:57 |    📌 Nearest miss: AAVE score=0.398 conf=0.507 quality=0.202/0.26 reason=score 0.398 <
+    0.594
+ 
+ 
+  16:51  up 16h15m  scan 122 ---------------------------------------------------------------------
+  EQUITY    $253.72
+  OPEN      flat  free $253.72
+  SESSION   $-2.38 -0.93%  peak $256.24  dd 0.98%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++============++++++++++++===================
+  DAY       real $-2.42  limit $9.48 (3.70%)  26% used
+            #######...................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    12 closed  1W 11L  win 8%  payoff 2.26  avg $-0.20/tr  best $+0.62  worst $-0.83
+            break-even 31%
+  LIFETIME  107tr 32W 75L 30%  $+3.72
+  FEES      $0.34  mk13/tk12  0.135% of eq
+  SCAN      805 > 14 > 0 passed  top AAVE 0.40 (score 0.398 < 0.59)  122 scans, 5436 analysed
+  MARKET    TRENDING  bias -0.30  breadth -0.61  taker flow +0.31
+  NEWS      65 articles  + tone +0.10  PEPE +0.70  TAO +0.69  HYPE +0.68
+  INFO      1 tilted  flow/fund/news/oi on 265
+  MOVERS    NIL +35% #10  BROCCOLI +26% #41  ONE -25% #26  LSK +22% #17
+  TAPE      - - - - - - + - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+16:56:59 | ⊥ C97 TF-CONFLICT: 1h=+0.86×4h=-0.79=d14=-0.68 — only longs allowed (1h dominant)
+  .. 16:59  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  14 analysed
+17:02:19 |    🪞 C266 board-parity (top movers vs screen): NIL +31%[#11] | BROCCOLI +23%[#37] | ONE
+    -22%[#24] | LSK +21%[Live=0.17<cut] | TUT +19%[#38]
+17:02:20 | ⊥ C97 TF-CONFLICT: 1h=+0.84×4h=-0.93=d14=-0.78 — only shorts allowed (4h dominant)
+17:03:39 |    🧭 C458-17: exploration is due but the best refusal (low_agreement 47%<53%) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+17:03:39 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=3, low_score=27,
+    ct_noisy_block=27, fee_floor=1, capitulation=5, pair_cap=1, low_agreement=1,
+    absorption_at_extreme=1, post_penalty_low=1, micro_exhaustion=1, poor_reward_risk=1
+17:03:39 |    📌 Nearest miss: 牛来 score=0.517 (pre-pen 0.86) conf=0.535 quality=0.276/0.26
+    reason=low_agreement 47%<53%
+  .. 17:07  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  69 analysed
+17:08:40 | ⊥ C97 TF-CONFLICT: 1h=+0.84×4h=-0.93=d14=-0.78 — only shorts allowed (4h dominant)
+17:14:00 |    🪞 C266 board-parity (top movers vs screen): NIL +34%[#10] | LSK +26%[Live=0.19<cut] |
+    FIGHT -25%[#53] | BROCCOLI +22%[#39] | 龙虾 -22%[#40]
+17:14:00 | ⊥ C97 TF-CONFLICT: 1h=+0.84×4h=-0.93=d14=-0.78 — only shorts allowed (4h dominant)
+17:14:19 |    🧭 C458-17: exploration is due but the best refusal (score 0.188 < 0.582) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+17:14:19 | 📊 Step 3 result: 3 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=28, ct_noisy_block=26, fee_floor=1, capitulation=5, pair_cap=1, low_agreement=1,
+    absorption_at_extreme=1, micro_exhaustion=1, post_penalty_low=1, poor_reward_risk=1
+17:14:19 |    📌 Nearest miss: TRUMP score=0.251 conf=0.543 quality=0.136/0.26 reason=score 0.188 <
+    0.582
+  .. 17:15  flat  $253.72  $-2.38 -0.93%  1W 11L 8%  3 analysed
