@@ -1799,3 +1799,147 @@
 
   << 20:15  CLOSE  ETC LONG @9.9580  -3.77% $-0.90  LOSS
        held 12m  C377_RISK_STOP: -3.81% =  round trip from +0.09%  -1.03R  TAKER
+  << 20:19  CLOSE  RENDER LONG @1.8238  -1.81% $-0.64  LOSS
+       held 15m  C455_FLOW_REFUSED: the e  round trip from +0.18%  -0.82R  TAKER
+
+
+  20:21  up 19h44m  scan 148 ---------------------------------------------------------------------
+  EQUITY    $251.80  unreal $-0.44
+  OPEN      1 pos $36.74 (15%)  free $215.50
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  DOT      LONG      1.1670    1.1540  -1.11%   -0.44   28m  - 19% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.30 -1.68%  peak $256.24  dd 1.73%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++======================+===+==
+  DAY       real $-3.90  limit $9.48 (3.70%)  41% used
+            ###########...............
+  MONTH     dial 15%  used $0.57 of $37.92  from $252.81
+  RECORD    15 closed  2W 13L  win 13%  payoff 0.97  avg $-0.26/tr  best $+0.62  worst $-0.90
+            break-even 51%
+  LIFETIME  110tr 33W 77L 30%  $+2.24
+  FEES      $0.42  mk17/tk15  0.169% of eq
+  SCAN      805 > 128 > 2 passed  top HOOD 0.46 (viable)  148 scans, 6826 analysed
+  MARKET    TRENDING  bias +0.46  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  + tone +0.14  BNB +0.71  TIA +0.50  PEOPLE +0.44
+  INFO      2 tilted  flow/news/oi on 305
+            info>0 13tr $-0.22 win 15%  info≤0 1tr $-0.90 win 0%
+  MOVERS    BROCCOLI +40% cut  LSK +30% cut  NIL +26% cut  STONK +25% #54
+  TAPE      - - - - - - + - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+
+  << 20:22  CLOSE  DOT LONG @1.1510  -1.37% $-0.53  LOSS
+       held 28m  C399_CONVICTION_COLLAPSE  round trip from +0.94%  -0.53R  TAKER
+
+
+  20:29  up 19h53m  scan 148 ---------------------------------------------------------------------
+  EQUITY    $251.70
+  OPEN      flat  free $251.70
+  SESSION   $-4.40 -1.72%  peak $256.24  dd 1.77%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++======================++==+===
+  DAY       real $-4.43  limit $9.48 (3.70%)  47% used
+            ############..............
+  MONTH     dial 15%  used $1.10 of $37.92  from $252.81
+  RECORD    16 closed  2W 14L  win 12%  payoff 0.94  avg $-0.27/tr  best $+0.62  worst $-0.90
+            break-even 52%
+  LIFETIME  111tr 33W 78L 30%  $+1.70
+  FEES      $0.45  mk17/tk16  0.177% of eq
+  SCAN      805 > 128 > 2 passed  top HOOD 0.46 (viable)  148 scans, 6826 analysed
+  MARKET    TRENDING  bias +0.46  breadth +0.00  taker flow -0.30
+  NEWS      65 articles  + tone +0.14  BNB +0.71  TIA +0.50  PEOPLE +0.44
+  INFO      2 tilted  flow/news/oi on 305
+            info>0 14tr $-0.24 win 14%  info≤0 1tr $-0.90 win 0%
+  MOVERS    BROCCOLI +40% cut  LSK +30% cut  NIL +26% cut  STONK +25% #54
+  TAPE      - - - - - - + - - - - - + - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 20:37  flat  $251.70  $-4.40 -1.72%  2W 14L 12%  128 analysed
+  .. 20:45  flat  $251.70  $-4.40 -1.72%  2W 14L 12%  128 analysed
+  >> 20:50  OPEN   TRUMP LONG @2.0540  x1 $30.55
+       target +7.9%  stop -1.8%  entry score 0.71  maker
+  >> 20:50  OPEN   STONK LONG @0.375840  x1 $30.95
+       target +10.0%  stop -2.3%  entry score 0.62  maker
+
+
+  20:53  up 20h17m  scan 150 ---------------------------------------------------------------------
+  EQUITY    $251.65  unreal $-0.05
+  OPEN      2 pos $61.50 (24%)  free $190.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  TRUMP    LONG      2.0540    2.0560  +0.10%   +0.01    3m  + 27% left
+  STONK    LONG    0.375840  0.375470  -0.10%   -0.06    3m  - 73% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.45 -1.74%  peak $256.24  dd 1.79%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++++++++++++======================+========
+  DAY       real $-4.43  limit $9.48 (3.70%)  47% used
+            ############..............
+  MONTH     dial 15%  used $1.10 of $37.92  from $252.81
+  RECORD    16 closed  2W 14L  win 12%  payoff 0.94  avg $-0.27/tr  best $+0.62  worst $-0.90
+            break-even 52%
+  LIFETIME  111tr 33W 78L 30%  $+1.70
+  FEES      $0.46  mk19/tk16  0.182% of eq
+  SCAN      805 > 128 > 9 passed  top TRUMP 0.71 (viable)  150 scans, 7082 analysed
+  MARKET    TRENDING  bias +0.00  breadth +0.00  taker flow +0.36
+  NEWS      65 articles  + tone +0.22  PEOPLE +0.44  ONE +0.25  XMR -0.25
+  INFO      9 tilted  flow/news/oi on 311
+            info>0 14tr $-0.24 win 14%  info≤0 1tr $-0.90 win 0%
+  MOVERS    BROCCOLI +38% cut  LSK +25% cut  ONDO +23% #7  ONE -22% cut
+  TAPE      - - - - - - + - - - - - + - - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:04  up 20h27m  scan 152 ---------------------------------------------------------------------
+  EQUITY    $251.79  unreal $+0.09
+  OPEN      2 pos $61.50 (24%)  free $190.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  TRUMP    LONG      2.0540    2.0500  -0.19%   -0.08   14m  - 22% left
+  STONK    LONG    0.375840  0.378310  +0.66%   +0.18   14m  + 75% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.31 -1.68%  peak $256.24  dd 1.74%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++++++++++++======================+==+=====
+  DAY       real $-4.43  limit $9.48 (3.70%)  47% used
+            ############..............
+  MONTH     dial 15%  used $1.10 of $37.92  from $252.81
+  RECORD    16 closed  2W 14L  win 12%  payoff 0.94  avg $-0.27/tr  best $+0.62  worst $-0.90
+            break-even 52%
+  LIFETIME  111tr 33W 78L 30%  $+1.70
+  FEES      $0.46  mk19/tk16  0.182% of eq
+  SCAN      805 > 128 > 0 passed  top KORU 0.85 (low_agreement 56%<)  152 scans, 7224 analysed
+  MARKET    MIXED  bias +0.06  breadth +0.64  taker flow +0.06
+  NEWS      65 articles  + tone +0.22  INJ +0.50  PEOPLE +0.44  ONE +0.25
+  INFO      4 tilted  flow/news/oi on 313
+            info>0 14tr $-0.24 win 14%  info≤0 1tr $-0.90 win 0%
+  MOVERS    BROCCOLI +38% cut  LSK +24% cut  ONDO +24% #8  STONK +22% #62
+  TAPE      - - - - - - + - - - - - + - - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  21:12  up 20h35m  scan 153 ---------------------------------------------------------------------
+  EQUITY    $252.19  unreal $+0.49
+  OPEN      2 pos $61.50 (24%)  free $190.20
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  TRUMP    LONG      2.0540    2.0630  +0.44%   +0.11   22m  + 24% left
+  STONK    LONG    0.375840  0.380780  +1.31%   +0.38   22m  + 76% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.91 -1.53%  peak $256.24  dd 1.58%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++++++++++++======================++=+======
+  DAY       real $-4.43  limit $9.48 (3.70%)  47% used
+            ############..............
+  MONTH     dial 15%  used $1.10 of $37.92  from $252.81
+  RECORD    16 closed  2W 14L  win 12%  payoff 0.94  avg $-0.27/tr  best $+0.62  worst $-0.90
+            break-even 52%
+  LIFETIME  111tr 33W 78L 30%  $+1.70
+  FEES      $0.46  mk19/tk16  0.182% of eq
+  SCAN      805 > 21 > 0 passed  top CFG 0.95 (vol_floor)  153 scans, 7245 analysed
+  MARKET    MIXED  bias +0.08  breadth +0.37  taker flow +0.30
+  NEWS      65 articles  + tone +0.22  INJ +0.50  PEOPLE +0.44  ONE +0.25
+  INFO      4 tilted  flow/news/oi on 313
+            info>0 14tr $-0.24 win 14%  info≤0 1tr $-0.90 win 0%
+  MOVERS    BROCCOLI +43% cut  LSK +27% cut  ONDO +25% #7  STONK +23% #63
+  TAPE      - - - - - - + - - - - - + - - -
+  ------------------------------------------------------------------------------------------------
+
