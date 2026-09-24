@@ -3647,3 +3647,259 @@
   TAPE      - - - - - - + - - - - - + - - - - + +
   ------------------------------------------------------------------------------------------------
  
+22:17:49 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +43%[#21] | LSK
+    +33%[Live=0.47<cut] | ONDO +26%[Live=0.46<cut] | LTC +24%[Live=0.40<cut] | NIL +22%[#11]
+22:19:13 |    ⚖️ C462-7 FET: penalties 0.52→0.35 (×0.68) vs bar 0.48 — the stack decided
+22:19:30 |    ⚖️ C462-7 MARSCOIN: penalties 0.56→0.38 (×0.67) vs bar 0.44 — the stack decided
+22:20:19 |    ⚖️ C462-7 MRVL: penalties 0.56→0.42 (×0.75) vs bar 0.44 — the stack decided
+22:21:40 |    ⚖️ C462-7 BNC: penalties 0.53→0.36 (×0.68) vs bar 0.44 — the stack decided
+22:22:09 | 📊 Step 3 result: 129 analyzed → 4 viable → Step 4 DRI/DSI
+ 
+  22:24  up 21h48m  scan 163 ---------------------------------------------------------------------
+  EQUITY    $252.96  unreal $-0.21
+  OPEN      2 pos $45.69 (18%)  free $207.49
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.2500  +3.51%   +0.42   49m  + 72% left
+  BTW      LONG      1.0897    1.0699  -1.81%   -0.63   30m  - 52% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.14 -1.23%  peak $256.24  dd 1.28%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++++++++++==+================++=+===========
+  DAY       real $-2.96  limit $9.48 (3.70%)  31% used
+            ########..................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    19 closed  4W 15L  win 21%  payoff 1.31  avg $-0.18/tr  best $+0.80  worst $-0.90
+            break-even 43%
+  LIFETIME  114tr 35W 79L 31%  $+3.17
+  FEES      $0.52  mk25/tk18  0.207% of eq
+  SCAN      805 > 129 > 4 passed  top BTW 0.59 (viable)  163 scans, 7991 analysed
+  MARKET    TRENDING  bias +0.52  breadth +0.00  taker flow +0.31
+  NEWS      65 articles  + tone +0.06  XMR -0.25  POLYMARKET +0.25  SENT -0.17
+  INFO      4 tilted  flow/news/oi on 320
+            info>0 15tr $-0.23 win 13%  info≤0 3tr $+0.08 win 67%
+  MOVERS    BROCCOLI +43% #21  LSK +33% cut  ONDO +26% cut  LTC +24% cut
+  TAPE      - - - - - - + - - - - - + - - - - + +
+  ------------------------------------------------------------------------------------------------
+ 
+22:25:41 | 📊 Step 3 result: 4 analyzed (+125 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=62, mtf_disagree=6, regime_blip=5, post_penalty_low=7, leg_exhausted=5,
+    flat_projection=2, trajectory_adj=4, reward_conviction=1, post_penalty_quality=5, low_quality=3,
+    micro_exhaustion=2, capitulation=7, no_structural_room=4, micro_wave=1, poor_reward_risk=2,
+    vol_floor=6, flow_veto=1
+22:25:41 |    📌 Nearest miss: XLM score=0.872 conf=0.532 quality=0.464/0.26 reason=mtf_disagree
+22:26:04 |    🛑 C377 HARD STOP BTW: -2.22% <= -2.10% (0.8R, R=2.80%) — arithmetic, not opinion
+22:26:04 | ❌ LOSS: BTW/USDT:USDT | C377_RISK_STOP: -2.22% = -0.79R
+  << 22:26  CLOSE  BTW LONG @1.0654  -2.23% $-0.77  LOSS
+       held 31m  C377_RISK_STOP: -2.22% =  round trip from +0.61%  -0.80R  TAKER
+22:28:53 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +44%[#19] | LSK
+    +35%[Live=0.48<cut] | ONDO +25%[Live=0.46<cut] | LTC +24%[Live=0.40<cut] | H +23%[#72]
+22:29:34 | 📊 Step 3 result: 7 analyzed (+120 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=60, mtf_disagree=5, regime_blip=4, post_penalty_low=7, leg_exhausted=4,
+    flat_projection=2, trajectory_adj=4, post_penalty_quality=5, reward_conviction=1, low_quality=3,
+    capitulation=8, micro_exhaustion=2, poor_reward_risk=2, no_structural_room=5, micro_wave=1,
+    vol_floor=7, flow_veto=1
+22:29:34 |    📌 Nearest miss: BMNR score=0.803 conf=0.839 quality=0.674/0.26 reason=vol_floor
+22:33:32 |    ⚖️ C462-7 BROCCOLI: penalties 0.49→0.42 (×0.87) vs bar 0.48 — the stack decided
+22:33:58 |    ⚖️ C462-7 FIL: penalties 0.56→0.42 (×0.75) vs bar 0.47 — the stack decided
+22:34:26 |    ⚖️ C462-7 MARSCOIN: penalties 0.48→0.29 (×0.60) vs bar 0.48 — the stack decided
+22:34:33 |    ⚖️ C462-7 DRAM: penalties 0.53→0.40 (×0.75) vs bar 0.44 — the stack decided
+22:34:36 |    ⚖️ C462-7 AAVE: penalties 0.55→0.42 (×0.75) vs bar 0.44 — the stack decided
+22:34:37 |    ⚖️ C462-7 JUP: penalties 0.51→0.35 (×0.69) vs bar 0.44 — the stack decided
+22:34:38 |    ⚖️ C462-7 SKHY: penalties 0.50→0.38 (×0.75) vs bar 0.44 — the stack decided
+22:35:07 |    ⚖️ C462-7 FARTCOIN: penalties 0.49→0.37 (×0.75) vs bar 0.48 — the stack decided
+22:36:19 |    ⚖️ C462-7 MET: penalties 0.56→0.44 (×0.80) vs bar 0.48 — the stack decided
+22:37:11 | 📊 Step 3 result: 127 analyzed → 6 viable → Step 4 DRI/DSI
+22:37:15 |    🎲 C378 odds-size: orderliness 0.10 -> risk x0.76 ($0.655)
+22:37:16 |    🔒 C378 stop level $8.276 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 22:37  OPEN   INJ LONG @8.5260  x1 $21.19
+       target +12.7%  stop -2.9%  entry score 0.71  maker
+ 
+ 
+  22:37  up 22h00m  scan 166 ---------------------------------------------------------------------
+  EQUITY    $252.89  unreal $+0.49
+  OPEN      2 pos $33.54 (13%)  free $218.87
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.7000  +4.11%   +0.50 1h02m  + 65% left
+  INJ      LONG      8.5260    8.5280  +0.02%   -0.01    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.21 -1.25%  peak $256.24  dd 1.31%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++++++++++++================++++============
+  DAY       real $-3.73  limit $9.48 (3.70%)  39% used
+            ##########................
+  MONTH     dial 15%  used $0.40 of $37.92  from $252.81
+  RECORD    20 closed  4W 16L  win 20%  payoff 1.22  avg $-0.21/tr  best $+0.80  worst $-0.90
+            break-even 45%
+  LIFETIME  115tr 35W 80L 30%  $+2.40
+  FEES      $0.55  mk26/tk19  0.216% of eq
+  SCAN      805 > 127 > 6 passed  top INJ 0.71 (viable)  166 scans, 8129 analysed
+  MARKET    TRENDING  bias +0.47  breadth +0.00  taker flow -0.20
+  NEWS      65 articles  + tone +0.06  DOGE +0.85  SHIB +0.85  COIN +0.70
+  INFO      6 tilted  flow/news/oi on 320
+            info>0 15tr $-0.23 win 13%  info≤0 4tr $-0.14 win 50%
+  MOVERS    BROCCOLI +44% #19  LSK +35% cut  ONDO +25% cut  LTC +24% cut
+  TAPE      - - - - - - + - - - - - + - - - - + + -
+  ------------------------------------------------------------------------------------------------
+ 
+22:40:26 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +43%[#25] | LSK +35%[#11] | ONDO
+    +26%[#6] | LTC +24%[Live=0.34<cut] | NIL +24%[#13]
+22:41:22 |    ⚖️ C462-7 BR: penalties 0.36→0.15 (×0.40) vs bar 0.27 — the stack decided
+22:41:36 | 📊 Step 3 result: 26 analyzed (+101 cached) → 3 viable → Step 4 DRI/DSI
+22:41:38 |    🎲 C378 odds-size: orderliness 0.09 -> risk x0.75 ($0.648)
+22:41:38 |    🔒 C378 stop level $4.5214 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 22:41  OPEN   NEAR LONG @4.6990  x1 $17.15
+       target +15.7%  stop -3.8%  entry score 0.54  maker
+22:45:42 |    ⚖️ C462-7 MUBARAK: penalties 0.69→0.21 (×0.30) vs bar 0.27 — the stack decided
+22:46:57 | 📊 Step 3 result: 127 analyzed → 0 passed | low_confidence=1, low_score=3, corr_cap=87,
+    micro_exhaustion=10, flat_projection=5, regime_blip=7, no_structural_room=8, leg_exhausted=1,
+    pair_cap=1, poor_reward_risk=4
+22:46:57 |    📌 Nearest miss: NBIS score=1.477 conf=0.871 quality=1.286/0.26 reason=corr_cap
+ 
+ 
+  22:46  up 22h10m  scan 168 ---------------------------------------------------------------------
+  EQUITY    $253.14  unreal $+0.74
+  OPEN      3 pos $50.69 (20%)  free $201.72
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.8400  +4.30%   +0.52 1h11m  + 13% left
+  INJ      LONG      8.5260    8.6250  +1.16%   +0.23    9m  + 38% left
+  NEAR     LONG      4.6990    4.6998  +0.02%   -0.01    5m  - 48% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-2.96 -1.16%  peak $256.24  dd 1.21%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++++++++==+===============++==+============
+  DAY       real $-3.73  limit $9.48 (3.70%)  39% used
+            ##########................
+  MONTH     dial 15%  used $0.40 of $37.92  from $252.81
+  RECORD    20 closed  4W 16L  win 20%  payoff 1.22  avg $-0.21/tr  best $+0.80  worst $-0.90
+            break-even 45%
+  LIFETIME  115tr 35W 80L 30%  $+2.40
+  FEES      $0.55  mk27/tk19  0.218% of eq
+  SCAN      805 > 127 > 0 passed  top NBIS 1.48 (corr_cap)  168 scans, 8282 analysed
+  MARKET    TRENDING  bias +0.48  breadth +0.39  taker flow +0.00
+  NEWS      65 articles  + tone +0.06  DOGE +0.85  SHIB +0.85  COIN +0.70
+  INFO      3 tilted  flow/news/oi on 322
+            info>0 15tr $-0.23 win 13%  info≤0 4tr $-0.14 win 50%
+  MOVERS    BROCCOLI +43% #25  LSK +35% #11  ONDO +26% #6  LTC +24% cut
+  TAPE      - - - - - - + - - - - - + - - - - + + -
+  ------------------------------------------------------------------------------------------------
+ 
+22:50:07 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +42%[#22] | LSK +34%[#12] | ONDO
+    +27%[#6] | LTC +23%[Live=0.37<cut] | NIL +21%[#14]
+22:50:50 | 📊 Step 3 result: 17 analyzed (+111 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=1, corr_cap=87, flat_projection=8, micro_exhaustion=9, regime_blip=7, pair_cap=2,
+    leg_exhausted=1, no_structural_room=6, ct_noisy_block=1, poor_reward_risk=4,
+    proj_confirms_trend=1
+22:50:50 |    📌 Nearest miss: CYPH score=1.174 conf=0.950 quality=1.115/0.26 reason=corr_cap
+22:50:55 | 🎯 EXIT SIGNAL: INJ/USDT:USDT - REL_TRAIL: peak=+1.8%(0.9PRU) gave=0.7PRU > trail=0.5PRU
+    cont=-0.61
+  << 22:50  CLOSE  INJ LONG @8.5480  +0.26% $+0.04  WIN
+       held 13m  REL_TRAIL: peak=+1.8%(0.  kept 15% of a +1.76% peak  +0.07R  TAKER
+ 
+ 
+  22:55  up 22h18m  scan 169 ---------------------------------------------------------------------
+  EQUITY    $252.84  unreal $+0.40
+  OPEN      2 pos $29.49 (12%)  free $222.95
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.6800  +4.09%   +0.49 1h19m  + 0% left
+  NEAR     LONG      4.6990    4.6769  -0.47%   -0.09   13m  - 51% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.26 -1.27%  peak $256.24  dd 1.33%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++++++++++====================+==+=============
+  DAY       real $-3.69  limit $9.48 (3.70%)  39% used
+            ##########................
+  MONTH     dial 15%  used $0.36 of $37.92  from $252.81
+  RECORD    21 closed  5W 16L  win 24%  payoff 1.00  avg $-0.19/tr  best $+0.80  worst $-0.90
+            break-even 50%
+  LIFETIME  116tr 36W 80L 31%  $+2.44
+  FEES      $0.56  mk27/tk20  0.223% of eq
+  SCAN      805 > 17 > 0 passed  top CYPH 1.17 (corr_cap)  169 scans, 8299 analysed
+  MARKET    TRENDING  bias +0.39  breadth +0.42  taker flow -0.02
+  NEWS      65 articles  - tone -0.12  DOGE +0.85  SHIB +0.85  COIN +0.70
+  INFO      3 tilted  flow/news/oi on 322
+            info>0 16tr $-0.22 win 19%  info≤0 4tr $-0.14 win 50%
+  MOVERS    BROCCOLI +42% #22  LSK +34% #12  ONDO +27% #6  LTC +23% cut
+  TAPE      - - - - - - + - - - - - + - - - - + + - +
+  ------------------------------------------------------------------------------------------------
+ 
+22:56:45 |    📓 C444: BTW exited on C377_RISK_STOP: -2.22% = at index 0.51 — 30min later the price
+    is -11.51% (-4.11R) lower — the exit protected capital
+23:01:33 |    🪞 C266 board-parity (top movers vs screen): BROCCOLI +37%[#29] | LSK +35%[#12] | ONDO
+    +26%[#6] | NIL +23%[#14] | LTC +22%[#8]
+23:01:34 | ⚠️ C79 WEAK-RESULTANT: R=+0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+23:02:18 |    ⚖️ C462-7 KORU: penalties 0.47→0.30 (×0.64) vs bar 0.39 — the stack decided
+23:02:23 |    ⚖️ C462-7 SOXS: penalties 0.47→0.30 (×0.64) vs bar 0.38 — the stack decided
+23:03:26 | 📊 Step 3 result: 127 analyzed → 0 passed | low_score=8, mtf_disagree=1, regime_blip=16,
+    h1_regime_shock=80, no_structural_room=4, flat_projection=16, pair_cap=1, low_quality=1
+23:03:26 |    📌 Nearest miss: 2Z score=1.000 conf=0.836 quality=0.836/0.26 reason=h1_regime_shock
+ 
+  23:03  up 22h26m  scan 170 ---------------------------------------------------------------------
+  EQUITY    $252.67  unreal $+0.23
+  OPEN      2 pos $29.49 (12%)  free $222.95
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.5500  +3.91%   +0.47 1h28m  + 0% left
+  NEAR     LONG      4.6990    4.6369  -1.32%   -0.24   21m  - 26% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.43 -1.34%  peak $256.24  dd 1.39%
+  CURVE     ++++++++++++++++*+++++++++++++++++++++++++++++++++==+===============++=========-======
+  DAY       real $-3.69  limit $9.48 (3.70%)  39% used
+            ##########................
+  MONTH     dial 15%  used $0.36 of $37.92  from $252.81
+  RECORD    21 closed  5W 16L  win 24%  payoff 1.00  avg $-0.19/tr  best $+0.80  worst $-0.90
+            break-even 50%
+  LIFETIME  116tr 36W 80L 31%  $+2.44
+  FEES      $0.56  mk27/tk20  0.223% of eq
+  SCAN      805 > 127 > 0 passed  top 2Z 1.00 (h1_regime_shock)  170 scans, 8426 analysed
+  MARKET    TRENDING  bias +0.06  breadth +0.00  taker flow +0.37
+  NEWS      65 articles  - tone -0.12  DOGE +0.85  SHIB +0.85  COIN +0.70
+  INFO      3 tilted  flow/news/oi on 322
+            info>0 16tr $-0.22 win 19%  info≤0 4tr $-0.14 win 50%
+  MOVERS    BROCCOLI +37% #29  LSK +35% #12  ONDO +26% #6  NIL +23% #14
+  TAPE      - - - - - - + - - - - - + - - - - + + - +
+  ------------------------------------------------------------------------------------------------
+ 
+23:05:27 | 🎯 EXIT SIGNAL: NEAR/USDT:USDT - C399_CONVICTION_COLLAPSE: only 15% of the entry thesis
+    left — DRI -0.137->-0.020 (15% left), DSI +0.319->+0.095 (30% left) | PnL=-1.7% (exiting BEFORE
+    the reversal shows in price)
+  << 23:05  CLOSE  NEAR LONG @4.6232  -1.61% $-0.29  LOSS
+       held 23m  C399_CONVICTION_COLLAPSE  round trip from +0.24%  -0.32R  TAKER
+23:07:04 |    🛡️ Guardian would intervene (DIRECTIONAL_BIAS_LONG) — report only since C482; the
+    monthly dial is the loss control
+23:08:27 | ⚠️ C79 WEAK-RESULTANT: R=+0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+ 
+ 
+  23:11  up 22h34m  scan 170 ---------------------------------------------------------------------
+  EQUITY    $252.62  unreal $+0.47
+  OPEN      1 pos $12.35 (5%)  free $239.81
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  AXTI     LONG     74.6300   77.5200  +3.87%   +0.47 1h36m  + 0% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.48 -1.36%  peak $256.24  dd 1.41%
+  CURVE     ++++++++++++++++*+++++++++++++++++++++++++++++++++=+================+==+======-=======
+  DAY       real $-3.98  limit $9.48 (3.70%)  42% used
+            ###########...............
+  MONTH     dial 15%  used $0.66 of $37.92  from $252.81
+  RECORD    22 closed  5W 17L  win 23%  payoff 1.01  avg $-0.20/tr  best $+0.80  worst $-0.90
+            break-even 50%
+  LIFETIME  117tr 36W 81L 31%  $+2.15
+  FEES      $0.57  mk27/tk21  0.227% of eq
+  SCAN      805 > 127 > 0 passed  top 2Z 1.00 (h1_regime_shock)  170 scans, 8426 analysed
+  MARKET    TRENDING  bias +0.06  breadth +0.34  taker flow +0.15
+  NEWS      65 articles  - tone -0.12  SHIB +0.85  COIN +0.70  NEAR +0.28
+  INFO      3 tilted  flow/news/oi on 322
+            info>0 17tr $-0.22 win 18%  info≤0 4tr $-0.14 win 50%
+  MOVERS    BROCCOLI +37% #29  LSK +35% #12  ONDO +26% #6  NIL +23% #14
+  TAPE      - - - - - - + - - - - - + - - - - + + - + -
+  ------------------------------------------------------------------------------------------------
+ 
+23:14:03 |    🪞 C266 board-parity (top movers vs screen): XAI +43%[#55] | LSK +35%[#13] | BROCCOLI
+    +35%[#28] | ONDO +25%[#7] | NIL +21%[#15]
+23:14:04 | ⚠️ C79 WEAK-RESULTANT: R=+0.07 mag=0.07 < 0.08 — direction unclear, higher bar applied
+23:14:37 | 📊 Step 3 result: 4 analyzed (+123 cached this 15m candle) → 0 passed | low_score=9,
+    mtf_disagree=1, regime_blip=15, no_structural_room=3, h1_regime_shock=82, flat_projection=15,
+    pair_cap=1, low_quality=1
+23:14:37 |    📌 Nearest miss: PROM score=0.934 conf=0.755 quality=0.705/0.26 reason=h1_regime_shock
