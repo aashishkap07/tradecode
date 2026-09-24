@@ -1496,3 +1496,154 @@
 10:14:33 | 📊 Step 3 result: 2 analyzed (+70 cached this 15m candle) → 0 passed | low_confidence=3,
     low_score=13, ct_noisy_block=36, flat_projection=11, proj_confirms_trend=1, poor_reward_risk=1,
     no_structural_room=5, micro_exhaustion=1, pair_cap=1
+  .. 10:17  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  2 analysed
+10:20:46 |    ⚖️ C462-7 COTI: penalties 0.46→0.28 (×0.60) vs bar 0.45 — the stack decided
+10:20:55 |    🧭 C458-17: exploration is due but the best refusal (post_penalty_quality) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+10:20:55 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=9, low_score=15,
+    ct_noisy_block=36, no_structural_room=4, micro_exhaustion=1, post_penalty_quality=2,
+    flat_projection=4, pair_cap=1
+10:20:55 |    📌 Nearest miss: MARSCOIN score=0.686 conf=0.643 quality=0.441/0.26
+    reason=post_penalty_quality
+  .. 10:25  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  72 analysed
+10:26:01 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[#7] | MUBARAK -29%[Live=0.35<cut]
+    | BTW +24%[#24] | ONE -21%[#31] | FLOCK -20%[Live=0.42<cut]
+10:26:27 |    🧭 C458-17: exploration is due but the best refusal (confidence 0.293 < 0.325) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+10:26:27 | 📊 Step 3 result: 16 analyzed (+56 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=17, ct_noisy_block=37, no_structural_room=4, micro_exhaustion=1,
+    post_penalty_quality=1, flat_projection=5, pair_cap=1, poor_reward_risk=1, capitulation=1
+10:26:27 |    📌 Nearest miss: INJ score=0.208 (pre-pen 0.27) conf=0.293 quality=0.061/0.26
+    reason=confidence 0.293 < 0.325
+10:31:29 | ⚠️ C79 WEAK-RESULTANT: R=+0.03 mag=0.03 < 0.08 — direction unclear, higher bar applied
+10:32:40 |    🧭 C458-17: exploration is due but the best refusal (score 0.373 < 0.616) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+10:32:40 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=12, low_score=31,
+    flat_projection=5, no_structural_room=18, micro_exhaustion=3, pair_cap=1, proj_confirms_trend=1,
+    poor_reward_risk=1
+10:32:40 |    📌 Nearest miss: ETC score=0.373 conf=0.672 quality=0.251/0.26 reason=score 0.373 <
+    0.616
+  .. 10:33  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  72 analysed
+10:37:49 |    🪞 C266 board-parity (top movers vs screen): NIL +41%[#7] | BTW +20%[Live=0.45<cut] |
+    FLOCK -20%[#46] | 龙虾 -17%[#43] | EVAA -17%[Live=-0.24<cut]
+10:37:50 | ⚠️ C79 WEAK-RESULTANT: R=+0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+10:38:14 |    ⚖️ C462-7 MARSCOIN: penalties 0.55→0.41 (×0.75) vs bar 0.45 — the stack decided
+10:38:22 |    🧭 C458-17: exploration is due but the best refusal (mtf_disagree) is a RISK gate, not
+    a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+10:38:22 | 📊 Step 3 result: 21 analyzed (+51 cached this 15m candle) → 0 passed | low_confidence=13,
+    low_score=36, mtf_disagree=1, flat_projection=3, no_structural_room=15, micro_exhaustion=2,
+    pair_cap=1, proj_confirms_trend=1
+10:38:22 |    📌 Nearest miss: PROM score=0.559 conf=0.584 quality=0.326/0.26 reason=mtf_disagree
+ 
+ 
+  10:41  up 10h04m  scan 76 ----------------------------------------------------------------------
+  EQUITY    $254.64
+  OPEN      flat  free $254.64
+  SESSION   $-1.46 -0.57%  peak $256.24  dd 0.62%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++========================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.17  mk5/tk7  0.067% of eq
+  SCAN      805 > 21 > 0 passed  top PROM 0.56 (mtf_disagree)  76 scans, 3451 analysed
+  MARKET    TRENDING  bias -0.13  breadth +0.44  taker flow +0.27
+  NEWS      65 articles  + tone +0.31  XRP -0.50  PEOPLE +0.44  OPENAI +0.17
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    NIL +41% #7  BTW +20% cut  FLOCK -20% #46  龙虾 -17% #43
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+10:43:23 | ⚠️ C79 WEAK-RESULTANT: R=+0.04 mag=0.04 < 0.08 — direction unclear, higher bar applied
+10:48:45 |    🪞 C266 board-parity (top movers vs screen): NIL +37%[#9] | LSK +24%[Live=0.35<cut] |
+    MUBARAK -23%[#20] | ONE -20%[#35] | FLOCK -19%[Live=0.52<cut]
+10:50:03 |    🧭 C458-17: exploration is due but the best refusal (vol_floor) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+10:50:03 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=3, low_score=35,
+    ct_noisy_block=10, capitulation=9, absorption_at_extreme=8, late_leg_no_forward=5, pair_cap=1,
+    flat_projection=3, micro_exhaustion=1, flow_veto=1, fee_floor=1, vol_floor=1
+10:50:03 |    📌 Nearest miss: MINIMAXHKD score=0.814 conf=0.764 quality=0.622/0.26 reason=vol_floor
+  .. 10:50  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  78 analysed
+  .. 10:58  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  78 analysed
+11:00:26 |    🪞 C266 board-parity (top movers vs screen): NIL +44%[#8] | MUBARAK -26%[#18] | 龙虾
+    -21%[Live=0.47<cut] | LSK +20%[#20] | FLOCK -18%[Live=0.39<cut]
+11:01:01 |    ⚖️ C462-7 ENA: penalties 0.61→0.46 (×0.75) vs bar 0.48 — the stack decided
+11:01:09 |    ⚖️ C462-7 ONDO: penalties 0.50→0.46 (×0.91) vs bar 0.48 — the stack decided
+11:01:22 |    🎢→⚖️ SPX: C292 stands down — parabola BROKEN (range 24×ATR, 3.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:01:48 | 📊 Step 3 result: 78 analyzed → 3 viable → Step 4 DRI/DSI
+11:01:50 |    🎲 C378 odds-size: orderliness 0.17 -> risk x0.80 ($0.695)
+11:01:50 |    🔒 C378 stop level $0.13314 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 11:01  OPEN   FF LONG @0.134810  x2 $27.94
+       target +5.0%  stop -1.2%  entry score 0.65  maker
+11:01:52 |    🎲 C378 odds-size: orderliness 0.11 -> risk x0.76 ($0.664)
+11:01:52 |    🔒 C378 stop level $0.003082 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 11:01  OPEN   CELR LONG @0.00315200  x1 $29.73
+       target +8.6%  stop -2.2%  entry score 0.72  maker
+11:02:05 |    🛡️ Guardian would intervene (LOSS_STREAK, LOW_WR, POOR_RR) — report only since C482;
+    the monthly dial is the loss control
+ 
+ 
+  11:06  up 10h29m  scan 78 ----------------------------------------------------------------------
+  EQUITY    $254.76  unreal $+0.12
+  OPEN      2 pos $57.67 (23%)  free $196.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  FF       LONG    0.134810  0.134880  +0.05%   -0.02    4m  - 51% left
+  CELR     LONG  0.003152000.00316900  +0.54%   +0.14    4m  + 34% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.34 -0.52%  peak $256.24  dd 0.58%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++===========================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.19  mk7/tk7  0.074% of eq
+  SCAN      805 > 78 > 3 passed  top CELR 0.72 (viable)  78 scans, 3607 analysed
+  MARKET    TRENDING  bias +0.26  breadth +0.00  taker flow +0.67
+  NEWS      65 articles  + tone +0.38  APE +0.70  XRP -0.50  PEOPLE +0.44
+  INFO      3 tilted  flow/fund/news/oi on 257
+  MOVERS    NIL +44% #8  MUBARAK -26% #18  龙虾 -21% cut  LSK +20% #20
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+11:07:13 | 📊 Step 3 result: 3 analyzed (+75 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=47, mtf_disagree=1, absorption_at_extreme=3, ct_noisy_block=6, capitulation=5,
+    low_quality=1, late_leg_no_forward=3, vol_floor=2, post_penalty_low=1
+11:07:13 |    📌 Nearest miss: CELR score=0.871 conf=0.786 quality=0.685/0.26 reason=vol_floor
+11:12:23 |    🪞 C266 board-parity (top movers vs screen): NIL +33%[#11] | MUBARAK -27%[#20] | 龙虾
+    -24%[Live=0.48<cut] | LSK +19%[#22] | ONE -18%[Live=0.51<cut]
+11:12:50 | 📊 Step 3 result: 3 analyzed (+75 cached) → 1 viable → Step 4 DRI/DSI
+ 
+  11:14  up 10h37m  scan 80 ----------------------------------------------------------------------
+  EQUITY    $254.63  unreal $-0.01
+  OPEN      2 pos $57.67 (23%)  free $196.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  FF       LONG    0.134810  0.135400  +0.44%   +0.20   12m  + 50% left
+  CELR     LONG  0.003152000.00313200  -0.63%   -0.21   12m  - 32% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.47 -0.57%  peak $256.24  dd 0.63%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++============================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.19  mk7/tk7  0.074% of eq
+  SCAN      805 > 3 > 1 passed  top VTHO 0.66 (viable)  80 scans, 3613 analysed
+  MARKET    TRENDING  bias +0.26  breadth +0.00  taker flow -0.49
+  NEWS      65 articles  + tone +0.38  APE +0.70  PEOPLE +0.44  ETH +0.44
+  INFO      1 tilted  flow/fund/news/oi on 259
+  MOVERS    NIL +33% #11  MUBARAK -27% #20  龙虾 -24% cut  LSK +19% #22
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
