@@ -1407,3 +1407,92 @@
     h1_regime_shock=30, regime_blip=13, flat_projection=7, low_quality=1, session_short=6,
     no_structural_room=1, late_leg_no_forward=1
 09:16:09 |    📌 Nearest miss: STONK score=0.468 conf=0.809 quality=0.378/0.26 reason=h1_regime_shock
+  .. 09:20  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  78 analysed
+09:26:34 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -37%[#17] | NIL +34%[#10] | ONE
+    -23%[#34] | SPX -20%[#53] | FLOCK -18%[Live=0.46<cut]
+09:26:57 | 📊 Step 3 result: 10 analyzed (+62 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=17, h1_regime_shock=28, regime_blip=12, flat_projection=7, low_quality=1,
+    late_leg_no_forward=1, no_structural_room=1
+09:26:57 |    📌 Nearest miss: ZETA score=0.528 conf=0.667 quality=0.352/0.26 reason=late-leg F=-0.03
+  .. 09:28  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  10 analysed
+09:33:15 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=8, low_score=26, mtf_disagree=1,
+    ct_noisy_block=25, news_tech_conflict=1, proj_confirms_trend=1, flat_projection=3,
+    micro_exhaustion=2, low_quality=1, reward_conviction=1, capitulation=2, no_structural_room=1
+09:33:15 |    📌 Nearest miss: ZETA score=0.424 (pre-pen 0.71) conf=0.618 quality=0.262/0.26
+    reason=reward_conviction needs 58%
+ 
+ 
+  09:36  up 9h00m  scan 68 -----------------------------------------------------------------------
+  EQUITY    $254.64
+  OPEN      flat  free $254.64
+  SESSION   $-1.46 -0.57%  peak $256.24  dd 0.62%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.17  mk5/tk7  0.067% of eq
+  SCAN      805 > 72 > 0 passed  top ZETA 0.42 (reward_conviction )  68 scans, 3107 analysed
+  MARKET    TRENDING  bias -0.35  breadth +0.00  taker flow -0.27
+  NEWS      65 articles  + tone +0.65  XRP +0.53  PEOPLE +0.44  AVAX +0.25
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    MUBARAK -37% #17  NIL +34% #10  ONE -23% #34  SPX -20% #53
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+09:38:22 |    🪞 C266 board-parity (top movers vs screen): NIL +39%[#9] | MUBARAK -38%[#17] | ONE
+    -22%[#34] | FLOCK -19%[Live=0.10<cut] | SPX -19%[#49]
+09:38:54 | 📊 Step 3 result: 17 analyzed (+55 cached this 15m candle) → 0 passed | low_confidence=8,
+    low_score=24, mtf_disagree=1, ct_noisy_block=22, news_tech_conflict=1, proj_confirms_trend=1,
+    flat_projection=4, micro_exhaustion=2, low_quality=1, reward_conviction=1, capitulation=2,
+    no_structural_room=2, pair_cap=1, late_leg_no_forward=1, post_penalty_quality=1
+09:38:54 |    📌 Nearest miss: EVAA score=0.733 conf=0.665 quality=0.488/0.26
+    reason=post_penalty_quality
+  .. 09:44  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  17 analysed
+09:49:16 |    🪞 C266 board-parity (top movers vs screen): NIL +43%[#6] | MUBARAK -33%[#15] | ONE
+    -24%[#30] | FLOCK -20%[Live=0.03<cut] | SPX -18%[#52]
+09:50:20 |    ⚖️ C462-7 STONK: penalties 0.63→0.26 (×0.41) vs bar 0.49 — the stack decided
+09:50:21 |    ⚖️ C462-7 ZEST: penalties 0.62→0.25 (×0.41) vs bar 0.49 — the stack decided
+09:50:30 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=27, low_score=28,
+    mtf_disagree=1, proj_confirms_trend=1, absorption_at_extreme=1, late_leg_no_forward=2,
+    flat_projection=4, capitulation=2, post_penalty_low=1, micro_exhaustion=2,
+    post_penalty_quality=1, no_structural_room=2
+09:50:30 |    📌 Nearest miss: ZETA score=0.746 conf=0.710 quality=0.530/0.26
+    reason=post_penalty_quality
+  .. 09:52  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  72 analysed
+  .. 10:00  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  72 analysed
+10:02:54 |    🪞 C266 board-parity (top movers vs screen): NIL +36%[#8] | MUBARAK -34%[Live=0.46<cut]
+    | ONE -24%[#29] | FLOCK -22%[Live=-0.07<cut] | BTW +20%[#31]
+10:03:49 |    ⚖️ C462-7 COTI: penalties 0.44→0.27 (×0.60) vs bar 0.44 — the stack decided
+10:03:53 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=3, low_score=13,
+    ct_noisy_block=36, flat_projection=11, proj_confirms_trend=1, poor_reward_risk=1,
+    no_structural_room=5, micro_exhaustion=1, pair_cap=1
+10:03:53 |    📌 Nearest miss: S score=0.289 conf=0.260 quality=0.075/0.26 reason=confidence 0.260 <
+    0.325
+ 
+ 
+  10:09  up 9h32m  scan 71 -----------------------------------------------------------------------
+  EQUITY    $254.64
+  OPEN      flat  free $254.64
+  SESSION   $-1.46 -0.57%  peak $256.24  dd 0.62%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++====================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.17  mk5/tk7  0.067% of eq
+  SCAN      805 > 72 > 0 passed  top S 0.29 (confidence 0.260 <)  71 scans, 3268 analysed
+  MARKET    MIXED  bias -0.31  breadth +0.17  taker flow +0.09
+  NEWS      65 articles  + tone +0.48  PEOPLE +0.44  OPENAI +0.17  ETHFI +0.17
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    NIL +36% #8  MUBARAK -34% cut  ONE -24% #29  FLOCK -22% cut
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+10:14:14 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[#7] | MUBARAK -35%[Live=0.46<cut]
+    | BTW +23%[#25] | FLOCK -21%[Live=-0.08<cut] | ONE -19%[#30]
+10:14:33 | 📊 Step 3 result: 2 analyzed (+70 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=13, ct_noisy_block=36, flat_projection=11, proj_confirms_trend=1, poor_reward_risk=1,
+    no_structural_room=5, micro_exhaustion=1, pair_cap=1
