@@ -1239,3 +1239,171 @@
     low_confidence=2, low_score=4, flat_projection=10, ct_noisy_block=48, micro_exhaustion=1,
     final_gate=1, poor_reward_risk=2, no_structural_room=6, pair_cap=1, capitulation=2
   .. 08:14  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  2 analysed
+08:18:55 |    ⚖️ C462-7 KMNO: penalties 0.56→0.42 (×0.75) vs bar 0.54 — the stack decided
+08:19:12 |    ⚖️ C462-7 ZAMA: penalties 0.66→0.30 (×0.45) vs bar 0.54 — the stack decided
+08:19:20 |    🧭 C458-17: exploration is due but the best refusal (score 0.421 < 0.539) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+08:19:20 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=5, low_score=48, capitulation=2,
+    poor_reward_risk=4, flat_projection=4, no_structural_room=14, pair_cap=1
+08:19:20 |    📌 Nearest miss: KMNO score=0.562 conf=0.816 quality=0.458/0.26 reason=score 0.421 <
+    0.539
+ 
+ 
+  08:22  up 7h45m  scan 59 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+===========================
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 78 > 0 passed  top KMNO 0.56 (score 0.421 < 0.53)  59 scans, 2755 analysed
+  MARKET    MIXED  bias -0.12  breadth +0.00  taker flow -0.29
+  NEWS      65 articles  + tone +0.31  BNB +0.73  ARB +0.70  DOGE +0.38
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +44% #8  MUBARAK -30% #16  ONE -26% #27  BTW +18% cut
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+08:24:28 |    🪞 C266 board-parity (top movers vs screen): NIL +39%[#8] | MUBARAK -30%[Live=0.55<cut]
+    | ONE -29%[#22] | FLOCK -18%[Live=0.30<cut] | SPX -17%[#50]
+08:25:03 |    🧭 C458-17: exploration is due but the best refusal (post-penalty 0.293 < 0.35) is a
+    RISK gate, not a measurement gate — standing down. Exploration is a reason to accept
+    UNCERTAINTY, never DANGER.
+08:25:03 | 📊 Step 3 result: 16 analyzed (+62 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=47, capitulation=2, poor_reward_risk=2, flat_projection=4, no_structural_room=18,
+    post_penalty_low=1, proj_confirms_trend=1, pair_cap=1
+08:25:03 |    📌 Nearest miss: LIT score=0.293 (pre-pen 0.65) conf=0.777 quality=0.227/0.26
+    reason=post-penalty 0.293 < 0.35
+08:30:05 | ⚠️ C79 WEAK-RESULTANT: R=+0.00 mag=0.00 < 0.08 — direction unclear, higher bar applied
+08:31:17 |    ⚖️ C462-7 JUP: penalties 0.56→0.33 (×0.60) vs bar 0.54 — the stack decided
+08:31:34 |    🧭 C458-17: exploration is due but the best refusal (vol_floor) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+08:31:34 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=15, low_score=43,
+    flat_projection=4, no_structural_room=8, poor_reward_risk=1, capitulation=3,
+    proj_confirms_trend=1, vol_floor=2, pair_cap=1
+08:31:34 |    📌 Nearest miss: KMNO score=0.935 conf=0.851 quality=0.796/0.26 reason=vol_floor
+  .. 08:31  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  78 analysed
+08:36:40 |    🪞 C266 board-parity (top movers vs screen): NIL +35%[Live=0.54<cut] | MUBARAK
+    -28%[Live=0.28<cut] | ONE -27%[#26] | FLOCK -17%[Live=0.22<cut] | BTW +17%[#35]
+08:36:41 | ⚠️ C79 WEAK-RESULTANT: R=+0.00 mag=0.00 < 0.08 — direction unclear, higher bar applied
+08:37:10 |    🧭 C458-17: exploration is due but the best refusal (score 0.286 < 0.548) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+08:37:10 | 📊 Step 3 result: 17 analyzed (+61 cached this 15m candle) → 0 passed | low_confidence=12,
+    low_score=40, flat_projection=7, no_structural_room=10, poor_reward_risk=1, capitulation=4,
+    proj_confirms_trend=1, vol_floor=2, micro_exhaustion=1
+08:37:10 |    📌 Nearest miss: ICP score=0.286 conf=0.715 quality=0.204/0.26 reason=score 0.286 <
+    0.548
+  .. 08:39  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  17 analysed
+08:42:11 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+08:47:35 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -37%[#14] | NIL +32%[#7] | ONE
+    -26%[#27] | FLOCK -18%[Live=0.52<cut] | BTW +18%[#32]
+08:47:36 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+08:48:51 | 📊 Step 3 result: 78 analyzed → 1 viable → Step 4 DRI/DSI
+08:48:52 |    🎲 C378 odds-size: orderliness 0.22 -> risk x0.83 ($0.721)
+08:48:52 |    🔒 C378 stop level $0.03688 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 08:48  OPEN   KMNO LONG @0.037890  x1 $26.85
+       target +9.4%  stop -2.7%  entry score 0.58  maker
+ 
+ 
+  08:48  up 8h12m  scan 63 -----------------------------------------------------------------------
+  EQUITY    $255.03  unreal $+0.03
+  OPEN      1 pos $26.85 (11%)  free $228.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KMNO     LONG    0.037890  0.037960  +0.18%   +0.03    0m  + 100% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.07 -0.42%  peak $256.24  dd 0.47%
+  CURVE     ++++++++++++++++++++++++++++++++++=+==============================
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk5/tk6  0.061% of eq
+  SCAN      805 > 78 > 1 passed  top KMNO 0.58 (viable)  63 scans, 2944 analysed
+  MARKET    TRENDING  bias +0.06  breadth +0.00  taker flow -0.28
+  NEWS      65 articles  + tone +0.67  BNB +0.73  DOGE +0.38  NEAR +0.34
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    MUBARAK -37% #14  NIL +32% #7  ONE -26% #27  FLOCK -18% cut
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+08:49:08 |    🛡️ Guardian would intervene (LOSS_STREAK, POOR_RR) — report only since C482; the
+    monthly dial is the loss control
+08:53:54 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+08:54:10 | 📊 Step 3 result: 1 analyzed (+77 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=42, leg_exhausted=1, poor_reward_risk=1, flat_projection=5, no_structural_room=9,
+    final_gate=1, micro_exhaustion=3, capitulation=2, session_short=5, low_quality=1,
+    post_penalty_low=1
+ 
+  08:56  up 8h20m  scan 64 -----------------------------------------------------------------------
+  EQUITY    $254.97  unreal $-0.03
+  OPEN      1 pos $26.85 (11%)  free $228.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  KMNO     LONG    0.037890  0.037880  -0.03%   -0.03    8m  - 64% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.13 -0.44%  peak $256.24  dd 0.50%
+  CURVE     ++++++++++++++++++++++++++++++++++++===============================
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk5/tk6  0.061% of eq
+  SCAN      805 > 1 > 0 passed  64 scans, 2945 analysed
+  MARKET    MIXED  bias +0.06  breadth +0.39  taker flow +0.15
+  NEWS      65 articles  + tone +0.67  LTC +0.70  PEOPLE +0.44  ETH +0.36
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    MUBARAK -37% #14  NIL +32% #7  ONE -26% #27  FLOCK -18% cut
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+08:59:18 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -37%[#15] | NIL
+    +33%[Live=0.59<cut] | ONE -23%[#28] | SPX -19%[#47] | BTW +18%[#29]
+08:59:19 | ⚠️ C79 WEAK-RESULTANT: R=+0.05 mag=0.05 < 0.08 — direction unclear, higher bar applied
+08:59:41 | 📊 Step 3 result: 2 analyzed (+76 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=42, flat_projection=5, poor_reward_risk=1, leg_exhausted=1, no_structural_room=9,
+    final_gate=1, micro_exhaustion=3, capitulation=2, session_short=5, low_quality=1,
+    post_penalty_low=1
+08:59:41 |    📌 Nearest miss: VVV score=0.104 (pre-pen 0.17) conf=0.442 quality=0.046/0.26
+    reason=score 0.104 < 0.599
+09:01:20 | 🎯 EXIT SIGNAL: KMNO/USDT:USDT - REGIME_EXIT: R=-0.45 opposes long PnL=-1.3%(-0.7PRU) —
+    macro shifted early
+  << 09:01  CLOSE  KMNO LONG @0.037410  -1.27% $-0.36  LOSS
+       held 12m  REGIME_EXIT: R=-0.45 opp  round trip from +0.18%  -0.35R  TAKER
+ 
+ 
+  09:04  up 8h28m  scan 65 -----------------------------------------------------------------------
+  EQUITY    $254.64
+  OPEN      flat  free $254.64
+  SESSION   $-1.46 -0.57%  peak $256.24  dd 0.62%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++============================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.17  mk5/tk7  0.067% of eq
+  SCAN      805 > 2 > 0 passed  top VVV 0.10 (score 0.104 < 0.59)  65 scans, 2947 analysed
+  MARKET    MIXED  bias -0.08  breadth +0.00  taker flow +0.02
+  NEWS      65 articles  + tone +0.67  LTC +0.70  PEOPLE +0.44  ETH +0.36
+  INFO      1 tilted  flow/fund/news/oi on 249
+  MOVERS    MUBARAK -37% #15  NIL +33% cut  ONE -23% #28  SPX -19% #47
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 09:12  flat  $254.64  $-1.46 -0.57%  0W 6L 0%  2 analysed
+09:14:48 |    🪞 C266 board-parity (top movers vs screen): MUBARAK -38%[#18] | NIL +30%[#14] | ONE
+    -23%[#31] | SPX -19%[#53] | BTW +18%[#32]
+09:16:09 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=4, low_score=15,
+    h1_regime_shock=30, regime_blip=13, flat_projection=7, low_quality=1, session_short=6,
+    no_structural_room=1, late_leg_no_forward=1
+09:16:09 |    📌 Nearest miss: STONK score=0.468 conf=0.809 quality=0.378/0.26 reason=h1_regime_shock
