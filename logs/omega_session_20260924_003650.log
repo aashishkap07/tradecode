@@ -5243,3 +5243,193 @@
     tick-legal]
   >> 04:16  OPEN   CYS LONG @0.189680  x1 $38.98
        target +6.0%  stop -1.8%  entry score 0.53  maker
+04:22:16 | 📊 Step 3 result: 1 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=50, flat_projection=8, micro_exhaustion=1, pair_cap=2, poor_reward_risk=2,
+    post_penalty_quality=1, proj_confirms_trend=1, no_structural_room=2, vol_floor=1
+04:22:16 |    📌 Nearest miss: CYS score=0.641 conf=0.663 quality=0.425/0.26 reason=score 0.641 <
+    0.720
+ 
+ 
+  04:22  up 27h46m  scan 217 ---------------------------------------------------------------------
+  EQUITY    $251.77  unreal $-0.31
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.188310  -0.72%   -0.31    5m  - 61% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.33 -1.69%  peak $256.24  dd 1.74%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++============++++============================
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 1 > 0 passed  top CYS 0.64 (score 0.641 < 0.72)  217 scans, 10605 analysed
+  MARKET    TRENDING  bias +0.08  breadth -0.20  taker flow +0.62
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 335
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -30% #33  XAI +28% cut  BROCCOLI +28% #26  QNT +26% #45
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:27:26 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -31%[#33] | BROCCOLI +29%[#26] | XAI
+    +27%[Live=0.42<cut] | QNT +27%[#39] | ONDO +25%[#5]
+04:27:46 | 📊 Step 3 result: 1 analyzed (+68 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=50, flat_projection=8, micro_exhaustion=1, pair_cap=2, poor_reward_risk=2,
+    post_penalty_quality=1, proj_confirms_trend=1, no_structural_room=2, vol_floor=1
+04:27:46 |    📌 Nearest miss: BANK score=0.010 conf=0.309 quality=0.003/0.26 reason=score 0.010 <
+    0.623
+ 
+  04:30  up 27h54m  scan 218 ---------------------------------------------------------------------
+  EQUITY    $251.71  unreal $-0.37
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.188020  -0.88%   -0.37   14m  - 41% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.39 -1.71%  peak $256.24  dd 1.77%
+  CURVE     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++==================-==========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 1 > 0 passed  top BANK 0.01 (score 0.010 < 0.62)  218 scans, 10606 analysed
+  MARKET    TRENDING  bias +0.08  breadth +0.00  taker flow -0.15
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 335
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #33  BROCCOLI +29% #26  XAI +27% cut  QNT +27% #39
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:32:48 | ⚠️ C79 WEAK-RESULTANT: R=+0.00 mag=0.00 < 0.08 — direction unclear, higher bar applied
+04:33:41 |    🎢→⚖️ TUT: C292 stands down — parabola BROKEN (range 24×ATR, 10.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:34:00 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 41×ATR, 10.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:34:03 | 📊 Step 3 result: 69 analyzed → 1 viable → Step 4 DRI/DSI
+ 
+  04:39  up 28h02m  scan 219 ---------------------------------------------------------------------
+  EQUITY    $251.67  unreal $-0.41
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.187830  -0.98%   -0.41   22m  - 48% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.43 -1.73%  peak $256.24  dd 1.78%
+  CURVE     *+++++++++++++++++++++++++++++++++++++++++============+++=================-===========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 69 > 1 passed  top CYS 0.41 (viable)  219 scans, 10675 analysed
+  MARKET    TRENDING  bias +0.14  breadth +0.00  taker flow +0.25
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 336
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #33  BROCCOLI +29% #26  XAI +27% cut  QNT +27% #39
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:39:09 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -31%[#34] | BROCCOLI
+    +28%[Live=0.40<cut] | XAI +27%[#31] | QNT +27%[#43] | ONDO +25%[#5]
+04:39:10 | ⚠️ C79 WEAK-RESULTANT: R=+0.00 mag=0.00 < 0.08 — direction unclear, higher bar applied
+04:39:29 | 🎯 EXIT SIGNAL: CYS/USDT:USDT - REGIME_EXIT: resultant flipped to -0.59 opposes long
+    PnL=-1.0% (armed 500s, own-DRI -0.04)
+  << 04:39  CLOSE  CYS LONG @0.187230  -1.29% $-0.53  LOSS
+       held 22m  REGIME_EXIT: resultant f  round trip from +0.13%  -0.55R  TAKER
+04:39:30 |    🛡️ Guardian would intervene (DIRECTIONAL_BIAS_LONG) — report only since C482; the
+    monthly dial is the loss control
+04:39:31 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 13×ATR, 5.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:39:36 |    🎢→⚖️ STONK: C292 stands down — parabola BROKEN (range 13×ATR, 5.8 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:39:38 | 📊 Step 3 result: 17 analyzed (+52 cached this 15m candle) → 0 passed | low_score=25,
+    flat_projection=13, h1_regime_shock=24, pair_cap=1, no_structural_room=3, vol_floor=2,
+    capitulation=1
+04:39:38 |    📌 Nearest miss: ONE score=0.529 conf=0.642 quality=0.340/0.26 reason=h1_regime_shock
+ 
+ 
+  04:47  up 28h10m  scan 220 ---------------------------------------------------------------------
+  EQUITY    $251.54
+  OPEN      flat  free $251.54
+  SESSION   $-4.56 -1.78%  peak $256.24  dd 1.83%
+  CURVE     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++=================-===========
+  DAY       real $-1.09  limit $9.44 (3.74%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $1.26 of $37.92  from $252.81
+  RECORD    31 closed  9W 22L  win 29%  payoff 1.21  avg $-0.15/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  126tr 40W 86L 32%  $+1.54
+  FEES      $0.75  mk40/tk27  0.299% of eq
+  SCAN      805 > 17 > 0 passed  top ONE 0.53 (h1_regime_shock)  220 scans, 10692 analysed
+  MARKET    TRENDING  bias +0.15  breadth -0.32  taker flow +0.25
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 336
+            info>0 25tr $-0.14 win 28%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #34  BROCCOLI +28% cut  XAI +27% #31  QNT +27% #43
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+04:49:44 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -36%[#32] | BROCCOLI +28%[#26] | XAI
+    +27%[#35] | QNT +27%[#42] | ONDO +26%[#5]
+04:49:45 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+04:50:32 |    🎢→⚖️ TUT: C292 stands down — parabola BROKEN (range 26×ATR, 10.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+04:50:44 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=3, low_score=16, mtf_disagree=1,
+    flat_projection=15, h1_regime_shock=20, proj_confirms_trend=3, pair_cap=2, no_structural_room=4,
+    vol_floor=1, capitulation=3, poor_reward_risk=1
+04:50:44 |    📌 Nearest miss: ARK score=0.974 conf=0.647 quality=0.630/0.26 reason=capitulation rej
+    vs RSI71
+  .. 04:55  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
+04:55:45 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+05:01:06 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -36%[#35] | BROCCOLI +28%[#26] | XAI
+    +27%[#36] | QNT +27%[#42] | ONDO +26%[#5]
+05:01:07 | ⊥ C97 TF-CONFLICT: 1h=+0.80×4h=-0.19=d14=-0.15 — only longs allowed (1h dominant)
+05:01:37 |    🎢→⚖️ BROCCOLI: C292 stands down — parabola BROKEN (range 22×ATR, 8.1 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:01:46 |    ⚖️ C462-7 DASH: penalties 0.71→0.50 (×0.70) vs bar 0.52 — the stack decided
+05:01:55 |    🎢→⚖️ TUT: C292 stands down — parabola BROKEN (range 25×ATR, 11.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:02:00 |    🎢→⚖️ CHIP: C292 stands down — parabola BROKEN (range 15×ATR, 3.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:02:02 |    🎢→⚖️ H: C292 stands down — parabola BROKEN (range 29×ATR, 8.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:02:04 |    🎢→⚖️ B2: C292 stands down — parabola BROKEN (range 40×ATR, 10.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+05:02:08 |    ⚖️ C462-7 DYM: penalties 0.55→0.29 (×0.52) vs bar 0.49 — the stack decided
+05:02:08 | 📊 Step 3 result: 69 analyzed → 0 passed | low_score=25, ct_noisy_block=28,
+    flat_projection=7, poor_reward_risk=3, pair_cap=1, no_structural_room=2, vol_floor=2,
+    capitulation=1
+05:02:08 |    📌 Nearest miss: ARK score=0.778 (pre-pen 1.11) conf=0.802 quality=0.624/0.26
+    reason=vol_floor
+  .. 05:03  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
+05:07:10 | ⊥ C97 TF-CONFLICT: 1h=+0.80×4h=-0.19=d14=-0.15 — only longs allowed (1h dominant)
+  .. 05:11  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
+05:12:28 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -39%[#33] | BROCCOLI +28%[#27] | QNT
+    +27%[#45] | XAI +27%[#37] | ONDO +26%[#5]
+05:12:29 | ⊥ C97 TF-CONFLICT: 1h=+0.80×4h=-0.19=d14=-0.15 — only longs allowed (1h dominant)
+05:12:45 | 📊 Step 3 result: 2 analyzed (+67 cached this 15m candle) → 0 passed | low_score=26,
+    ct_noisy_block=29, flat_projection=6, poor_reward_risk=2, pair_cap=1, no_structural_room=2,
+    vol_floor=2, capitulation=1
+05:12:45 |    📌 Nearest miss: NEAR score=0.110 conf=0.379 quality=0.042/0.26 reason=score 0.110 <
+    0.620

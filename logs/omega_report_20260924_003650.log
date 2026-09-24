@@ -3264,3 +3264,112 @@
   .. 04:14  flat  $252.08  $-4.02 -1.57%  9W 21L 30%  1 analysed
   >> 04:16  OPEN   CYS LONG @0.189680  x1 $38.98
        target +6.0%  stop -1.8%  entry score 0.53  maker
+
+
+  04:22  up 27h46m  scan 217 ---------------------------------------------------------------------
+  EQUITY    $251.77  unreal $-0.31
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.188310  -0.72%   -0.31    5m  - 61% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.33 -1.69%  peak $256.24  dd 1.74%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++============++++============================
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 1 > 0 passed  top CYS 0.64 (score 0.641 < 0.72)  217 scans, 10605 analysed
+  MARKET    TRENDING  bias +0.08  breadth -0.20  taker flow +0.62
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 335
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -30% #33  XAI +28% cut  BROCCOLI +28% #26  QNT +26% #45
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  04:30  up 27h54m  scan 218 ---------------------------------------------------------------------
+  EQUITY    $251.71  unreal $-0.37
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.188020  -0.88%   -0.37   14m  - 41% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.39 -1.71%  peak $256.24  dd 1.77%
+  CURVE     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++==================-==========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 1 > 0 passed  top BANK 0.01 (score 0.010 < 0.62)  218 scans, 10606 analysed
+  MARKET    TRENDING  bias +0.08  breadth +0.00  taker flow -0.15
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 335
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #33  BROCCOLI +29% #26  XAI +27% cut  QNT +27% #39
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  04:39  up 28h02m  scan 219 ---------------------------------------------------------------------
+  EQUITY    $251.67  unreal $-0.41
+  OPEN      1 pos $38.98 (15%)  free $213.10
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CYS      LONG    0.189680  0.187830  -0.98%   -0.41   22m  - 48% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-4.43 -1.73%  peak $256.24  dd 1.78%
+  CURVE     *+++++++++++++++++++++++++++++++++++++++++============+++=================-===========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.73  mk40/tk26  0.289% of eq
+  SCAN      805 > 69 > 1 passed  top CYS 0.41 (viable)  219 scans, 10675 analysed
+  MARKET    TRENDING  bias +0.14  breadth +0.00  taker flow +0.25
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 336
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #33  BROCCOLI +29% #26  XAI +27% cut  QNT +27% #39
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  << 04:39  CLOSE  CYS LONG @0.187230  -1.29% $-0.53  LOSS
+       held 22m  REGIME_EXIT: resultant f  round trip from +0.13%  -0.55R  TAKER
+
+
+  04:47  up 28h10m  scan 220 ---------------------------------------------------------------------
+  EQUITY    $251.54
+  OPEN      flat  free $251.54
+  SESSION   $-4.56 -1.78%  peak $256.24  dd 1.83%
+  CURVE     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++=================-===========
+  DAY       real $-1.09  limit $9.44 (3.74%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $1.26 of $37.92  from $252.81
+  RECORD    31 closed  9W 22L  win 29%  payoff 1.21  avg $-0.15/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  126tr 40W 86L 32%  $+1.54
+  FEES      $0.75  mk40/tk27  0.299% of eq
+  SCAN      805 > 17 > 0 passed  top ONE 0.53 (h1_regime_shock)  220 scans, 10692 analysed
+  MARKET    TRENDING  bias +0.15  breadth -0.32  taker flow +0.25
+  NEWS      65 articles  + tone +0.28  XRP +0.57  NEAR +0.34  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 336
+            info>0 25tr $-0.14 win 28%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #34  BROCCOLI +28% cut  XAI +27% #31  QNT +27% #43
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 04:55  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
+  .. 05:03  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
+  .. 05:11  flat  $251.54  $-4.56 -1.78%  9W 22L 29%  69 analysed
