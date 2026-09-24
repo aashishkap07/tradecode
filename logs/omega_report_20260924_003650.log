@@ -3158,3 +3158,109 @@
 
   << 03:14  CLOSE  PENDLE LONG @2.5794  -0.53% $-0.20  LOSS
        held 40m  C399_CONVICTION_COLLAPSE  round trip from +0.23%  -0.24R  TAKER
+
+
+  03:18  up 26h42m  scan 207 ---------------------------------------------------------------------
+  EQUITY    $252.69
+  OPEN      flat  free $252.69
+  SESSION   $-3.41 -1.33%  peak $256.24  dd 1.39%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++=============+++==========================
+  DAY       real $+0.06  limit $9.44 (3.74%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.12 of $37.92  from $252.81
+  RECORD    29 closed  9W 20L  win 31%  payoff 1.26  avg $-0.12/tr  best $+0.96  worst $-0.90
+            break-even 44%
+  LIFETIME  124tr 40W 84L 32%  $+2.69
+  FEES      $0.70  mk38/tk25  0.277% of eq
+  SCAN      805 > 2 > 0 passed  207 scans, 10247 analysed
+  MARKET    TRENDING  bias +0.38  breadth +0.10  taker flow -0.25
+  NEWS      65 articles  - tone -0.05  ONE +0.70  FORM +0.30  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 334
+            info>0 23tr $-0.10 win 30%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -34% #21  XAI +33% #18  LSK +28% #5  BROCCOLI +28% #14
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + -
+  ------------------------------------------------------------------------------------------------
+
+  >> 03:21  OPEN   CHIP LONG @0.049570  x1 $25.73
+       target +8.8%  stop -2.7%  entry score 0.59  maker
+
+
+  03:26  up 26h50m  scan 209 ---------------------------------------------------------------------
+  EQUITY    $252.28  unreal $-0.41
+  OPEN      1 pos $25.73 (10%)  free $226.96
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CHIP     LONG    0.049570  0.048810  -1.53%   -0.41    5m  - 58% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-3.82 -1.49%  peak $256.24  dd 1.55%
+  CURVE     *++++++++++++*++++++++++++++++++++++++++++++============++++=================--=======
+  DAY       real $+0.06  limit $9.44 (3.74%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.12 of $37.92  from $252.81
+  RECORD    29 closed  9W 20L  win 31%  payoff 1.26  avg $-0.12/tr  best $+0.96  worst $-0.90
+            break-even 44%
+  LIFETIME  124tr 40W 84L 32%  $+2.69
+  FEES      $0.71  mk39/tk25  0.280% of eq
+  SCAN      805 > 1 > 0 passed  top CHIP 0.28 (post-penalty 0.281)  209 scans, 10308 analysed
+  MARKET    TRENDING  bias +0.49  breadth +0.20  taker flow +0.33
+  NEWS      65 articles  - tone -0.05  FORM +0.30  ONE +0.30  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 334
+            info>0 23tr $-0.10 win 30%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -36% #25  XAI +34% #18  LSK +28% #5  BROCCOLI +27% #16
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + -
+  ------------------------------------------------------------------------------------------------
+
+  << 03:33  CLOSE  CHIP LONG @0.048430  -2.30% $-0.61  LOSS
+       held 12m  REL_DRAWDOWN: PnL=-2.4%(  round trip from +0.34%  -0.65R  TAKER
+
+
+  03:34  up 26h58m  scan 210 ---------------------------------------------------------------------
+  EQUITY    $252.08
+  OPEN      flat  free $252.08
+  SESSION   $-4.02 -1.57%  peak $256.24  dd 1.62%
+  CURVE     *++++++++++++*+++++++++++++++++++++++++++++=============+++==================-========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.72  mk39/tk26  0.286% of eq
+  SCAN      805 > 69 > 0 passed  top XPL 0.85 (reentry-chase 0.7A)  210 scans, 10377 analysed
+  MARKET    TRENDING  bias +0.42  breadth +0.00  taker flow -0.66
+  NEWS      65 articles  - tone -0.05  FORM +0.30  ONE +0.30  POLYMARKET +0.25
+  INFO      1 tilted  flow/news/oi on 334
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -36% #32  XAI +33% #28  LSK +29% #9  BROCCOLI +29% #24
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 03:42  flat  $252.08  $-4.02 -1.57%  9W 21L 30%  4 analysed
+  .. 03:50  flat  $252.08  $-4.02 -1.57%  9W 21L 30%  69 analysed
+  .. 03:58  flat  $252.08  $-4.02 -1.57%  9W 21L 30%  15 analysed
+
+
+  04:06  up 27h30m  scan 214 ---------------------------------------------------------------------
+  EQUITY    $252.08
+  OPEN      flat  free $315.10
+  SESSION   $-4.02 -1.57%  peak $256.24  dd 1.62%
+  CURVE     *++++++++++++*++++++++++++++++++++++++++++=============+++=================--=========
+  DAY       real $-0.55  limit $9.44 (3.74%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.73 of $37.92  from $252.81
+  RECORD    30 closed  9W 21L  win 30%  payoff 1.22  avg $-0.13/tr  best $+0.96  worst $-0.90
+            break-even 45%
+  LIFETIME  125tr 40W 85L 32%  $+2.08
+  FEES      $0.72  mk39/tk26  0.286% of eq
+  SCAN      805 > 69 > 1 passed  top CYS 0.57 (viable)  214 scans, 10534 analysed
+  MARKET    TRENDING  bias +0.19  breadth +0.00  taker flow +0.24
+  NEWS      65 articles  + tone +0.13  UNI -0.71  ETH -0.41  NEAR -0.32
+  INFO      1 tilted  flow/news/oi on 335
+            info>0 24tr $-0.12 win 29%  info≤0 5tr $-0.21 win 40%
+  MOVERS    龙虾 -31% #34  XAI +29% #31  QNT +28% #42  BROCCOLI +28% #24
+  TAPE      - - - - - - + - - - - - + - - - - + + - + - + + - - + + - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 04:14  flat  $252.08  $-4.02 -1.57%  9W 21L 30%  1 analysed
+  >> 04:16  OPEN   CYS LONG @0.189680  x1 $38.98
+       target +6.0%  stop -1.8%  entry score 0.53  maker
