@@ -1990,3 +1990,226 @@
   ------------------------------------------------------------------------------------------------
  
 13:16:53 |    ⚖️ C462-7 FIL: penalties 0.68→0.41 (×0.60) vs bar 0.45 — the stack decided
+13:17:33 |    ⚖️ C462-7 SLX: penalties 0.54→0.32 (×0.60) vs bar 0.47 — the stack decided
+13:17:40 | 📊 Step 3 result: 76 analyzed → 2 viable → Step 4 DRI/DSI
+13:21:02 | 📊 Step 3 result: 2 analyzed (+74 cached this 15m candle) → 0 passed | low_confidence=12,
+    low_score=22, mtf_disagree=1, h1_regime_shock=17, regime_blip=4, late_leg_no_forward=3,
+    post_penalty_low=1, absorption_at_extreme=1, final_gate=1, capitulation=5, pair_cap=1,
+    no_structural_room=1, flat_projection=2, fee_floor=1, session_short=4
+13:21:02 |    📌 Nearest miss: RAY score=0.312 (pre-pen 0.69) conf=0.395 quality=0.123/0.26
+    reason=post-penalty 0.312 < 0.33
+ 
+  13:22  up 12h45m  scan 99 ----------------------------------------------------------------------
+  EQUITY    $254.97  unreal $-0.02
+  OPEN      2 pos $52.84 (21%)  free $202.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      SHORT   0.353750  0.352160  +0.45%   +0.19   30m  + 69% left
+  RAY      LONG      2.1419    2.1260  -0.74%   -0.22   18m  - 83% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.13 -0.44%  peak $256.24  dd 0.50%
+  CURVE     ++++++++++++++++++++++++++++++++++====================================================
+  DAY       real $-1.14  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  1W 7L  win 12%  payoff 2.50  avg $-0.14/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  103tr 32W 71L 31%  $+4.99
+  FEES      $0.23  mk11/tk8  0.091% of eq
+  SCAN      805 > 2 > 0 passed  top RAY 0.31 (post-penalty 0.312)  99 scans, 4380 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.42  taker flow -0.04
+  NEWS      65 articles  + tone +0.57  ARB +0.85  ETH +0.72  PEPE +0.70
+  INFO      2 tilted  flow/fund/news/oi on 261
+  MOVERS    龙虾 -39% #32  LSK +36% #12  MUBARAK -27% cut  ONE -22% #25
+  TAPE      - - - - - - + -
+  ------------------------------------------------------------------------------------------------
+ 
+13:24:09 |    🪞 C266 board-parity (top movers vs screen): LSK +38%[#12] | B2 +32%[#33] | 龙虾
+    -31%[#37] | MUBARAK -29%[Live=0.08<cut] | ONE -21%[#25]
+13:24:47 | 📊 Step 3 result: 17 analyzed (+53 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=27, mtf_disagree=1, h1_regime_shock=14, regime_blip=2, late_leg_no_forward=2,
+    post_penalty_low=2, flat_projection=1, absorption_at_extreme=1, final_gate=1, capitulation=7,
+    post_penalty_quality=1, pair_cap=1, no_structural_room=1
+13:24:47 |    📌 Nearest miss: LIT score=0.702 conf=0.950 quality=0.667/0.26
+    reason=post_penalty_quality
+ 
+  13:30  up 12h53m  scan 100 ---------------------------------------------------------------------
+  EQUITY    $255.06  unreal $+0.07
+  OPEN      2 pos $52.84 (21%)  free $202.15
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  UAI      SHORT   0.353750  0.351080  +0.75%   +0.36   38m  + 66% left
+  RAY      LONG      2.1419    2.1205  -1.00%   -0.29   26m  - 78% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.04 -0.41%  peak $256.24  dd 0.46%
+  CURVE     ++++++++++++++++++++++++++++++++++====================================================
+  DAY       real $-1.14  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  1W 7L  win 12%  payoff 2.50  avg $-0.14/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  103tr 32W 71L 31%  $+4.99
+  FEES      $0.23  mk11/tk8  0.091% of eq
+  SCAN      805 > 17 > 0 passed  top LIT 0.70 (post_penalty_quali)  100 scans, 4397 analysed
+  MARKET    TRENDING  bias +0.43  breadth +0.53  taker flow -0.62
+  NEWS      65 articles  + tone +0.57  ARB +0.85  ETH +0.72  PEPE +0.70
+  INFO      2 tilted  flow/fund/news/oi on 261
+  MOVERS    LSK +38% #12  B2 +32% #33  龙虾 -31% #37  MUBARAK -29% cut
+  TAPE      - - - - - - + -
+  ------------------------------------------------------------------------------------------------
+ 
+13:31:32 |    ⚖️ C462-7 HYPE: penalties 0.65→0.39 (×0.60) vs bar 0.45 — the stack decided
+13:31:35 |    ⚖️ C462-7 LSK: penalties 0.55→0.42 (×0.75) vs bar 0.53 — the stack decided
+13:32:12 |    ⚖️ C462-7 ACE: penalties 0.51→0.38 (×0.75) vs bar 0.47 — the stack decided
+13:32:23 |    ⚖️ C462-7 COTI: penalties 0.47→0.10 (×0.21) vs bar 0.39 — the stack decided
+13:32:37 | 📊 Step 3 result: 70 analyzed → 2 viable → Step 4 DRI/DSI
+13:32:41 |    🎲 C378 odds-size: orderliness 0.07 -> risk x0.74 ($0.644)
+13:32:41 |    🔒 C378 stop level $9.384 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 13:32  OPEN   ETC LONG @9.5380  x1 $29.11
+       target +5.7%  stop -1.6%  entry score 0.63  maker
+13:33:26 | 🎯 EXIT SIGNAL: UAI/USDT:USDT - REGIME_EXIT: R=+0.55 opposes short PnL=-0.7%(-0.4PRU) —
+    macro shifted early
+  << 13:33  CLOSE  UAI SHORT @0.355610  -0.53% $-0.32  LOSS
+       held 41m  REGIME_EXIT: R=+0.55 opp  round trip from +1.09%  -0.30R  TAKER
+13:35:52 |    🪞 C266 board-parity (top movers vs screen): B2 +42%[#30] | LSK +42%[#11] | NIL
+    +39%[Live=0.32<cut] | 龙虾 -32%[#40] | MUBARAK -25%[Live=0.08<cut]
+13:36:29 | 📊 Step 3 result: 16 analyzed (+54 cached) → 2 viable → Step 4 DRI/DSI
+ 
+ 
+  13:38  up 13h01m  scan 102 ---------------------------------------------------------------------
+  EQUITY    $254.83  unreal $+0.16
+  OPEN      2 pos $55.60 (22%)  free $199.07
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RAY      LONG      2.1419    2.1255  -0.77%   -0.22   34m  - 75% left
+  ETC      LONG      9.5380    9.6730  +1.42%   +0.39    6m  + 63% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.27 -0.50%  peak $256.24  dd 0.55%
+  CURVE     +++++++++++++++++++++++++++++++++=====================================================
+  DAY       real $-1.46  limit $9.48 (3.70%)  15% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    9 closed  1W 8L  win 11%  payoff 2.41  avg $-0.16/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  104tr 32W 72L 31%  $+4.67
+  FEES      $0.27  mk12/tk9  0.106% of eq
+  SCAN      805 > 16 > 2 passed  top LIT 0.60 (viable)  102 scans, 4483 analysed
+  MARKET    TRENDING  bias +0.42  breadth +0.47  taker flow +0.03
+  NEWS      65 articles  + tone +0.44  ARB +0.85  ETH +0.72  PEPE +0.70
+  INFO      2 tilted  flow/fund/news/oi on 262
+  MOVERS    B2 +42% #30  LSK +42% #11  NIL +39% cut  龙虾 -32% #40
+  TAPE      - - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+ 
+13:39:52 | 📊 Step 3 result: 2 analyzed (+68 cached) → 1 viable → Step 4 DRI/DSI
+13:45:01 |    🪞 C266 board-parity (top movers vs screen): B2 +45%[#29] | NIL +40%[Live=0.32<cut] |
+    LSK +39%[#13] | 龙虾 -36%[#40] | MUBARAK -23%[Live=0.07<cut]
+13:45:28 |    ⚖️ C462-7 HYPE: penalties 0.72→0.32 (×0.45) vs bar 0.49 — the stack decided
+13:45:31 |    ⚖️ C462-7 LSK: penalties 0.60→0.45 (×0.75) vs bar 0.59 — the stack decided
+13:45:34 |    ⚖️ C462-7 LTC: penalties 0.59→0.44 (×0.75) vs bar 0.57 — the stack decided
+13:46:19 |    ⚖️ C462-7 MORPHO: penalties 0.60→0.45 (×0.75) vs bar 0.48 — the stack decided
+13:46:23 | 📊 Step 3 result: 70 analyzed → 4 viable → Step 4 DRI/DSI
+ 
+  13:46  up 13h09m  scan 104 ---------------------------------------------------------------------
+  EQUITY    $254.46  unreal $-0.21
+  OPEN      2 pos $55.60 (22%)  free $199.07
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  RAY      LONG      2.1419    2.1036  -1.79%   -0.49   42m  - 58% left
+  ETC      LONG      9.5380    9.6390  +1.06%   +0.28   14m  + 61% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-1.64 -0.64%  peak $256.24  dd 0.69%
+  CURVE     +++++++++++++++++++++++++++++++++=====================================================
+  DAY       real $-1.46  limit $9.48 (3.70%)  15% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    9 closed  1W 8L  win 11%  payoff 2.41  avg $-0.16/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  104tr 32W 72L 31%  $+4.67
+  FEES      $0.27  mk12/tk9  0.106% of eq
+  SCAN      805 > 70 > 4 passed  top ETC 0.73 (viable)  104 scans, 4555 analysed
+  MARKET    TRENDING  bias +0.36  breadth +0.00  taker flow -0.25
+  NEWS      65 articles  + tone +0.44  ARB +0.85  ETH +0.72  PEPE +0.70
+  INFO      4 tilted  flow/news/oi on 263
+  MOVERS    B2 +45% #29  NIL +40% cut  LSK +39% #13  龙虾 -36% #40
+  TAPE      - - - - - - + - -
+  ------------------------------------------------------------------------------------------------
+ 
+13:51:46 |    🛑 C377 HARD STOP RAY: -2.96% <= -2.64% (0.8R, R=3.52%) — arithmetic, not opinion
+13:51:47 | ❌ LOSS: RAY/USDT:USDT | C377_RISK_STOP: -2.96% = -0.84R
+  << 13:51  CLOSE  RAY LONG @2.0763  -3.06% $-0.83  LOSS
+       held 47m  C377_RISK_STOP: -2.96% =  round trip from +0.16%  -0.87R  TAKER
+13:51:50 | 📊 Step 3 result: 4 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=25, ct_noisy_block=15, fee_floor=1, absorption_at_extreme=8, flat_projection=3,
+    capitulation=2, post_penalty_low=1, late_leg_no_forward=3, regime_blip=2, pair_cap=1,
+    post_penalty_quality=1, vol_floor=1
+13:51:50 |    📌 Nearest miss: LIT score=0.763 conf=0.717 quality=0.547/0.26
+    reason=post_penalty_quality
+13:52:42 |    🛡️ Guardian would intervene (LOW_WR, EXCESSIVE_GIVEBACK) — report only since C482; the
+    monthly dial is the loss control
+ 
+ 
+  13:54  up 13h17m  scan 105 ---------------------------------------------------------------------
+  EQUITY    $253.88  unreal $+0.04
+  OPEN      1 pos $29.11 (11%)  free $224.73
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ETC      LONG      9.5380    9.5580  +0.21%   +0.04   22m  + 55% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-2.22 -0.87%  peak $256.24  dd 0.92%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++++++++++++++===============++++++++++++==+====
+  DAY       real $-2.29  limit $9.48 (3.70%)  24% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    10 closed  1W 9L  win 10%  payoff 1.93  avg $-0.23/tr  best $+0.62  worst $-0.83
+            break-even 34%
+  LIFETIME  105tr 32W 73L 30%  $+3.84
+  FEES      $0.29  mk12/tk10  0.113% of eq
+  SCAN      805 > 4 > 0 passed  top LIT 0.76 (post_penalty_quali)  105 scans, 4559 analysed
+  MARKET    TRENDING  bias +0.36  breadth +0.41  taker flow -0.46
+  NEWS      65 articles  + tone +0.44  PEPE +0.70  ADA +0.70  PEOPLE +0.44
+  INFO      4 tilted  flow/news/oi on 263
+  MOVERS    B2 +45% #29  NIL +40% cut  LSK +39% #13  龙虾 -36% #40
+  TAPE      - - - - - - + - - -
+  ------------------------------------------------------------------------------------------------
+ 
+13:56:50 | 🎯 EXIT SIGNAL: ETC/USDT:USDT - PEAK_FLOOR: peaked at +1.6%(1.1PRU) now=+0.0% — profit
+    fully erased, protecting capital
+  << 13:56  CLOSE  ETC LONG @9.5350  -0.03% $-0.03  LOSS
+       held 24m  PEAK_FLOOR: peaked at +1  round trip from +1.64%  -0.01R  TAKER
+ 
+ 
+  14:02  up 13h26m  scan 105 ---------------------------------------------------------------------
+  EQUITY    $253.81
+  OPEN      flat  free $253.81
+  SESSION   $-2.29 -0.89%  peak $256.24  dd 0.95%
+  CURVE     ++++++++++++++++++++++++++++++++==================+===============++==========+=======
+  DAY       real $-2.33  limit $9.48 (3.70%)  25% used
+            ######....................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    11 closed  1W 10L  win 9%  payoff 2.12  avg $-0.21/tr  best $+0.62  worst $-0.83
+            break-even 32%
+  LIFETIME  106tr 32W 74L 30%  $+3.81
+  FEES      $0.30  mk12/tk11  0.120% of eq
+  SCAN      805 > 4 > 0 passed  top LIT 0.76 (post_penalty_quali)  105 scans, 4559 analysed
+  MARKET    TRENDING  bias +0.36  breadth +0.41  taker flow -0.03
+  NEWS      65 articles  + tone +0.44  PEPE +0.70  ADA +0.70  PEOPLE +0.44
+  INFO      4 tilted  flow/news/oi on 263
+  MOVERS    B2 +45% #29  NIL +40% cut  LSK +39% #13  龙虾 -36% #40
+  TAPE      - - - - - - + - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+14:07:00 |    🪞 C266 board-parity (top movers vs screen): NIL +37%[#10] | LSK +36%[#14] | 龙虾
+    -32%[#44] | MUBARAK -23%[Live=0.00<cut] | ONE -19%[Live=0.37<cut]
+14:07:28 |    ⚖️ C462-7 LSK: penalties 0.93→0.28 (×0.30) vs bar 0.53 — the stack decided
+14:07:42 |    ⚖️ C462-7 TIA: penalties 0.49→0.37 (×0.75) vs bar 0.37 — the stack decided
+14:07:51 |    ⚖️ C462-7 AKE: penalties 0.75→0.36 (×0.48) vs bar 0.43 — the stack decided
+14:08:05 |    ⚖️ C462-7 LIT: penalties 0.78→0.23 (×0.30) vs bar 0.49 — the stack decided
+14:08:07 |    ⚖️ C462-7 ETC: penalties 0.75→0.23 (×0.30) vs bar 0.60 — the stack decided
+14:08:16 | 📊 Step 3 result: 69 analyzed → 0 passed | low_confidence=6, low_score=33, mtf_disagree=3,
+    late_leg_no_forward=11, no_structural_room=2, absorption_at_extreme=4, regime_blip=3,
+    low_quality=4, final_gate=1, pair_cap=1, post_penalty_low=1
+14:08:16 |    📌 Nearest miss: SEI score=0.288 (pre-pen 0.42) conf=0.718 quality=0.207/0.26
+    reason=final_gate
+  .. 14:10  flat  $253.81  $-2.29 -0.89%  1W 10L 9%  69 analysed
