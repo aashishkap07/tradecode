@@ -517,3 +517,102 @@
   TAPE      - - - -
   ------------------------------------------------------------------------------------------------
 
+
+
+  05:22  up 4h45m  scan 38 -----------------------------------------------------------------------
+  EQUITY    $255.49  unreal $-0.05
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167190  -0.15%   -0.05   10m  - 31% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.61 -0.24%  peak $256.24  dd 0.29%
+  CURVE     ++++++=========+++=================+====
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 70 > 0 passed  top TIA 0.25 (score 0.255 < 0.34)  38 scans, 1764 analysed
+  MARKET    MIXED  bias -0.20  breadth +0.06  taker flow -0.56
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +52% #8  MUBARAK -32% #16  FOLKS -20% #44  龙虾 +20% #39
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+
+
+
+  05:30  up 4h53m  scan 39 -----------------------------------------------------------------------
+  EQUITY    $255.59  unreal $+0.05
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167985  +0.32%   +0.05   18m  + 38% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.51 -0.20%  peak $256.24  dd 0.25%
+  CURVE     ++++++=========+++=================+=====
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 15 > 0 passed  top VIRTUAL 0.41 (quality 0.227 < 0.)  39 scans, 1779 analysed
+  MARKET    MIXED  bias -0.19  breadth -0.07  taker flow +0.26
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +54% #6  MUBARAK -32% cut  FOLKS -22% #46  ONE -20% #21
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+
+  -> 05:36  HALF   龙虾 LONG @0.164263  -1.90% $-0.22
+       loss half banked  TAKER  $11.04 rides on
+  << 05:37  CLOSE  龙虾 LONG @0.162834  -2.75% $-0.53  LOSS
+       held 24m  C377_RISK_STOP: -2.43% =  round trip from +0.66%  -0.89R  TAKER
+
+
+  05:38  up 5h01m  scan 40 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+=======
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 70 > 0 passed  top MUBARAK 0.45 (exhaustion_hard)  40 scans, 1849 analysed
+  MARKET    TRENDING  bias -0.31  breadth +0.00  taker flow -0.16
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +57% #6  MUBARAK -33% #13  FOLKS -26% #40  ONE -21% #21
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  .. 05:46  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  70 analysed
+  .. 05:54  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  71 analysed
+  .. 06:03  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  71 analysed
+
+
+  06:11  up 5h34m  scan 42 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+===========
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 71 > 0 passed  top ONE 0.56 (low_agreement 51%<)  42 scans, 1991 analysed
+  MARKET    TRENDING  bias -0.15  breadth +0.15  taker flow -0.31
+  NEWS      65 articles  + tone +0.38  ETH +0.40  UNI +0.23  OPENAI +0.17
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +50% #7  MUBARAK -29% #16  ONE -25% #25  FOLKS -23% #47
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+

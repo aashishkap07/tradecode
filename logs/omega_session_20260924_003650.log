@@ -874,3 +874,156 @@
   TAPE      - - - -
   ------------------------------------------------------------------------------------------------
  
+05:18:13 |    ⚖️ C462-7 TIA: penalties 0.39→0.25 (×0.66) vs bar 0.34 — the stack decided
+05:18:20 |    ⚖️ C462-7 JTO: penalties 0.34→0.21 (×0.60) vs bar 0.34 — the stack decided
+05:18:30 |    ⚖️ C462-7 SPX: penalties 0.36→0.24 (×0.66) vs bar 0.34 — the stack decided
+05:18:35 |    ⚖️ C462-7 STX: penalties 0.35→0.23 (×0.66) vs bar 0.34 — the stack decided
+05:18:42 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=4, low_score=17,
+    flat_projection=13, ct_noisy_block=28, no_structural_room=6, pair_cap=1, capitulation=1
+05:18:42 |    📌 Nearest miss: TIA score=0.255 (pre-pen 0.39) conf=0.540 quality=0.138/0.26
+    reason=score 0.255 < 0.344
+ 
+  05:22  up 4h45m  scan 38 -----------------------------------------------------------------------
+  EQUITY    $255.49  unreal $-0.05
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167190  -0.15%   -0.05   10m  - 31% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.61 -0.24%  peak $256.24  dd 0.29%
+  CURVE     ++++++=========+++=================+====
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 70 > 0 passed  top TIA 0.25 (score 0.255 < 0.34)  38 scans, 1764 analysed
+  MARKET    MIXED  bias -0.20  breadth +0.06  taker flow -0.56
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +52% #8  MUBARAK -32% #16  FOLKS -20% #44  龙虾 +20% #39
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+05:23:49 |    🪞 C266 board-parity (top movers vs screen): NIL +54%[#6] | MUBARAK -32%[Live=0.29<cut]
+    | FOLKS -22%[#46] | ONE -20%[#21] | FLOCK -19%[Live=0.12<cut]
+05:24:17 | 📊 Step 3 result: 15 analyzed (+55 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=14, flat_projection=12, ct_noisy_block=30, no_structural_room=5, pair_cap=1,
+    low_quality=2, capitulation=1
+05:24:17 |    📌 Nearest miss: VIRTUAL score=0.409 conf=0.555 quality=0.227/0.26 reason=quality 0.227
+    < 0.276
+ 
+  05:30  up 4h53m  scan 39 -----------------------------------------------------------------------
+  EQUITY    $255.59  unreal $+0.05
+  OPEN      1 pos $22.09 (9%)  free $233.45
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  龙虾       LONG    0.167446  0.167985  +0.32%   +0.05   18m  + 38% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.51 -0.20%  peak $256.24  dd 0.25%
+  CURVE     ++++++=========+++=================+=====
+  DAY       real $-0.60  limit $9.48 (3.70%)  6% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    4 closed  0W 4L  win 0%  avg $-0.14/tr  best $-0.08  worst $-0.25
+  LIFETIME  99tr 31W 68L 31%  $+5.54
+  FEES      $0.14  mk4/tk4  0.053% of eq
+  SCAN      805 > 15 > 0 passed  top VIRTUAL 0.41 (quality 0.227 < 0.)  39 scans, 1779 analysed
+  MARKET    MIXED  bias -0.19  breadth -0.07  taker flow +0.26
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +54% #6  MUBARAK -32% cut  FOLKS -22% #46  ONE -20% #21
+  TAPE      - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+05:34:40 |    🪞 C266 board-parity (top movers vs screen): NIL +57%[#6] | MUBARAK -33%[#13] | FOLKS
+    -26%[#40] | ONE -21%[#21] | FLOCK -20%[Live=0.07<cut]
+05:35:15 |    ⚖️ C462-7 ARB: penalties 0.40→0.30 (×0.75) vs bar 0.34 — the stack decided
+05:35:23 |    ⚖️ C462-7 ALLO: penalties 0.36→0.25 (×0.69) vs bar 0.35 — the stack decided
+05:35:49 | 📊 Step 3 result: 70 analyzed → 0 passed | low_confidence=1, low_score=18,
+    ct_noisy_block=24, regime_blip=12, flat_projection=6, exhaustion_hard=1, low_quality=2,
+    leg_exhausted=1, capitulation=2, pair_cap=1, poor_reward_risk=1, no_structural_room=1
+05:35:49 |    📌 Nearest miss: MUBARAK score=0.452 conf=0.661 quality=0.299/0.26
+    reason=exhaustion_hard
+  -> 05:36  HALF   龙虾 LONG @0.164263  -1.90% $-0.22
+       loss half banked  TAKER  $11.04 rides on
+05:37:18 |    🛑 C377 HARD STOP 龙虾: -2.43% <= -2.31% (0.8R, R=3.08%) — arithmetic, not opinion
+05:37:18 |    ✂️ C482-A split trade: banked $-0.22 + remainder $-0.31 = whole idea $-0.53 — every
+    record below uses the whole idea
+05:37:18 | ❌ LOSS: 龙虾/USDT:USDT | C377_RISK_STOP: -2.43% = -0.79R
+  << 05:37  CLOSE  龙虾 LONG @0.162834  -2.75% $-0.53  LOSS
+       held 24m  C377_RISK_STOP: -2.43% =  round trip from +0.66%  -0.89R  TAKER
+ 
+ 
+  05:38  up 5h01m  scan 40 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+=======
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 70 > 0 passed  top MUBARAK 0.45 (exhaustion_hard)  40 scans, 1849 analysed
+  MARKET    TRENDING  bias -0.31  breadth +0.00  taker flow -0.16
+  NEWS      65 articles  + tone +0.29  ETH +0.73  XRP +0.70  NEAR +0.53
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +57% #6  MUBARAK -33% #13  FOLKS -26% #40  ONE -21% #21
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 05:46  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  70 analysed
+05:51:00 |    🪞 C266 board-parity (top movers vs screen): NIL +60%[#8] | MUBARAK -32%[#15] | FOLKS
+    -28%[#44] | ONE -23%[#24] | B2 -19%[#53]
+05:52:09 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=3, low_score=19,
+    flat_projection=15, ct_noisy_block=13, regime_blip=9, poor_reward_risk=2, final_gate=1,
+    leg_exhausted=1, reward_conviction=1, low_quality=2, no_structural_room=2,
+    post_penalty_quality=1, proj_confirms_trend=1, vol_floor=1
+05:52:09 |    📌 Nearest miss: ONE score=0.447 (pre-pen 0.75) conf=0.503 quality=0.225/0.26
+    reason=reward_conviction needs 63%
+  .. 05:54  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  71 analysed
+06:02:30 |    🪞 C266 board-parity (top movers vs screen): NIL +50%[#7] | MUBARAK -29%[#16] | ONE
+    -25%[#25] | FOLKS -23%[#47] | FLOCK -18%[Live=0.27<cut]
+06:02:31 | ⚠️ C79 WEAK-RESULTANT: R=-0.01 mag=0.01 < 0.08 — direction unclear, higher bar applied
+06:03:27 |    ⚖️ C462-7 ZEST: penalties 0.55→0.44 (×0.79) vs bar 0.49 — the stack decided
+06:03:30 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=3, low_score=26,
+    flat_projection=18, poor_reward_risk=4, regime_blip=8, no_structural_room=5, low_agreement=1,
+    capitulation=4, leg_exhausted=1, proj_confirms_trend=1
+06:03:30 |    📌 Nearest miss: ONE score=0.560 (pre-pen 0.93) conf=0.583 quality=0.326/0.26
+    reason=low_agreement 51%<60%
+  .. 06:03  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  71 analysed
+06:07:18 |    📓 C444: 龙虾 exited on C377_RISK_STOP: -2.43% = at index 0.30 — 30min later the price is
+    -1.53% (-0.49R) lower — the exit protected capital
+06:08:31 | ⚠️ C79 WEAK-RESULTANT: R=-0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+ 
+ 
+  06:11  up 5h34m  scan 42 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+===========
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 71 > 0 passed  top ONE 0.56 (low_agreement 51%<)  42 scans, 1991 analysed
+  MARKET    TRENDING  bias -0.15  breadth +0.15  taker flow -0.31
+  NEWS      65 articles  + tone +0.38  ETH +0.40  UNI +0.23  OPENAI +0.17
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +50% #7  MUBARAK -29% #16  ONE -25% #25  FOLKS -23% #47
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+06:13:51 |    🪞 C266 board-parity (top movers vs screen): NIL +46%[#7] | MUBARAK -29%[#14] | ONE
+    -26%[#23] | FOLKS -22%[#47] | FLOCK -18%[Live=0.28<cut]
+06:13:53 | ⚠️ C79 WEAK-RESULTANT: R=-0.02 mag=0.02 < 0.08 — direction unclear, higher bar applied
+06:14:12 |    ⚖️ C462-7 STONK: penalties 0.65→0.39 (×0.59) vs bar 0.50 — the stack decided
+06:14:12 | 📊 Step 3 result: 4 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=3,
+    low_score=26, mtf_disagree=1, flat_projection=19, poor_reward_risk=4, no_structural_room=5,
+    low_agreement=1, capitulation=4, regime_blip=6, leg_exhausted=1, proj_confirms_trend=1
+06:14:12 |    📌 Nearest miss: API3 score=0.631 conf=0.532 quality=0.336/0.26 reason=mtf_disagree
