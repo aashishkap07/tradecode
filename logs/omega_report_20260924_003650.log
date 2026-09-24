@@ -919,3 +919,108 @@
   TAPE      - - - - - -
   ------------------------------------------------------------------------------------------------
 
+
+
+  11:22  up 10h45m  scan 81 ----------------------------------------------------------------------
+  EQUITY    $255.27  unreal $+0.63
+  OPEN      2 pos $57.67 (23%)  free $196.97
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  FF       LONG    0.134810  0.136070  +0.93%   +0.48   20m  + 55% left
+  CELR     LONG  0.003152000.00317100  +0.60%   +0.16   20m  + 25% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.83 -0.32%  peak $256.24  dd 0.38%
+  CURVE     +++++++++++++++++++++++++++++++++++++++++=============================================
+  DAY       real $-1.49  limit $9.48 (3.70%)  16% used
+            ####......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    6 closed  0W 6L  win 0%  avg $-0.24/tr  best $-0.08  worst $-0.53
+  LIFETIME  101tr 31W 70L 31%  $+4.64
+  FEES      $0.19  mk7/tk7  0.074% of eq
+  SCAN      805 > 78 > 2 passed  top FF 0.84 (viable)  81 scans, 3691 analysed
+  MARKET    TRENDING  bias +0.29  breadth +0.00  taker flow -0.06
+  NEWS      65 articles  + tone +0.38  APE +0.70  PEOPLE +0.44  ETH +0.44
+  INFO      2 tilted  flow/fund/news/oi on 259
+  MOVERS    NIL +33% #11  MUBARAK -27% #20  龙虾 -24% cut  LSK +19% #22
+  TAPE      - - - - - -
+  ------------------------------------------------------------------------------------------------
+
+  -> 11:27  HALF   FF LONG @0.136450  +1.22% $+0.33
+       win half banked  maker  $13.97 rides on
+  << 11:27  CLOSE  FF LONG @0.136250  +1.07% $+0.62  WIN
+       held 25m  TRAILING_TP: peak=+2.9%   kept 74% of a +1.44% peak  +0.64R  maker
+
+
+  11:30  up 10h53m  scan 82 ----------------------------------------------------------------------
+  EQUITY    $255.14  unreal $-0.12
+  OPEN      1 pos $29.73 (12%)  free $225.53
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  CELR     LONG  0.003152000.00314200  -0.32%   -0.12   28m  - 26% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.96 -0.37%  peak $256.24  dd 0.43%
+  CURVE     ++++++++++++++++++++++++++++++++++++++++==============================================
+  DAY       real $-0.88  limit $9.48 (3.70%)  9% used
+            ##........................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    7 closed  1W 6L  win 14%  payoff 2.54  avg $-0.12/tr  best $+0.62  worst $-0.53
+            break-even 28%
+  LIFETIME  102tr 32W 70L 31%  $+5.26
+  FEES      $0.20  mk9/tk7  0.078% of eq
+  SCAN      805 > 12 > 0 passed  top FF 1.09 (vol_floor)  82 scans, 3703 analysed
+  MARKET    TRENDING  bias +0.27  breadth +0.50  taker flow +0.19
+  NEWS      65 articles  + tone +0.33  APE +0.70  PEOPLE +0.44  ETH +0.44
+  INFO      2 tilted  flow/fund/news/oi on 259
+  MOVERS    龙虾 -31% cut  NIL +31% cut  MUBARAK -27% #19  LSK +19% #22
+  TAPE      - - - - - - +
+  ------------------------------------------------------------------------------------------------
+
+  << 11:32  CLOSE  CELR LONG @0.00312600  -0.82% $-0.27  LOSS
+       held 30m  PEAK_REVERSAL: peak=+1.0  round trip from +1.05%  -0.28R  TAKER
+
+
+  11:38  up 11h01m  scan 83 ----------------------------------------------------------------------
+  EQUITY    $254.99
+  OPEN      flat  free $254.99
+  SESSION   $-1.11 -0.43%  peak $256.24  dd 0.49%
+  CURVE     +++++++++++++++++++++++++++++++++++++++===============================================
+  DAY       real $-1.14  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  1W 7L  win 12%  payoff 2.50  avg $-0.14/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  103tr 32W 71L 31%  $+4.99
+  FEES      $0.22  mk9/tk8  0.085% of eq
+  SCAN      805 > 78 > 0 passed  top CELR 0.82 (h1_regime_shock)  83 scans, 3781 analysed
+  MARKET    TRENDING  bias -0.17  breadth +0.75  taker flow -0.23
+  NEWS      65 articles  + tone +0.33  APE +0.70  PEOPLE +0.44  ETH +0.44
+  INFO      2 tilted  flow/fund/news/oi on 259
+  MOVERS    龙虾 -31% cut  NIL +31% cut  MUBARAK -27% #19  LSK +19% #22
+  TAPE      - - - - - - + -
+  ------------------------------------------------------------------------------------------------
+
+  .. 11:46  flat  $254.99  $-1.11 -0.43%  1W 7L 12%  11 analysed
+  .. 11:54  flat  $254.99  $-1.11 -0.43%  1W 7L 12%  15 analysed
+  .. 12:02  flat  $254.99  $-1.11 -0.43%  1W 7L 12%  15 analysed
+
+
+  12:10  up 11h33m  scan 87 ----------------------------------------------------------------------
+  EQUITY    $254.99
+  OPEN      flat  free $254.99
+  SESSION   $-1.11 -0.43%  peak $256.24  dd 0.49%
+  CURVE     ++++++++++++++++++++++++++++++++++++++================================================
+  DAY       real $-1.14  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    8 closed  1W 7L  win 12%  payoff 2.50  avg $-0.14/tr  best $+0.62  worst $-0.53
+            break-even 29%
+  LIFETIME  103tr 32W 71L 31%  $+4.99
+  FEES      $0.22  mk9/tk8  0.085% of eq
+  SCAN      805 > 77 > 0 passed  top FF 0.78 (reentry-chase 0.8A)  87 scans, 3962 analysed
+  MARKET    TRENDING  bias +0.02  breadth +0.00  taker flow +0.14
+  NEWS      65 articles  + tone +0.15  PEPE +0.53  PEOPLE +0.44  XRP +0.33
+  INFO      1 tilted  flow/fund/news/oi on 261
+  MOVERS    龙虾 -41% #40  MUBARAK -32% cut  LSK +29% #15  EVAA -17% #68
+  TAPE      - - - - - - + -
+  ------------------------------------------------------------------------------------------------
+
