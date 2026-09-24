@@ -1117,3 +1117,125 @@
     poor_reward_risk=1, flow_veto=2, proj_confirms_trend=1, post_penalty_quality=1, low_quality=1
 07:11:58 |    📌 Nearest miss: GRASS score=0.446 conf=0.339 quality=0.151/0.26 reason=quality 0.151 <
     0.277
+07:18:19 |    🧭 C458-17: exploration is due but the best refusal (quality 0.234 < 0.272) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+07:18:19 | 📊 Step 3 result: 72 analyzed → 0 passed | low_confidence=2, low_score=34,
+    ct_noisy_block=22, no_structural_room=1, capitulation=2, low_quality=3, flat_projection=2,
+    absorption_at_extreme=2, late_leg_no_forward=1, micro_exhaustion=1, fee_floor=1, vol_floor=1
+07:18:19 |    📌 Nearest miss: ONE score=0.685 conf=0.456 quality=0.312/0.26 reason=quality 0.234 <
+    0.272
+ 
+ 
+  07:18  up 6h41m  scan 51 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+===================
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 72 > 0 passed  top ONE 0.69 (quality 0.234 < 0.)  51 scans, 2398 analysed
+  MARKET    TRENDING  bias -0.40  breadth +0.17  taker flow -0.19
+  NEWS      65 articles  + tone +0.31  PEPE +0.25  PEOPLE +0.25  LINK +0.22
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +50% #8  MUBARAK -28% #17  ONE -22% #27  FOLKS -21% #50
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+07:23:26 |    🪞 C266 board-parity (top movers vs screen): NIL +44%[#8] | MUBARAK -27%[#15] | ONE
+    -21%[#32] | BTW +19%[#35] | FLOCK -18%[Live=-0.12<cut]
+07:23:49 |    ⚖️ C462-7 BSV: penalties 0.37→0.32 (×0.89) vs bar 0.33 — the stack decided
+07:23:57 |    ⚖️ C462-7 KMNO: penalties 0.65→0.20 (×0.30) vs bar 0.45 — the stack decided
+07:24:05 |    🧭 C458-17: exploration is due but the best refusal (real-CVD veto -0.60) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+07:24:05 | 📊 Step 3 result: 24 analyzed (+54 cached this 15m candle) → 0 passed | low_confidence=5,
+    low_score=38, ct_noisy_block=16, no_structural_room=1, capitulation=5, low_quality=2,
+    flat_projection=2, late_leg_no_forward=2, absorption_at_extreme=2, micro_exhaustion=1,
+    flow_veto=1, fee_floor=1, vol_floor=1, poor_reward_risk=1
+07:24:05 |    📌 Nearest miss: ZHIPUHKD score=0.819 (pre-pen 1.09) conf=0.663 quality=0.543/0.26
+    reason=real-CVD veto -0.60
+  .. 07:26  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  24 analysed
+07:31:10 |    ⚖️ C462-7 BSV: penalties 0.36→0.33 (×0.91) vs bar 0.34 — the stack decided
+07:31:28 |    ⚖️ C462-7 TUT: penalties 0.36→0.27 (×0.75) vs bar 0.34 — the stack decided
+07:31:36 |    🧭 C458-17: exploration is due but the best refusal (dir_proj_conflict) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+07:31:36 | 📊 Step 3 result: 78 analyzed → 0 passed | low_score=27, ct_noisy_block=36,
+    late_leg_no_forward=2, flat_projection=3, dir_proj_conflict=1, micro_exhaustion=1,
+    proj_confirms_trend=1, low_quality=2, capitulation=2, no_structural_room=1,
+    absorption_at_extreme=2
+07:31:36 |    📌 Nearest miss: ONE score=0.625 conf=0.663 quality=0.415/0.26 reason=dir_proj_conflict
+  .. 07:34  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  78 analysed
+07:36:45 |    🪞 C266 board-parity (top movers vs screen): NIL +42%[#9] | MUBARAK -32%[#18] | ONE
+    -21%[Live=0.58<cut] | FLOCK -18%[Live=-0.03<cut] | BTW +18%[#38]
+07:37:14 |    🧭 C458-17: exploration is due but the best refusal (late-leg F=-0.02) is a RISK gate,
+    not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never
+    DANGER.
+07:37:14 | 📊 Step 3 result: 18 analyzed (+59 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=24, ct_noisy_block=34, late_leg_no_forward=3, flat_projection=5, micro_exhaustion=1,
+    proj_confirms_trend=1, low_quality=2, capitulation=3, no_structural_room=1,
+    absorption_at_extreme=1
+07:37:14 |    📌 Nearest miss: ENS score=0.463 conf=0.626 quality=0.290/0.26 reason=late-leg F=-0.02
+07:37:18 |    🔭 C456: 龙虾 exited on C377_RISK_STOP: -2.43% = — at its OWN thesis horizon (120min) the
+    price is -8.92% (-2.89R) lower — the exit protected capital
+07:42:33 | 📊 Step 3 result: 1 analyzed (+77 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=24, ct_noisy_block=34, late_leg_no_forward=3, flat_projection=5, micro_exhaustion=1,
+    proj_confirms_trend=1, low_quality=2, pair_cap=1, capitulation=3, no_structural_room=1,
+    absorption_at_extreme=1
+  .. 07:42  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  1 analysed
+07:47:40 |    🪞 C266 board-parity (top movers vs screen): NIL +45%[#8] | MUBARAK -32%[#17] | ONE
+    -21%[#34] | FLOCK -17%[Live=0.07<cut] | SPX -17%[#51]
+07:48:03 |    ⚖️ C462-7 NIL: penalties 0.56→0.17 (×0.31) vs bar 0.54 — the stack decided
+07:48:32 |    ⚖️ C462-7 ZHIPUHKD: penalties 0.45→0.33 (×0.75) vs bar 0.35 — the stack decided
+07:48:35 |    ⚖️ C462-7 KMNO: penalties 0.66→0.20 (×0.30) vs bar 0.45 — the stack decided
+07:48:47 |    🧭 C458-17: exploration is due but the best refusal (post_penalty_quality) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+07:48:47 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=40, low_score=22,
+    capitulation=2, absorption_at_extreme=2, flat_projection=7, low_quality=1,
+    post_penalty_quality=1, pair_cap=1, no_structural_room=1, late_leg_no_forward=1
+07:48:47 |    📌 Nearest miss: MARSCOIN score=0.618 conf=0.618 quality=0.382/0.26
+    reason=post_penalty_quality
+ 
+ 
+  07:50  up 7h13m  scan 56 -----------------------------------------------------------------------
+  EQUITY    $255.00
+  OPEN      flat  free $255.00
+  SESSION   $-1.10 -0.43%  peak $256.24  dd 0.48%
+  CURVE     ++++++++++++++++++++++++++++++++++=+=======================
+  DAY       real $-1.13  limit $9.48 (3.70%)  12% used
+            ###.......................
+  MONTH     dial 15%  used $0.00 of $37.92  from $252.81
+  RECORD    5 closed  0W 5L  win 0%  avg $-0.22/tr  best $-0.08  worst $-0.53
+  LIFETIME  100tr 31W 69L 31%  $+5.00
+  FEES      $0.15  mk4/tk6  0.059% of eq
+  SCAN      805 > 78 > 0 passed  top MARSCOIN 0.62 (post_penalty_quali)  56 scans, 2597 analysed
+  MARKET    TRENDING  bias -0.49  breadth +0.00  taker flow -0.18
+  NEWS      65 articles  + tone +0.42  SHIB +0.53  PEPE +0.44  ETH +0.27
+  INFO      3 tilted  flow/fund/news/oi on 227
+  MOVERS    NIL +45% #8  MUBARAK -32% #17  ONE -21% #34  FLOCK -17% cut
+  TAPE      - - - - -
+  ------------------------------------------------------------------------------------------------
+ 
+  .. 07:58  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  78 analysed
+08:01:08 |    🪞 C266 board-parity (top movers vs screen): NIL +45%[#8] | MUBARAK -31%[#18] | ONE
+    -23%[#33] | FLOCK -17%[Live=0.17<cut] | SPX -17%[#55]
+08:02:17 |    🧭 C458-17: exploration is due but the best refusal (final_gate) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+08:02:17 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=2, low_score=4,
+    flat_projection=10, ct_noisy_block=48, micro_exhaustion=1, final_gate=1, poor_reward_risk=2,
+    no_structural_room=7, capitulation=2, pair_cap=1
+08:02:17 |    📌 Nearest miss: ONE score=0.318 (pre-pen 0.48) conf=0.642 quality=0.204/0.26
+    reason=final_gate
+  .. 08:06  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  78 analysed
+08:12:41 |    🪞 C266 board-parity (top movers vs screen): NIL +44%[#8] | MUBARAK -30%[#16] | ONE
+    -26%[#27] | BTW +18%[Live=0.50<cut] | SPX -18%[#51]
+08:13:00 | 📊 Step 3 result: 2 analyzed (+76 cached this 15m candle) → 0 passed | score_zero=1,
+    low_confidence=2, low_score=4, flat_projection=10, ct_noisy_block=48, micro_exhaustion=1,
+    final_gate=1, poor_reward_risk=2, no_structural_room=6, pair_cap=1, capitulation=2
+  .. 08:14  flat  $255.00  $-1.10 -0.43%  0W 5L 0%  2 analysed
