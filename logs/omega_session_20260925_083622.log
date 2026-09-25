@@ -228,3 +228,125 @@
 10:09:14 |    📌 Nearest miss: NEAR score=0.379 (pre-pen 0.50) conf=0.709 quality=0.269/0.26
     reason=score 0.284 < 0.470
   .. 10:12  flat  $250.14  $-0.00 -0.00%  0W 0L  16 analysed
+10:19:36 |    🪞 C266 board-parity (top movers vs screen): QNT +36%[#19] | XPL +28%[#10] | ONDO
+    +27%[#3] | BROCCOLI +22%[#21] | 龙虾 -20%[#27]
+10:19:37 | ⊥ C97 TF-CONFLICT: 1h=+0.58×4h=-0.39=d14=-0.23 — only longs allowed (1h dominant)
+10:20:46 |    🎢→⚖️ PLUME: C292 stands down — parabola BROKEN (range 22×ATR, 8.6 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:21:02 | 📊 Step 3 result: 71 analyzed → 2 viable → Step 4 DRI/DSI
+ 
+ 
+  10:21  up 1h44m  scan 14 -----------------------------------------------------------------------
+  EQUITY    $250.14
+  OPEN      flat  free $311.50
+  SESSION   $-0.00 -0.00%
+  CURVE     +=============
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      no fills yet this run
+  SCAN      805 > 71 > 2 passed  top ACE 0.60 (viable)  14 scans, 645 analysed
+  MARKET    TRENDING  bias +0.07  breadth +0.00  taker flow -0.32
+  NEWS      65 articles  + tone +0.33  BEAT +0.67  CFG +0.13
+  INFO      2 tilted  flow/news/oi on 134
+  MOVERS    QNT +36% #19  XPL +28% #10  ONDO +27% #3  BROCCOLI +22% #21
+  ------------------------------------------------------------------------------------------------
+ 
+10:21:03 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $311.4954 → $250.1448 (equity
+    $250.1448 − locked $0.0000 = $250.1448); discrepancy $+61.3506. Money that does not exist would
+    have been sized against [correction #2]
+10:26:05 | ⊥ C97 TF-CONFLICT: 1h=+0.58×4h=-0.39=d14=-0.23 — only longs allowed (1h dominant)
+10:26:25 | 📊 Step 3 result: 2 analyzed (+69 cached) → 1 viable → Step 4 DRI/DSI
+  .. 10:29  flat  $250.14  $-0.00 -0.00%  0W 0L  2 analysed
+10:29:03 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $312.6810 → $250.1448 (equity
+    $250.1448 − locked $0.0000 = $250.1448); discrepancy $+62.5362. Money that does not exist would
+    have been sized against [correction #3]
+10:31:32 |    🪞 C266 board-parity (top movers vs screen): QNT +34%[#21] | XPL +28%[#10] | ONDO
+    +25%[#3] | MUBARAK -20%[#31] | H +18%[Live=0.00<cut]
+10:31:56 |    ⚖️ C462-7 SUI: penalties 0.36→0.19 (×0.54) vs bar 0.33 — the stack decided
+10:32:09 |    ⚖️ C462-7 BTW: penalties 0.38→0.34 (×0.89) vs bar 0.35 — the stack decided
+10:32:14 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 30×ATR, 16.9 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:32:29 |    ⚖️ C462-7 PROM: penalties 0.51→0.35 (×0.70) vs bar 0.43 — the stack decided
+10:32:42 | 📊 Step 3 result: 71 analyzed → 2 viable → Step 4 DRI/DSI
+  .. 10:37  flat  $250.14  $-0.00 -0.00%  0W 0L  71 analysed
+10:37:04 |    ⚖️ C427 LEDGER CORRECTED at position_summary: available $297.1648 → $250.1448 (equity
+    $250.1448 − locked $0.0000 = $250.1448); discrepancy $+47.0200. Money that does not exist would
+    have been sized against [correction #4]
+10:38:05 | 📊 Step 3 result: 2 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=50, flat_projection=4, late_leg_no_forward=1, low_quality=1, post_penalty_quality=2,
+    fee_floor=1, micro_exhaustion=1, vol_floor=1, capitulation=4
+10:38:05 |    📌 Nearest miss: ACE score=0.642 (pre-pen 0.69) conf=0.624 quality=0.401/0.26
+    reason=post_penalty_quality
+10:43:11 |    🪞 C266 board-parity (top movers vs screen): QNT +30%[#25] | XPL +27%[#10] | ONDO
+    +25%[#3] | NIL -18%[Live=0.21<cut] | BROCCOLI +17%[#31]
+10:43:29 | 📊 Step 3 result: 4 analyzed (+67 cached this 15m candle) → 0 passed | low_confidence=6,
+    low_score=51, late_leg_no_forward=1, flat_projection=5, low_quality=2, fee_floor=1,
+    post_penalty_quality=2, micro_exhaustion=1, vol_floor=1, capitulation=1
+10:43:29 |    📌 Nearest miss: STONK score=0.446 (pre-pen 0.50) conf=0.502 quality=0.224/0.26
+    reason=quality 0.168 < 0.280
+  .. 10:45  flat  $250.14  $-0.00 -0.00%  0W 0L  4 analysed
+10:48:30 | ⊥ C97 TF-CONFLICT: 1h=+0.55×4h=-0.68=d14=-0.38 — only shorts allowed (4h dominant)
+10:48:57 |    ⚖️ C462-7 SUI: penalties 0.43→0.23 (×0.53) vs bar 0.42 — the stack decided
+10:49:01 |    ⚖️ C462-7 DOGE: penalties 0.40→0.35 (×0.88) vs bar 0.39 — the stack decided
+10:49:14 |    🎢→⚖️ BROCCOLI: C292 stands down — parabola BROKEN (range 19×ATR, 9.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+10:49:29 |    ⚖️ C462-7 BEAT: penalties 0.95→0.68 (×0.71) vs bar 0.68 — the stack decided
+10:49:58 |    ⚖️ C462-7 STONK: penalties 0.52→0.35 (×0.66) vs bar 0.42 — the stack decided
+10:49:59 | 📊 Step 3 result: 71 analyzed → 0 passed | low_confidence=10, low_score=48,
+    late_leg_no_forward=2, fee_floor=1, post_penalty_quality=1, low_quality=1, flat_projection=3,
+    capitulation=2, no_structural_room=2, poor_reward_risk=1
+10:49:59 |    📌 Nearest miss: BEAT score=0.902 (pre-pen 0.95) conf=0.760 quality=0.685/0.26
+    reason=score 0.676 < 0.680
+ 
+ 
+  10:53  up 2h16m  scan 19 -----------------------------------------------------------------------
+  EQUITY    $250.14
+  OPEN      flat  free $250.14
+  SESSION   $-0.00 -0.00%
+  CURVE     +=================
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      no fills yet this run
+  SCAN      805 > 71 > 0 passed  top BEAT 0.90 (score 0.676 < 0.68)  19 scans, 795 analysed
+  MARKET    TRENDING  bias +0.01  breadth +0.00  taker flow -0.01
+  NEWS      65 articles  + tone +0.33  PEPE +0.25  OP +0.25  BGB +0.25
+  INFO      2 tilted  flow/news/oi on 136
+  MOVERS    QNT +30% #25  XPL +27% #10  ONDO +25% #3  NIL -18% cut
+  ------------------------------------------------------------------------------------------------
+ 
+10:55:08 |    🪞 C266 board-parity (top movers vs screen): QNT +33%[#23] | XPL +27%[#10] | ONDO
+    +25%[#3] | NIL -19%[#11] | BROCCOLI +18%[#30]
+10:55:09 | ⊥ C97 TF-CONFLICT: 1h=+0.55×4h=-0.68=d14=-0.38 — only shorts allowed (4h dominant)
+10:55:28 |    ⚖️ C462-7 ENA: penalties 0.75→0.40 (×0.53) vs bar 0.42 — the stack decided
+10:55:41 |    ⚖️ C462-7 1000BONK: penalties 0.54→0.36 (×0.66) vs bar 0.42 — the stack decided
+10:55:46 | 📊 Step 3 result: 27 analyzed (+51 cached this 15m candle) → 0 passed | low_confidence=13,
+    low_score=47, late_leg_no_forward=2, flat_projection=6, fee_floor=2, post_penalty_quality=2,
+    low_quality=1, capitulation=2, no_structural_room=2, poor_reward_risk=1
+10:55:46 |    📌 Nearest miss: MARSCOIN score=0.709 (pre-pen 0.80) conf=0.729 quality=0.517/0.26
+    reason=post_penalty_quality
+11:00:48 | ⊥ C97 TF-CONFLICT: 1h=+0.39×4h=-0.47=d14=-0.18 — only shorts allowed (4h dominant)
+11:02:14 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=7, low_score=40,
+    flat_projection=19, low_quality=2, poor_reward_risk=3, post_penalty_quality=2, final_gate=1,
+    no_structural_room=2, capitulation=1, vol_floor=1
+11:02:14 |    📌 Nearest miss: PENGU score=0.309 (pre-pen 0.44) conf=0.697 quality=0.215/0.26
+    reason=final_gate
+  .. 11:02  flat  $250.14  $-0.00 -0.00%  0W 0L  78 analysed
+11:07:21 |    🪞 C266 board-parity (top movers vs screen): QNT +34%[#20] | XPL +28%[#8] | ONDO
+    +23%[#3] | ARK +19%[#41] | BROCCOLI +18%[#29]
+11:07:22 | ⊥ C97 TF-CONFLICT: 1h=+0.39×4h=-0.47=d14=-0.18 — only shorts allowed (4h dominant)
+11:07:51 |    ⚖️ C462-7 KAITO: penalties 0.35→0.19 (×0.53) vs bar 0.32 — the stack decided
+11:07:52 | 📊 Step 3 result: 14 analyzed (+64 cached this 15m candle) → 0 passed | low_confidence=4,
+    low_score=43, flat_projection=16, low_quality=2, post_penalty_quality=2, poor_reward_risk=3,
+    final_gate=1, no_structural_room=4, vol_floor=2, capitulation=1
+11:07:52 |    📌 Nearest miss: BILL score=1.194 conf=0.843 quality=1.007/0.26 reason=vol_floor
+  .. 11:10  flat  $250.14  $-0.00 -0.00%  0W 0L  14 analysed
+11:12:53 | ⊥ C97 TF-CONFLICT: 1h=+0.39×4h=-0.47=d14=-0.18 — only shorts allowed (4h dominant)
