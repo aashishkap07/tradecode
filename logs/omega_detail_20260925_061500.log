@@ -7103,3 +7103,1433 @@
 08:16:20 | 🔻 Day: -0.98% realised (loss limit $9.44, 26% used · dial 15%/month) [C483]
 08:16:20 | ============================================================
 08:16:20 | 
+08:17:10 | 📋 STEP 1: Using cached 78 pairs (330s old, refresh at 480s)
+08:17:10 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:17:10 | 📋 STEP 2: MARKET ANALYSIS — News, Bias, Coherence
+08:17:10 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:17:11 |    🌍 C270 macro: NDX/SPX z=-0.55 gold z=-0.98 tone x1.00 sess w=0.15 -> tilt -0.008 | R +0.13->+0.13
+08:17:11 | ⚠️ C85 MARGINAL-RESULTANT: R=+0.13 mag=0.13 — entries allowed with higher bar
+08:17:11 | 📰 News: 65 articles | 🔵 +0.23
+08:17:11 | 📈 Market: 🔵BULLISH (blend=+0.13 R=+0.13) | 1h=-0.16 4h=+0.26 12h=+0.05 align=-0.01 macro=✓
+08:17:11 | 📊 Regime: MIXED (0.48) | DFA=0.71 Ent=0.89 GARCH=0.0020
+08:17:11 | 🎲 RegimeMarkov: state=CH → next most-likely CH (P=0.78, persist=0.78, conf=0.75, n=275) | calib[1521]: acc=0.84 brier=0.057
+08:17:11 | 🎲 PairMarkov: calib[29390]: acc=1.00 brier=0.000 (baseline 0.160)
+08:17:11 | 🎲 FamilyMarkov: calib[3228/120]: acc=1.00 brier=0.003 (base 0.020) skill=+83.7% [need +5%] EARNED [C342]
+08:17:11 | 🎲 IchiMarkov: calib[29127/200]: acc=0.83 brier=0.125 (base 0.149) skill=+16.0% [need +5%] EARNED [C343]
+08:17:11 | 🧮 S3-EV: calib[156]: acc=0.33 brier=0.329 (baseline 0.250)
+08:17:11 | 🌊 Market coherence: 65% long (41↑ vs 22↓)
+08:17:11 | 💰 Taker flow: 🔻 -0.16 (BTC=-0.17 ETH=-0.15)
+08:17:11 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:17:11 | 📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair
+08:17:11 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:17:27 | 📰 News: 65 articles | Market sentiment: 🔸 +0.04
+08:17:30 |    📚 PairProfiles: 471 pairs in persistent baseline (154/155 mature this scan)
+08:17:30 |    ------------------------------------
+08:17:30 |    🧬 BTC: breadth 3/5 → conviction 0.79 | cat=majors/W-1.00(member) meanrev×1.40 | Sq=-0.03 fund=+0.004% OI=$2708.3M CVD=+0.60 ofi=+0.38 OIdiv=+0.18 book=-0.12
+08:17:30 |    📰 BTC: news long sig=0.30 score=+0.02
+08:17:30 |    🎢→✅ BTC: parabola RESOLVED (pullback age 47c, recovered 5.6 ATR, extreme re-touched) → long allowed, penalty 15%
+08:17:30 |    ⚡ BTC: projection 0.26% modest + MA-fan compressing (ma_fan=+0.01) → penalty 20%
+08:17:30 |    ☁️ BTC: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:17:30 |    🕐 C249 session floor: IST 08.3h coupling w=0.15 → entry bar ×1.127
+08:17:30 |    ❌ BTC: long scr=0.09 conf=0.44 → low score (<0.47)
+08:17:31 |    ------------------------------------
+08:17:31 |    🧬 ETH: breadth 3/5 → conviction 0.57 | cat=majors/W-1.00(member) meanrev×1.40 | Sq=-0.04 fund=+0.006% OI=$2088.3M CVD=+0.26 ofi=-0.17 OIdiv=+0.27 book=+0.30
+08:17:31 |    📰 ETH: news long sig=0.30 score=+0.03
+08:17:31 |    🎢→✅ ETH: parabola RESOLVED (pullback age 34c, recovered 3.4 ATR) → long allowed, penalty 15%
+08:17:31 |    ❌ ETH: long scr=0.08 conf=0.33 → low score (<0.47)
+08:17:31 |    ------------------------------------
+08:17:31 |    🧬 ONDO: breadth 2/5 → conviction 0.67 | cat=rwa/W-0.96(member) meanrev×1.26 | Sq=-0.03 fund=+0.005% OI=$33.4M CVD=-0.20 ofi=+0.11 OIdiv=+0.26 book=+0.13
+08:17:31 |    🧬 ONDO: own-history vol 1.86% vs baseline 0.71% (×2.62) → abnormal-wild conviction ×0.94 [C286-2]
+08:17:31 |    📰 ONDO: news long sig=0.30 score=+0.23
+08:17:31 |    ⚡ ONDO: 24h=+27.4% but 1h=+0.0% (TURNING) → penalty 30%
+08:17:31 |    ⚡ ONDO: projection 0.70% modest + MA-fan compressing (ma_fan=+0.04) → penalty 20%
+08:17:32 |    🧠 ONDO: memory — conviction decaying -0.24 over 8 scans → score ×0.84 [C352]
+08:17:32 |    ☁️ ONDO: ichimoku A+ persisting 0.87 AGAINST the short → score ×0.97 (earned ledger) [C343]
+08:17:32 |    ⚡ ONDO: short news-tech conflict — score×0.70 (news long sig=0.30)
+08:17:32 |    ❌ ONDO: short scr=0.04 conf=0.26 → low confidence
+08:17:32 |    ------------------------------------
+08:17:32 |    🧬 XRP: breadth 3/5 → conviction 0.54 | cat=l1/W-1.00(member) momentum×0.79 | Sq=-0.04 fund=+0.006% OI=$256.6M CVD=-0.29 ofi=-0.06 OIdiv=+0.38 book=+0.13
+08:17:32 |    📰 XRP: news short sig=0.30 score=-0.13
+08:17:32 |    ❌ XRP: short scr=0.09 conf=0.54 → low score (<0.51)
+08:17:33 |    ------------------------------------
+08:17:33 |    🧬 ZEC: breadth 5/6 → conviction 0.70 | cat=privacy/W-0.91(member) meanrev×1.40 | Sq=-0.05 fund=+0.007% OI=$158.6M CVD=-0.39 ofi=-0.07 OIdiv=-0.02 book=+0.29
+08:17:33 |    📰 ZEC: news short sig=0.30 score=-0.05
+08:17:33 |    ❌ ZEC: short scr=0.19 conf=0.63 → low score (<0.51)
+08:17:34 |    ------------------------------------
+08:17:34 |    🧬 SOL: breadth 3/5 → conviction 0.79 | cat=solana_eco/W-1.00(member) momentum×0.86 | Sq=+0.02 fund=-0.003% OI=$463.9M CVD=-0.30 ofi=-0.39 OIdiv=-0.18 book=+0.30
+08:17:34 |    📄 SOL: news neutral sig=0.12 score=+0.03
+08:17:34 |    🎢→✅ SOL: parabola RESOLVED (pullback age 0c, recovered 0.3 ATR, extreme re-touched) → long allowed, penalty 15%
+08:17:34 |    ☁️ SOL: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:17:34 |    ❌ SOL: long scr=0.12 conf=0.57 → low score (<0.47)
+08:17:34 |    ------------------------------------
+08:17:34 |    🧬 XAU: breadth 4/5 → conviction 0.78 | cat=calm/W-0.97(regime) meanrev×1.27 | Sq=-0.05 fund=+0.007% OI=$74.1M CVD=+0.25 ofi=-0.01 OIdiv=-0.07 book=-0.22
+08:17:34 |    📄 XAU: news long sig=0.10 score=+0.04
+08:17:34 |    🎢→✅ XAU: parabola RESOLVED (pullback age 64c, recovered 6.7 ATR, extreme re-touched) → long allowed, penalty 15%
+08:17:34 |    🧠 XAU: memory — conviction decaying -0.08 over 5 scans → score ×0.95 [C352]
+08:17:34 |    ☁️ XAU: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:17:34 |    ❌ XAU: long scr=0.15 conf=0.64 → low score (<0.47)
+08:17:35 |    ------------------------------------
+08:17:35 |    🧬 NEAR: breadth 5/6 → conviction 0.87 | cat=ai/W-0.70(member) trend×1.09 | Sq=-0.06 fund=+0.009% OI=$74.4M CVD=+0.13 ofi=+0.17 OIdiv=+0.35 book=-0.28
+08:17:35 |    📰 NEAR: news short sig=0.30 score=-0.03
+08:17:35 |    🧠 NEAR: memory — 3 direction flips in 5 scans — unstable read → score ×0.95 [C352]
+08:17:35 |    ☁️ NEAR: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:35 |    ❌ NEAR: short scr=0.11 conf=0.53 → low score (<0.62)
+08:17:35 |    ------------------------------------
+08:17:35 |    🧬 LTC: breadth 5/6 → conviction 0.73 | cat=l1/W-0.43(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$37.0M CVD=+0.07 ofi=+0.02 OIdiv=+0.24 book=+0.21
+08:17:35 |    📰 LTC: news long sig=0.30 score=+0.04
+08:17:36 |    🧠 LTC: memory — 5 direction flips in 7 scans — unstable read → score ×0.85 [C352]
+08:17:36 |    ☁️ LTC: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:36 |    🛑 LTC: short into CAPITULATION/BLOW-OFF -- climactic bullish rejection (vol-spike) vs RSI 31 -> reversal imminent, continuation blocked
+08:17:36 |    ------------------------------------
+08:17:36 |    🧬 CL: breadth 5/5 → conviction 1.00 | cat=calm/W-0.68(regime) meanrev×1.19 | Sq=+0.09 fund=-0.013% OI=$35.8M CVD=-0.54 ofi=-0.00 OIdiv=+0.40 book=-0.30
+08:17:36 |    · CL: news ~market score=+0.01 (no coin-specific articles)
+08:17:36 |    🛑 CL: SHORT at RSI 12 (oversold, stretched) → brake 40%
+08:17:36 |    🎢→✅ CL: parabola RESOLVED (bounce age 42c, unwound 14.7 ATR) → short allowed, penalty 15%
+08:17:36 |    🛑 CL: projection 0.19% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=-0.03) → blocked
+08:17:37 |    ------------------------------------
+08:17:37 |    🧬 HYPE: breadth 4/5 → conviction 0.73 | cat=defi/W-0.50(member) meanrev×1.11 | Sq=+0.01 fund=-0.001% OI=$204.4M CVD=-0.60 ofi=+0.06 OIdiv=+0.24 book=+0.30
+08:17:37 |    🩸 C398 capitulation tilt: 0.07 ATR off its own 12h low → short score ×0.940 [+4.67pp measured, down-side only by design]
+08:17:37 |    📄 HYPE: news neutral sig=0.12 score=+0.02
+08:17:37 |    🎢→✅ HYPE: parabola RESOLVED (bounce age 29c, unwound 8.0 ATR) → short allowed, penalty 15%
+08:17:37 |    🛑 HYPE: projection 0.20% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:17:37 |    ------------------------------------
+08:17:37 |    🧬 NIL: breadth 4/6 → conviction 0.72 | cat=wild/W+0.85(regime) meanrev×0.76 | Sq=-0.03 fund=+0.005% OI=$3.7M CVD=-0.23 ofi=-0.23 OIdiv=+0.05 book=+0.15
+08:17:37 |    🧬 NIL: own-history vol 3.38% vs baseline 1.39% (×2.44) → abnormal-wild conviction ×0.95 [C286-2]
+08:17:37 |    · NIL: news ~market score=+0.01 (no coin-specific articles)
+08:17:37 |    ⚡ NIL: 24h=-16.4% but 1h=+0.0% (TURNING) → penalty 30%
+08:17:37 |    🛑 NIL: projection 0.44% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.03) → blocked
+08:17:38 |    ------------------------------------
+08:17:38 |    🧬 ENA: breadth 2/6 → conviction 0.34 | cat=defi/W+0.42(member) meanrev×0.86 | Sq=-0.03 fund=+0.005% OI=$49.1M CVD=-0.21 ofi=-0.33 OIdiv=+0.30 book=+0.23
+08:17:38 |    📄 ENA: news neutral sig=0.12 score=+0.02
+08:17:38 |    ⚡ ENA: short wick rejection #1 → score×0.75
+08:17:38 |    ❌ ENA: short scr=0.02 conf=0.09 → low confidence
+08:17:38 |    ------------------------------------
+08:17:38 |    🧬 SUI: breadth 3/5 → conviction 0.69 | cat=l1/W-0.26(member) trend×1.11 | Sq=+0.01 fund=-0.001% OI=$64.2M CVD=-0.29 ofi=+0.05 OIdiv=+0.13 book=-0.14
+08:17:38 |    · SUI: news ~market score=+0.01 (no coin-specific articles)
+08:17:39 |    ❌ SUI: short scr=0.20 conf=0.40 → low score (<0.59)
+08:17:39 |    ------------------------------------
+08:17:39 |    🧬 UNI: breadth 5/6 → conviction 0.88 | cat=defi/W+0.32(member) meanrev×0.89 | Sq=-0.06 fund=+0.010% OI=$35.2M CVD=-0.60 ofi=-0.01 OIdiv=+0.32 book=-0.29
+08:17:39 |    📰 UNI: news short sig=0.30 score=-0.23
+08:17:39 |    ⚡ UNI: projection 0.70% modest + MA-fan compressing (ma_fan=+0.01) → penalty 20%
+08:17:39 |    ☁️ UNI: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:39 |    ❌ UNI: short scr=0.14 conf=0.76 → low score (<0.50)
+08:17:40 |    ------------------------------------
+08:17:40 |    🧬 DOGE: breadth 2/6 → conviction 0.56 | cat=meme/W-0.39(member) flow×1.06 | Sq=-0.04 fund=+0.007% OI=$122.5M CVD=-0.15 ofi=+0.03 OIdiv=+0.29 book=+0.17
+08:17:40 |    · DOGE: news ~market score=+0.01 (no coin-specific articles)
+08:17:40 |    🎢 DOGE: long BLOCKED — broken-parabola bounce (day range 12×ATR, 3.5 ATR below the day high) → post-blow-off distribution risk
+08:17:40 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:17:40 |    ❌ DOGE: long scr=0.16 conf=0.35 → low score (<0.47)
+08:17:41 |    ------------------------------------
+08:17:41 |    🧬 LINK: breadth 3/6 → conviction 0.55 | cat=defi/W-0.44(member) trend×1.10 | Sq=-0.04 fund=+0.007% OI=$54.3M CVD=-0.29 ofi=-0.04 OIdiv=-0.21 book=-0.09
+08:17:41 |    📄 LINK: news neutral sig=0.12 score=+0.06
+08:17:41 |    🛑 LINK: projection 0.30% < 0.35% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.03) → blocked
+08:17:41 |    ------------------------------------
+08:17:41 |    🧬 XPL: breadth 5/6 → conviction 0.83 | cat=mid/W+0.30(regime) meanrev×0.92 | Sq=-0.03 fund=+0.005% OI=$9.9M CVD=-0.22 ofi=+0.20 OIdiv=+0.22 book=+0.08
+08:17:41 |    🧬 XPL: own-history vol 2.96% vs baseline 1.01% (×2.94) → abnormal-wild conviction ×0.92 [C286-2]
+08:17:41 |    · XPL: news ~market score=+0.01 (no coin-specific articles)
+08:17:41 |    🎢→✅ XPL: parabola RESOLVED (pullback age 4c, recovered 1.3 ATR, extreme re-touched) → long allowed, penalty 15%
+08:17:41 |    🛑 XPL: long MICRO-EXHAUSTION (3/3 signals) → blocked
+08:17:42 |    ------------------------------------
+08:17:42 |    🧬 XLM: breadth 3/6 → conviction 0.58 | cat=l1/W-0.44(member) trend×1.12 | Sq=-0.07 fund=+0.010% OI=$27.4M CVD=-0.60 ofi=+0.14 OIdiv=+0.32 book=+0.29
+08:17:42 |    🧬 XLM: own-history vol 1.17% vs baseline 0.59% (×1.99) → abnormal-wild conviction ×0.98 [C286-2]
+08:17:42 |    📄 XLM: news short sig=0.10 score=-0.08
+08:17:42 |    🎢→✅ XLM: parabola RESOLVED (pullback age 0c, recovered 0.2 ATR, extreme re-touched) → long allowed, penalty 15%
+08:17:42 |    🛑 XLM: projection 0.20% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:17:42 |    ------------------------------------
+08:17:42 |    🧬 LSK: breadth 4/5 → conviction 0.90 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=+0.00 fund=-0.000% OI=$2.3M CVD=-0.13 ofi=+0.15 OIdiv=+0.39 book=+0.00
+08:17:42 |    · LSK: news ~market score=+0.01 (no coin-specific articles)
+08:17:42 |    🛑 LSK: SHORT at RSI 0 (oversold, stretched) → brake 45%
+08:17:42 |    🎢→✅ LSK: parabola RESOLVED (bounce age 25c, unwound 14.7 ATR) → short allowed, penalty 15%
+08:17:43 |    🛑 LSK: short structural exhaustion (1% room) → blocked
+08:17:43 |    ------------------------------------
+08:17:43 |    🧬 PEPE: breadth 5/6 → conviction 0.85 | cat=meme/W-0.03(member) meanrev×0.86 | Sq=-0.04 fund=+0.006% OI=$36.9M CVD=-0.60 ofi=+0.04 OIdiv=+0.28 book=-0.20
+08:17:43 |    📰 PEPE: news long sig=0.30 score=+0.06
+08:17:44 |    ☁️ PEPE: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:44 |    ⚡ PEPE: short news-tech conflict — score×0.70 (news long sig=0.30)
+08:17:44 |    ❌ PEPE: short scr=0.05 conf=0.50 → low score (<0.47)
+08:17:44 |    ------------------------------------
+08:17:44 |    🧬 XAG: breadth 5/5 → conviction 1.00 | cat=calm/W-0.67(regime) meanrev×1.19 | Sq=-0.07 fund=+0.010% OI=$26.2M CVD=+0.40 ofi=+0.05 OIdiv=+0.39 book=-0.16
+08:17:44 |    · XAG: news ~market score=+0.01 (no coin-specific articles)
+08:17:44 |    🎢→✅ XAG: parabola RESOLVED (pullback age 46c, recovered 5.5 ATR) → long allowed, penalty 15%
+08:17:44 |    🛑 XAG: projection 0.11% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.01) → blocked
+08:17:44 |    ------------------------------------
+08:17:44 |    🧬 BZ: breadth 4/5 → conviction 0.63 | cat=calm/W-0.73(regime) meanrev×1.20 | Sq=+0.07 fund=-0.009% OI=$28.5M CVD=+0.09 ofi=-0.01 OIdiv=+0.21 book=-0.25
+08:17:44 |    · BZ: news ~market score=+0.01 (no coin-specific articles)
+08:17:44 |    🛑 BZ: SHORT at RSI 16 (oversold, stretched) → brake 32%
+08:17:44 |    🎢→✅ BZ: parabola RESOLVED (bounce age 42c, unwound 15.8 ATR) → short allowed, penalty 15%
+08:17:44 |    🛑 BZ: short target 0.1% too small + room 6% → blocked
+08:17:45 |    ------------------------------------
+08:17:45 |    🧬 TRUMP: breadth 5/6 → conviction 0.86 | cat=meme/W+0.33(member) momentum×1.24 | Sq=+0.13 fund=-0.019% OI=$15.4M CVD=-0.58 ofi=+0.04 OIdiv=+0.38 book=+0.15
+08:17:45 |    📄 TRUMP: news neutral sig=0.10 score=+0.00
+08:17:45 |    ❌ TRUMP: short scr=0.09 conf=0.43 → low score (<0.55)
+08:17:46 |    ------------------------------------
+08:17:46 |    🧬 BCH: breadth 3/5 → conviction 0.73 | cat=l1/W-0.19(member) trend×1.11 | Sq=-0.06 fund=+0.010% OI=$23.3M CVD=-0.30 ofi=+0.06 OIdiv=+0.23 book=-0.29
+08:17:46 |    📰 BCH: news short sig=0.30 score=-0.25
+08:17:46 |    🎢→✅ BCH: parabola RESOLVED (pullback age 47c, recovered 2.1 ATR) → long allowed, penalty 15%
+08:17:46 |    ⚡ BCH: projection 0.67% modest + MA-fan compressing (ma_fan=+0.04) → penalty 20%
+08:17:46 |    ⚡ BCH: long news-tech conflict — score×0.70 (news short sig=0.30)
+08:17:46 |    ❌ BCH: long scr=0.07 conf=0.50 → low score (<0.52)
+08:17:46 |    ------------------------------------
+08:17:46 |    🧬 BGB: breadth 5/5 → conviction 1.00 | cat=mid/W-0.15(regime) meanrev×1.04 | Sq=-0.04 fund=+0.007% OI=$23.3M CVD=-0.60 ofi=+0.04 OIdiv=+0.60 book=+0.18
+08:17:46 |    🧬 BGB: own-history vol 0.98% vs baseline 0.32% (×3.09) → abnormal-wild conviction ×0.91 [C286-2]
+08:17:46 |    📰 BGB: news long sig=0.30 score=+0.13
+08:17:46 |    🎢→✅ BGB: parabola RESOLVED (pullback age 22c, recovered 5.7 ATR) → long allowed, penalty 15%
+08:17:47 |    🛰️ BGB: C199 order-flow weakening long (OI=neutral, CVD=-0.99) → ×0.75
+08:17:47 |    ❌ BGB: long scr=0.22 conf=0.50 → low score (<0.56)
+08:17:47 |    ------------------------------------
+08:17:47 |    🧬 WLD: breadth 5/6 → conviction 0.90 | cat=ai/W+0.60(member) momentum×1.28 | Sq=-0.04 fund=+0.006% OI=$27.6M CVD=-0.25 ofi=+0.07 OIdiv=+0.36 book=-0.26
+08:17:47 |    📄 WLD: news neutral sig=0.12 score=+0.01
+08:17:48 |    🛑 WLD: short structural exhaustion (3% room) → blocked
+08:17:48 |    ------------------------------------
+08:17:48 |    🧬 SKHYNIX: breadth 4/5 → conviction 0.93 | cat=calm/W-0.55(regime) meanrev×1.16 | Sq=+0.00 fund=+0.000% OI=$21.3M CVD=-0.18 ofi=+0.06 OIdiv=-0.44 book=-0.30
+08:17:48 |    🧬 SKHYNIX: own-history vol 0.24% vs baseline 0.39% (×0.62) → coiled conviction ×1.01 [C286-2]
+08:17:48 |    · SKHYNIX: news ~market score=+0.01 (no coin-specific articles)
+08:17:48 |    🛑 SKHYNIX: LONG at RSI 74 (overbought, stretched) → brake 10%
+08:17:48 |    🎢→✅ SKHYNIX: parabola RESOLVED (pullback age 68c, recovered 7.9 ATR) → long allowed, penalty 15%
+08:17:48 |    🛑 SKHYNIX: projection 0.12% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.02) → blocked
+08:17:49 |    ------------------------------------
+08:17:49 |    🧬 MUBARAK: breadth 5/6 → conviction 0.93 | cat=wild/W+0.90(regime) meanrev×0.75 | Sq=-0.05 fund=+0.007% OI=$3.4M CVD=-0.28 ofi=-0.15 OIdiv=+0.18 book=-0.09
+08:17:49 |    · MUBARAK: news ~market score=+0.01 (no coin-specific articles)
+08:17:49 |    🛑 MUBARAK: short structural exhaustion (2% room) → blocked
+08:17:49 |    ------------------------------------
+08:17:49 |    🧬 XAUT: breadth 3/4 → conviction 0.80 | cat=calm/W-0.80(regime) meanrev×1.22 | Sq=-0.01 fund=+0.002% OI=$26.5M CVD=+0.47 ofi=+0.02 OIdiv=+0.60 book=-0.17
+08:17:49 |    · XAUT: news ~market score=+0.01 (no coin-specific articles)
+08:17:49 |    🎢→✅ XAUT: parabola RESOLVED (pullback age 46c, recovered 5.6 ATR) → long allowed, penalty 15%
+08:17:49 |    🛑 XAUT: projection 0.11% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.01) → blocked
+08:17:50 |    ------------------------------------
+08:17:50 |    🧬 BROCCOLI: breadth 5/6 → conviction 0.90 | cat=wild/W+0.79(regime) meanrev×0.78 | Sq=-0.16 fund=+0.020% OI=$2.0M CVD=+0.13 ofi=+0.01 OIdiv=+0.42 book=+0.10
+08:17:50 |    🧬 BROCCOLI: own-history vol 2.14% vs baseline 1.25% (×1.71) → abnormal-wild conviction ×0.99 [C286-2]
+08:17:50 |    · BROCCOLI: news ~market score=+0.01 (no coin-specific articles)
+08:17:50 |    ⚡ BROCCOLI: 24h=+18.8% but 1h=+0.0% (TURNING) → penalty 30%
+08:17:50 |    🎢→✅ BROCCOLI: parabola RESOLVED (bounce age 41c, unwound 11.7 ATR) → short allowed, penalty 15%
+08:17:50 |    ☁️ BROCCOLI: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:50 |    ❌ BROCCOLI: short scr=0.17 conf=0.52 → low score (<0.49)
+08:17:51 |    ------------------------------------
+08:17:51 |    🧬 PAXG: breadth 4/6 → conviction 0.78 | cat=calm/W-0.82(regime) meanrev×1.23 | Sq=-0.03 fund=+0.005% OI=$10.5M CVD=+0.28 ofi=-0.07 OIdiv=-0.23 book=-0.30
+08:17:51 |    · PAXG: news ~market score=+0.01 (no coin-specific articles)
+08:17:51 |    🎢→✅ PAXG: parabola RESOLVED (pullback age 64c, recovered 6.0 ATR) → long allowed, penalty 15%
+08:17:51 |    🛑 PAXG: projection 0.21% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.01) → blocked
+08:17:51 |    ------------------------------------
+08:17:51 |    🧬 MARSCOIN: breadth 5/6 → conviction 0.93 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.05 fund=+0.007% OI=$2.0M CVD=-0.40 ofi=-0.07 OIdiv=+0.31 book=-0.20
+08:17:51 |    🧬 MARSCOIN: own-history vol 1.47% vs baseline 2.46% (×0.60) → coiled conviction ×1.01 [C286-2]
+08:17:51 |    · MARSCOIN: news ~market score=+0.01 (no coin-specific articles)
+08:17:51 |    🛑 MARSCOIN: SHORT at RSI 24 (oversold, stretched) → brake 13%
+08:17:52 |    ☁️ MARSCOIN: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:52 |    🪝 MARSCOIN: short CONFIRMED-TREND PULLBACK (macro=-0.76, target 2.2%≈1.5×ATR, room 20%) → conviction support ×1.20 (0.44→0.52)
+08:17:56 |    📊 MARSCO flow(proxy): L/S 1h=1.3 4h=1.1 12h=1.3 | R=-0.14 taker=-0.05 SM=-0.48
+08:17:56 |    📈 MARSCO OI: neutral Δ=+0.0% str=+0.00
+08:17:56 |    📏 MARSCOIN: short at 7% of its own 24h range → extension penalty 10% (measured: that third wins ~47% vs ~54% at the other end, 4/4 out-of-sample) [C455-4]
+08:17:56 | ⚡ MARSCOIN: short already moved -13.8% but vol RISING → penalty 30%
+08:17:56 |    ❌ MARSCOIN: short post-penalty score 0.31 < 0.32
+08:17:56 |    ------------------------------------
+08:17:56 |    🧬 AAVE: breadth 3/5 → conviction 0.49 | cat=defi/W-0.31(member) trend×1.09 | Sq=-0.02 fund=+0.003% OI=$29.5M CVD=+0.10 ofi=-0.35 book=-0.11
+08:17:56 |    📄 AAVE: news neutral sig=0.12 score=+0.02
+08:17:56 |    🛑 AAVE: projection 0.20% < 0.38% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:17:57 |    ------------------------------------
+08:17:57 |    🧬 龙虾: breadth 5/6 → conviction 0.89 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.45 fund=+0.058% OI=$32.6M CVD=+0.60 ofi=+0.14 OIdiv=+0.60 book=+0.00
+08:17:57 |    · 龙虾: news ~market score=+0.01 (no coin-specific articles)
+08:17:57 |    ⚡ 龙虾: 24h=-20.2% but 1h=+0.0% (TURNING) → penalty 30%
+08:17:57 |    ☁️ 龙虾: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:17:57 |    🪝 龙虾: long CONFIRMED-TREND PULLBACK (macro=+0.97, target 4.9%≈1.1×ATR, room 24%) → conviction support ×1.20 (0.34→0.40)
+08:17:57 |    ❌ 龙虾: long scr=0.40 conf=0.61 → low score (<0.51)
+08:17:57 |    ⚖️ C462-7 龙虾: penalties 0.56→0.40 (×0.72) vs bar 0.51 — the stack decided
+08:17:58 |    ------------------------------------
+08:17:58 |    🧬 PONS: breadth 3/6 → conviction 0.61 | cat=wild/W+0.99(regime) meanrev×0.72 | Sq=-0.05 fund=+0.007% OI=$4.5M CVD=-0.39 ofi=+0.04 OIdiv=-0.11 book=+0.20
+08:17:58 |    · PONS: news ~market score=+0.01 (no coin-specific articles)
+08:17:58 |    🛑 PONS: projection 0.20% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:17:58 |    ------------------------------------
+08:17:58 |    🧬 BTW: breadth 4/6 → conviction 0.59 | cat=wild/W+0.98(regime) meanrev×0.73 | Sq=-0.23 fund=+0.030% OI=$29.4M CVD=-0.43 ofi=+0.35 OIdiv=+0.40 book=+0.29
+08:17:58 |    · BTW: news ~market score=+0.01 (no coin-specific articles)
+08:17:58 |    🎢→✅ BTW: parabola RESOLVED (bounce age 24c, unwound 7.1 ATR) → short allowed, penalty 15%
+08:17:58 |    ☁️ BTW: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:17:58 |    ❌ BTW: short scr=0.14 conf=0.68 → low score (<0.62)
+08:17:59 |    ------------------------------------
+08:17:59 |    🧬 AKE: breadth 5/6 → conviction 0.81 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.03 fund=+0.005% OI=$1.8M CVD=-0.40 ofi=+0.40 OIdiv=+0.22 book=+0.19
+08:17:59 |    🧬 AKE: own-history vol 1.97% vs baseline 3.43% (×0.57) → coiled conviction ×1.02 [C286-2]
+08:17:59 |    · AKE: news ~market score=+0.01 (no coin-specific articles)
+08:17:59 |    🛑 AKE: projection 0.44% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=-0.03) → blocked
+08:17:59 |    ------------------------------------
+08:17:59 |    🧬 PENGU: breadth 5/6 → conviction 0.89 | cat=wild/W+0.83(regime) meanrev×0.77 | Sq=-0.03 fund=+0.005% OI=$8.4M CVD=-0.60 ofi=+0.15 OIdiv=+0.26 book=+0.27
+08:17:59 |    · PENGU: news ~market score=+0.01 (no coin-specific articles)
+08:18:00 |    🛑 PENGU: short target 0.0% too small + room 9% → blocked
+08:18:00 |    ------------------------------------
+08:18:00 |    🧬 XAI: breadth 5/6 → conviction 0.91 | cat=wild/W+0.77(regime) meanrev×0.78 | Sq=+0.14 fund=-0.017% OI=$0.8M CVD=+0.10 ofi=+0.01 OIdiv=+0.44 book=+0.08
+08:18:00 |    🧬 XAI: own-history vol 2.33% vs baseline 1.33% (×1.75) → abnormal-wild conviction ×0.99 [C286-2]
+08:18:00 |    · XAI: news ~market score=+0.01 (no coin-specific articles)
+08:18:00 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 25×ATR, 16.0 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:18:00 |    ⚡ XAI: 24h=+12.2% but 1h=+0.0% (TURNING) → penalty 24%
+08:18:00 |    🛑 XAI: SHORT at RSI 19 (oversold, stretched) → brake 26%
+08:18:00 |    🎢→✅ XAI: parabola RESOLVED (bounce age 34c, unwound 15.9 ATR) → short allowed, penalty 15%
+08:18:01 |    🛑 XAI: short structural exhaustion (0% room) → blocked
+08:18:01 |    ------------------------------------
+08:18:01 |    🧬 INJ: breadth 5/6 → conviction 0.70 | cat=l1/W-0.03(member) trend×1.10 | Sq=-0.05 fund=+0.008% OI=$14.5M CVD=-0.20 ofi=+0.33 OIdiv=+0.12 book=-0.21
+08:18:01 |    · INJ: news ~market score=+0.01 (no coin-specific articles)
+08:18:01 |    🎢→✅ INJ: parabola RESOLVED (bounce age 37c, unwound 11.4 ATR) → short allowed, penalty 15%
+08:18:01 |    ☁️ INJ: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:01 |    ⚠️ INJ: short into bullish rejection candle at RSI 37 (counter-signal) -> conviction x0.85
+08:18:01 |    ⚡ INJ: short wick rejection #1 → score×0.75
+08:18:01 |    ❌ INJ: short scr=0.11 conf=0.49 → low score (<0.53)
+08:18:02 |    ------------------------------------
+08:18:02 |    🧬 SEI: breadth 4/6 → conviction 0.59 | cat=l1/W-0.32(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$9.1M CVD=+0.02 ofi=-0.01 OIdiv=+0.04 book=+0.05
+08:18:02 |    · SEI: news ~market score=+0.01 (no coin-specific articles)
+08:18:02 |    🧠 SEI: memory — conviction rising +0.12 over 4 scans → score ×1.08 [C352]
+08:18:02 |    ☁️ SEI: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:18:02 |    ⚠️ SEI: long into bearish rejection candle at RSI 60 (counter-signal) -> conviction x0.85
+08:18:02 |    🛑 SEI: long CAPITULATION REJECTION (wick+vol) → blocked
+08:18:03 |    ------------------------------------
+08:18:03 |    🧬 ALGO: breadth 3/6 → conviction 0.54 | cat=l1/W-0.30(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$5.7M CVD=+0.09 ofi=+0.03 OIdiv=+0.24 book=-0.20
+08:18:03 |    · ALGO: news ~market score=+0.01 (no coin-specific articles)
+08:18:03 |    ⚡ ALGO: short wick rejection #1 → score×0.75
+08:18:03 |    ❌ ALGO: short scr=0.03 conf=0.23 → low confidence
+08:18:03 |    ------------------------------------
+08:18:03 |    🧬 APT: breadth 4/6 → conviction 0.63 | cat=l1/W-0.08(member) trend×1.10 | Sq=-0.06 fund=+0.010% OI=$8.4M CVD=+0.27 ofi=+0.00 OIdiv=+0.34 book=+0.27
+08:18:03 |    · APT: news ~market score=+0.01 (no coin-specific articles)
+08:18:03 |    🎢→✅ APT: parabola RESOLVED (bounce age 48c, unwound 8.7 ATR) → short allowed, penalty 15%
+08:18:04 |    🛑 APT: short structural exhaustion (0% room) → blocked
+08:18:04 |    ------------------------------------
+08:18:04 |    🧬 POL: breadth 3/5 → conviction 0.65 | cat=l2/W+0.23(member) momentum×1.14 | Sq=-0.03 fund=+0.005% OI=$4.2M CVD=-0.57 ofi=-0.05 OIdiv=-0.14 book=-0.16
+08:18:04 |    · POL: news ~market score=+0.01 (no coin-specific articles)
+08:18:04 |    🛑 POL: projection 0.06% < 0.38% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.03) → blocked
+08:18:05 |    ------------------------------------
+08:18:05 |    🧬 SAMSUNG: breadth 4/5 → conviction 0.78 | cat=calm/W-0.73(regime) meanrev×1.20 | Sq=+0.01 fund=-0.001% OI=$7.3M CVD=-0.26 ofi=+0.10 OIdiv=-0.38 book=+0.29
+08:18:05 |    · SAMSUNG: news ~market score=+0.01 (no coin-specific articles)
+08:18:05 |    🛑 SAMSUNG: LONG at RSI 82 (overbought, stretched) → brake 27%
+08:18:05 |    🎢→✅ SAMSUNG: parabola RESOLVED (pullback age 34c, recovered 6.7 ATR) → long allowed, penalty 15%
+08:18:05 |    🧠 SAMSUNG: memory — 3 direction flips in 7 scans — unstable read → score ×0.95 [C352]
+08:18:05 |    ☁️ SAMSUNG: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:18:05 |    ❌ SAMSUNG: long scr=0.21 conf=0.57 → low score (<0.47)
+08:18:05 |    ------------------------------------
+08:18:05 |    🧬 XMR: breadth 2/5 → conviction 0.41 | cat=privacy/W+0.18(member) meanrev×1.07 | Sq=-0.20 fund=+0.027% OI=$8.2M CVD=+0.25 ofi=+0.18 book=-0.08
+08:18:05 |    📄 XMR: news short sig=0.12 score=-0.05
+08:18:06 |    ❌ XMR: short scr=0.09 conf=0.36 → low score (<0.53)
+08:18:06 |    ------------------------------------
+08:18:06 |    🧬 PI: breadth 4/6 → conviction 0.71 | cat=mid/W-0.33(regime) meanrev×1.09 | Sq=-0.03 fund=+0.005% OI=$5.0M CVD=-0.07 ofi=+0.23 book=+0.22
+08:18:06 |    · PI: news ~market score=+0.01 (no coin-specific articles)
+08:18:06 |    ❌ PI: short scr=0.04 conf=0.61 → low score (<0.47)
+08:18:07 |    ------------------------------------
+08:18:07 |    🧬 PYTH: breadth 6/6 → conviction 1.00 | cat=solana_eco/W+0.28(member) momentum×1.20 | Sq=-0.03 fund=+0.005% OI=$2.9M CVD=-0.28 ofi=-0.02 OIdiv=-0.03 book=-0.10
+08:18:07 |    📄 PYTH: news neutral sig=0.12 score=+0.01
+08:18:07 |    🎢→✅ PYTH: parabola RESOLVED (pullback age 17c, recovered 2.9 ATR) → long allowed, penalty 15%
+08:18:07 |    🛑 PYTH: projection 0.06% < 0.47% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.03) → blocked
+08:18:07 |    ------------------------------------
+08:18:07 |    🧬 PENDLE: breadth 5/6 → conviction 0.89 | cat=defi/W+0.29(member) flow×1.11 | Sq=-0.06 fund=+0.010% OI=$4.5M CVD=-0.34 ofi=-0.29 OIdiv=+0.23 book=-0.24
+08:18:07 |    📄 PENDLE: news neutral sig=0.12 score=+0.02
+08:18:08 |    ❌ PENDLE: short scr=0.08 conf=0.30 → low confidence
+08:18:08 |    ------------------------------------
+08:18:08 |    🧬 NATGAS: breadth 3/5 → conviction 0.51 | cat=mid/W-0.19(regime) meanrev×1.05 | Sq=-0.14 fund=+0.018% OI=$11.1M CVD=-0.30 ofi=+0.01 OIdiv=+0.08 book=+0.29
+08:18:08 |    🧬 NATGAS: own-history vol 0.30% vs baseline 0.47% (×0.65) → coiled conviction ×1.01 [C286-2]
+08:18:08 |    · NATGAS: news ~market score=+0.01 (no coin-specific articles)
+08:18:08 |    🎢→✅ NATGAS: parabola RESOLVED (bounce age 35c, unwound 13.6 ATR) → short allowed, penalty 15%
+08:18:08 |    ⚡ NATGAS: projection 0.49% modest + MA-fan compressing (ma_fan=-0.01) → penalty 20%
+08:18:08 |    ☁️ NATGAS: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:08 |    ❌ NATGAS: short scr=0.01 conf=0.38 → low score (<0.47)
+08:18:09 |    ------------------------------------
+08:18:09 |    🧬 TUT: breadth 5/6 → conviction 0.90 | cat=wild/W+0.99(regime) meanrev×0.72 | Sq=-0.03 fund=+0.005% OI=$7.1M CVD=-0.25 ofi=-0.08 OIdiv=+0.42 book=-0.23
+08:18:09 |    🧬 TUT: own-history vol 1.05% vs baseline 1.66% (×0.63) → coiled conviction ×1.01 [C286-2]
+08:18:09 |    · TUT: news ~market score=+0.01 (no coin-specific articles)
+08:18:09 |    🛑 TUT: SHORT at RSI 12 (oversold, stretched) → brake 40%
+08:18:09 |    🎢→✅ TUT: parabola RESOLVED (bounce age 63c, unwound 16.1 ATR) → short allowed, penalty 15%
+08:18:09 |    🛑 TUT: short structural exhaustion (3% room) → blocked
+08:18:10 |    ------------------------------------
+08:18:10 |    🧬 MORPHO: breadth 5/6 → conviction 0.83 | cat=defi/W+0.73(member) meanrev×0.78 | Sq=-0.03 fund=+0.005% OI=$3.1M CVD=+0.07 ofi=-0.24 OIdiv=+0.22 book=-0.29
+08:18:10 |    🧬 MORPHO: own-history vol 0.55% vs baseline 1.00% (×0.54) → coiled conviction ×1.02 [C286-2]
+08:18:10 |    📄 MORPHO: news neutral sig=0.12 score=+0.02
+08:18:10 |    ⚠️ MORPHO: short into bullish rejection candle at RSI 41 (counter-signal) -> conviction x0.85
+08:18:10 |    ⚡ MORPHO: short wick rejection #1 → score×0.75
+08:18:10 |    ❌ MORPHO: short scr=0.01 conf=0.22 → low confidence
+08:18:11 |    ------------------------------------
+08:18:11 |    🧬 JST: breadth 6/6 → conviction 1.00 | cat=calm/W-0.81(regime) meanrev×1.23 | Sq=+0.03 fund=-0.005% OI=$2.0M CVD=+0.22 ofi=-0.40 book=-0.00
+08:18:11 |    📰 JST: news long sig=0.30 score=+0.17
+08:18:11 |    🛑 JST: LONG at RSI 91 (overbought, stretched) → brake 45%
+08:18:11 |    🛑 JST: long structural exhaustion (0% room) → blocked
+08:18:11 |    ------------------------------------
+08:18:11 |    🧬 CRV: breadth 2/6 → conviction 0.42 | cat=defi/W+0.13(member) flow×1.08 | Sq=-0.04 fund=+0.007% OI=$5.5M CVD=+0.12 ofi=+0.11 OIdiv=+0.24 book=-0.07
+08:18:11 |    📄 CRV: news neutral sig=0.12 score=+0.02
+08:18:11 |    🎢 CRV: long BLOCKED — broken-parabola bounce (day range 14×ATR, 6.2 ATR below the day high) → post-blow-off distribution risk
+08:18:11 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:18:11 |    ⚡ CRV: projection 0.61% modest + MA-fan compressing (ma_fan=-0.12) → penalty 20%
+08:18:12 |    ☁️ CRV: ichimoku B- persisting 0.82 AGAINST the long → score ×0.98 (earned ledger) [C343]
+08:18:12 |    ❌ CRV: long scr=0.05 conf=0.30 → low confidence
+08:18:12 |    ------------------------------------
+08:18:12 |    🧬 TIA: breadth 5/6 → conviction 0.89 | cat=l1/W-0.05(member) trend×1.10 | Sq=-0.02 fund=+0.003% OI=$4.6M CVD=-0.59 ofi=-0.13 OIdiv=+0.28 book=-0.20
+08:18:12 |    · TIA: news ~market score=+0.01 (no coin-specific articles)
+08:18:12 |    ☁️ TIA: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:13 |    ❌ TIA: short scr=0.27 conf=0.58 → low score (<0.49)
+08:18:13 |    ------------------------------------
+08:18:13 |    🧬 VTHO: breadth 5/6 → conviction 0.87 | cat=wild/W+0.46(regime) meanrev×0.87 | Sq=+0.12 fund=-0.016% OI=$1.4M CVD=+0.26 ofi=-0.10 OIdiv=+0.60 book=-0.07
+08:18:13 |    · VTHO: news ~market score=+0.01 (no coin-specific articles)
+08:18:13 |    🧠 VTHO: memory — 3 direction flips in 8 scans — unstable read → score ×0.95 [C352]
+08:18:13 |    ❌ VTHO: long scr=0.17 conf=0.45 → low score (<0.49)
+08:18:14 |    ------------------------------------
+08:18:14 |    🧬 CSOPSK2LHKD: breadth 3/5 → conviction 0.58 | cat=calm/W-0.47(regime) meanrev×1.13 | Sq=-0.07 fund=+0.014% OI=$0.1M CVD=+0.60 ofi=+0.02 OIdiv=+0.22 book=-0.24
+08:18:14 |    · CSOPSK2LHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:14 |    🎢 CSOPSK2LHKD: short BLOCKED — broken-parabola bounce (day range 15×ATR, 4.1 ATR above the day low) → post-capitulation squeeze risk
+08:18:14 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:18:14 |    ❌ CSOPSK2LHKD: short scr=0.10 conf=0.36 → low score (<0.47)
+08:18:15 |    ------------------------------------
+08:18:15 |    🧬 B2: breadth 3/5 → conviction 0.63 | cat=wild/W+0.75(regime) meanrev×0.79 | Sq=-0.03 fund=+0.005% OI=$2.9M CVD=+0.28 ofi=-0.12 book=+0.08
+08:18:15 |    🧬 B2: own-history vol 0.71% vs baseline 1.14% (×0.63) → coiled conviction ×1.01 [C286-2]
+08:18:15 |    · B2: news ~market score=+0.01 (no coin-specific articles)
+08:18:15 |    ☁️ B2: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:15 |    ❌ B2: short scr=0.00 conf=0.22 → low confidence
+08:18:15 |    ------------------------------------
+08:18:15 |    🧬 STG: breadth 4/6 → conviction 0.76 | cat=wild/W+0.78(regime) meanrev×0.78 | Sq=-0.03 fund=+0.005% OI=$0.8M CVD=-0.41 ofi=+0.02 book=-0.18
+08:18:15 |    🧬 STG: own-history vol 0.40% vs baseline 1.15% (×0.35) → coiled conviction ×1.05 [C286-2]
+08:18:15 |    · STG: news ~market score=+0.01 (no coin-specific articles)
+08:18:15 |    🎢→✅ STG: parabola RESOLVED (bounce age 49c, unwound 6.7 ATR) → short allowed, penalty 15%
+08:18:16 |    ❌ STG: short scr=0.55 conf=0.44 → low quality (0.24<0.27)
+08:18:16 |    ------------------------------------
+08:18:16 |    🧬 APR: breadth 3/5 → conviction 0.69 | cat=mid/W-0.06(regime) meanrev×1.02 | Sq=-0.12 fund=+0.020% OI=$4.2M CVD=-0.12 ofi=+0.13
+08:18:16 |    🧬 APR: own-history vol 0.52% vs baseline 0.79% (×0.66) → coiled conviction ×1.01 [C286-2]
+08:18:16 |    · APR: news ~market score=+0.01 (no coin-specific articles)
+08:18:16 |    ☁️ APR: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:16 |    ❌ APR: short scr=0.05 conf=0.50 → low score (<0.47)
+08:18:17 |    ------------------------------------
+08:18:17 |    🧬 CAKE: breadth 3/5 → conviction 0.56 | cat=defi/W+0.06(member) trend×1.07 | Sq=-0.03 fund=+0.005% OI=$2.3M CVD=-0.29 ofi=+0.15
+08:18:17 |    🧬 CAKE: own-history vol 0.25% vs baseline 0.58% (×0.42) → coiled conviction ×1.04 [C286-2]
+08:18:17 |    📄 CAKE: news neutral sig=0.12 score=+0.02
+08:18:17 |    ⚡ CAKE: projection 0.44% modest + MA-fan compressing (ma_fan=-0.01) → penalty 20%
+08:18:17 |    ❌ CAKE: short scr=0.04 conf=0.48 → low score (<0.47)
+08:18:18 |    ------------------------------------
+08:18:18 |    🧬 CHIP: breadth 4/6 → conviction 0.66 | cat=wild/W+0.81(regime) meanrev×0.77 | Sq=-0.03 fund=+0.005% OI=$1.8M CVD=+0.40 ofi=-0.19 OIdiv=+0.38 book=-0.16
+08:18:18 |    · CHIP: news ~market score=+0.01 (no coin-specific articles)
+08:18:18 |    🛑 CHIP: SHORT at RSI 13 (oversold, stretched) → brake 38%
+08:18:18 |    ☁️ CHIP: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:18 |    ⚠️ CHIP: short into bullish rejection candle at RSI 13 (counter-signal) -> conviction x0.85
+08:18:18 |    ⚡ CHIP: short wick rejection #1 → score×0.75
+08:18:18 |    ❌ CHIP: short scr=0.02 conf=0.20 → low confidence
+08:18:19 |    ------------------------------------
+08:18:19 |    🧬 AXS: breadth 3/6 → conviction 0.35 | cat=gaming/W+0.45(member) flow×1.09 | Sq=-0.03 fund=+0.005% OI=$3.4M CVD=-0.03 ofi=+0.05 OIdiv=+0.24 book=-0.04
+08:18:19 |    🧬 AXS: own-history vol 1.61% vs baseline 0.69% (×2.32) → abnormal-wild conviction ×0.95 [C286-2]
+08:18:19 |    · AXS: news ~market score=+0.01 (no coin-specific articles)
+08:18:19 |    🎢→✅ AXS: parabola RESOLVED (pullback age 2c, recovered 0.6 ATR, extreme re-touched) → long allowed, penalty 15%
+08:18:19 |    ⚡ AXS: projection 0.70% modest + MA-fan compressing (ma_fan=+0.08) → penalty 20%
+08:18:19 |    ☁️ AXS: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:18:19 |    ⚠️ AXS: long into bearish rejection candle at RSI 67 (counter-signal) -> conviction x0.85
+08:18:19 |    ⚡ AXS: long wick rejection #1 → score×0.75
+08:18:19 |    🪝 AXS: long CONFIRMED-TREND PULLBACK (macro=+0.48, target 3.2%≈2.0×ATR, room 42%) → conviction support ×1.14 (0.39→0.44)
+08:18:19 |    ❌ AXS: long scr=0.44 conf=0.50 → low score (<0.62)
+08:18:20 |    ------------------------------------
+08:18:20 |    🧬 FARTCOIN: breadth 3/5 → conviction 0.54 | cat=meme/W+0.55(member) momentum×1.31 | Sq=-0.04 fund=+0.005% OI=$12.3M CVD=-0.28 ofi=+0.17 OIdiv=+0.39 book=+0.03
+08:18:20 |    · FARTCOIN: news ~market score=+0.01 (no coin-specific articles)
+08:18:20 |    🎢→✅ FARTCOIN: parabola RESOLVED (bounce age 48c, unwound 6.6 ATR) → short allowed, penalty 15%
+08:18:20 |    🧠 FARTCOIN: memory — conviction decaying -0.18 over 4 scans → score ×0.88 [C352]
+08:18:20 |    ☁️ FARTCOIN: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:20 |    ❌ FARTCOIN: short scr=0.20 conf=0.59 → low score (<0.47)
+08:18:21 |    ------------------------------------
+08:18:21 |    🧬 H: breadth 4/6 → conviction 0.73 | cat=wild/W+0.98(regime) meanrev×0.73 | Sq=-0.03 fund=+0.005% OI=$1.6M CVD=-0.12 ofi=+0.28 book=+0.14
+08:18:21 |    · H: news ~market score=+0.01 (no coin-specific articles)
+08:18:21 |    🎢→⚖️ H: C292 stands down — parabola BROKEN (range 21×ATR, 10.1 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:18:21 |    ⚡ H: 24h=+12.0% but 1h=+0.0% (TURNING) → penalty 24%
+08:18:21 |    🎢→✅ H: parabola RESOLVED (bounce age 40c, unwound 10.1 ATR) → short allowed, penalty 15%
+08:18:21 |    🛑 H: short structural exhaustion (0% room) → blocked
+08:18:21 |    ------------------------------------
+08:18:21 |    🧬 ETHFI: breadth 5/6 → conviction 0.90 | cat=defi/W+0.09(member) flow×1.07 | Sq=-0.03 fund=+0.005% OI=$6.1M CVD=-0.27 ofi=-0.28 OIdiv=+0.38 book=-0.24
+08:18:21 |    📄 ETHFI: news neutral sig=0.12 score=+0.02
+08:18:21 |    🎢 ETHFI: short BLOCKED — broken-parabola bounce (day range 8×ATR, 3.6 ATR above the day low) → post-capitulation squeeze risk
+08:18:21 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:18:22 |    ❌ ETHFI: short scr=0.19 conf=0.53 → low score (<0.51)
+08:18:22 |    ------------------------------------
+08:18:22 |    🧬 ALLO: breadth 4/4 → conviction 1.00 | cat=ai/W+0.50(member) momentum×1.25 | Sq=-0.03 fund=+0.005% OI=$2.4M CVD=+0.12 ofi=-0.18 book=-0.00
+08:18:22 |    📄 ALLO: news neutral sig=0.12 score=+0.01
+08:18:22 |    🎢 ALLO: short BLOCKED — broken-parabola bounce (day range 12×ATR, 2.8 ATR above the day low) → post-capitulation squeeze risk
+08:18:22 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:18:22 |    🛑 ALLO: projection 0.21% < 0.33% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:18:23 |    ------------------------------------
+08:18:23 |    🧬 COMP: breadth 5/6 → conviction 0.92 | cat=defi/W+0.49(member) meanrev×0.84 | Sq=-0.06 fund=+0.010% OI=$2.0M CVD=-0.28 ofi=+0.05 book=-0.22
+08:18:23 |    📄 COMP: news neutral sig=0.12 score=+0.02
+08:18:23 |    🛑 COMP: SHORT at RSI 21 (oversold, stretched) → brake 20%
+08:18:23 |    🎢→✅ COMP: parabola RESOLVED (bounce age 25c, unwound 7.5 ATR) → short allowed, penalty 15%
+08:18:23 |    🛑 COMP: short structural exhaustion (0% room) → blocked
+08:18:23 |    ------------------------------------
+08:18:23 |    🧬 CSOPSS2LHKD: breadth 5/6 → conviction 0.77 | cat=calm/W-0.53(regime) meanrev×1.15 | Sq=+0.45 fund=-0.058% OI=$0.4M CVD=+0.22 ofi=+0.09 OIdiv=-0.56 book=+0.11
+08:18:23 |    · CSOPSS2LHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:23 |    🛑 CSOPSS2LHKD: LONG at RSI 78 (overbought, stretched) → brake 18%
+08:18:24 |    ☁️ CSOPSS2LHKD: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:18:24 |    ❌ CSOPSS2LHKD: long scr=0.30 conf=0.53 → low score (<0.47)
+08:18:24 |    ⚖️ C462-7 CSOPSS2LHKD: penalties 0.51→0.30 (×0.60) vs bar 0.47 — the stack decided
+08:18:24 |    ------------------------------------
+08:18:24 |    🧬 SPX: breadth 2/5 → conviction 0.46 | cat=wild/W+0.77(regime) meanrev×0.79 | Sq=-0.03 fund=+0.005% OI=$2.5M CVD=+0.08 ofi=-0.04 OIdiv=-0.12 book=+0.03
+08:18:24 |    · SPX: news ~market score=+0.01 (no coin-specific articles)
+08:18:24 |    🎢 SPX: long BLOCKED — broken-parabola bounce (day range 10×ATR, 4.6 ATR below the day high) → post-blow-off distribution risk
+08:18:24 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:18:24 |    ⚡ SPX: projection 0.59% modest + MA-fan compressing (ma_fan=+0.07) → penalty 20%
+08:18:25 |    ❌ SPX: long scr=0.09 conf=0.38 → low score (<0.47)
+08:18:25 |    ------------------------------------
+08:18:25 |    🧬 SHEINHKD: breadth 4/6 → conviction 0.58 | cat=mid/W+0.13(regime) meanrev×0.96 | Sq=+0.05 fund=-0.009% OI=$0.2M CVD=-0.60 ofi=-0.06 OIdiv=-0.43 book=-0.01
+08:18:25 |    🧬 SHEINHKD: own-history vol 0.55% vs baseline 0.29% (×1.89) → abnormal-wild conviction ×0.98 [C286-2]
+08:18:25 |    · SHEINHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:25 |    🛑 SHEINHKD: SHORT at RSI 3 (oversold, stretched) → brake 22% [capitulation-flow confirmed → halved]
+08:18:26 |    🛑 SHEINHKD: short structural exhaustion (2% room) → blocked
+08:18:26 |    ------------------------------------
+08:18:26 |    🧬 XIAOMIHKD: breadth 5/6 → conviction 0.84 | cat=calm/W-0.56(regime) meanrev×1.16 | Sq=-0.14 fund=+0.016% OI=$0.8M CVD=-0.50 ofi=+0.27 OIdiv=+0.22 book=+0.29
+08:18:26 |    🧬 XIAOMIHKD: own-history vol 0.56% vs baseline 0.26% (×2.17) → abnormal-wild conviction ×0.96 [C286-2]
+08:18:26 |    · XIAOMIHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:26 |    🛑 XIAOMIHKD: SHORT at RSI 18 (oversold, stretched) → brake 28%
+08:18:26 |    ❌ XIAOMIHKD: short scr=0.19 conf=0.52 → low score (<0.50)
+08:18:27 |    ------------------------------------
+08:18:27 |    🧬 ZHIPUHKD: breadth 5/6 → conviction 0.85 | cat=mid/W+0.00(regime) meanrev×1.00 | Sq=+0.00 fund=-0.000% OI=$0.7M CVD=+0.52 ofi=+0.24 OIdiv=+0.29 book=-0.30
+08:18:27 |    🧬 ZHIPUHKD: own-history vol 0.98% vs baseline 0.51% (×1.92) → abnormal-wild conviction ×0.98 [C286-2]
+08:18:27 |    · ZHIPUHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:27 |    🎢→✅ ZHIPUHKD: parabola RESOLVED (bounce age 1c, unwound 1.5 ATR, extreme re-touched) → short allowed, penalty 15%
+08:18:27 |    🛰️ ZHIPUHKD: C199 order-flow weakening short (OI=neutral, CVD=+0.44) → ×0.75
+08:18:27 |    ❌ ZHIPUHKD: short scr=0.25 conf=0.57 → low score (<0.54)
+08:18:28 |    ------------------------------------
+08:18:28 |    🧬 TENCENTHKD: breadth 4/5 → conviction 0.76 | cat=calm/W-0.76(regime) meanrev×1.21 | Sq=-0.00 fund=+0.000% OI=$0.3M CVD=+0.60 ofi=-0.19 OIdiv=+0.30 book=-0.30
+08:18:28 |    🧬 TENCENTHKD: own-history vol 0.38% vs baseline 0.20% (×1.94) → abnormal-wild conviction ×0.98 [C286-2]
+08:18:28 |    · TENCENTHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:28 |    🛑 TENCENTHKD: SHORT at RSI 12 (oversold, stretched) → brake 40%
+08:18:28 |    🎢→✅ TENCENTHKD: parabola RESOLVED (bounce age 1c, unwound 1.0 ATR, extreme re-touched) → short allowed, penalty 15%
+08:18:28 |    ☁️ TENCENTHKD: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:18:28 |    ⚠️ TENCENTHKD: short into bullish rejection candle at RSI 12 (counter-signal) -> conviction x0.85
+08:18:28 |    ⚡ TENCENTHKD: short wick rejection #2 → score×0.75
+08:18:28 |    ❌ TENCENTHKD: short scr=0.01 conf=0.24 → low confidence
+08:18:28 |    ------------------------------------
+08:18:28 |    🧬 MINIMAXHKD: breadth 5/6 → conviction 0.88 | cat=mid/W+0.19(regime) meanrev×0.95 | Sq=+0.08 fund=-0.013% OI=$0.2M CVD=+0.26 ofi=+0.40 OIdiv=+0.46 book=+0.17
+08:18:28 |    · MINIMAXHKD: news ~market score=+0.01 (no coin-specific articles)
+08:18:28 |    🎢→✅ MINIMAXHKD: parabola RESOLVED (bounce age 1c, unwound 1.3 ATR, extreme re-touched) → short allowed, penalty 15%
+08:18:29 |    🛰️ MINIMAXHKD: C199 order-flow weakening short (OI=neutral, CVD=+0.52) → ×0.75
+08:18:29 |    ❌ MINIMAXHKD: short scr=0.19 conf=0.42 → low score (<0.52)
+08:18:29 |    ------------------------------------
+08:18:29 |    🧬 NDX100: breadth 6/6 → conviction 1.00 | cat=calm/W-0.47(regime) meanrev×1.13 | Sq=+0.01 fund=-0.002% OI=$2.5M CVD=-0.18 ofi=-0.02 OIdiv=+0.43 book=-0.15
+08:18:29 |    · NDX100: news ~market score=+0.01 (no coin-specific articles)
+08:18:29 |    🛑 NDX100: long structural exhaustion (2% room) → blocked
+08:18:29 | 📊 Step 3 result: 77 analyzed → 0 passed | low_confidence=9, low_score=35, capitulation=2, flat_projection=15, micro_exhaustion=1, no_structural_room=11, poor_reward_risk=2, post_penalty_low=1, low_quality=1
+08:18:29 |    📌 Nearest miss: STG score=0.551 conf=0.441 quality=0.243/0.26 reason=quality 0.243 < 0.272
+08:18:29 |    📊 Top signals: rsi_v=+48.00 | perm_=+0.97 | catal=-0.80 | rqa_d=+0.80 | hurst=+0.63 | volum=+0.50
+08:18:29 |    🎯 Dir: short | Agreement: 13/27 (48%)
+08:23:30 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:30 | 📋 STEP 1: SCREENING — Scanning all futures markets
+08:23:30 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:30 | 🔍 Scanning 805 markets for lively pairs...
+08:23:30 |    🕒 C408: RWA held out this scan — us_equity×315  (they print 24/7 but only inform in session)
+08:23:30 | 📊 285 pairs meet volume threshold ($750,000 relative)
+08:23:30 |    🧮 C424 phase-2 caps ADD per desk: crypto 114/267 · energy 3/3 · hk_equity 7/7 · index_future 2/2 · korea_equity 2/2 · metal 4/4 = 132 (a global cap let a busy desk crowd out a quiet one; C417 already ruled that comparison meaningless) [throttled 15min]
+08:23:36 |    🗂 C417 DESKS — each market scanned on its own terms:
+08:23:36 |         ● crypto       universe  465  floor $   300k  passed  114  analysing  60
+08:23:36 |         ○ us_equity    US cash closed
+08:23:36 |         ● index_future universe    3  floor $   300k  passed    2  analysing   2
+08:23:36 |         ● metal        universe    8  floor $  1744k  passed    4  analysing   4
+08:23:36 |         ● energy       universe    3  floor $  3657k  passed    3  analysing   3
+08:23:36 |         ● korea_equity universe    3  floor $   716k  passed    2  analysing   2
+08:23:36 |         ● hk_equity    universe    8  floor $   300k  passed    7  analysing   7
+08:23:36 |         → 78 pairs into Step 3 across 6 open markets (one budget each, they ADD — a second market never shrinks the first)
+08:23:36 | 🏆 Top 78 pairs (PREDICTIVE: freshness + projected + geometric)
+08:23:36 |    1. BTC/USDT:USDT: Live=1.070 V=$3046.9M Chg=-0.1% Proj=+0.32 Geo=-0.030
+08:23:36 |    2. ETH/USDT:USDT: Live=0.984 V=$1812.8M Chg=-0.3% Proj=+0.28 Geo=-0.075
+08:23:36 |    3. ONDO/USDT:USDT: Live=0.725 V=$138.8M Chg=+26.0% Proj=+0.14 Geo=+0.040
+08:23:36 |    4. XRP/USDT:USDT: Live=0.618 V=$309.2M Chg=+1.6% Proj=+0.04 Geo=-0.060
+08:23:36 |    5. ZEC/USDT:USDT: Live=0.892 V=$299.1M Chg=+1.1% Proj=+0.32 Geo=-0.028
+08:23:36 |    6. SOL/USDT:USDT: Live=1.120 V=$223.5M Chg=+1.5% Proj=+0.56 Geo=+0.152
+08:23:36 |    7. XAU/USDT:USDT: Live=0.418 V=$142.0M Chg=-0.2% Proj=-0.10 Geo=+0.034
+08:23:36 |    8. NEAR/USDT:USDT: Live=0.886 V=$119.5M Chg=+2.1% Proj=+0.39 Geo=+0.039
+08:23:36 |    9. LTC/USDT:USDT: Live=0.912 V=$71.0M Chg=+7.0% Proj=+0.42 Geo=+0.007
+08:23:36 |    10. CL/USDT:USDT: Live=0.647 V=$80.8M Chg=+1.8% Proj=+0.16 Geo=+0.163
+08:23:36 |    11. HYPE/USDT:USDT: Live=0.504 V=$78.4M Chg=-1.7% Proj=+0.02 Geo=+0.003
+08:23:36 |    12. ENA/USDT:USDT: Live=0.728 V=$50.5M Chg=+10.0% Proj=+0.25 Geo=+0.149
+08:23:36 |    13. NIL/USDT:USDT: Live=0.831 V=$58.0M Chg=-17.5% Proj=+0.36 Geo=-0.000
+08:23:36 |    14. UNI/USDT:USDT: Live=0.718 V=$47.4M Chg=-3.1% Proj=+0.26 Geo=-0.050
+08:23:36 |    15. SUI/USDT:USDT: Live=0.515 V=$55.4M Chg=+3.6% Proj=+0.06 Geo=-0.020
+08:23:36 |    16. XPL/USDT:USDT: Live=0.612 V=$19.5M Chg=+24.8% Proj=+0.16 Geo=+0.009
+08:23:36 |    17. LINK/USDT:USDT: Live=0.500 V=$28.2M Chg=+7.4% Proj=+0.05 Geo=+0.028
+08:23:36 |    18. DOGE/USDT:USDT: Live=0.793 V=$53.9M Chg=+1.4% Proj=+0.35 Geo=-0.062
+08:23:36 |    19. LSK/USDT:USDT: Live=0.796 V=$60.6M Chg=+4.7% Proj=+0.35 Geo=+0.274
+08:23:36 |    20. XLM/USDT:USDT: Live=0.723 V=$23.1M Chg=+8.4% Proj=+0.29 Geo=+0.186
+08:23:36 |    21. PEPE/USDT:USDT: Live=0.608 V=$54.4M Chg=+0.0% Proj=+0.18 Geo=-0.015
+08:23:36 |    22. BZ/USDT:USDT: Live=0.414 V=$36.6M Chg=+1.5% Proj=-0.01 Geo=+0.141
+08:23:36 |    23. XAG/USDT:USDT: Live=0.309 V=$36.0M Chg=-0.3% Proj=-0.10 Geo=+0.030
+08:23:36 |    24. FET/USDT:USDT: Live=0.798 V=$11.9M Chg=+13.7% Proj=+0.39 Geo=+0.021
+08:23:36 |    25. BGB/USDT:USDT: Live=0.635 V=$26.0M Chg=-3.4% Proj=+0.23 Geo=-0.017
+08:23:36 |    26. WLD/USDT:USDT: Live=0.918 V=$23.2M Chg=+4.8% Proj=+0.52 Geo=+0.029
+08:23:36 |    27. SKHYNIX/USDT:USDT: Live=0.298 V=$24.4M Chg=-0.6% Proj=-0.09 Geo=+0.039
+08:23:36 |    28. BCH/USDT:USDT: Live=0.490 V=$32.2M Chg=-0.5% Proj=+0.10 Geo=+0.001
+08:23:36 |    29. MUBARAK/USDT:USDT: Live=0.842 V=$10.9M Chg=-20.9% Proj=+0.46 Geo=+0.150
+08:23:36 |    30. PONS/USDT:USDT: Live=0.778 V=$7.0M Chg=-6.0% Proj=+0.40 Geo=-0.008
+08:23:36 |    31. BROCCOLI/USDT:USDT: Live=0.504 V=$14.4M Chg=+18.0% Proj=+0.13 Geo=+0.130
+08:23:36 |    32. MARSCOIN/USDT:USDT: Live=0.925 V=$7.4M Chg=-14.7% Proj=+0.55 Geo=+0.082
+08:23:36 |    33. AVAX/USDT:USDT: Live=0.593 V=$22.1M Chg=-1.1% Proj=+0.22 Geo=+0.074
+08:23:36 |    34. 龙虾/USDT:USDT: Live=0.752 V=$11.9M Chg=-21.4% Proj=+0.39 Geo=+0.136
+08:23:36 |    35. XAUT/USDT:USDT: Live=0.502 V=$18.7M Chg=-0.3% Proj=+0.14 Geo=+0.036
+08:23:36 |    36. QNT/USDT:USDT: Live=0.539 V=$2.4M Chg=+25.9% Proj=+0.18 Geo=-0.003
+08:23:36 |    37. PAXG/USDT:USDT: Live=0.265 V=$17.4M Chg=-0.3% Proj=-0.10 Geo=+0.033
+08:23:36 |    38. AAVE/USDT:USDT: Live=0.517 V=$10.5M Chg=+4.3% Proj=+0.16 Geo=-0.042
+08:23:36 |    39. PENGU/USDT:USDT: Live=0.750 V=$13.7M Chg=-2.8% Proj=+0.39 Geo=+0.044
+08:23:36 |    40. BTW/USDT:USDT: Live=0.640 V=$11.8M Chg=-7.8% Proj=+0.29 Geo=+0.110
+08:23:36 |    41. FIL/USDT:USDT: Live=0.606 V=$15.8M Chg=+1.7% Proj=+0.26 Geo=+0.056
+08:23:36 |    42. DOT/USDT:USDT: Live=0.876 V=$11.7M Chg=+2.1% Proj=+0.54 Geo=+0.069
+08:23:36 |    43. XAI/USDT:USDT: Live=0.600 V=$11.7M Chg=+12.6% Proj=+0.27 Geo=+0.267
+08:23:36 |    44. SEI/USDT:USDT: Live=0.640 V=$6.2M Chg=+6.2% Proj=+0.31 Geo=+0.019
+08:23:36 |    45. BNB/USDT:USDT: Live=0.613 V=$13.3M Chg=+0.3% Proj=+0.29 Geo=-0.060
+08:23:36 |    46. LDO/USDT:USDT: Live=0.520 V=$3.6M Chg=+9.8% Proj=+0.21 Geo=+0.009
+08:23:36 |    47. XMR/USDT:USDT: Live=0.682 V=$7.8M Chg=+1.9% Proj=+0.38 Geo=+0.046
+08:23:36 |    48. SAMSUNG/USDT:USDT: Live=0.420 V=$7.2M Chg=-0.8% Proj=+0.12 Geo=+0.098
+08:23:36 |    49. PI/USDT:USDT: Live=0.493 V=$2.5M Chg=-3.0% Proj=+0.19 Geo=-0.055
+08:23:36 |    50. HBAR/USDT:USDT: Live=0.482 V=$7.4M Chg=+1.8% Proj=+0.18 Geo=-0.015
+08:23:36 |    51. JST/USDT:USDT: Live=0.666 V=$0.6M Chg=+5.6% Proj=+0.39 Geo=+0.159
+08:23:36 |    52. RAY/USDT:USDT: Live=0.588 V=$8.0M Chg=+0.9% Proj=+0.31 Geo=+0.061
+08:23:36 |    53. FARTCOIN/USDT:USDT: Live=0.685 V=$4.1M Chg=-2.8% Proj=+0.41 Geo=-0.011
+08:23:36 |    54. TUT/USDT:USDT: Live=0.926 V=$6.1M Chg=+3.9% Proj=+0.65 Geo=+0.222
+08:23:36 |    55. POL/USDT:USDT: Live=0.542 V=$2.7M Chg=+5.3% Proj=+0.27 Geo=+0.021
+08:23:36 |    56. NATGAS/USDT:USDT: Live=0.082 V=$4.5M Chg=+2.6% Proj=-0.19 Geo=+0.120
+08:23:36 |    57. PENDLE/USDT:USDT: Live=0.669 V=$2.7M Chg=+5.7% Proj=+0.40 Geo=-0.011
+08:23:36 |    58. TRX/USDT:USDT: Live=0.618 V=$1.7M Chg=-1.1% Proj=+0.35 Geo=-0.067
+08:23:36 |    59. CSOPSK2LHKD/USDT:USDT: Live=-0.019 V=$1.3M Chg=-3.0% Proj=-0.28 Geo=-0.073
+08:23:36 |    60. PYTH/USDT:USDT: Live=0.736 V=$2.4M Chg=+7.0% Proj=+0.47 Geo=+0.004
+08:23:36 |    61. TIA/USDT:USDT: Live=0.645 V=$4.6M Chg=+2.4% Proj=+0.39 Geo=+0.026
+08:23:36 |    62. B2/USDT:USDT: Live=0.495 V=$1.9M Chg=+10.0% Proj=+0.24 Geo=+0.039
+08:23:36 |    63. JTO/USDT:USDT: Live=0.485 V=$1.9M Chg=+5.9% Proj=+0.24 Geo=+0.036
+08:23:36 |    64. CHIP/USDT:USDT: Live=0.549 V=$2.5M Chg=+8.6% Proj=+0.30 Geo=+0.203
+08:23:36 |    65. H/USDT:USDT: Live=0.659 V=$1.8M Chg=+11.3% Proj=+0.43 Geo=+0.120
+08:23:36 |    66. CYS/USDT:USDT: Live=0.492 V=$2.7M Chg=+4.5% Proj=+0.26 Geo=+0.114
+08:23:36 |    67. CROSS/USDT:USDT: Live=0.694 V=$0.3M Chg=+7.6% Proj=+0.47 Geo=+0.145
+08:23:36 |    68. AXS/USDT:USDT: Live=0.481 V=$1.1M Chg=+7.5% Proj=+0.26 Geo=+0.244
+08:23:36 |    69. CAP/USDT:USDT: Live=0.755 V=$1.5M Chg=+4.0% Proj=+0.54 Geo=+0.049
+08:23:36 |    70. RED/USDT:USDT: Live=0.517 V=$0.3M Chg=+7.6% Proj=+0.31 Geo=+0.129
+08:23:36 |    71. CSOPSS2LHKD/USDT:USDT: Live=0.134 V=$1.0M Chg=-2.8% Proj=-0.06 Geo=+0.122
+08:23:36 |    72. SHEINHKD/USDT:USDT: Live=0.822 V=$0.4M Chg=-5.7% Proj=+0.63 Geo=+0.183
+08:23:36 |    73. TENCENTHKD/USDT:USDT: Live=0.458 V=$0.6M Chg=-1.2% Proj=+0.30 Geo=+0.069
+08:23:36 |    74. XIAOMIHKD/USDT:USDT: Live=0.215 V=$0.5M Chg=-2.3% Proj=+0.06 Geo=+0.139
+08:23:36 |    75. MINIMAXHKD/USDT:USDT: Live=0.312 V=$0.6M Chg=-2.6% Proj=+0.17 Geo=+0.155
+08:23:36 |    76. SPX/USDT:USDT: Live=0.185 V=$1.1M Chg=+0.5% Proj=+0.07 Geo=-0.002
+08:23:36 |    77. ZHIPUHKD/USDT:USDT: Live=0.481 V=$0.7M Chg=-0.7% Proj=+0.39 Geo=+0.163
+08:23:36 |    78. NDX100/USDT:USDT: Live=-0.440 V=$0.6M Chg=+0.2% Proj=-0.52 Geo=-0.063
+08:23:36 |    🪞 C266 board-parity (top movers vs screen): ONDO +26%[#3] | QNT +26%[#36] | XPL +25%[#16] | 龙虾 -21%[#34] | MUBARAK -21%[#29]
+08:23:36 |    🔬 BTC geo: slope=+0.010 rough=-0.056 pure=+0.016
+08:23:36 |    🔬 ETH geo: slope=+0.005 rough=-0.080
+08:23:36 |    🔬 ONDO geo: slope=+0.024 fib=+0.080 rough=-0.073 pure=+0.008
+08:23:36 | 📦 OHLCV cache: 160 pairs cached for quick_scan
+08:23:36 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:36 | 📋 STEP 2: MARKET ANALYSIS — News, Bias, Coherence
+08:23:36 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:37 |    🌍 C270 macro: NDX/SPX z=-0.55 gold z=-0.99 tone x1.00 sess w=0.15 -> tilt -0.008 | R +0.13->+0.13
+08:23:37 | ⚠️ C85 MARGINAL-RESULTANT: R=+0.13 mag=0.13 — entries allowed with higher bar
+08:23:37 | 📰 News: 65 articles | 🔸 +0.04
+08:23:37 | 📈 Market: 🔵BULLISH (blend=+0.11 R=+0.13) | 1h=-0.16 4h=+0.26 12h=+0.05 align=-0.01 macro=✓
+08:23:37 | 📊 Regime: MIXED (0.52) | DFA=0.71 Ent=0.90 GARCH=0.0020
+08:23:37 | 🎲 RegimeMarkov: state=CH → next most-likely CH (P=0.78, persist=0.78, conf=0.75, n=275) | calib[1522]: acc=0.84 brier=0.057
+08:23:37 | 🎲 PairMarkov: calib[29439]: acc=1.00 brier=0.000 (baseline 0.160)
+08:23:37 | 🎲 FamilyMarkov: calib[3234/120]: acc=1.00 brier=0.003 (base 0.020) skill=+83.8% [need +5%] EARNED [C342]
+08:23:37 | 🎲 IchiMarkov: calib[29176/200]: acc=0.83 brier=0.125 (base 0.149) skill=+15.9% [need +5%] EARNED [C343]
+08:23:37 | 🧮 S3-EV: calib[156]: acc=0.33 brier=0.329 (baseline 0.250)
+08:23:37 | 🌊 Market coherence: 68% long (43↑ vs 20↓)
+08:23:38 | 💰 Taker flow: 🔸 +0.01 (BTC=+0.07 ETH=-0.05)
+08:23:38 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:38 | 📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair
+08:23:38 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:23:51 | 🌐 Market breadth -0.20 (OVERSOLD-heavy, 77 pairs) — fresh entries in that direction get a late-move brake
+08:23:54 |    📚 PairProfiles: 471 pairs in persistent baseline (160/160 mature this scan)
+08:23:54 |    ------------------------------------
+08:23:54 |    🧬 FET: breadth 5/6 → conviction 0.76 | cat=ai/W+0.06(member) momentum×1.13 | Sq=-0.07 fund=+0.010% OI=$16.8M CVD=-0.43 ofi=+0.04 OIdiv=+0.29 book=+0.01
+08:23:54 |    🌍 C396 session tilt: Asia (02h UTC) → entry score ×0.88 [measured 55.9% Europe vs 46.5% Asia barrier-win]
+08:23:54 |    📄 FET: news neutral sig=0.12 score=+0.01
+08:23:54 |    🎢→⚖️ FET: C292 stands down — parabola BROKEN (range 16×ATR, 3.7 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:23:54 |    ⚡ FET: 24h=+13.7% but 1h=+0.0% (TURNING) → penalty 27%
+08:23:54 |    ⚡ FET: projection 0.66% modest + MA-fan compressing (ma_fan=-0.06) → penalty 20%
+08:23:54 |    🧭 C436 direction probability: no source has earned skill — base rate (unchanged behaviour)
+08:23:54 |    🧪 C420-5: S3 probability skill -31.5% over 156 scored trades (brier 0.329 vs baseline 0.250) → claims kept at ×0.00; p 0.62→0.42. NOT EARNED — p is the base rate [throttled 15min]
+08:23:55 |    ⚖️ C467: FET E=-0.023R is below the +0.005R bar, but the probability feeding E has NO measured skill (Brier skill ≤ 0), so E does not get a veto — score taxed 1% instead and the other gates decide. The veto returns automatically when p starts beating a coin flip [C467, throttled 10min]
+08:23:55 |    ☁️ FET: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:55 |    ⚠️ FET: short into bullish rejection candle at RSI 36 (counter-signal) -> conviction x0.85
+08:23:55 |    🛑 FET: short CAPITULATION REJECTION (wick+vol) → blocked
+08:23:55 |    ------------------------------------
+08:23:55 |    🧬 AVAX: breadth 4/6 → conviction 0.72 | cat=l1/W-0.30(member) trend×1.12 | Sq=-0.04 fund=+0.006% OI=$30.2M CVD=-0.28 ofi=-0.15 book=+0.05
+08:23:55 |    · AVAX: news ~market score=+0.01 (no coin-specific articles)
+08:23:55 |    🎢→✅ AVAX: parabola RESOLVED (bounce age 20c, unwound 6.6 ATR) → short allowed, penalty 15%
+08:23:55 |    ☁️ AVAX: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:55 |    🕐 C249 session floor: IST 08.4h coupling w=0.15 → entry bar ×1.127
+08:23:55 |    ❌ AVAX: short scr=0.20 conf=0.66 → low score (<0.51)
+08:23:56 |    ------------------------------------
+08:23:56 |    🧬 QNT: breadth 4/6 → conviction 0.57 | cat=calm/W-0.42(regime) meanrev×1.12 | Sq=-0.06 fund=+0.010% OI=$2.5M CVD=+0.21 ofi=-0.20 OIdiv=+0.60 book=-0.29
+08:23:56 |    🧬 QNT: own-history vol 1.84% vs baseline 0.70% (×2.63) → abnormal-wild conviction ×0.94 [C286-2]
+08:23:56 |    · QNT: news ~market score=+0.01 (no coin-specific articles)
+08:23:56 |    ⚡ QNT: projection 0.58% modest + MA-fan compressing (ma_fan=-0.01) → penalty 20%
+08:23:56 |    ☁️ QNT: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:23:56 |    ❌ QNT: long scr=0.29 conf=0.78 → low score (<0.59)
+08:23:56 |    ------------------------------------
+08:23:56 |    🧬 FIL: breadth 5/6 → conviction 0.90 | cat=depin/W+0.10(member) flow×1.09 | Sq=-0.06 fund=+0.010% OI=$10.3M CVD=-0.29 ofi=+0.40 OIdiv=+0.31 book=+0.10
+08:23:56 |    · FIL: news ~market score=+0.01 (no coin-specific articles)
+08:23:56 |    🎢→✅ FIL: parabola RESOLVED (bounce age 48c, unwound 6.2 ATR) → short allowed, penalty 15%
+08:23:57 |    🧠 FIL: memory — 3 direction flips in 6 scans — unstable read → score ×0.95 [C352]
+08:23:57 |    ☁️ FIL: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:57 |    ❌ FIL: short scr=0.18 conf=0.62 → low score (<0.54)
+08:23:57 |    ------------------------------------
+08:23:57 |    🧬 DOT: breadth 5/6 → conviction 0.87 | cat=l1/W-0.12(member) trend×1.11 | Sq=-0.03 fund=+0.005% OI=$21.3M CVD=-0.11 ofi=+0.03 OIdiv=+0.30 book=+0.06
+08:23:57 |    · DOT: news ~market score=+0.01 (no coin-specific articles)
+08:23:57 |    📏 DOT: projection 2.49% is 3.6× this pair's own 15m ATR (0.70%) — capped to 2.09% before R. A forecast beyond 3 ATR in one candle is a broken reading, not an opportunity [C420-3a, throttled 15min]
+08:23:57 |    ☁️ DOT: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:57 |    ❌ DOT: short scr=0.08 conf=0.49 → low score (<0.53)
+08:23:58 |    ------------------------------------
+08:23:58 |    🧬 BNB: breadth 3/6 → conviction 0.44 | cat=majors/W-0.73(member) meanrev×1.34 | Sq=-0.04 fund=+0.006% OI=$72.4M CVD=+0.29 ofi=-0.08 OIdiv=+0.21 book=+0.00
+08:23:58 |    🧭 C403 flow term: takers are -0.95 AGAINST this short → score ×0.905
+08:23:58 |    📰 BNB: news long sig=0.30 score=+0.06
+08:23:58 |    ⚡ BNB: projection 0.31% modest + MA-fan compressing (ma_fan=+0.01) → penalty 20%
+08:23:58 |    ☁️ BNB: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:58 |    ⚡ BNB: short news-tech conflict — score×0.70 (news long sig=0.30)
+08:23:58 |    ❌ BNB: short scr=0.03 conf=0.48 → low score (<0.47)
+08:23:58 |    ------------------------------------
+08:23:58 |    🧬 LDO: breadth 5/6 → conviction 0.86 | cat=defi/W-0.24(member) trend×1.09 | Sq=-0.03 fund=+0.005% OI=$3.2M CVD=-0.21 ofi=-0.07 OIdiv=+0.32 book=+0.28
+08:23:58 |    📄 LDO: news neutral sig=0.12 score=+0.02
+08:23:58 |    🧭 C439: earned chains put p at 0.20 against a base of 0.42 — they DISAGREE with this short → score ×0.958 (bounded, same treatment C342/C343 give a dissenting chain) [throttled 15min]
+08:23:58 |    🧠 LDO: memory — conviction decaying -0.18 over 4 scans → score ×0.88 [C352]
+08:23:58 |    ❌ LDO: short scr=0.04 conf=0.25 → low confidence
+08:23:59 |    ------------------------------------
+08:23:59 |    🧬 HBAR: breadth 3/5 → conviction 0.64 | cat=l1/W-0.39(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$16.8M CVD=+0.29 ofi=-0.11 book=-0.28
+08:23:59 |    · HBAR: news ~market score=+0.01 (no coin-specific articles)
+08:23:59 |    ☁️ HBAR: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:23:59 |    ❌ HBAR: short scr=0.03 conf=0.47 → low score (<0.47)
+08:23:59 |    ------------------------------------
+08:23:59 |    🧬 RAY: breadth 5/6 → conviction 0.91 | cat=solana_eco/W+0.81(member) momentum×1.35 | Sq=-0.03 fund=+0.005% OI=$3.4M CVD=-0.27 ofi=+0.02 book=+0.25
+08:23:59 |    📄 RAY: news neutral sig=0.12 score=+0.02
+08:23:59 |    🎢→✅ RAY: parabola RESOLVED (bounce age 31c, unwound 9.7 ATR) → short allowed, penalty 15%
+08:24:00 |    🛑 RAY: short structural exhaustion (0% room) → blocked
+08:24:00 |    ------------------------------------
+08:24:00 |    🧬 TRX: breadth 3/5 → conviction 0.77 | cat=l1/W-0.90(member) momentum×0.80 | Sq=+0.02 fund=-0.002% OI=$9.1M CVD=-0.29 ofi=+0.19 book=-0.03
+08:24:00 |    · TRX: news ~market score=+0.01 (no coin-specific articles)
+08:24:00 |    🎢→✅ TRX: parabola RESOLVED (bounce age 39c, unwound 5.1 ATR) → short allowed, penalty 15%
+08:24:00 |    ☁️ TRX: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:24:00 |    ❌ TRX: short scr=0.05 conf=0.52 → low score (<0.47)
+08:24:00 |    ------------------------------------
+08:24:00 |    🧬 JTO: breadth 5/6 → conviction 0.84 | cat=solana_eco/W+0.10(member) momentum×1.15 | Sq=-0.03 fund=+0.005% OI=$2.2M CVD=-0.56 ofi=-0.20 OIdiv=+0.23 book=+0.25
+08:24:00 |    📄 JTO: news neutral sig=0.12 score=+0.01
+08:24:01 |    🧠 JTO: memory — conviction decaying -0.30 over 4 scans → score ×0.80 [C352]
+08:24:01 |    ❌ JTO: short scr=0.11 conf=0.29 → low confidence
+08:24:01 |    ------------------------------------
+08:24:01 |    🧬 CYS: breadth 3/5 → conviction 0.55 | cat=wild/W+0.63(regime) meanrev×0.82 | Sq=-0.03 fund=+0.005% OI=$2.1M CVD=+0.48 ofi=-0.17 book=+0.10
+08:24:01 |    · CYS: news ~market score=+0.01 (no coin-specific articles)
+08:24:01 |    🎢→✅ CYS: parabola RESOLVED (bounce age 69c, unwound 9.5 ATR) → short allowed, penalty 15%
+08:24:01 |    ☁️ CYS: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:24:01 |    ⚠️ CYS: short into bullish rejection candle at RSI 33 (counter-signal) -> conviction x0.85
+08:24:01 |    ⚡ CYS: short wick rejection #1 → score×0.75
+08:24:01 |    ❌ CYS: short scr=0.03 conf=0.26 → low confidence
+08:24:02 |    ------------------------------------
+08:24:02 |    🧬 CROSS: breadth 5/6 → conviction 0.73 | cat=calm/W-0.72(regime) meanrev×1.20 | Sq=-0.03 fund=+0.005% OI=$1.4M CVD=+0.13 ofi=+0.37 book=+0.20
+08:24:02 |    · CROSS: news ~market score=+0.01 (no coin-specific articles)
+08:24:02 |    🛑 CROSS: LONG at RSI 76 (overbought, stretched) → brake 15%
+08:24:02 |    ☁️ CROSS: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:24:02 |    🛑 CROSS: long into CAPITULATION/BLOW-OFF -- climactic bearish rejection (vol-spike) vs RSI 76 -> reversal imminent, continuation blocked
+08:24:02 |    ------------------------------------
+08:24:02 |    🧬 CAP: breadth 3/6 → conviction 0.41 | cat=mid/W+0.19(regime) meanrev×0.95 | Sq=-0.04 fund=+0.005% OI=$1.0M CVD=-0.16 ofi=-0.08 book=-0.12
+08:24:02 |    · CAP: news ~market score=+0.01 (no coin-specific articles)
+08:24:02 |    ⚡ CAP: projection 0.67% modest + MA-fan compressing (ma_fan=+0.08) → penalty 20%
+08:24:03 |    ☁️ CAP: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:24:03 |    ❌ CAP: long scr=0.06 conf=0.56 → low score (<0.47)
+08:24:03 |    ------------------------------------
+08:24:03 |    🧬 RED: breadth 6/6 → conviction 1.00 | cat=mid/W-0.29(regime) meanrev×1.08 | Sq=-0.03 fund=+0.005% OI=$0.8M CVD=-0.26 ofi=+0.06 book=-0.16
+08:24:03 |    · RED: news ~market score=+0.01 (no coin-specific articles)
+08:24:03 |    🛑 RED: LONG at RSI 77 (overbought, stretched) → brake 16%
+08:24:03 |    🛑 RED: long structural exhaustion (4% room) → blocked
+08:24:03 | 📊 Step 3 result: 15 analyzed (+63 cached this 15m candle) → 0 passed | low_confidence=9, low_score=37, capitulation=4, flat_projection=13, micro_exhaustion=1, no_structural_room=11, poor_reward_risk=2, post_penalty_low=1
+08:24:03 |    📌 Nearest miss: CROSS score=0.303 conf=0.712 quality=0.216/0.26 reason=capitulation rej vs RSI76
+08:24:03 |    📊 Top signals: rsi_v=+76.47 | capit=-1.00 | perm_=+0.93 | rqa_d=+0.74 | wavef=+0.67 | vwdi=+0.63
+08:24:03 |    🎯 Dir: long | Agreement: 26/32 (81%)
+  .. 08:24  flat  $250.14  $-1.40 -0.56%  0W 3L 0%  15 analysed
+08:24:20 | 
+08:24:20 | ============================================================
+08:24:20 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+08:24:20 | 💰 Equity: $250.14 | Unrealized: $+0.00
+08:24:20 | 💵 Available: $250.14 | Locked: $0.00
+08:24:20 | 📈 Session: $-1.40 (-0.6%)
+08:24:20 | 🎯 Win Rate: Overall 31% | Session 0% | Open 0%
+08:24:20 | ============================================================
+08:24:20 | ============================================================
+08:24:20 | 🔻 Day: -0.98% realised (loss limit $9.44, 26% used · dial 15%/month) [C483]
+08:24:20 | ============================================================
+08:24:20 | 
+08:29:04 | 📋 STEP 1: Using cached 78 pairs (327s old, refresh at 480s)
+08:29:04 |    📰 C421-4: news layer now covering 60 screened pairs; 48 have a resolvable coin name from venue metadata (the old typed map held 24 majors and the query asked only about bitcoin/ethereum)
+08:29:04 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:29:04 | 📋 STEP 2: MARKET ANALYSIS — News, Bias, Coherence
+08:29:04 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:29:05 |    🌍 C270 macro: NDX/SPX z=-0.61 gold z=-0.98 tone x1.00 sess w=0.15 -> tilt -0.009 | R +0.13->+0.13
+08:29:05 | ⚠️ C85 MARGINAL-RESULTANT: R=+0.13 mag=0.13 — entries allowed with higher bar
+08:29:05 | 📰 News: 65 articles | 🔸 +0.04
+08:29:05 | 📈 Market: 🔵BULLISH (blend=+0.11 R=+0.13) | 1h=-0.16 4h=+0.26 12h=+0.05 align=-0.01 macro=✓
+08:29:05 |    🧭 C420-7 bias ledger: over 10 settled readings, R vs the NEXT hour's breadth change corr +0.741, sign hit-rate 0% vs a majority-class baseline of 100%. CORRELATION is the number to read: the hit-rate flatters itself whenever both series share a sign (C421-5). INSTRUMENTED ONLY, nothing acts on this yet)
+08:29:05 | 📊 Regime: MIXED (0.52) | DFA=0.71 Ent=0.90 GARCH=0.0020
+08:29:05 | 🎲 RegimeMarkov: state=CH → next most-likely CH (P=0.78, persist=0.78, conf=0.76, n=276) | calib[1523]: acc=0.84 brier=0.057
+08:29:05 | 🎲 PairMarkov: calib[29446]: acc=1.00 brier=0.000 (baseline 0.160)
+08:29:05 | 🎲 FamilyMarkov: calib[3235/120]: acc=1.00 brier=0.003 (base 0.020) skill=+83.8% [need +5%] EARNED [C342]
+08:29:05 | 🎲 IchiMarkov: calib[29183/200]: acc=0.83 brier=0.125 (base 0.149) skill=+15.9% [need +5%] EARNED [C343]
+08:29:05 | 🧮 S3-EV: calib[156]: acc=0.33 brier=0.329 (baseline 0.250)
+08:29:05 | 🌊 Market coherence: 68% long (43↑ vs 20↓)
+08:29:05 | 💰 Taker flow: 🔻 -0.17 (BTC=-0.00 ETH=-0.35)
+08:29:05 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:29:05 | 📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair
+08:29:05 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  .. 08:32  flat  $250.14  $-1.40 -0.56%  0W 3L 0%  15 analysed
+08:32:21 | 
+08:32:21 | ============================================================
+08:32:21 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+08:32:21 | 💰 Equity: $250.14 | Unrealized: $+0.00
+08:32:21 | 💵 Available: $250.14 | Locked: $0.00
+08:32:21 | 📈 Session: $-1.40 (-0.6%)
+08:32:21 | 🎯 Win Rate: Overall 31% | Session 0% | Open 0%
+08:32:21 | ============================================================
+08:32:21 | ============================================================
+08:32:21 | 🔻 Day: -0.98% realised (loss limit $9.44, 26% used · dial 15%/month) [C483]
+08:32:21 | ============================================================
+08:32:21 | 
+08:34:18 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:18 | 📋 STEP 1: SCREENING — Scanning all futures markets
+08:34:18 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:21 |    📊 C451-2 funding cross-section: 805 pairs, median +0.0050%, p90 +0.0100% — crowding is now read against the BOARD, not against a fixed number [throttled 30min]
+08:34:21 | 🔍 Scanning 805 markets for lively pairs...
+08:34:22 |    🕒 C408: RWA held out this scan — us_equity×315  (they print 24/7 but only inform in session)
+08:34:22 | 📊 286 pairs meet volume threshold ($750,000 relative)
+08:34:27 |    🗂 C417 DESKS — each market scanned on its own terms:
+08:34:27 |         ● crypto       universe  465  floor $   300k  passed  115  analysing  60
+08:34:27 |         ○ us_equity    US cash closed
+08:34:27 |         ● index_future universe    3  floor $   300k  passed    2  analysing   2
+08:34:27 |         ● metal        universe    8  floor $  1745k  passed    4  analysing   4
+08:34:27 |         ● energy       universe    3  floor $  3661k  passed    3  analysing   3
+08:34:27 |         ● korea_equity universe    3  floor $   711k  passed    2  analysing   2
+08:34:27 |         ● hk_equity    universe    8  floor $   300k  passed    7  analysing   7
+08:34:27 |         → 78 pairs into Step 3 across 6 open markets (one budget each, they ADD — a second market never shrinks the first)
+08:34:27 | 🏆 Top 78 pairs (PREDICTIVE: freshness + projected + geometric)
+08:34:27 |    1. BTC/USDT:USDT: Live=1.172 V=$3064.4M Chg=-0.2% Proj=+0.42 Geo=-0.069
+08:34:27 |    2. ETH/USDT:USDT: Live=1.080 V=$1827.1M Chg=-0.5% Proj=+0.37 Geo=-0.061
+08:34:27 |    3. ONDO/USDT:USDT: Live=0.831 V=$140.2M Chg=+27.0% Proj=+0.24 Geo=+0.065
+08:34:27 |    4. XRP/USDT:USDT: Live=0.705 V=$310.2M Chg=+1.1% Proj=+0.13 Geo=-0.048
+08:34:27 |    5. ZEC/USDT:USDT: Live=0.923 V=$299.5M Chg=+1.5% Proj=+0.35 Geo=-0.079
+08:34:27 |    6. SOL/USDT:USDT: Live=1.071 V=$225.2M Chg=+1.1% Proj=+0.52 Geo=+0.029
+08:34:27 |    7. XAU/USDT:USDT: Live=0.486 V=$141.9M Chg=-0.2% Proj=-0.03 Geo=+0.104
+08:34:27 |    8. NEAR/USDT:USDT: Live=0.857 V=$119.7M Chg=+2.4% Proj=+0.36 Geo=+0.009
+08:34:27 |    9. LTC/USDT:USDT: Live=0.692 V=$70.3M Chg=+7.1% Proj=+0.20 Geo=-0.011
+08:34:27 |    10. CL/USDT:USDT: Live=0.556 V=$80.7M Chg=+1.7% Proj=+0.08 Geo=+0.156
+08:34:27 |    11. HYPE/USDT:USDT: Live=0.572 V=$78.4M Chg=-1.6% Proj=+0.09 Geo=-0.006
+08:34:27 |    12. NIL/USDT:USDT: Live=0.908 V=$57.6M Chg=-18.6% Proj=+0.44 Geo=+0.026
+08:34:27 |    13. ENA/USDT:USDT: Live=0.677 V=$50.9M Chg=+8.8% Proj=+0.21 Geo=+0.108
+08:34:27 |    14. SUI/USDT:USDT: Live=0.612 V=$55.8M Chg=+3.9% Proj=+0.16 Geo=-0.023
+08:34:27 |    15. UNI/USDT:USDT: Live=0.858 V=$47.4M Chg=-3.0% Proj=+0.40 Geo=-0.046
+08:34:27 |    16. LSK/USDT:USDT: Live=0.700 V=$60.1M Chg=+8.8% Proj=+0.25 Geo=+0.270
+08:34:27 |    17. DOGE/USDT:USDT: Live=0.868 V=$55.1M Chg=+1.0% Proj=+0.43 Geo=-0.060
+08:34:27 |    18. XLM/USDT:USDT: Live=0.785 V=$23.2M Chg=+8.7% Proj=+0.35 Geo=+0.168
+08:34:27 |    19. PEPE/USDT:USDT: Live=0.814 V=$54.2M Chg=-0.1% Proj=+0.39 Geo=-0.039
+08:34:27 |    20. BZ/USDT:USDT: Live=0.229 V=$36.6M Chg=+1.5% Proj=-0.19 Geo=+0.139
+08:34:27 |    21. ADA/USDT:USDT: Live=0.528 V=$33.1M Chg=+2.7% Proj=+0.11 Geo=-0.070
+08:34:27 |    22. XAG/USDT:USDT: Live=0.209 V=$36.1M Chg=-0.3% Proj=-0.20 Geo=+0.031
+08:34:27 |    23. FET/USDT:USDT: Live=0.741 V=$12.0M Chg=+13.9% Proj=+0.34 Geo=-0.033
+08:34:27 |    24. TRUMP/USDT:USDT: Live=0.519 V=$21.0M Chg=+4.3% Proj=+0.12 Geo=+0.017
+08:34:27 |    25. WLD/USDT:USDT: Live=0.897 V=$23.4M Chg=+4.7% Proj=+0.50 Geo=+0.011
+08:34:27 |    26. SKHYNIX/USDT:USDT: Live=0.199 V=$24.4M Chg=-0.6% Proj=-0.19 Geo=+0.044
+08:34:27 |    27. PUMP/USDT:USDT: Live=0.503 V=$14.5M Chg=-3.8% Proj=+0.13 Geo=+0.026
+08:34:27 |    28. MUBARAK/USDT:USDT: Live=0.821 V=$10.9M Chg=-20.6% Proj=+0.45 Geo=+0.155
+08:34:27 |    29. BTW/USDT:USDT: Live=0.513 V=$11.7M Chg=-12.0% Proj=+0.14 Geo=-0.039
+08:34:27 |    30. MARSCOIN/USDT:USDT: Live=0.855 V=$7.4M Chg=-14.5% Proj=+0.49 Geo=+0.115
+08:34:27 |    31. AVAX/USDT:USDT: Live=0.603 V=$22.2M Chg=-1.2% Proj=+0.23 Geo=+0.034
+08:34:27 |    32. XAUT/USDT:USDT: Live=0.507 V=$18.7M Chg=-0.3% Proj=+0.14 Geo=+0.043
+08:34:27 |    33. PENGU/USDT:USDT: Live=0.729 V=$13.7M Chg=-3.2% Proj=+0.37 Geo=+0.040
+08:34:27 |    34. PAXG/USDT:USDT: Live=0.309 V=$17.5M Chg=-0.3% Proj=-0.05 Geo=+0.080
+08:34:27 |    35. 龙虾/USDT:USDT: Live=0.746 V=$12.0M Chg=-19.7% Proj=+0.39 Geo=+0.139
+08:34:27 |    36. PONS/USDT:USDT: Live=0.511 V=$7.0M Chg=-5.1% Proj=+0.15 Geo=-0.045
+08:34:27 |    37. FIL/USDT:USDT: Live=0.636 V=$15.9M Chg=+2.1% Proj=+0.28 Geo=+0.031
+08:34:27 |    38. AAVE/USDT:USDT: Live=0.500 V=$10.5M Chg=+4.0% Proj=+0.15 Geo=-0.050
+08:34:27 |    39. ARB/USDT:USDT: Live=0.664 V=$15.9M Chg=-1.2% Proj=+0.32 Geo=-0.033
+08:34:27 |    40. XAI/USDT:USDT: Live=0.578 V=$11.7M Chg=+12.9% Proj=+0.25 Geo=+0.245
+08:34:27 |    41. SEI/USDT:USDT: Live=0.647 V=$6.2M Chg=+6.6% Proj=+0.32 Geo=+0.026
+08:34:27 |    42. ZRO/USDT:USDT: Live=0.782 V=$6.3M Chg=-7.8% Proj=+0.45 Geo=+0.102
+08:34:27 |    43. DOT/USDT:USDT: Live=0.907 V=$11.6M Chg=+1.6% Proj=+0.58 Geo=+0.031
+08:34:27 |    44. PI/USDT:USDT: Live=0.593 V=$2.5M Chg=-3.5% Proj=+0.28 Geo=-0.050
+08:34:27 |    45. LDO/USDT:USDT: Live=0.645 V=$3.6M Chg=+10.3% Proj=+0.33 Geo=+0.002
+08:34:27 |    46. BNB/USDT:USDT: Live=0.766 V=$13.7M Chg=+0.0% Proj=+0.45 Geo=-0.036
+08:34:27 |    47. APT/USDT:USDT: Live=0.518 V=$8.6M Chg=+2.9% Proj=+0.22 Geo=+0.016
+08:34:27 |    48. XMR/USDT:USDT: Live=0.526 V=$7.8M Chg=+1.2% Proj=+0.24 Geo=+0.007
+08:34:27 |    49. SAMSUNG/USDT:USDT: Live=0.309 V=$7.1M Chg=-0.6% Proj=+0.02 Geo=+0.101
+08:34:27 |    50. RIVER/USDT:USDT: Live=0.478 V=$4.0M Chg=+7.4% Proj=+0.20 Geo=+0.097
+08:34:27 |    51. TUT/USDT:USDT: Live=0.820 V=$6.1M Chg=+4.8% Proj=+0.54 Geo=+0.211
+08:34:27 |    52. FARTCOIN/USDT:USDT: Live=0.688 V=$4.2M Chg=-3.0% Proj=+0.41 Geo=+0.000
+08:34:27 |    53. HBAR/USDT:USDT: Live=0.571 V=$7.2M Chg=+0.9% Proj=+0.29 Geo=+0.015
+08:34:27 |    54. RAY/USDT:USDT: Live=0.686 V=$8.1M Chg=+0.7% Proj=+0.41 Geo=+0.102
+08:34:27 |    55. JST/USDT:USDT: Live=0.691 V=$0.6M Chg=+6.0% Proj=+0.42 Geo=+0.192
+08:34:27 |    56. NATGAS/USDT:USDT: Live=-0.070 V=$4.5M Chg=+2.5% Proj=-0.34 Geo=-0.028
+08:34:27 |    57. TRX/USDT:USDT: Live=0.565 V=$1.7M Chg=-1.1% Proj=+0.30 Geo=-0.071
+08:34:27 |    58. ALLO/USDT:USDT: Live=0.692 V=$1.5M Chg=-6.0% Proj=+0.43 Geo=+0.038
+08:34:27 |    59. POL/USDT:USDT: Live=0.541 V=$2.7M Chg=+4.8% Proj=+0.28 Geo=+0.003
+08:34:27 |    60. CSOPSK2LHKD/USDT:USDT: Live=0.069 V=$1.4M Chg=-2.8% Proj=-0.19 Geo=-0.057
+08:34:27 |    61. PROM/USDT:USDT: Live=0.596 V=$2.7M Chg=+7.7% Proj=+0.34 Geo=+0.090
+08:34:27 |    62. 1000BONK/USDT:USDT: Live=0.484 V=$3.8M Chg=+3.7% Proj=+0.23 Geo=-0.018
+08:34:27 |    63. STG/USDT:USDT: Live=0.631 V=$1.8M Chg=-8.0% Proj=+0.38 Geo=+0.021
+08:34:27 |    64. JTO/USDT:USDT: Live=0.540 V=$1.9M Chg=+6.1% Proj=+0.29 Geo=+0.014
+08:34:27 |    65. H/USDT:USDT: Live=0.583 V=$1.8M Chg=+12.6% Proj=+0.35 Geo=+0.099
+08:34:27 |    66. CYS/USDT:USDT: Live=0.558 V=$2.7M Chg=+4.7% Proj=+0.33 Geo=+0.181
+08:34:27 |    67. EGLD/USDT:USDT: Live=0.623 V=$1.9M Chg=+4.1% Proj=+0.40 Geo=+0.109
+08:34:27 |    68. DEEP/USDT:USDT: Live=0.676 V=$0.5M Chg=+11.9% Proj=+0.47 Geo=+0.217
+08:34:27 |    69. ETHFI/USDT:USDT: Live=0.623 V=$3.0M Chg=+0.7% Proj=+0.42 Geo=+0.009
+08:34:27 |    70. APR/USDT:USDT: Live=0.529 V=$1.0M Chg=-3.2% Proj=+0.33 Geo=+0.076
+08:34:27 |    71. CSOPSS2LHKD/USDT:USDT: Live=0.036 V=$1.0M Chg=-2.5% Proj=-0.14 Geo=+0.135
+08:34:27 |    72. SHEINHKD/USDT:USDT: Live=0.902 V=$0.5M Chg=-5.1% Proj=+0.74 Geo=+0.194
+08:34:27 |    73. TENCENTHKD/USDT:USDT: Live=0.403 V=$0.6M Chg=-1.0% Proj=+0.26 Geo=+0.080
+08:34:27 |    74. MINIMAXHKD/USDT:USDT: Live=0.209 V=$0.6M Chg=-2.5% Proj=+0.08 Geo=+0.209
+08:34:27 |    75. XIAOMIHKD/USDT:USDT: Live=0.181 V=$0.5M Chg=-1.7% Proj=+0.06 Geo=+0.141
+08:34:27 |    76. SPX/USDT:USDT: Live=0.515 V=$1.0M Chg=+0.6% Proj=+0.40 Geo=+0.048
+08:34:27 |    77. ZHIPUHKD/USDT:USDT: Live=0.360 V=$0.7M Chg=-1.4% Proj=+0.25 Geo=+0.232
+08:34:27 |    78. NDX100/USDT:USDT: Live=-0.364 V=$0.6M Chg=+0.2% Proj=-0.44 Geo=-0.064
+08:34:27 |    🪞 C266 board-parity (top movers vs screen): ONDO +27%[#3] | QNT +26%[Live=0.34<cut] | XPL +23%[Live=0.45<cut] | MUBARAK -21%[#28] | 龙虾 -20%[#35]
+08:34:27 |    🔬 BTC geo: slope=+0.007 rough=-0.075
+08:34:27 |    🔬 ETH geo: slope=+0.019 rough=-0.080
+08:34:27 |    🔬 ONDO geo: slope=+0.076 fib=+0.022 rough=-0.051 pure=+0.019
+08:34:27 | 📦 OHLCV cache: 161 pairs cached for quick_scan
+08:34:27 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:27 | 📋 STEP 2: MARKET ANALYSIS — News, Bias, Coherence
+08:34:27 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:28 |    🌍 C270 macro: NDX/SPX z=-0.36 gold z=-1.00 tone x1.00 sess w=0.15 -> tilt -0.005 | R -0.13->-0.14
+08:34:28 | 📉 C76 12h-DAMPEN: 12h=+0.37 opposes resultant=-0.14 → conviction ×0.70
+08:34:28 | ⚠️ C85 MARGINAL-RESULTANT: R=-0.14 mag=0.14 — entries allowed with higher bar
+08:34:28 | 📰 News: 65 articles | 🔸 +0.04
+08:34:28 | 📈 Market: 🔻BEARISH (blend=-0.01 R=-0.14) | 1h=-0.92 4h=-0.19 12h=+0.37 align=-0.08 macro=✓
+08:34:28 | 📊 Regime: MIXED (0.50) | DFA=0.79 Ent=0.92 GARCH=0.0021
+08:34:28 | 🎲 RegimeMarkov: state=CH → next most-likely CH (P=0.78, persist=0.78, conf=0.76, n=277) | calib[1524]: acc=0.84 brier=0.057
+08:34:28 | 🎲 PairMarkov: calib[29446]: acc=1.00 brier=0.000 (baseline 0.160)
+08:34:28 | 🎲 FamilyMarkov: calib[3235/120]: acc=1.00 brier=0.003 (base 0.020) skill=+83.8% [need +5%] EARNED [C342]
+08:34:28 | 🎲 IchiMarkov: calib[29183/200]: acc=0.83 brier=0.125 (base 0.149) skill=+15.9% [need +5%] EARNED [C343]
+08:34:28 | 🧮 S3-EV: calib[156]: acc=0.33 brier=0.329 (baseline 0.250)
+08:34:28 | 🌊 Market coherence: 58% long (36↑ vs 26↓)
+08:34:29 | 💰 Taker flow: 🔵 +0.30 (BTC=+0.16 ETH=+0.43)
+08:34:29 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:29 | 📋 STEP 3: PREDICTIVE ANALYSIS — Scoring each pair
+08:34:29 | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+08:34:46 |    📚 PairProfiles: 471 pairs in persistent baseline (161/161 mature this scan)
+08:34:46 |    ------------------------------------
+08:34:46 |    🧬 BTC: breadth 2/6 → conviction 0.48 | cat=majors/W-1.00(member) meanrev×1.40 | Sq=-0.03 fund=+0.004% OI=$2698.5M CVD=+0.29 ofi=+0.40 OIdiv=+0.27 book=+0.28
+08:34:46 |    🌍 C396 session tilt: Asia (03h UTC) → entry score ×0.88 [measured 55.9% Europe vs 46.5% Asia barrier-win]
+08:34:46 |    📰 BTC: news long sig=0.30 score=+0.02
+08:34:46 |    🎢→✅ BTC: parabola RESOLVED (pullback age 48c, recovered 4.2 ATR, extreme re-touched) → long allowed, penalty 15%
+08:34:46 |    ⚖️ C467: BTC E=-0.091R is below the +0.000R bar, but the probability feeding E has NO measured skill (Brier skill ≤ 0), so E does not get a veto — score taxed 5% instead and the other gates decide. The veto returns automatically when p starts beating a coin flip [C467, throttled 10min]
+08:34:46 |    🧠 BTC: memory — 3 direction flips in 7 scans — unstable read → score ×0.95 [C352]
+08:34:46 |    ❌ BTC: long scr=0.08 conf=0.29 → low confidence
+08:34:47 |    ------------------------------------
+08:34:47 |    🧬 ETH: breadth 3/5 → conviction 0.57 | cat=majors/W-1.00(member) meanrev×1.40 | Sq=-0.04 fund=+0.006% OI=$2095.2M CVD=+0.23 ofi=+0.04 OIdiv=+0.21 book=-0.19
+08:34:47 |    🧭 C403 flow term: takers are -0.42 AGAINST this short → score ×0.958
+08:34:47 |    📰 ETH: news long sig=0.30 score=+0.03
+08:34:47 |    🛑 ETH: short target 0.1% too small + room 8% → blocked
+08:34:47 |    ------------------------------------
+08:34:47 |    🧬 ONDO: breadth 4/6 → conviction 0.74 | cat=rwa/W-0.99(member) meanrev×1.28 | Sq=-0.03 fund=+0.005% OI=$33.8M CVD=-0.17 ofi=-0.12 OIdiv=+0.59 book=-0.14
+08:34:47 |    🧬 ONDO: own-history vol 1.89% vs baseline 0.71% (×2.67) → abnormal-wild conviction ×0.93 [C286-2]
+08:34:47 |    📰 ONDO: news long sig=0.30 score=+0.23
+08:34:47 |    🎢→✅ ONDO: parabola RESOLVED (pullback age 0c, recovered 0.4 ATR, extreme re-touched) → long allowed, penalty 15%
+08:34:47 |    🛑 ONDO: projection 0.20% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.04) → blocked
+08:34:48 |    ------------------------------------
+08:34:48 |    🧬 XRP: breadth 5/6 → conviction 0.82 | cat=l1/W-1.00(member) momentum×0.77 | Sq=-0.04 fund=+0.006% OI=$256.0M CVD=-0.56 ofi=-0.22 OIdiv=+0.39 book=-0.24
+08:34:48 |    📰 XRP: news short sig=0.30 score=-0.13
+08:34:48 |    🛑 XRP: short target 0.1% too small + room 7% → blocked
+08:34:48 |    ------------------------------------
+08:34:48 |    🧬 ZEC: breadth 4/5 → conviction 0.69 | cat=privacy/W-0.97(member) meanrev×1.40 | Sq=-0.05 fund=+0.007% OI=$159.5M CVD=-0.47 ofi=-0.10 OIdiv=-0.24 book=+0.27
+08:34:48 |    📰 ZEC: news short sig=0.30 score=-0.05
+08:34:48 |    ⚡ ZEC: projection 0.41% modest + MA-fan compressing (ma_fan=+0.01) → penalty 20%
+08:34:49 |    ⚡ ZEC: short wick rejection #1 → score×0.75
+08:34:49 |    🕐 C249 session floor: IST 08.6h coupling w=0.15 → entry bar ×1.127
+08:34:49 |    ❌ ZEC: short scr=0.06 conf=0.38 → low score (<0.51)
+08:34:49 |    ------------------------------------
+08:34:49 |    🧬 SOL: breadth 4/6 → conviction 0.52 | cat=solana_eco/W-1.00(member) momentum×0.84 | Sq=+0.02 fund=-0.003% OI=$463.8M CVD=+0.60 ofi=-0.38 OIdiv=+0.18 book=+0.13
+08:34:49 |    📄 SOL: news neutral sig=0.12 score=+0.03
+08:34:49 |    ⚡ SOL: projection 0.68% modest + MA-fan compressing (ma_fan=+0.02) → penalty 20%
+08:34:49 |    ❌ SOL: short scr=0.07 conf=0.57 → low score (<0.48)
+08:34:49 |    ------------------------------------
+08:34:49 |    🧬 XAU: breadth 3/5 → conviction 0.76 | cat=calm/W-0.99(regime) meanrev×1.28 | Sq=-0.05 fund=+0.007% OI=$74.0M CVD=-0.28 ofi=-0.01 OIdiv=-0.11 book=-0.25
+08:34:49 |    📄 XAU: news long sig=0.10 score=+0.04
+08:34:49 |    🎢→✅ XAU: parabola RESOLVED (pullback age 65c, recovered 5.7 ATR, extreme re-touched) → long allowed, penalty 15%
+08:34:49 |    🧠 XAU: memory — conviction decaying -0.09 over 6 scans → score ×0.94 [C352]
+08:34:49 |    ☁️ XAU: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:34:49 |    ❌ XAU: long scr=0.13 conf=0.51 → low score (<0.47)
+08:34:50 | 
+============================================================
+🛑 Signal 15 — saving logs...
+============================================================
+08:34:50 |    ------------------------------------
+08:34:50 |    🧬 NEAR: breadth 4/6 → conviction 0.67 | cat=ai/W-0.88(member) momentum×0.87 | Sq=-0.06 fund=+0.009% OI=$74.4M CVD=+0.50 ofi=+0.00 OIdiv=+0.34 book=-0.16
+08:34:50 |    📰 NEAR: news short sig=0.30 score=-0.03
+08:34:50 |    🧠 NEAR: memory — 4 direction flips in 6 scans — unstable read → score ×0.90 [C352]
+08:34:50 |    ☁️ NEAR: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:50 |    ⚠️ NEAR: short into bullish rejection candle at RSI 40 (counter-signal) -> conviction x0.85
+08:34:50 |    ⚡ NEAR: short wick rejection #1 → score×0.75
+08:34:50 |    ❌ NEAR: short scr=0.06 conf=0.42 → low score (<0.62)
+08:34:50 |    ------------------------------------
+08:34:50 |    🧬 LTC: breadth 3/5 → conviction 0.73 | cat=l1/W-0.35(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$37.3M CVD=+0.28 ofi=+0.04 OIdiv=+0.15 book=+0.05
+08:34:50 |    📰 LTC: news long sig=0.30 score=+0.04
+08:34:50 |    🎢 LTC: long BLOCKED — broken-parabola bounce (day range 17×ATR, 7.0 ATR below the day high) → post-blow-off distribution risk
+08:34:50 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:34:51 |    🧠 LTC: memory — 5 direction flips in 8 scans — unstable read → score ×0.85 [C352]
+08:34:51 |    ☁️ LTC: ichimoku B- persisting 0.82 AGAINST the long → score ×0.98 (earned ledger) [C343]
+08:34:51 |    ❌ LTC: long scr=0.07 conf=0.40 → low score (<0.55)
+08:34:51 |    ------------------------------------
+08:34:51 |    🧬 CL: breadth 3/5 → conviction 0.53 | cat=calm/W-0.63(regime) meanrev×1.18 | Sq=+0.09 fund=-0.013% OI=$35.7M CVD=-0.09 ofi=+0.10 OIdiv=+0.41 book=-0.29
+08:34:51 |    · CL: news ~market score=+0.01 (no coin-specific articles)
+08:34:51 |    🛑 CL: SHORT at RSI 13 (oversold, stretched) → brake 39%
+08:34:51 |    🎢→✅ CL: parabola RESOLVED (bounce age 43c, unwound 15.4 ATR) → short allowed, penalty 15%
+08:34:51 |    🛑 CL: short structural exhaustion (2% room) → blocked
+08:34:51 |    ------------------------------------
+08:34:51 |    🧬 HYPE: breadth 4/5 → conviction 0.69 | cat=defi/W-0.42(member) trend×1.10 | Sq=+0.01 fund=-0.001% OI=$205.0M CVD=+0.22 ofi=+0.10 OIdiv=+0.18 book=-0.27
+08:34:51 |    📄 HYPE: news neutral sig=0.12 score=+0.02
+08:34:51 |    🎢→✅ HYPE: parabola RESOLVED (bounce age 30c, unwound 8.1 ATR) → short allowed, penalty 15%
+08:34:52 |    ☁️ HYPE: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:52 |    ⚠️ HYPE: short into bullish rejection candle at RSI 37 (counter-signal) -> conviction x0.85
+08:34:52 |    ⚡ HYPE: short wick rejection #1 → score×0.75
+08:34:52 |    ❌ HYPE: short scr=0.02 conf=0.33 → low score (<0.49)
+08:34:52 |    ------------------------------------
+08:34:52 |    🧬 NIL: breadth 2/6 → conviction 0.35 | cat=wild/W+0.87(regime) meanrev×0.76 | Sq=-0.04 fund=+0.005% OI=$3.7M CVD=-0.25 ofi=-0.26 OIdiv=+0.06 book=-0.29
+08:34:52 |    🧬 NIL: own-history vol 3.56% vs baseline 1.35% (×2.64) → abnormal-wild conviction ×0.93 [C286-2]
+08:34:52 |    · NIL: news ~market score=+0.01 (no coin-specific articles)
+08:34:52 |    ⚡ NIL: 24h=-18.6% but 1h=+0.0% (TURNING) → penalty 30%
+08:34:52 |    🧠 NIL: memory — 4 direction flips in 7 scans — unstable read → score ×0.90 [C352]
+08:34:52 |    ☁️ NIL: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:34:52 |    ❌ NIL: long scr=0.11 conf=0.39 → low score (<0.50)
+08:34:53 |    ------------------------------------
+08:34:53 |    🧬 ENA: breadth 6/6 → conviction 1.00 | cat=defi/W+0.49(member) meanrev×0.84 | Sq=-0.03 fund=+0.005% OI=$49.3M CVD=-0.36 ofi=+0.10 OIdiv=+0.28 book=+0.20
+08:34:53 |    📄 ENA: news neutral sig=0.12 score=+0.02
+08:34:53 |    🎢→✅ ENA: parabola RESOLVED (pullback age 0c, recovered 1.0 ATR, extreme re-touched) → long allowed, penalty 15%
+08:34:53 |    🛑 ENA: projection 0.47% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:34:53 |    ------------------------------------
+08:34:53 |    🧬 SUI: breadth 3/5 → conviction 0.68 | cat=l1/W-0.15(member) trend×1.11 | Sq=+0.01 fund=-0.001% OI=$64.7M CVD=+0.08 ofi=-0.03 OIdiv=+0.08 book=-0.28
+08:34:53 |    · SUI: news ~market score=+0.01 (no coin-specific articles)
+08:34:53 |    ❌ SUI: short scr=0.18 conf=0.40 → low score (<0.60)
+08:34:54 |    ------------------------------------
+08:34:54 |    🧬 UNI: breadth 4/6 → conviction 0.56 | cat=defi/W+0.43(member) meanrev×0.86 | Sq=-0.06 fund=+0.010% OI=$35.1M CVD=+0.60 ofi=-0.22 OIdiv=+0.32 book=-0.26
+08:34:54 |    📰 UNI: news short sig=0.30 score=-0.23
+08:34:54 |    🎢→✅ UNI: parabola RESOLVED (bounce age 49c, unwound 4.9 ATR) → short allowed, penalty 15%
+08:34:54 |    ☁️ UNI: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:54 |    ❌ UNI: short scr=0.16 conf=0.66 → low score (<0.51)
+08:34:54 |    ------------------------------------
+08:34:54 |    🧬 LSK: breadth 2/5 → conviction 0.57 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.01 fund=+0.001% OI=$2.4M CVD=-0.06 ofi=+0.04 OIdiv=+0.32 book=+0.25
+08:34:54 |    · LSK: news ~market score=+0.01 (no coin-specific articles)
+08:34:54 |    🛑 LSK: SHORT at RSI 6 (oversold, stretched) → brake 45%
+08:34:54 |    🎢→✅ LSK: parabola RESOLVED (bounce age 26c, unwound 14.4 ATR) → short allowed, penalty 15%
+08:34:55 |    ☁️ LSK: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:55 |    ❌ LSK: short scr=0.03 conf=0.29 → low confidence
+08:34:55 |    ------------------------------------
+08:34:55 |    🧬 DOGE: breadth 3/5 → conviction 0.53 | cat=meme/W-0.33(member) meanrev×0.93 | Sq=-0.04 fund=+0.007% OI=$121.6M CVD=+0.47 ofi=-0.14 OIdiv=+0.37 book=-0.08
+08:34:55 |    · DOGE: news ~market score=+0.01 (no coin-specific articles)
+08:34:55 |    🛑 DOGE: short target 0.2% too small + room 8% → blocked
+08:34:56 |    ------------------------------------
+08:34:56 |    🧬 XLM: breadth 5/6 → conviction 0.88 | cat=l1/W-0.36(member) trend×1.12 | Sq=-0.07 fund=+0.010% OI=$27.7M CVD=+0.60 ofi=-0.03 OIdiv=+0.18 book=-0.01
+08:34:56 |    🧬 XLM: own-history vol 1.13% vs baseline 0.58% (×1.94) → abnormal-wild conviction ×0.98 [C286-2]
+08:34:56 |    📄 XLM: news short sig=0.10 score=-0.08
+08:34:56 |    🎢→✅ XLM: parabola RESOLVED (pullback age 0c, recovered 0.3 ATR, extreme re-touched) → long allowed, penalty 15%
+08:34:56 |    🛑 XLM: projection 0.20% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.00) → blocked
+08:34:56 |    ------------------------------------
+08:34:56 |    🧬 PEPE: breadth 5/6 → conviction 0.90 | cat=meme/W+0.06(member) momentum×1.17 | Sq=-0.04 fund=+0.006% OI=$37.0M CVD=+0.18 ofi=+0.07 OIdiv=+0.24
+08:34:56 |    📰 PEPE: news long sig=0.30 score=+0.06
+08:34:56 |    ☁️ PEPE: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:56 |    ⚡ PEPE: short news-tech conflict — score×0.70 (news long sig=0.30)
+08:34:56 |    ❌ PEPE: short scr=0.09 conf=0.50 → low score (<0.47)
+08:34:56 |    ------------------------------------
+08:34:56 |    🧬 BZ: breadth 3/5 → conviction 0.56 | cat=calm/W-0.71(regime) meanrev×1.20 | Sq=+0.06 fund=-0.009% OI=$28.4M CVD=+0.29 ofi=-0.04 OIdiv=+0.25 book=-0.16
+08:34:56 |    🩸 C398 capitulation tilt: 0.14 ATR off its own 12h low → short score ×0.940 [+4.67pp measured, down-side only by design]
+08:34:56 |    · BZ: news ~market score=+0.01 (no coin-specific articles)
+08:34:56 |    🛑 BZ: SHORT at RSI 16 (oversold, stretched) → brake 31%
+08:34:56 |    🎢→✅ BZ: parabola RESOLVED (bounce age 43c, unwound 16.6 ATR) → short allowed, penalty 15%
+08:34:56 |    🛑 BZ: short structural exhaustion (2% room) → blocked
+08:34:57 |    ------------------------------------
+08:34:57 |    🧬 ADA: breadth 5/6 → conviction 0.84 | cat=l1/W-0.70(member) momentum×0.84 | Sq=-0.05 fund=+0.008% OI=$63.9M CVD=+0.07 ofi=+0.04 OIdiv=+0.10 book=-0.16
+08:34:57 |    📰 ADA: news long sig=0.30 score=+0.38
+08:34:57 |    🧠 ADA: memory — conviction decaying -0.08 over 7 scans → score ×0.94 [C352]
+08:34:57 |    ⚡ ADA: short news-tech conflict — score×0.70 (news long sig=0.30)
+08:34:57 |    ❌ ADA: short scr=0.10 conf=0.43 → low score (<0.49)
+08:34:58 |    ------------------------------------
+08:34:58 |    🧬 XAG: breadth 3/4 → conviction 0.79 | cat=calm/W-0.62(regime) meanrev×1.17 | Sq=-0.07 fund=+0.010% OI=$26.2M CVD=-0.11 ofi=+0.02 OIdiv=+0.38 book=-0.13
+08:34:58 |    · XAG: news ~market score=+0.01 (no coin-specific articles)
+08:34:58 |    🎢→✅ XAG: parabola RESOLVED (pullback age 47c, recovered 5.4 ATR) → long allowed, penalty 15%
+08:34:58 |    ☁️ XAG: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:34:58 |    ❌ XAG: long scr=0.22 conf=0.66 → low score (<0.47)
+08:34:58 |    ------------------------------------
+08:34:58 |    🧬 FET: breadth 4/6 → conviction 0.78 | cat=ai/W+0.14(member) momentum×1.15 | Sq=-0.07 fund=+0.010% OI=$17.0M CVD=+0.07 ofi=-0.04 OIdiv=+0.19 book=+0.18
+08:34:58 |    📄 FET: news neutral sig=0.12 score=+0.01
+08:34:58 |    🎢→⚖️ FET: C292 stands down — parabola BROKEN (range 16×ATR, 3.1 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:34:58 |    ⚡ FET: 24h=+13.9% but 1h=+0.0% (TURNING) → penalty 28%
+08:34:58 |    ☁️ FET: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:58 |    ❌ FET: short scr=0.03 conf=0.37 → low score (<0.47)
+08:34:58 |    ------------------------------------
+08:34:58 |    🧬 TRUMP: breadth 4/6 → conviction 0.70 | cat=meme/W+0.45(member) momentum×1.28 | Sq=+0.12 fund=-0.019% OI=$15.6M CVD=+0.18 ofi=-0.02 OIdiv=+0.35 book=-0.12
+08:34:58 |    📄 TRUMP: news neutral sig=0.10 score=+0.00
+08:34:58 |    ⚠️ TRUMP: short into bullish rejection candle at RSI 44 (counter-signal) -> conviction x0.85
+08:34:58 |    ⚡ TRUMP: short wick rejection #1 → score×0.75
+08:34:58 |    ❌ TRUMP: short scr=0.06 conf=0.33 → low score (<0.55)
+08:34:59 |    ------------------------------------
+08:34:59 |    🧬 WLD: breadth 5/6 → conviction 0.82 | cat=ai/W+0.01(member) momentum×1.11 | Sq=-0.04 fund=+0.006% OI=$27.6M CVD=-0.01 ofi=-0.04 OIdiv=+0.37 book=-0.25
+08:34:59 |    📄 WLD: news neutral sig=0.12 score=+0.01
+08:34:59 |    🧠 WLD: memory — 3 direction flips in 7 scans — unstable read → score ×0.95 [C352]
+08:34:59 |    ☁️ WLD: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:34:59 |    ⚠️ WLD: short into bullish rejection candle at RSI 33 (counter-signal) -> conviction x0.85
+08:34:59 |    ⚡ WLD: short wick rejection #1 → score×0.75
+08:34:59 |    ❌ WLD: short scr=0.07 conf=0.43 → low score (<0.50)
+08:34:59 |    ------------------------------------
+08:34:59 |    🧬 SKHYNIX: breadth 4/6 → conviction 0.65 | cat=calm/W-0.49(regime) meanrev×1.14 | Sq=+0.00 fund=+0.000% OI=$21.3M CVD=-0.45 ofi=+0.10 OIdiv=-0.43 book=-0.30
+08:34:59 |    🧬 SKHYNIX: own-history vol 0.25% vs baseline 0.39% (×0.64) → coiled conviction ×1.01 [C286-2]
+08:34:59 |    · SKHYNIX: news ~market score=+0.01 (no coin-specific articles)
+08:34:59 |    🛑 SKHYNIX: LONG at RSI 75 (overbought, stretched) → brake 10%
+08:34:59 |    🎢→✅ SKHYNIX: parabola RESOLVED (pullback age 69c, recovered 7.6 ATR) → long allowed, penalty 15%
+08:34:59 |    🧠 SKHYNIX: memory — conviction rising +0.07 over 6 scans → score ×1.04 [C352]
+08:34:59 |    ☁️ SKHYNIX: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:34:59 |    ❌ SKHYNIX: long scr=0.17 conf=0.51 → low score (<0.47)
+08:35:03 |    📚 PairProfiles: 471 pairs in persistent baseline (161/161 mature this scan)
+08:35:03 |    ------------------------------------
+08:35:03 |    🧬 PUMP: breadth 3/6 → conviction 0.51 | cat=wild/W+0.49(regime) meanrev×0.86 | Sq=-0.03 fund=+0.005% OI=$15.6M CVD=+0.38 ofi=-0.04 OIdiv=+0.32 book=-0.25
+08:35:03 |    · PUMP: news ~market score=+0.01 (no coin-specific articles)
+08:35:03 |    🎢 PUMP: short BLOCKED — broken-parabola bounce (day range 8×ATR, 3.1 ATR above the day low) → post-capitulation squeeze risk
+08:35:03 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:03 |    🔻 PUMP: session loss $-0.34 → higher bar
+08:35:03 |    🧠 PUMP: memory — conviction decaying -0.22 over 5 scans → score ×0.85 [C352]
+08:35:03 |    ⚡ PUMP: short wick rejection #1 → score×0.75
+08:35:03 |    ❌ PUMP: short scr=0.20 conf=0.26 → low confidence
+08:35:03 |    ------------------------------------
+08:35:03 |    🧬 MUBARAK: breadth 5/6 → conviction 0.92 | cat=wild/W+0.92(regime) meanrev×0.74 | Sq=-0.05 fund=+0.007% OI=$3.4M CVD=+0.17 ofi=+0.14 OIdiv=+0.22 book=-0.15
+08:35:03 |    · MUBARAK: news ~market score=+0.01 (no coin-specific articles)
+08:35:04 |    ☁️ MUBARAK: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:04 |    🛰️ MUBARAK: C199 order-flow weakening short (OI=neutral, CVD=+0.25) → ×0.75
+08:35:04 |    ❌ MUBARAK: short scr=0.48 conf=0.61 → low score (<0.49)
+08:35:04 |    ⚖️ C462-7 MUBARAK: penalties 0.65→0.48 (×0.75) vs bar 0.49 — the stack decided
+08:35:04 |    ------------------------------------
+08:35:04 |    🧬 BTW: breadth 5/6 → conviction 0.89 | cat=wild/W+0.99(regime) meanrev×0.72 | Sq=-0.22 fund=+0.030% OI=$29.0M CVD=-0.17 ofi=+0.34 OIdiv=+0.43 book=+0.04
+08:35:04 |    · BTW: news ~market score=+0.01 (no coin-specific articles)
+08:35:04 |    🎢→✅ BTW: parabola RESOLVED (bounce age 25c, unwound 7.9 ATR) → short allowed, penalty 15%
+08:35:05 |    ☁️ BTW: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:05 |    🪝 BTW: short CONFIRMED-TREND PULLBACK (macro=-0.45, target 2.7%≈1.5×ATR, room 28%) → conviction support ×1.14 (0.32→0.36)
+08:35:05 |    ⚖️ BTW: short bar rescaled 0.62→0.34 (same 91th pct of the SHORT distribution; long side untouched) [C326]
+08:35:05 |    ❌ BTW: short scr=0.36 conf=0.67 → low quality (0.24<0.33)
+08:35:05 |    ------------------------------------
+08:35:05 |    🧬 MARSCOIN: breadth 4/6 → conviction 0.69 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.05 fund=+0.007% OI=$2.0M CVD=+0.08 ofi=-0.33 OIdiv=+0.30
+08:35:05 |    🧬 MARSCOIN: own-history vol 1.51% vs baseline 2.59% (×0.58) → coiled conviction ×1.02 [C286-2]
+08:35:05 |    · MARSCOIN: news ~market score=+0.01 (no coin-specific articles)
+08:35:05 |    🛑 MARSCOIN: SHORT at RSI 26 (oversold, stretched) → brake 8%
+08:35:05 |    ☁️ MARSCOIN: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:05 |    ⚠️ MARSCOIN: short into bullish rejection candle at RSI 26 (counter-signal) -> conviction x0.85
+08:35:05 |    ⚡ MARSCOIN: short wick rejection #1 → score×0.75
+08:35:06 |    ⚖️ MARSCOIN: short bar rescaled 0.49→0.27 (same 85th pct of the SHORT distribution; long side untouched) [C326]
+08:35:06 |    ❌ MARSCOIN: short scr=0.26 conf=0.49 → low score (<0.27)
+08:35:06 |    ------------------------------------
+08:35:06 |    🧬 AVAX: breadth 4/6 → conviction 0.74 | cat=l1/W-0.25(member) trend×1.11 | Sq=-0.04 fund=+0.006% OI=$30.2M CVD=+0.53 ofi=-0.04 OIdiv=+0.12 book=+0.24
+08:35:06 |    · AVAX: news ~market score=+0.01 (no coin-specific articles)
+08:35:06 |    ⚡ AVAX: projection 0.56% modest + MA-fan compressing (ma_fan=+0.02) → penalty 20%
+08:35:06 |    ☁️ AVAX: ichimoku B- persisting 0.82 AGAINST the long → score ×0.98 (earned ledger) [C343]
+08:35:06 |    ❌ AVAX: long scr=0.11 conf=0.37 → low score (<0.51)
+08:35:07 |    ------------------------------------
+08:35:07 |    🧬 XAUT: breadth 3/5 → conviction 0.79 | cat=calm/W-0.79(regime) meanrev×1.22 | Sq=-0.01 fund=+0.002% OI=$26.5M CVD=-0.42 ofi=+0.18 OIdiv=+0.60 book=+0.22
+08:35:07 |    · XAUT: news ~market score=+0.01 (no coin-specific articles)
+08:35:07 |    🎢→✅ XAUT: parabola RESOLVED (pullback age 47c, recovered 4.8 ATR, extreme re-touched) → long allowed, penalty 15%
+08:35:07 |    ⚡ XAUT: projection 0.30% modest + MA-fan compressing (ma_fan=+0.01) → penalty 20%
+08:35:07 |    🧠 XAUT: memory — conviction rising +0.09 over 6 scans → score ×1.06 [C352]
+08:35:07 |    ☁️ XAUT: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:07 |    ❌ XAUT: long scr=0.11 conf=0.51 → low score (<0.47)
+08:35:07 |    ------------------------------------
+08:35:07 |    🧬 PENGU: breadth 5/6 → conviction 0.78 | cat=mid/W+0.10(regime) meanrev×0.97 | Sq=-0.03 fund=+0.005% OI=$8.4M CVD=-0.12 ofi=-0.31 OIdiv=+0.25 book=+0.28
+08:35:07 |    · PENGU: news ~market score=+0.01 (no coin-specific articles)
+08:35:07 |    🧠 PENGU: memory — 3 direction flips in 5 scans — unstable read → score ×0.95 [C352]
+08:35:07 |    ☁️ PENGU: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:07 |    ⚠️ PENGU: short into bullish rejection candle at RSI 37 (counter-signal) -> conviction x0.85
+08:35:07 |    🛑 PENGU: short CAPITULATION REJECTION (wick+vol) → blocked
+08:35:08 |    ------------------------------------
+08:35:08 |    🧬 PAXG: breadth 4/5 → conviction 0.99 | cat=calm/W-0.81(regime) meanrev×1.23 | Sq=-0.03 fund=+0.005% OI=$10.6M CVD=-0.15 ofi=-0.06 OIdiv=-0.08 book=-0.30
+08:35:08 |    · PAXG: news ~market score=+0.01 (no coin-specific articles)
+08:35:08 |    🎢→✅ PAXG: parabola RESOLVED (pullback age 65c, recovered 5.2 ATR) → long allowed, penalty 15%
+08:35:08 |    🧠 PAXG: memory — conviction rising +0.11 over 5 scans → score ×1.07 [C352]
+08:35:08 |    ☁️ PAXG: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:08 |    ❌ PAXG: long scr=0.17 conf=0.49 → low score (<0.47)
+08:35:08 |    ------------------------------------
+08:35:08 |    🧬 龙虾: breadth 4/6 → conviction 0.65 | cat=wild/W+1.00(regime) meanrev×0.72 | Sq=-0.45 fund=+0.058% OI=$32.6M CVD=-0.52 ofi=-0.10 OIdiv=+0.60 book=+0.03
+08:35:08 |    · 龙虾: news ~market score=+0.01 (no coin-specific articles)
+08:35:08 |    ⚡ 龙虾: 24h=-19.7% but 1h=+0.0% (TURNING) → penalty 30%
+08:35:08 |    ☁️ 龙虾: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:08 |    🛰️ 龙虾: C199 order-flow weakening long (OI=neutral, CVD=-0.44) → ×0.75
+08:35:08 |    ❌ 龙虾: long scr=0.29 conf=0.62 → low score (<0.51)
+08:35:08 |    ⚖️ C462-7 龙虾: penalties 0.66→0.29 (×0.45) vs bar 0.51 — the stack decided
+08:35:09 |    ------------------------------------
+08:35:09 |    🧬 PONS: breadth 4/6 → conviction 0.61 | cat=wild/W+0.99(regime) meanrev×0.72 | Sq=-0.05 fund=+0.007% OI=$4.5M CVD=+0.28 ofi=+0.24 OIdiv=-0.41 book=+0.03
+08:35:09 |    🧬 PONS: own-history vol 1.09% vs baseline 1.78% (×0.61) → coiled conviction ×1.01 [C286-2]
+08:35:09 |    · PONS: news ~market score=+0.01 (no coin-specific articles)
+08:35:09 |    ☁️ PONS: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:09 |    ⚠️ PONS: short into bullish rejection candle at RSI 45 (counter-signal) -> conviction x0.85
+08:35:09 |    ⚡ PONS: short wick rejection #1 → score×0.75
+08:35:09 |    ⚖️ PONS: short bar rescaled 0.51→0.28 (same 86th pct of the SHORT distribution; long side untouched) [C326]
+08:35:09 |    ❌ PONS: short scr=0.10 conf=0.47 → low score (<0.28)
+08:35:09 |    ------------------------------------
+08:35:09 |    🧬 FIL: breadth 5/6 → conviction 0.83 | cat=depin/W+0.18(member) flow×1.10 | Sq=-0.06 fund=+0.010% OI=$10.4M CVD=+0.05 ofi=-0.34 OIdiv=+0.30 book=-0.30
+08:35:09 |    · FIL: news ~market score=+0.01 (no coin-specific articles)
+08:35:09 |    🎢→✅ FIL: parabola RESOLVED (bounce age 49c, unwound 5.9 ATR) → short allowed, penalty 15%
+08:35:10 |    🧠 FIL: memory — 4 direction flips in 7 scans — unstable read → score ×0.90 [C352]
+08:35:10 |    ☁️ FIL: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:10 |    ⚠️ FIL: short into bullish rejection candle at RSI 36 (counter-signal) -> conviction x0.85
+08:35:10 |    ⚡ FIL: short wick rejection #1 → score×0.75
+08:35:10 |    ⚖️ FIL: short bar rescaled 0.51→0.28 (same 87th pct of the SHORT distribution; long side untouched) [C326]
+08:35:10 |    ❌ FIL: short scr=0.06 conf=0.37 → low score (<0.28)
+08:35:10 |    ------------------------------------
+08:35:10 |    🧬 AAVE: breadth 5/6 → conviction 0.85 | cat=defi/W-0.21(member) trend×1.09 | Sq=-0.02 fund=+0.003% OI=$29.5M CVD=+0.43 ofi=-0.19 book=-0.28
+08:35:10 |    📄 AAVE: news neutral sig=0.12 score=+0.02
+08:35:10 |    ⚖️ AAVE: short bar rescaled 0.51→0.28 (same 87th pct of the SHORT distribution; long side untouched) [C326]
+08:35:10 |    ❌ AAVE: short scr=0.04 conf=0.49 → low score (<0.28)
+08:35:10 |    ------------------------------------
+08:35:10 |    🧬 ARB: breadth 5/6 → conviction 0.78 | cat=l2/W+0.68(member) momentum×1.26 | Sq=-0.02 fund=+0.003% OI=$20.4M CVD=+0.22 ofi=-0.09 OIdiv=+0.06 book=-0.18
+08:35:10 |    · ARB: news ~market score=+0.01 (no coin-specific articles)
+08:35:10 |    🎢→✅ ARB: parabola RESOLVED (bounce age 49c, unwound 3.9 ATR) → short allowed, penalty 15%
+08:35:11 |    ⚠️ ARB: short into bullish rejection candle at RSI 44 (counter-signal) -> conviction x0.85
+08:35:11 |    🛑 ARB: short CAPITULATION REJECTION (wick+vol) → blocked
+08:35:11 |    ------------------------------------
+08:35:11 |    🧬 XAI: breadth 3/5 → conviction 0.64 | cat=wild/W+0.80(regime) meanrev×0.77 | Sq=+0.13 fund=-0.017% OI=$0.8M CVD=+0.60 ofi=-0.09 OIdiv=+0.44
+08:35:11 |    🧬 XAI: own-history vol 2.13% vs baseline 1.05% (×2.04) → abnormal-wild conviction ×0.97 [C286-2]
+08:35:11 |    · XAI: news ~market score=+0.01 (no coin-specific articles)
+08:35:11 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 27×ATR, 17.2 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:35:11 |    ⚡ XAI: 24h=+12.9% but 1h=+0.0% (TURNING) → penalty 26%
+08:35:11 |    🛑 XAI: SHORT at RSI 11 (oversold, stretched) → brake 43%
+08:35:11 |    🎢→✅ XAI: parabola RESOLVED (bounce age 35c, unwound 17.2 ATR) → short allowed, penalty 15%
+08:35:11 |    🛑 XAI: short structural exhaustion (4% room) → blocked
+08:35:12 |    ------------------------------------
+08:35:12 |    🧬 SEI: breadth 5/6 → conviction 0.87 | cat=l1/W-0.26(member) trend×1.11 | Sq=-0.07 fund=+0.010% OI=$9.1M CVD=-0.25 ofi=+0.17 OIdiv=+0.05 book=-0.15
+08:35:12 |    🧬 SEI: own-history vol 1.25% vs baseline 0.71% (×1.75) → abnormal-wild conviction ×0.99 [C286-2]
+08:35:12 |    · SEI: news ~market score=+0.01 (no coin-specific articles)
+08:35:12 |    ☁️ SEI: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:12 |    🛰️ SEI: C199 order-flow weakening long (OI=neutral, CVD=-0.16) → ×0.75
+08:35:12 |    ❌ SEI: long scr=0.25 conf=0.84 → low score (<0.49)
+08:35:12 |    ------------------------------------
+08:35:12 |    🧬 ZRO: breadth 5/6 → conviction 0.82 | cat=l2/W+0.67(member) momentum×1.26 | Sq=-0.03 fund=+0.005% OI=$3.9M CVD=-0.22 ofi=+0.16 OIdiv=+0.60 book=-0.26
+08:35:12 |    · ZRO: news ~market score=+0.01 (no coin-specific articles)
+08:35:13 |    🧠 ZRO: memory — 3 direction flips in 6 scans — unstable read → score ×0.95 [C352]
+08:35:13 |    ☁️ ZRO: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:13 |    ❌ ZRO: long scr=0.08 conf=0.33 → low score (<0.54)
+08:35:13 |    ------------------------------------
+08:35:13 |    🧬 DOT: breadth 5/6 → conviction 0.81 | cat=l1/W-0.05(member) trend×1.10 | Sq=-0.03 fund=+0.005% OI=$21.3M CVD=-0.02 ofi=-0.05 OIdiv=+0.31 book=+0.15
+08:35:13 |    · DOT: news ~market score=+0.01 (no coin-specific articles)
+08:35:13 |    🎢→✅ DOT: parabola RESOLVED (bounce age 49c, unwound 5.6 ATR) → short allowed, penalty 15%
+08:35:13 |    ☁️ DOT: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:13 |    ⚠️ DOT: short into bullish rejection candle at RSI 32 (counter-signal) -> conviction x0.85
+08:35:13 |    ⚡ DOT: short wick rejection #1 → score×0.75
+08:35:13 |    ⚖️ DOT: short bar rescaled 0.53→0.29 (same 88th pct of the SHORT distribution; long side untouched) [C326]
+08:35:13 |    ❌ DOT: short scr=0.07 conf=0.40 → low score (<0.29)
+08:35:14 |    ------------------------------------
+08:35:14 |    🧬 PI: breadth 1/5 → conviction 0.26 | cat=calm/W-0.79(regime) meanrev×1.22 | Sq=-0.04 fund=+0.005% OI=$5.0M CVD=-0.53 ofi=+0.19 book=+0.04
+08:35:14 |    · PI: news ~market score=+0.01 (no coin-specific articles)
+08:35:14 |    ❌ PI: long scr=0.02 conf=0.33 → low score (<0.47)
+08:35:14 |    ------------------------------------
+08:35:14 |    🧬 LDO: breadth 4/6 → conviction 0.62 | cat=defi/W-0.18(member) trend×1.08 | Sq=-0.03 fund=+0.005% OI=$3.3M CVD=+0.28 ofi=-0.04 OIdiv=+0.30 book=-0.06
+08:35:14 |    📄 LDO: news neutral sig=0.12 score=+0.02
+08:35:14 |    🎢→⚖️ LDO: C292 stands down — parabola BROKEN (range 17×ATR, 4.0 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:35:14 |    ⚡ LDO: 24h=+10.3% but 1h=+0.0% (TURNING) → penalty 21%
+08:35:15 |    ⚠️ LDO: short into bullish rejection candle at RSI 37 (counter-signal) -> conviction x0.85
+08:35:15 |    🛑 LDO: short CAPITULATION REJECTION (wick+vol) → blocked
+08:35:15 |    ------------------------------------
+08:35:15 |    🧬 BNB: breadth 4/6 → conviction 0.59 | cat=majors/W-0.71(member) meanrev×1.33 | Sq=-0.04 fund=+0.006% OI=$72.3M CVD=-0.14 ofi=-0.33 OIdiv=+0.24 book=+0.19
+08:35:15 |    📰 BNB: news long sig=0.30 score=+0.06
+08:35:15 |    🎢→✅ BNB: parabola RESOLVED (bounce age 41c, unwound 6.5 ATR) → short allowed, penalty 15%
+08:35:15 |    🛑 BNB: short structural exhaustion (3% room) → blocked
+08:35:15 |    ------------------------------------
+08:35:15 |    🧬 APT: breadth 5/6 → conviction 0.80 | cat=l1/W-0.03(member) trend×1.10 | Sq=-0.06 fund=+0.010% OI=$8.4M CVD=+0.31 ofi=-0.34 OIdiv=+0.31 book=-0.13
+08:35:15 |    · APT: news ~market score=+0.01 (no coin-specific articles)
+08:35:15 |    🎢→✅ APT: parabola RESOLVED (bounce age 49c, unwound 8.2 ATR) → short allowed, penalty 15%
+08:35:16 |    ☁️ APT: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:16 |    ⚠️ APT: short into bullish rejection candle at RSI 36 (counter-signal) -> conviction x0.85
+08:35:16 |    🛑 APT: short CAPITULATION REJECTION (wick+vol) → blocked
+08:35:16 |    ------------------------------------
+08:35:16 |    🧬 XMR: breadth 3/5 → conviction 0.62 | cat=privacy/W+0.02(member) meanrev×1.12 | Sq=-0.21 fund=+0.027% OI=$8.1M CVD=-0.07 ofi=-0.08 OIdiv=+0.33 book=+0.16
+08:35:16 |    📄 XMR: news short sig=0.12 score=-0.05
+08:35:16 |    ⚖️ XMR: short bar rescaled 0.53→0.29 (same 88th pct of the SHORT distribution; long side untouched) [C326]
+08:35:16 |    ❌ XMR: short scr=0.07 conf=0.49 → low score (<0.29)
+08:35:17 |    ------------------------------------
+08:35:17 |    🧬 SAMSUNG: breadth 6/6 → conviction 1.00 | cat=calm/W-0.73(regime) meanrev×1.21 | Sq=+0.01 fund=-0.001% OI=$7.3M CVD=-0.55 ofi=-0.15 OIdiv=-0.39 book=+0.10
+08:35:17 |    · SAMSUNG: news ~market score=+0.01 (no coin-specific articles)
+08:35:17 |    🛑 SAMSUNG: LONG at RSI 82 (overbought, stretched) → brake 28%
+08:35:17 |    🎢→✅ SAMSUNG: parabola RESOLVED (pullback age 35c, recovered 6.7 ATR) → long allowed, penalty 15%
+08:35:17 |    ⚡ SAMSUNG: projection 0.49% modest + MA-fan compressing (ma_fan=+0.05) → penalty 20%
+08:35:17 |    🧠 SAMSUNG: memory — 3 direction flips in 8 scans — unstable read → score ×0.95 [C352]
+08:35:17 |    ☁️ SAMSUNG: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:17 |    ❌ SAMSUNG: long scr=0.16 conf=0.46 → low score (<0.47)
+08:35:17 |    ------------------------------------
+08:35:17 |    🧬 RIVER: breadth 5/6 → conviction 0.85 | cat=wild/W+0.39(regime) meanrev×0.89 | Sq=-0.07 fund=+0.009% OI=$3.3M CVD=-0.28 ofi=+0.17 book=-0.09
+08:35:17 |    · RIVER: news ~market score=+0.01 (no coin-specific articles)
+08:35:18 |    ☁️ RIVER: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:18 |    ❌ RIVER: short scr=0.06 conf=0.32 → low confidence
+08:35:18 |    ------------------------------------
+08:35:18 |    🧬 TUT: breadth 4/6 → conviction 0.65 | cat=wild/W+0.98(regime) meanrev×0.73 | Sq=-0.03 fund=+0.005% OI=$7.2M CVD=+0.26 ofi=-0.15 OIdiv=+0.39 book=+0.05
+08:35:18 |    🧬 TUT: own-history vol 1.03% vs baseline 1.67% (×0.62) → coiled conviction ×1.01 [C286-2]
+08:35:18 |    · TUT: news ~market score=+0.01 (no coin-specific articles)
+08:35:18 |    🛑 TUT: SHORT at RSI 14 (oversold, stretched) → brake 37%
+08:35:18 |    🎢→✅ TUT: parabola RESOLVED (bounce age 64c, unwound 16.2 ATR) → short allowed, penalty 15%
+08:35:18 |    ☁️ TUT: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:18 |    ⚠️ TUT: short into bullish rejection candle at RSI 14 (counter-signal) -> conviction x0.85
+08:35:18 |    ⚡ TUT: short wick rejection #1 → score×0.75
+08:35:18 |    ⚖️ TUT: short bar rescaled 0.49→0.27 (same 85th pct of the SHORT distribution; long side untouched) [C326]
+08:35:18 |    ❌ TUT: short scr=0.13 conf=0.38 → low score (<0.27)
+08:35:19 |    ------------------------------------
+08:35:19 |    🧬 FARTCOIN: breadth 4/6 → conviction 0.50 | cat=meme/W-0.39(member) flow×1.06 | Sq=-0.04 fund=+0.005% OI=$12.3M CVD=+0.60 ofi=+0.28 OIdiv=+0.39 book=+0.30
+08:35:19 |    · FARTCOIN: news ~market score=+0.01 (no coin-specific articles)
+08:35:19 |    🎢→✅ FARTCOIN: parabola RESOLVED (bounce age 49c, unwound 7.1 ATR) → short allowed, penalty 15%
+08:35:19 |    ☁️ FARTCOIN: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:19 |    ⚖️ FARTCOIN: short bar rescaled 0.49→0.27 (same 85th pct of the SHORT distribution; long side untouched) [C326]
+08:35:19 |    ❌ FARTCOIN: short scr=0.21 conf=0.57 → low score (<0.27)
+08:35:19 |    ------------------------------------
+08:35:19 |    🧬 HBAR: breadth 4/5 → conviction 0.82 | cat=l1/W-0.34(member) trend×1.12 | Sq=-0.06 fund=+0.010% OI=$16.8M CVD=-0.17 ofi=-0.32 OIdiv=+0.20 book=-0.02
+08:35:19 |    · HBAR: news ~market score=+0.01 (no coin-specific articles)
+08:35:19 |    🛑 HBAR: short target 0.0% too small + room 6% → blocked
+08:35:20 |    ------------------------------------
+08:35:20 |    🧬 RAY: breadth 3/6 → conviction 0.44 | cat=solana_eco/W+0.84(member) momentum×1.36 | Sq=-0.04 fund=+0.005% OI=$3.4M CVD=+0.60 ofi=-0.10 book=-0.05
+08:35:20 |    📄 RAY: news neutral sig=0.12 score=+0.02
+08:35:20 |    🛑 RAY: SHORT at RSI 11 (oversold, stretched) → brake 42%
+08:35:20 |    🎢→✅ RAY: parabola RESOLVED (bounce age 32c, unwound 10.8 ATR) → short allowed, penalty 15%
+08:35:20 |    🛑 RAY: short structural exhaustion (1% room) → blocked
+08:35:20 |    ------------------------------------
+08:35:20 |    🧬 JST: breadth 6/6 → conviction 1.00 | cat=calm/W-0.61(regime) meanrev×1.17 | Sq=+0.03 fund=-0.005% OI=$2.0M CVD=-0.00 ofi=-0.37
+08:35:20 |    📰 JST: news long sig=0.30 score=+0.17
+08:35:20 |    🛑 JST: LONG at RSI 92 (overbought, stretched) → brake 45%
+08:35:21 |    🛑 JST: long structural exhaustion (0% room) → blocked
+08:35:21 |    ------------------------------------
+08:35:21 |    🧬 NATGAS: breadth 2/4 → conviction 0.54 | cat=calm/W-0.41(regime) meanrev×1.11 | Sq=-0.14 fund=+0.018% OI=$11.1M CVD=-0.29 ofi=-0.10 OIdiv=-0.12 book=+0.30
+08:35:21 |    🧬 NATGAS: own-history vol 0.31% vs baseline 0.48% (×0.64) → coiled conviction ×1.01 [C286-2]
+08:35:21 |    · NATGAS: news ~market score=+0.01 (no coin-specific articles)
+08:35:21 |    🛑 NATGAS: projection 0.15% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=-0.01) → blocked
+08:35:21 |    ------------------------------------
+08:35:21 |    🧬 TRX: breadth 3/5 → conviction 0.55 | cat=l1/W-0.48(member) trend×1.13 | Sq=+0.02 fund=-0.002% OI=$9.1M CVD=+0.02 ofi=+0.01 book=+0.27
+08:35:21 |    · TRX: news ~market score=+0.01 (no coin-specific articles)
+08:35:21 |    ☁️ TRX: ichimoku B- persisting 0.82 AGAINST the long → score ×0.98 (earned ledger) [C343]
+08:35:21 |    ❌ TRX: long scr=0.05 conf=0.51 → low score (<0.47)
+08:35:22 |    ------------------------------------
+08:35:22 |    🧬 ALLO: breadth 3/5 → conviction 0.65 | cat=ai/W+0.20(member) momentum×1.17 | Sq=-0.03 fund=+0.005% OI=$2.4M CVD=+0.29 ofi=-0.25 OIdiv=+0.06 book=-0.03
+08:35:22 |    📄 ALLO: news neutral sig=0.12 score=+0.01
+08:35:22 |    🎢 ALLO: short BLOCKED — broken-parabola bounce (day range 12×ATR, 2.5 ATR above the day low) → post-capitulation squeeze risk
+08:35:22 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:22 |    ☁️ ALLO: ichimoku A+ persisting 0.87 AGAINST the short → score ×0.97 (earned ledger) [C343]
+08:35:22 |    ⚡ ALLO: short wick rejection #1 → score×0.75
+08:35:22 |    ❌ ALLO: short scr=0.11 conf=0.20 → low confidence
+08:35:22 |    ------------------------------------
+08:35:22 |    🧬 POL: breadth 5/6 → conviction 0.88 | cat=l2/W-0.23(member) trend×1.09 | Sq=-0.03 fund=+0.005% OI=$4.1M CVD=-0.33 ofi=-0.00 OIdiv=+0.33 book=+0.00
+08:35:22 |    · POL: news ~market score=+0.01 (no coin-specific articles)
+08:35:22 |    🛑 POL: short target 0.0% too small + room 8% → blocked
+08:35:23 |    ------------------------------------
+08:35:23 |    🧬 CSOPSK2LHKD: breadth 2/5 → conviction 0.33 | cat=calm/W-0.88(regime) meanrev×1.25 | Sq=-0.07 fund=+0.014% OI=$0.1M CVD=+0.29 ofi=-0.01 OIdiv=+0.32 book=-0.01
+08:35:23 |    · CSOPSK2LHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:23 |    🎢 CSOPSK2LHKD: short BLOCKED — broken-parabola bounce (day range 15×ATR, 3.8 ATR above the day low) → post-capitulation squeeze risk
+08:35:23 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:23 |    ⚠️ CSOPSK2LHKD: short into bullish rejection candle at RSI 41 (counter-signal) -> conviction x0.85
+08:35:23 |    ⚡ CSOPSK2LHKD: short wick rejection #1 → score×0.75
+08:35:23 |    ❌ CSOPSK2LHKD: short scr=0.03 conf=0.29 → low confidence
+08:35:23 |    ------------------------------------
+08:35:23 |    🧬 PROM: breadth 4/6 → conviction 0.78 | cat=wild/W+0.89(regime) meanrev×0.75 | Sq=-0.06 fund=+0.008% OI=$4.7M CVD=-0.48 ofi=+0.23 book=-0.19
+08:35:23 |    · PROM: news ~market score=+0.01 (no coin-specific articles)
+08:35:23 |    🎢→✅ PROM: parabola RESOLVED (bounce age 60c, unwound 7.5 ATR) → short allowed, penalty 15%
+08:35:24 |    ☁️ PROM: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:24 |    ⚖️ PROM: short bar rescaled 0.60→0.33 (same 91th pct of the SHORT distribution; long side untouched) [C326]
+08:35:24 |    ❌ PROM: short scr=0.04 conf=0.39 → low score (<0.33)
+08:35:24 |    ------------------------------------
+08:35:24 |    🧬 1000BONK: breadth 4/6 → conviction 0.73 | cat=mid/W+0.05(regime) meanrev×0.98 | Sq=-0.03 fund=+0.005% OI=$4.5M CVD=+0.11 ofi=-0.01 book=-0.10
+08:35:24 |    · 1000BONK: news ~market score=+0.01 (no coin-specific articles)
+08:35:24 |    🔻 1000BONK: session loss $-0.18 → higher bar
+08:35:24 |    ☁️ 1000BONK: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:24 |    ⚠️ 1000BONK: short into bullish rejection candle at RSI 36 (counter-signal) -> conviction x0.85
+08:35:24 |    ⚡ 1000BONK: short wick rejection #1 → score×0.75
+08:35:24 |    ❌ 1000BONK: short scr=0.07 conf=0.27 → low confidence
+08:35:24 |    ------------------------------------
+08:35:24 |    🧬 STG: breadth 4/6 → conviction 0.66 | cat=wild/W+0.50(regime) meanrev×0.86 | Sq=-0.03 fund=+0.005% OI=$0.8M CVD=-0.05 ofi=+0.00 book=+0.15
+08:35:24 |    🧬 STG: own-history vol 0.39% vs baseline 1.12% (×0.35) → coiled conviction ×1.05 [C286-2]
+08:35:24 |    · STG: news ~market score=+0.01 (no coin-specific articles)
+08:35:24 |    🛑 STG: projection 0.21% < 0.25% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.02) → blocked
+08:35:25 |    ------------------------------------
+08:35:25 |    🧬 JTO: breadth 4/6 → conviction 0.65 | cat=solana_eco/W+0.16(member) momentum×1.17 | Sq=-0.03 fund=+0.005% OI=$2.2M CVD=-0.19 ofi=-0.01 OIdiv=+0.20 book=+0.29
+08:35:25 |    📄 JTO: news neutral sig=0.12 score=+0.01
+08:35:25 |    ⚡ JTO: short wick rejection #1 → score×0.75
+08:35:25 |    ❌ JTO: short scr=0.09 conf=0.28 → low confidence
+08:35:25 |    ------------------------------------
+08:35:25 |    🧬 H: breadth 5/6 → conviction 0.87 | cat=wild/W+0.98(regime) meanrev×0.73 | Sq=-0.03 fund=+0.005% OI=$1.6M CVD=+0.20 ofi=-0.15 book=+0.09
+08:35:25 |    · H: news ~market score=+0.01 (no coin-specific articles)
+08:35:25 |    🎢→⚖️ H: C292 stands down — parabola BROKEN (range 21×ATR, 8.7 ATR off the day extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING path [C299]
+08:35:25 |    ⚡ H: 24h=+12.6% but 1h=+0.0% (TURNING) → penalty 25%
+08:35:26 |    ☁️ H: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:26 |    🛰️ H: C199 order-flow weakening short (OI=neutral, CVD=+0.32) → ×0.75
+08:35:26 |    ⚖️ H: short bar rescaled 0.49→0.27 (same 85th pct of the SHORT distribution; long side untouched) [C326]
+08:35:26 |    ❌ H: short scr=0.22 conf=0.61 → low score (<0.27)
+08:35:26 |    ⚖️ C462-7 H: penalties 0.49→0.22 (×0.45) vs bar 0.27 — the stack decided
+08:35:26 |    ------------------------------------
+08:35:26 |    🧬 CYS: breadth 4/5 → conviction 0.88 | cat=wild/W+0.82(regime) meanrev×0.77 | Sq=-0.04 fund=+0.005% OI=$2.1M CVD=-0.17 ofi=+0.10 book=-0.15
+08:35:26 |    · CYS: news ~market score=+0.01 (no coin-specific articles)
+08:35:26 |    🛑 CYS: SHORT at RSI 21 (oversold, stretched) → brake 21%
+08:35:26 |    🎢→✅ CYS: parabola RESOLVED (bounce age 70c, unwound 10.5 ATR) → short allowed, penalty 15%
+08:35:26 |    🛑 CYS: short structural exhaustion (3% room) → blocked
+08:35:27 |    ------------------------------------
+08:35:27 |    🧬 EGLD: breadth 4/5 → conviction 0.89 | cat=l1/W-0.70(member) momentum×0.84 | Sq=-0.06 fund=+0.010% OI=$2.3M CVD=+0.28 ofi=-0.13 OIdiv=+0.06 book=+0.25
+08:35:27 |    · EGLD: news ~market score=+0.01 (no coin-specific articles)
+08:35:27 |    🎢 EGLD: long BLOCKED — broken-parabola bounce (day range 14×ATR, 6.4 ATR below the day high) → post-blow-off distribution risk
+08:35:27 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:27 |    ☁️ EGLD: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:27 |    ❌ EGLD: long scr=0.50 conf=0.56 → low score (<0.51)
+08:35:28 |    ------------------------------------
+08:35:28 |    🧬 DEEP: breadth 4/6 → conviction 0.78 | cat=wild/W+0.42(regime) meanrev×0.88 | Sq=-0.03 fund=+0.005% OI=$0.9M CVD=-0.23 ofi=+0.16 OIdiv=+0.16 book=-0.20
+08:35:28 |    🧬 DEEP: own-history vol 1.71% vs baseline 0.88% (×1.95) → abnormal-wild conviction ×0.98 [C286-2]
+08:35:28 |    · DEEP: news ~market score=+0.01 (no coin-specific articles)
+08:35:28 |    🛑 DEEP: LONG at RSI 77 (overbought, stretched) → brake 16%
+08:35:28 |    🛑 DEEP: projection 0.40% < 0.50% (ATR-relative) + MA-fan not accelerating (ma_fan=+0.08) → blocked
+08:35:28 |    ------------------------------------
+08:35:28 |    🧬 ETHFI: breadth 4/6 → conviction 0.75 | cat=defi/W+0.40(member) meanrev×0.87 | Sq=-0.03 fund=+0.005% OI=$6.1M CVD=+0.13 ofi=-0.37 OIdiv=+0.35 book=-0.23
+08:35:28 |    📄 ETHFI: news neutral sig=0.12 score=+0.02
+08:35:28 |    🎢 ETHFI: short BLOCKED — broken-parabola bounce (day range 8×ATR, 3.5 ATR above the day low) → post-capitulation squeeze risk
+08:35:28 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:28 |    ⚠️ ETHFI: short into bullish rejection candle at RSI 30 (counter-signal) -> conviction x0.85
+08:35:28 |    ⚡ ETHFI: short wick rejection #1 → score×0.75
+08:35:28 |    ❌ ETHFI: short scr=0.06 conf=0.28 → low confidence
+08:35:28 |    ------------------------------------
+08:35:28 |    🧬 APR: breadth 2/5 → conviction 0.48 | cat=mid/W-0.21(regime) meanrev×1.06 | Sq=-0.15 fund=+0.020% OI=$4.2M CVD=+0.23 ofi=-0.17
+08:35:28 |    · APR: news ~market score=+0.01 (no coin-specific articles)
+08:35:28 |    🎢→✅ APR: parabola RESOLVED (bounce age 1c, unwound 0.8 ATR, extreme re-touched) → short allowed, penalty 15%
+08:35:28 |    ☁️ APR: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:28 |    ⚠️ APR: short into bullish rejection candle at RSI 29 (counter-signal) -> conviction x0.85
+08:35:28 |    ⚡ APR: short wick rejection #1 → score×0.75
+08:35:28 |    ❌ APR: short scr=0.01 conf=0.24 → low confidence
+08:35:29 |    ------------------------------------
+08:35:29 |    🧬 CSOPSS2LHKD: breadth 6/6 → conviction 1.00 | cat=calm/W-0.74(regime) meanrev×1.21 | Sq=+0.42 fund=-0.058% OI=$0.4M CVD=+0.23 ofi=+0.19 OIdiv=+0.56 book=-0.03
+08:35:29 |    · CSOPSS2LHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:29 |    🛑 CSOPSS2LHKD: LONG at RSI 80 (overbought, stretched) → brake 11% [capitulation-flow confirmed → halved]
+08:35:29 |    🎢→✅ CSOPSS2LHKD: parabola RESOLVED (pullback age 29c, recovered 7.5 ATR) → long allowed, penalty 15%
+08:35:29 |    ⚡ CSOPSS2LHKD: projection 0.41% modest + MA-fan compressing (ma_fan=+0.08) → penalty 20%
+08:35:29 |    ☁️ CSOPSS2LHKD: ichimoku A+ persisting 0.87 WITH the long → score ×1.03 (earned ledger) [C343]
+08:35:29 |    ❌ CSOPSS2LHKD: long scr=0.33 conf=0.64 → low score (<0.48)
+08:35:30 |    ------------------------------------
+08:35:30 |    🧬 SHEINHKD: breadth 4/6 → conviction 0.71 | cat=mid/W+0.27(regime) meanrev×0.92 | Sq=+0.05 fund=-0.009% OI=$0.1M CVD=+0.13 ofi=+0.40 OIdiv=+0.29 book=-0.26
+08:35:30 |    🧬 SHEINHKD: own-history vol 0.73% vs baseline 0.29% (×2.49) → abnormal-wild conviction ×0.94 [C286-2]
+08:35:30 |    · SHEINHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:30 |    🛑 SHEINHKD: SHORT at RSI 2 (oversold, stretched) → brake 45%
+08:35:30 |    ⚖️ SHEINHKD: short bar rescaled 0.54→0.30 (same 88th pct of the SHORT distribution; long side untouched) [C326]
+08:35:30 |    ❌ SHEINHKD: short scr=0.09 conf=0.43 → low score (<0.30)
+08:35:30 |    ------------------------------------
+08:35:30 |    🧬 TENCENTHKD: breadth 3/5 → conviction 0.55 | cat=calm/W-0.65(regime) meanrev×1.18 | Sq=-0.00 fund=+0.000% OI=$0.3M CVD=+0.26 ofi=+0.12 OIdiv=+0.31 book=+0.10
+08:35:30 |    🧬 TENCENTHKD: own-history vol 0.38% vs baseline 0.20% (×1.94) → abnormal-wild conviction ×0.98 [C286-2]
+08:35:30 |    · TENCENTHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:30 |    🛑 TENCENTHKD: SHORT at RSI 14 (oversold, stretched) → brake 36%
+08:35:30 |    🎢→✅ TENCENTHKD: parabola RESOLVED (bounce age 2c, unwound 0.9 ATR, extreme re-touched) → short allowed, penalty 15%
+08:35:30 |    ⚡ TENCENTHKD: projection 0.39% modest + MA-fan compressing (ma_fan=-0.04) → penalty 20%
+08:35:31 |    ☁️ TENCENTHKD: ichimoku B- persisting 0.82 WITH the short → score ×1.02 (earned ledger) [C343]
+08:35:31 |    ⚠️ TENCENTHKD: short into bullish rejection candle at RSI 14 (counter-signal) -> conviction x0.85
+08:35:31 |    ⚡ TENCENTHKD: short wick rejection #1 → score×0.75
+08:35:31 |    ❌ TENCENTHKD: short scr=0.01 conf=0.27 → low confidence
+08:35:31 |    ------------------------------------
+08:35:31 |    🧬 MINIMAXHKD: breadth 2/6 → conviction 0.41 | cat=calm/W-0.64(regime) meanrev×1.18 | Sq=+0.08 fund=-0.013% OI=$0.2M CVD=+0.26 ofi=+0.40 OIdiv=+0.38 book=-0.16
+08:35:31 |    · MINIMAXHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:31 |    🎢→✅ MINIMAXHKD: parabola RESOLVED (bounce age 2c, unwound 0.9 ATR, extreme re-touched) → short allowed, penalty 15%
+08:35:31 |    ⚡ MINIMAXHKD: projection 0.56% modest + MA-fan compressing (ma_fan=-0.08) → penalty 20%
+08:35:31 |    ⚠️ MINIMAXHKD: short into bullish rejection candle at RSI 35 (counter-signal) -> conviction x0.85
+08:35:31 |    ⚡ MINIMAXHKD: short wick rejection #1 → score×0.75
+08:35:31 |    ❌ MINIMAXHKD: short scr=0.05 conf=0.24 → low confidence
+08:35:31 |    ------------------------------------
+08:35:31 |    🧬 XIAOMIHKD: breadth 4/6 → conviction 0.64 | cat=mid/W-0.23(regime) meanrev×1.06 | Sq=-0.14 fund=+0.016% OI=$0.8M CVD=-0.01 ofi=-0.40 OIdiv=+0.20 book=+0.01
+08:35:31 |    🧬 XIAOMIHKD: own-history vol 0.61% vs baseline 0.26% (×2.35) → abnormal-wild conviction ×0.95 [C286-2]
+08:35:31 |    · XIAOMIHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:31 |    🛑 XIAOMIHKD: SHORT at RSI 18 (oversold, stretched) → brake 28%
+08:35:32 |    ⚠️ XIAOMIHKD: short into bullish rejection candle at RSI 18 (counter-signal) -> conviction x0.85
+08:35:32 |    ⚡ XIAOMIHKD: short wick rejection #1 → score×0.75
+08:35:32 |    ⚖️ XIAOMIHKD: short bar rescaled 0.53→0.29 (same 88th pct of the SHORT distribution; long side untouched) [C326]
+08:35:32 |    ❌ XIAOMIHKD: short scr=0.11 conf=0.52 → low score (<0.29)
+08:35:32 |    ------------------------------------
+08:35:32 |    🧬 SPX: breadth 5/6 → conviction 0.89 | cat=mid/W+0.21(regime) meanrev×0.94 | Sq=-0.03 fund=+0.005% OI=$2.4M CVD=-0.60 ofi=-0.40 OIdiv=+0.24 book=-0.15
+08:35:32 |    · SPX: news ~market score=+0.01 (no coin-specific articles)
+08:35:32 |    🎢→✅ SPX: parabola RESOLVED (bounce age 41c, unwound 5.7 ATR) → short allowed, penalty 15%
+08:35:32 |    🛑 SPX: short structural exhaustion (3% room) → blocked
+08:35:33 |    ------------------------------------
+08:35:33 |    🧬 ZHIPUHKD: breadth 3/6 → conviction 0.44 | cat=calm/W-0.52(regime) meanrev×1.15 | Sq=+0.00 fund=-0.000% OI=$0.7M CVD=+0.56 ofi=+0.10 OIdiv=+0.36 book=+0.09
+08:35:33 |    🧬 ZHIPUHKD: own-history vol 1.00% vs baseline 0.50% (×2.01) → abnormal-wild conviction ×0.97 [C286-2]
+08:35:33 |    · ZHIPUHKD: news ~market score=+0.01 (no coin-specific articles)
+08:35:33 |    🎢→✅ ZHIPUHKD: parabola RESOLVED (bounce age 2c, unwound 1.1 ATR, extreme re-touched) → short allowed, penalty 15%
+08:35:33 |    ⚡ ZHIPUHKD: projection 0.67% modest + MA-fan compressing (ma_fan=-0.08) → penalty 20%
+08:35:33 |    ⚖️ ZHIPUHKD: short bar rescaled 0.57→0.32 (same 90th pct of the SHORT distribution; long side untouched) [C326]
+08:35:33 |    ❌ ZHIPUHKD: short scr=0.21 conf=0.49 → low score (<0.32)
+08:35:33 |    ------------------------------------
+08:35:33 |    🧬 NDX100: breadth 6/6 → conviction 1.00 | cat=mid/W+0.07(regime) meanrev×0.98 | Sq=+0.01 fund=-0.002% OI=$2.5M CVD=-0.22 ofi=+0.00 OIdiv=+0.39 book=-0.13
+08:35:33 |    · NDX100: news ~market score=+0.01 (no coin-specific articles)
+08:35:33 |    🎢 NDX100: long BLOCKED — broken-parabola bounce (day range 12×ATR, 1.5 ATR below the day high) → post-blow-off distribution risk
+08:35:33 |       ⚖️ parabola → score ×0.82 (penalty, not a veto — must still clear the bar) [C403]
+08:35:33 |    🛑 NDX100: long target 0.0% too small + room 8% → blocked
+08:35:33 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=12, low_score=41, poor_reward_risk=6, flat_projection=6, no_structural_room=8, low_quality=1, capitulation=4
+08:35:33 |    📌 Nearest miss: MUBARAK score=0.646 conf=0.610 quality=0.394/0.26 reason=score 0.484 < 0.487
+08:35:33 |    📊 Top signals: rsi_v=+30.70 | short=-1.00 | kalma=-0.98 | perm_=+0.97 | vwdi=-0.80 | rqa_d=+0.67
+08:35:33 |    🎯 Dir: short | Agreement: 18/35 (51%)
