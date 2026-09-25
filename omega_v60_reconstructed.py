@@ -271,6 +271,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C376 maker exit',          # and when it does not
         'C462-6',
         'C463',
+        'C487',                     # whether a resting order really filled
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
         'NEWS',                     # C463-3 news panel
@@ -2079,7 +2080,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C486'
+_OMEGA_VERSION = 'C487'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2793,7 +2794,16 @@ class Config:
         self.USE_LIMIT_ORDERS = True
         self.PAPER_REALISTIC_FILLS = True  # C286: paper limits fill only if price actually touched the limit (kills adverse-selection blindness)
         self.LIMIT_ORDER_OFFSET_PCT = 0.1
-        self.LIMIT_ORDER_TIMEOUT_SECONDS = 30
+        self.LIMIT_ORDER_TIMEOUT_SECONDS = 30   # C487: how long a resting ENTRY waits for the market (paper and live)
+        # ═══ C487: A RESTING ORDER IS FILLED BY WHAT HAPPENS AFTER IT ARRIVES ═══
+        # Paper judged an entry limit by the 5 minutes BEFORE it was placed and
+        # filled 92%% of them; the market came back through the price afterwards
+        # on at most 75%%, and the ones it did not come back to were the winners
+        # (41 of 164 trades, +$7.57). Live code booked a position the moment the order
+        # was SENT and never looked again. Both now wait and look forward.
+        # False restores the C486 behaviour exactly.
+        self.C487_HONEST_FILLS = True
+        self.C487_EXIT_REST_S = 5               # a maker EXIT rests this long, then crosses
 
         # === Monitoring ===
         # ═══ C368: THE CONSISTENCY BUDGET ═══════════════════════════════
@@ -8784,7 +8794,9 @@ class ExchangeManager:
         # None reproduces C363 exactly: entries post-only, exits never.
         if post_only is None:
             post_only = not reduce_only
-        if (order_type == 'limit' and price and post_only
+        _rest487 = bool(getattr(self.cfg, 'C487_HONEST_FILLS', True)
+                        and order_type == 'limit' and price and (post_only or reduce_only))
+        if (order_type == 'limit' and price and post_only and not _rest487
                 and getattr(self.cfg, 'PAPER_REALISTIC_FILLS', True)):
             # reduce_only is excluded by `post_only` being False for exits:
             # A STOP MUST ALWAYS BE ABLE TO GET OUT (the C364 doctrine), and a
@@ -8820,6 +8832,15 @@ class ExchangeManager:
                             f"live declines (C363). {self._c364_postonly_sim} this session")
                 return {'id': f"postonly_reject_{int(time.time()*1000)}", 'price': 0,
                         'filled': 0, 'status': 'canceled'}
+        if _rest487:
+            # C487: the order is ON THE BOOK, not filled. c487_settle decides,
+            # from what the market does from this instant on -- exactly the
+            # question the exchange answers for a live order.
+            logger.info(f"📝 Paper LIMIT resting: {symbol.split('/')[0]} {side} @${_fmt_px(price)}"
+                        f"{' (reduce-only)' if reduce_only else ''}")
+            return {'id': f"paper_{int(time.time()*1000)}_{hash(symbol) % 10000}", 'price': price,
+                    'filled': 0.0, 'status': 'open', 'amount': size, 'side': side,
+                    'c487_t0': time.time(), 'c487_queue': self._c487_queue(symbol, side, price)}
         if order_type == 'limit' and price:
             fill_price = price                      # a resting limit fills AT its price
         else:
@@ -8883,6 +8904,154 @@ class ExchangeManager:
             return False, 0
         except:
             return False, 0
+
+    def _c487_queue(self, symbol: str, side: str, price: float):
+        """C487: how much size is ahead of a new resting order, read from the
+        book the moment it arrives. At the touch it is the displayed size there;
+        a price that improves the book (inside the spread) has nobody ahead
+        (0.0); a price behind the touch has unseen depth ahead (None -- only a
+        print THROUGH it can then fill it). Any read failure is None too."""
+        try:
+            t = self.exchange.fetch_ticker(symbol)
+            bid, ask = float(t.get('bid') or 0), float(t.get('ask') or 0)
+            if not (bid > 0 and ask > bid):
+                return None
+            eps = max(abs(price) * 1e-9, 1e-12)
+            if side == 'buy':
+                if abs(price - bid) <= eps:
+                    return float(t.get('bidVolume') or 0) or None
+                return 0.0 if bid < price < ask else None
+            if abs(price - ask) <= eps:
+                return float(t.get('askVolume') or 0) or None
+            return 0.0 if bid < price < ask else None
+        except Exception:
+            return None
+
+    def _c487_through(self, symbol: str, side: str, price: float, since_ms: int, order: dict = None):
+        """C487: has the market filled a resting order at `price` since
+        `since_ms` (the moment it arrived)? True / False, or None when neither
+        the book nor the tape could be read.
+
+        A resting BUY at p is certainly filled once the best ask is at or
+        below p (every bid at p, ours included, was consumed) or a trade prints
+        strictly below p. A resting SELL mirrors it. Prints exactly AT p fill it
+        only once they have used up the size that was queued AHEAD of it when
+        it arrived, plus its own size (order['c487_queue'], read from the book
+        at placement; each print counted once). Orders cancelled ahead of it
+        are not credited, and with no queue reading at-price prints are not
+        counted at all -- so this can only err toward NOT filling, the same
+        floor C364 set for costs: offline results are a floor, never flattering."""
+        seen = False
+        try:
+            _b, _a, _src = self.get_bid_ask(symbol)
+            if _src == 'book' and _b and _a:
+                seen = True
+                if (side == 'buy' and _a <= price) or (side == 'sell' and _b >= price):
+                    return True
+        except Exception:
+            pass
+        try:
+            import requests as _rq
+            _bsym = symbol.replace('/USDT:USDT', 'USDT').replace('/', '')
+            _r = _rq.get('https://api.bitget.com/api/v2/mix/market/fills',
+                         params={'symbol': _bsym, 'productType': 'USDT-FUTURES', 'limit': '100'},
+                         timeout=5)
+            _d = _r.json().get('data')
+            if isinstance(_d, list):
+                seen = True
+                _q = order.get('c487_queue') if isinstance(order, dict) else None
+                _ids = order.setdefault('c487_ids', set()) if isinstance(order, dict) else set()
+                for _t in _d:
+                    if int(_t.get('ts') or 0) < since_ms:
+                        continue
+                    _p = float(_t.get('price') or 0)
+                    if _p > 0 and ((side == 'buy' and _p < price) or (side == 'sell' and _p > price)):
+                        return True
+                    _id = _t.get('tradeId') or (_t.get('ts'), _t.get('price'), _t.get('size'))
+                    if _q is not None and _p > 0 and abs(_p - price) <= max(abs(price) * 1e-9, 1e-12) \
+                            and _id not in _ids:
+                        _ids.add(_id)
+                        order['c487_at'] = float(order.get('c487_at') or 0) + float(_t.get('size') or 0)
+                if _q is not None and isinstance(order, dict) and \
+                        float(order.get('c487_at') or 0) >= float(_q) + float(order.get('amount') or 0):
+                    return True
+        except Exception:
+            pass
+        return False if seen else None
+
+    def c487_settle(self, symbol: str, order: dict, side: str, price: float,
+                    size: float, wait_s: float) -> Tuple[float, float, str]:
+        """C487: how much of THIS order actually filled, and at what price.
+
+        Returns (filled_size, avg_price, how), how in 'filled' | 'partial' |
+        'unfilled' | 'unknown'. ONE question for paper and live alike:
+          PAPER  a resting order (status 'open') waits up to wait_s and fills
+                 only if the market trades through it AFTER it arrived. Market
+                 and crossing orders filled on arrival and pass straight back.
+          LIVE   the order is read back from the exchange until it is done or
+                 wait_s runs out, then CANCELLED and read once more, because a
+                 fill can race the cancel. Nothing is booked that the exchange
+                 does not say it holds, and no order is left resting behind.
+        'unknown' means the order could not be read at all: callers treat it as
+        not filled, and live logs it as an ERROR so a human checks the venue."""
+        if not order or order.get('status') == 'canceled':
+            return 0.0, 0.0, 'unfilled'
+        size = float(size or 0)
+        if self.cfg.PAPER_MODE:
+            if order.get('status') != 'open':
+                return (float(order.get('filled') or size),
+                        float(order.get('price') or price or 0), 'filled')
+            t0 = float(order.get('c487_t0') or time.time())
+            deadline = t0 + max(0.0, float(wait_s or 0))
+            seen = False
+            while True:
+                r = self._c487_through(symbol, side, price, int(t0 * 1000), order)
+                if r:
+                    return size, float(price), 'filled'
+                seen = seen or (r is not None)
+                left = deadline - time.time()
+                if left <= 0:
+                    break
+                time.sleep(min(1.5, left))
+            return 0.0, 0.0, ('unfilled' if seen else 'unknown')
+        oid = order.get('id')
+        if not oid:
+            return 0.0, 0.0, 'unknown'
+        deadline = time.time() + max(0.0, float(wait_s or 0))
+        o = None
+        while True:
+            try:
+                o = self.exchange.fetch_order(oid, symbol)
+                f = float(o.get('filled') or 0)
+                if o.get('status') == 'closed' or (size > 0 and f >= size * 0.999):
+                    f = f or size
+                    return f, float(o.get('average') or o.get('price') or price or 0), 'filled'
+                if o.get('status') == 'canceled':
+                    break
+            except Exception:
+                pass
+            left = deadline - time.time()
+            if left <= 0:
+                break
+            time.sleep(min(1.0, left))
+        if not o or o.get('status') != 'canceled':
+            try:
+                self.exchange.cancel_order(oid, symbol)
+            except Exception:
+                pass
+        for _k in range(3):
+            try:
+                o = self.exchange.fetch_order(oid, symbol)
+                f = float(o.get('filled') or 0)
+                px = float(o.get('average') or o.get('price') or price or 0) if f > 0 else 0.0
+                if size > 0 and f >= size * 0.999:
+                    return f, px, 'filled'
+                return f, px, ('partial' if f > 0 else 'unfilled')
+            except Exception:
+                time.sleep(0.5)
+        logger.error(f"🚨 C487: order {oid} on {symbol.split('/')[0]} could not be read back after "
+                        f"cancel -- treated as NOT filled. CHECK THE EXCHANGE BY HAND.")
+        return 0.0, 0.0, 'unknown'
 
     def cancel_order(self, symbol: str, order_id: str):
         if self.cfg.PAPER_MODE:
@@ -23098,6 +23267,7 @@ class TradingBot:
             # a close that protects capital must always be able to cross.
             _ord = None
             _maker462 = False
+            _mf487h = 1.0          # C487: the share of the half that really filled maker
             if (kind == 'win'
                     and bool(getattr(self.cfg, 'C462_MAKER_HALF', True))
                     and bool(getattr(self.cfg, 'C376_MAKER_EXITS', True))):
@@ -23112,6 +23282,27 @@ class TradingBot:
                         _ord = self.exchange.place_order(
                             symbol, close_side, _half, pos.leverage,
                             order_type='limit', price=_lim462, reduce_only=True)
+                        # C487: rests, and fills only if the market comes to it
+                        _mf487h = 1.0
+                        if getattr(self.cfg, 'C487_HONEST_FILLS', True) and _ord:
+                            _lim462 = float(_ord.get('price') or _lim462)          # as rounded to tick
+                            _f487h, _px487h, _ = self.exchange.c487_settle(
+                                symbol, _ord, close_side, _lim462, _half,
+                                float(getattr(self.cfg, 'C487_EXIT_REST_S', 5)))
+                            if _f487h >= _half * 0.999:
+                                _ord = dict(_ord, status='closed', filled=_f487h, price=_px487h or _lim462)
+                            elif _f487h > 0:
+                                _left487h = _half - _f487h
+                                _o2h = self.exchange.place_order(symbol, close_side, _left487h,
+                                                                 pos.leverage, reduce_only=True)
+                                _f2h, _px2h, _ = self.exchange.c487_settle(symbol, _o2h, close_side,
+                                                                           0.0, _left487h, 3.0)
+                                _px2h = _px2h or float((_o2h or {}).get('price') or 0) or price
+                                _mf487h = _f487h / _half
+                                _ord = dict(_ord, status='closed', filled=_half,
+                                            price=(_f487h * (_px487h or _lim462) + _left487h * _px2h) / _half)
+                            else:
+                                _ord = dict(_ord, filled=0)
                         if _ord and float(_ord.get('filled', 0) or 0) > 0:
                             _maker462 = True
                             self._c462_half_makers = getattr(self, '_c462_half_makers', 0) + 1
@@ -23134,6 +23325,15 @@ class TradingBot:
             if _ord is None:
                 _ord = self.exchange.place_order(symbol, close_side, _half,
                                                  pos.leverage, reduce_only=True)
+                if (getattr(self.cfg, 'C487_HONEST_FILLS', True) and not self.cfg.PAPER_MODE
+                        and _ord):                         # C487: the real price, live
+                    _f487m, _px487m, _h487m = self.exchange.c487_settle(
+                        symbol, _ord, close_side, 0.0, _half, 3.0)
+                    if _px487m > 0:
+                        _ord = dict(_ord, price=_px487m)
+                    if _f487m < _half * 0.999:
+                        logger.error(f"🚨 C487: half-close of {symbol.split('/')[0]} confirmed only "
+                                        f"{_f487m:g} of {_half:g} ({_h487m}) -- CHECK THE EXCHANGE BY HAND")
             _fill = price
             try:
                 _fp = float(_ord.get('price') or 0) if _ord else 0
@@ -23145,8 +23345,11 @@ class TradingBot:
             _pnl_pct = _move * pos.leverage
             _gross = (_move / 100.0) * (_half * pos.entry_price)
             # C462-6 / C462-5: the fee follows the ORDER, not the intent.
-            _exit_fee = (_half * _fill) * (
-                (self.cfg.MAKER_FEE_PCT if _maker462 else self.cfg.TAKER_FEE_PCT) / 100.0)
+            _rate487h = self.cfg.MAKER_FEE_PCT if _maker462 else self.cfg.TAKER_FEE_PCT
+            if _maker462 and _mf487h < 1.0:                # C487: a live partial is blended
+                _rate487h = (self.cfg.MAKER_FEE_PCT * _mf487h
+                             + self.cfg.TAKER_FEE_PCT * (1.0 - _mf487h))
+            _exit_fee = (_half * _fill) * (_rate487h / 100.0)
             _entry_fee_half = float(getattr(pos, 'entry_fee', 0.0) or 0.0) / 2.0
             _fees = _entry_fee_half + _exit_fee
             _net = _gross - _fees
@@ -23355,6 +23558,7 @@ class TradingBot:
             # ledger that cannot see that difference cannot show whether the
             # claim is paying. The flag follows the ORDER, not the intent.
             _c462_maker_exit = False
+            _c487_mfrac = 0.0      # C487: the share of the exit that really filled maker
             if _c376_profit and getattr(self.cfg, 'C376_MAKER_EXITS', True):
                 try:
                     _bid376, _ask376, _src376 = self.exchange.get_bid_ask(symbol)
@@ -23368,8 +23572,38 @@ class TradingBot:
                         _close_order = self.exchange.place_order(
                             symbol, close_side, pos.size, pos.leverage,
                             order_type='limit', price=_lim376, reduce_only=True)
+                        # C487: the order RESTS for C487_EXIT_REST_S and fills only
+                        # if the market comes to it. Before this, paper filled it
+                        # on the spot, and live read `filled` in the same breath
+                        # as sending it -- found it empty, crossed with a market
+                        # order, and left the limit resting on the book behind it.
+                        _mf487 = 1.0
+                        if getattr(self.cfg, 'C487_HONEST_FILLS', True) and _close_order:
+                            _lim376 = float(_close_order.get('price') or _lim376)   # as rounded to tick
+                            _f487, _px487, _ = self.exchange.c487_settle(
+                                symbol, _close_order, close_side, _lim376, pos.size,
+                                float(getattr(self.cfg, 'C487_EXIT_REST_S', 5)))
+                            if _f487 >= pos.size * 0.999:
+                                _close_order = dict(_close_order, status='closed', filled=_f487,
+                                                    price=_px487 or _lim376)
+                            elif _f487 > 0:
+                                # live only: part filled at the limit, the rest crosses
+                                _left487 = pos.size - _f487
+                                _o2 = self.exchange.place_order(symbol, close_side, _left487,
+                                                                pos.leverage, reduce_only=True)
+                                _f2, _px2, _ = self.exchange.c487_settle(symbol, _o2, close_side,
+                                                                         0.0, _left487, 3.0)
+                                _px2 = _px2 or float((_o2 or {}).get('price') or 0) or exit_price
+                                _mf487 = _f487 / pos.size
+                                _close_order = dict(_close_order, status='closed', filled=pos.size,
+                                                    price=(_f487 * (_px487 or _lim376) + _left487 * _px2) / pos.size)
+                                logger.info(f"   \u25d0 C487 maker exit PARTIAL {symbol.split('/')[0]}: "
+                                            f"{100 * _mf487:.0f}% at the limit, the rest crossed")
+                            else:
+                                _close_order = dict(_close_order, filled=0)
                         if _close_order and float(_close_order.get('filled', 0) or 0) > 0:
                             _c462_maker_exit = True          # C462-5
+                            _c487_mfrac = _mf487
                             self._c376_maker_fills = getattr(self, '_c376_maker_fills', 0) + 1
                             logger.info(f"   \U0001f3af C376 MAKER exit filled {symbol.split('/')[0]} "
                                         f"@${_fmt_px(_lim376)} — saved ~{(self.cfg.TAKER_FEE_PCT - self.cfg.MAKER_FEE_PCT):.2f}%% "
@@ -23394,6 +23628,17 @@ class TradingBot:
                                 f"{_why376} [throttled 5min]")
             if _close_order is None:
                 _close_order = self.exchange.place_order(symbol, close_side, pos.size, pos.leverage, reduce_only=True)  # C180-F3
+                # C487: live, read the real average price back instead of trusting
+                # the monitor's last mark (ccxt returns no price for a new market order)
+                if (getattr(self.cfg, 'C487_HONEST_FILLS', True) and not self.cfg.PAPER_MODE
+                        and _close_order):
+                    _f487c, _px487c, _h487c = self.exchange.c487_settle(
+                        symbol, _close_order, close_side, 0.0, pos.size, 3.0)
+                    if _px487c > 0:
+                        _close_order = dict(_close_order, price=_px487c)
+                    if _f487c < pos.size * 0.999:
+                        logger.error(f"🚨 C487: close of {symbol.split('/')[0]} confirmed only "
+                                        f"{_f487c:g} of {pos.size:g} ({_h487c}) -- CHECK THE EXCHANGE BY HAND")
             try:
                 _fill_p = float(_close_order.get('price') or 0) if _close_order else 0
                 if _fill_p > 0:
@@ -23427,6 +23672,9 @@ class TradingBot:
             # the market order below and pays taker, exactly as it does live.
             _exit_rate462 = (self.cfg.MAKER_FEE_PCT if _c462_maker_exit
                              else self.cfg.TAKER_FEE_PCT)
+            if _c462_maker_exit and _c487_mfrac < 1.0:     # C487: a live partial is blended
+                _exit_rate462 = (self.cfg.MAKER_FEE_PCT * _c487_mfrac
+                                 + self.cfg.TAKER_FEE_PCT * (1.0 - _c487_mfrac))
             exit_fee = position_value * (_exit_rate462 / 100)
             # ═══ C364: FUNDING — the cost paper has NEVER paid ═══════════════
             # A perpetual charges a holding fee at 00:00 / 08:00 / 16:00 UTC.
@@ -33293,6 +33541,18 @@ class TradingBot:
                                                     _existing.leverage,
                                                     'limit' if self.cfg.USE_LIMIT_ORDERS else 'market',
                                                     _addpx286)
+                if _ord286 and getattr(self.cfg, 'C487_HONEST_FILLS', True):
+                    # C487: the tranche exists only once the market has filled it
+                    _f487p, _px487p, _ = self.exchange.c487_settle(
+                        symbol, _ord286, _side286, _addpx286, _addsz286,
+                        3.0 if _c297p_urgent else float(self.cfg.LIMIT_ORDER_TIMEOUT_SECONDS))
+                    if 0 < _f487p < _addsz286 * 0.999:
+                        _frac487p = _f487p / _addsz286
+                        self.portfolio.release_margin(_lock286 * (1.0 - _frac487p), 0.0, 0.0, count_trade=False)
+                        _lock286 = _lock286 * _frac487p
+                        _addsz286 = _f487p
+                    _ord286 = dict(_ord286, status=('closed' if _f487p > 0 else 'canceled'),
+                                   filled=_f487p, price=(_px487p or _addpx286))
                 if not _ord286 or _ord286.get('status') == 'canceled' or _ord286.get('filled', 1) == 0:
                     # C397-4c: same defect — an unfilled add-tranche was booked
                     # as a losing trade on a position that is still open.
@@ -34212,6 +34472,38 @@ class TradingBot:
             if not order:
                 self.portfolio.available_balance += margin  # Release
                 return
+            # ═══ C487: A POSITION EXISTS ONLY ONCE THE MARKET HAS FILLED IT ═══
+            # Before this, paper judged a resting entry by the five minutes
+            # BEFORE it was placed (and filled 92%% of them), and live booked the
+            # position the instant the order was SENT -- then never looked
+            # again. A resting bid that the market ran away from was a phantom
+            # position live and a free winner in paper. Both now wait for the
+            # market and book only what it actually filled, at the real price.
+            if getattr(self.cfg, 'C487_HONEST_FILLS', True) and order.get('status') != 'canceled':
+                _t487 = time.time()
+                _w487 = (float(self.cfg.LIMIT_ORDER_TIMEOUT_SECONDS)
+                         if (self.cfg.USE_LIMIT_ORDERS and not _cross402) else 3.0)
+                _rate487 = fee / max(margin * leverage, 1e-12)
+                _f487, _px487, _how487 = self.exchange.c487_settle(symbol, order, side, price, size, _w487)
+                if _f487 <= 0:
+                    logger.info(f"   ⛔ C487 entry NOT filled: {symbol.split('/')[0]} {side} @${_fmt_px(price)} -- "
+                                f"{'no market data could be read' if _how487 == 'unknown' else 'the market never traded through it'} "
+                                f"in {_w487:.0f}s (would not fill live)")
+                    order = {'id': order.get('id'), 'price': 0, 'filled': 0, 'status': 'canceled'}
+                else:
+                    if _f487 < size * 0.999:
+                        _frac487 = _f487 / size
+                        _unused487 = margin * (1.0 - _frac487)
+                        self.portfolio.release_margin(_unused487, 0.0, 0.0, count_trade=False)
+                        logger.info(f"   ◐ C487 entry PARTIAL: {symbol.split('/')[0]} {100*_frac487:.0f}% filled -- "
+                                    f"${_unused487:.2f} of margin released")
+                        margin = margin * _frac487
+                    size = _f487
+                    price = _px487 or price
+                    fee = size * price * _rate487
+                    order = dict(order, status='closed', filled=size, price=price)
+                    logger.info(f"   ✅ C487 entry filled: {symbol.split('/')[0]} {side} @${_fmt_px(price)} "
+                                f"after {time.time() - _t487:.0f}s")
             # C286: an unfilled paper limit (price never touched) returns a
             # 'canceled' order — release the locked margin and abort cleanly so
             # no phantom position is created. This is the realistic-fill path.
