@@ -744,3 +744,298 @@
     reason=late-leg F=-0.11
 14:16:01 | 📈 C398: pack extended +1.95 ATR over 3h UP — no tilt (the up-side mirror failed
     out-of-sample by design)
+14:17:25 |    ⚖️ C462-7 OP: penalties 0.52→0.39 (×0.75) vs bar 0.46 — the stack decided
+14:17:37 |    🚨 C455-2: JTO — the ENTRY stack has just REFUSED this exact long (C414 real-CVD veto,
+    real CVD -0.60) and the bot is HOLDING it. Handed to the exit stack as evidence instead of
+    discarded.
+14:17:39 |    ⚖️ C462-7 AERO: penalties 0.55→0.41 (×0.75) vs bar 0.49 — the stack decided
+14:18:05 |    ⚖️ C462-7 PLUME: penalties 0.58→0.43 (×0.75) vs bar 0.46 — the stack decided
+14:18:11 |    🚨 C455-2: ARK — the ENTRY stack has just REFUSED this exact long (C414 real-CVD veto,
+    real CVD -0.47) and the bot is HOLDING it. Handed to the exit stack as evidence instead of
+    discarded.
+14:18:11 | 📊 Step 3 result: 70 analyzed → 2 viable → Step 4 DRI/DSI
+ 
+  14:18  up 5h42m  scan 47 -----------------------------------------------------------------------
+  EQUITY    $251.23  unreal $+1.09
+  OPEN      2 pos $43.39 (17%)  free $206.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.220500  +2.85%   +0.57   29m  + 77% left
+  JTO      LONG    0.511200  0.515500  +0.84%   +0.52   16m  + 51% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+1.09 +0.43%
+  CURVE     ========================================+++
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      $0.02  mk2/tk0  0.007% of eq
+  SCAN      805 > 70 > 2 passed  top ZEN 0.51 (viable)  47 scans, 1983 analysed
+  MARKET    MIXED  bias +0.38  breadth +0.00  taker flow +0.16
+  NEWS      65 articles  + tone +0.30  TRUMP +0.34  ONDO +0.27  UNI -0.26
+  INFO      2 tilted  flow/fund/news/oi on 158
+  MOVERS    QNT +39% cut  XPL +38% #9  BROCCOLI +36% #16  ONDO +31% #5
+  ------------------------------------------------------------------------------------------------
+ 
+14:23:21 |    🪞 C266 board-parity (top movers vs screen): QNT +40%[#14] | XPL +33%[#9] | ONDO
+    +32%[#3] | BROCCOLI +29%[#22] | ARK +28%[#30]
+14:23:21 | 📈 C398: pack extended +1.62 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:23:38 |    🎯 C462-6 MAKER half filled JTO @$0.518500 — saved ~0.04% of the half notional (1 this
+    session)
+  -> 14:23  HALF   JTO LONG @0.518500  +1.43% $+0.47
+       win half banked  maker  $11.32 rides on
+14:23:47 |    ⚖️ C462-7 MON: penalties 0.56→0.42 (×0.75) vs bar 0.46 — the stack decided
+14:23:58 | 📊 Step 3 result: 14 analyzed (+56 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=27, mtf_disagree=2, regime_blip=3, crowding=2, no_structural_room=9,
+    post_penalty_quality=2, capitulation=5, ct_noisy_block=5, post_penalty_low=3, flat_projection=1,
+    flow_veto=2, vol_floor=6, leg_exhausted=1
+14:23:58 |    📌 Nearest miss: JASMY score=0.913 conf=0.877 quality=0.800/0.26 reason=vol_floor
+ 
+ 
+  14:26  up 5h50m  scan 48 -----------------------------------------------------------------------
+  EQUITY    $251.95  unreal $+1.33
+  OPEN      2 pos $32.07 (13%)  free $218.55
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.224100  +4.52%   +0.92   37m  + 72% left
+  JTO      LONG    0.511200  0.517800  +1.29%   +0.41   24m  + 51% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+1.81 +0.72%
+  CURVE     ==========================================++
+  DAY       real $-2.02  limit $9.44 (3.74%)  21% used
+            ######....................
+  MONTH     dial 15%  used $2.19 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.62
+  FEES      $0.02  mk3/tk0  0.010% of eq
+  SCAN      805 > 14 > 0 passed  top JASMY 0.91 (vol_floor)  48 scans, 1997 analysed
+  MARKET    MIXED  bias +0.39  breadth +0.63  taker flow +0.04
+  NEWS      65 articles  + tone +0.30  TAO +0.48  HYPE +0.34  TRUMP +0.34
+  INFO      2 tilted  flow/fund/news/oi on 158
+  MOVERS    QNT +40% #14  XPL +33% #9  ONDO +32% #3  BROCCOLI +29% #22
+  ------------------------------------------------------------------------------------------------
+ 
+14:28:59 | 📈 C398: pack extended +1.62 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:34:21 |    🪞 C266 board-parity (top movers vs screen): QNT +39%[#18] | XPL +35%[#9] | ARK
+    +33%[#30] | ONDO +32%[#4] | AKE -26%[Live=0.47<cut]
+14:34:21 | 📈 C398: pack extended +1.85 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:34:30 |    🎯 C462-6 MAKER half filled ARK @$0.229200 — saved ~0.04% of the half notional (2 this
+    session)
+  -> 14:34  HALF   ARK LONG @0.229200  +6.90% $+0.71
+       win half banked  maker  $10.38 rides on
+14:34:43 |    ⚖️ C462-7 SUI: penalties 0.48→0.36 (×0.75) vs bar 0.45 — the stack decided
+14:35:19 |    ⚖️ C462-7 ARB: penalties 0.47→0.35 (×0.75) vs bar 0.45 — the stack decided
+14:36:56 | 📊 Step 3 result: 69 analyzed → 8 viable → Step 4 DRI/DSI
+ 
+ 
+  14:36  up 6h00m  scan 49 -----------------------------------------------------------------------
+  EQUITY    $252.53  unreal $+1.20
+  OPEN      2 pos $21.70 (9%)  free $229.63
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.230200  +7.37%   +0.76   47m  + 73% left
+  JTO      LONG    0.511200  0.518300  +1.39%   +0.44   34m  + 55% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+2.39 +0.95%
+  CURVE     ==========================================+++
+  DAY       real $-1.30  limit $9.44 (3.74%)  14% used
+            ####......................
+  MONTH     dial 15%  used $1.48 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+1.33
+  FEES      $0.03  mk4/tk0  0.011% of eq
+  SCAN      805 > 69 > 8 passed  top ARK 0.87 (viable)  49 scans, 2066 analysed
+  MARKET    TRENDING  bias +0.51  breadth +0.00  taker flow -0.20
+  NEWS      65 articles  + tone +0.30  TAO +0.48  HYPE +0.34  UNI -0.26
+  INFO      8 tilted  flow/fund/news/oi on 160
+  MOVERS    QNT +39% #18  XPL +35% #9  ARK +33% #30  ONDO +32% #4
+  ------------------------------------------------------------------------------------------------
+ 
+14:39:57 | 📈 C398: pack extended +1.85 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:40:32 | 📊 Step 3 result: 8 analyzed (+61 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=18, mtf_disagree=4, micro_exhaustion=3, absorption_at_extreme=2,
+    late_leg_no_forward=7, post_penalty_quality=10, crowding=1, final_gate=1, flat_projection=1,
+    regime_blip=2, low_quality=2, leg_exhausted=1, post_penalty_low=3, dir_proj_conflict=1,
+    vol_floor=5, fee_floor=1
+14:40:32 |    📌 Nearest miss: JTO score=1.261 conf=0.501 quality=0.632/0.26 reason=mtf_disagree
+14:43:39 |    🪞 C266 board-parity (top movers vs screen): QNT +38%[#17] | XPL +35%[#9] | ARK
+    +34%[#31] | ONDO +30%[#4] | BROCCOLI +27%[#25]
+14:43:39 | 📈 C398: pack extended +1.87 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:44:01 | 📊 Step 3 result: 3 analyzed (+66 cached this 15m candle) → 0 passed | low_confidence=7,
+    low_score=18, mtf_disagree=4, micro_exhaustion=3, late_leg_no_forward=8,
+    absorption_at_extreme=2, post_penalty_quality=10, crowding=1, final_gate=1, flat_projection=1,
+    regime_blip=2, low_quality=2, leg_exhausted=1, post_penalty_low=4, vol_floor=4, fee_floor=1
+14:44:01 |    📌 Nearest miss: POL score=0.275 conf=0.571 quality=0.157/0.26 reason=late-leg F=-0.17
+ 
+  14:44  up 6h08m  scan 51 -----------------------------------------------------------------------
+  EQUITY    $252.89  unreal $+1.56
+  OPEN      2 pos $21.70 (9%)  free $229.63
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.234400  +9.33%   +0.96   55m  + 75% left
+  JTO      LONG    0.511200  0.520600  +1.84%   +0.60   42m  + 56% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+2.75 +1.10%
+  CURVE     ===========================================+++
+  DAY       real $-1.30  limit $9.44 (3.74%)  14% used
+            ####......................
+  MONTH     dial 15%  used $1.48 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+1.33
+  FEES      $0.03  mk4/tk0  0.011% of eq
+  SCAN      805 > 3 > 0 passed  top POL 0.28 (late-leg F=-0.17)  51 scans, 2077 analysed
+  MARKET    TRENDING  bias +0.50  breadth +0.88  taker flow +0.02
+  NEWS      65 articles  - tone -0.08  TAO +0.48  HYPE +0.34  UNI -0.26
+  INFO      8 tilted  flow/fund/news/oi on 160
+  MOVERS    QNT +38% #17  XPL +35% #9  ARK +34% #31  ONDO +30% #4
+  ------------------------------------------------------------------------------------------------
+ 
+14:46:22 | 🎯 EXIT SIGNAL: JTO/USDT:USDT - EARLY_PEAK_CAPTURE: peak=+6.2%(2.4PRU) now=+4.3%
+    gave=30%(0.7PRU)
+14:46:22 |    🎯 C376 MAKER exit filled JTO @$0.519500 — saved ~0.04%% of notional (1 this session)
+14:46:22 |    ✂️ C482-A split trade: banked $+0.47 + remainder $+0.54 = whole idea $+1.01 — every
+    record below uses the whole idea
+  << 14:46  CLOSE  JTO LONG @0.519500  +1.62% $+1.01  WIN
+       held 43m  EARLY_PEAK_CAPTURE: peak  kept 79% of a +2.05% peak  +1.24R  maker
+14:46:59 | 🎯 EXIT SIGNAL: ARK/USDT:USDT - EARLY_PEAK_CAPTURE: peak=+9.3%(2.7PRU) now=+7.1%
+    gave=24%(0.6PRU)
+14:46:59 |    🎯 C376 MAKER exit filled ARK @$0.229800 — saved ~0.04%% of notional (2 this session)
+14:46:59 |    ✂️ C482-A split trade: banked $+0.71 + remainder $+0.74 = whole idea $+1.45 — every
+    record below uses the whole idea
+  << 14:46  CLOSE  ARK LONG @0.229800  +7.18% $+1.45  WIN
+       held 57m  EARLY_PEAK_CAPTURE: peak  kept 77% of a +9.33% peak  +1.54R  maker
+14:50:01 | 📈 C398: pack extended +1.87 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:50:29 |    🎢→⚖️ ENA: C292 stands down — parabola BROKEN (range 21×ATR, 7.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+14:51:26 |    ⚖️ C462-7 OP: penalties 0.51→0.39 (×0.75) vs bar 0.44 — the stack decided
+14:52:01 |    ⚖️ C462-7 ZEN: penalties 0.53→0.39 (×0.75) vs bar 0.40 — the stack decided
+14:52:10 | 📊 Step 3 result: 69 analyzed → 7 viable → Step 4 DRI/DSI
+14:52:11 |    🎲 C378 odds-size: orderliness 0.24 -> risk x0.85 ($0.729)
+14:52:12 |    🔒 C378 stop level $0.06458 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 14:52  OPEN   SEI LONG @0.066190  x1 $29.93
+       target +9.4%  stop -2.4%  entry score 0.77  maker
+14:52:13 |    🎲 C378 odds-size: orderliness 0.09 -> risk x0.75 ($0.649)
+14:52:14 |    🔒 C378 stop level $2.5708 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+  >> 14:52  OPEN   PENDLE LONG @2.6163  x1 $37.29
+       target +6.0%  stop -1.7%  entry score 0.62  maker
+ 
+ 
+  14:52  up 6h16m  scan 52 -----------------------------------------------------------------------
+  EQUITY    $252.62  unreal $+0.01
+  OPEN      2 pos $67.22 (27%)  free $185.39
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  SEI      LONG    0.066190  0.066270  +0.12%   +0.01    0m  + 66% left
+  PENDLE   LONG      2.6163    2.6182  +0.07%   -0.00    0m  - 68% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+2.48 +0.99%  peak $252.89  dd 0.11%
+  CURVE     ===========================================++++++
+  DAY       real $-0.03  limit $9.44 (3.74%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.20 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+1.23/tr  best $+1.45  worst $+1.01
+  LIFETIME  131tr 42W 89L 32%  $+2.61
+  FEES      $0.05  mk8/tk0  0.020% of eq
+  SCAN      805 > 69 > 7 passed  top SEI 0.77 (viable)  52 scans, 2146 analysed
+  MARKET    TRENDING  bias +0.59  breadth +0.00  taker flow -0.27
+  NEWS      65 articles  - tone -0.08  TAO +0.48  HYPE +0.34  UNI -0.26
+  INFO      6 tilted  flow/fund/news/oi on 160
+            info>0 1tr $+1.01 win 100%  info≤0 1tr $+1.45 win 100%
+  MOVERS    QNT +38% #17  XPL +35% #9  ARK +34% #31  ONDO +30% #4
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+14:55:24 |    🪞 C266 board-parity (top movers vs screen): QNT +39%[Live=0.57<cut] | XPL +34%[#12] |
+    ONDO +30%[#4] | ARK +30%[#36] | BROCCOLI +28%[#22]
+14:55:24 | 📈 C398: pack extended +2.04 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:56:12 | 📊 Step 3 result: 18 analyzed (+52 cached) → 1 viable → Step 4 DRI/DSI
+14:59:13 | 📈 C398: pack extended +2.04 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+14:59:30 | 📊 Step 3 result: 1 analyzed (+69 cached this 15m candle) → 0 passed | low_confidence=1,
+    low_score=27, mtf_disagree=4, capitulation=7, absorption_at_extreme=3, proj_confirms_trend=1,
+    regime_blip=1, crowding=1, low_quality=2, counter_trend_block=3, post_penalty_low=4,
+    late_leg_no_forward=5, leg_exhausted=1, dir_proj_conflict=2, reentry_chase=1,
+    post_penalty_quality=2, vol_floor=2, flow_veto=2, flat_projection=1
+14:59:30 |    📌 Nearest miss: SPK score=0.715 conf=0.474 quality=0.339/0.26 reason=mtf_disagree
+ 
+  15:01  up 6h24m  scan 54 -----------------------------------------------------------------------
+  EQUITY    $252.86  unreal $+0.25
+  OPEN      2 pos $67.22 (27%)  free $185.39
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  SEI      LONG    0.066190  0.066380  +0.29%   +0.06    8m  + 61% left
+  PENDLE   LONG      2.6163    2.6314  +0.58%   +0.19    8m  + 40% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+2.72 +1.09%  peak $252.89  dd 0.01%
+  CURVE     ===========================================+++++++
+  DAY       real $-0.03  limit $9.44 (3.74%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.20 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+1.23/tr  best $+1.45  worst $+1.01
+  LIFETIME  131tr 42W 89L 32%  $+2.61
+  FEES      $0.05  mk8/tk0  0.020% of eq
+  SCAN      805 > 1 > 0 passed  top SPK 0.72 (mtf_disagree)  54 scans, 2165 analysed
+  MARKET    TRENDING  bias +0.59  breadth +0.61  taker flow -0.43
+  NEWS      65 articles  - tone -0.08  ONE +0.26  BNB +0.21  NEAR -0.18
+  INFO      1 tilted  flow/fund/news/oi on 162
+            info>0 1tr $+1.01 win 100%  info≤0 1tr $+1.45 win 100%
+  MOVERS    QNT +39% cut  XPL +34% #12  ONDO +30% #4  ARK +30% #36
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+15:02:32 | 📈 C398: pack extended +2.04 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+15:02:55 |    ⚖️ C462-7 ETH: penalties 0.52→0.39 (×0.75) vs bar 0.40 — the stack decided
+15:03:25 |    ⚖️ C462-7 NIL: penalties 0.59→0.36 (×0.60) vs bar 0.44 — the stack decided
+15:05:21 | 📊 Step 3 result: 70 analyzed → 10 viable → Step 4 DRI/DSI
+15:08:30 |    🪞 C266 board-parity (top movers vs screen): QNT +37%[Live=0.49<cut] | XPL +33%[#13] |
+    ONDO +31%[#5] | PHA +26%[Live=0.55<cut] | ARK +25%[#44]
+15:08:30 | 📈 C398: pack extended +2.22 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+15:09:11 | 📊 Step 3 result: 22 analyzed (+50 cached this 15m candle) → 0 passed | low_score=18,
+    mtf_disagree=5, late_leg_no_forward=13, proj_confirms_trend=2, post_penalty_low=3,
+    regime_blip=1, absorption_at_extreme=8, crowding=1, flat_projection=1, flow_veto=2,
+    low_quality=3, post_penalty_quality=6, counter_trend_block=1, reentry_chase=1, vol_floor=3,
+    micro_exhaustion=1, final_gate=1, fee_floor=1, dir_proj_conflict=1
+15:09:11 |    📌 Nearest miss: SPK score=1.021 conf=0.428 quality=0.437/0.26 reason=mtf_disagree
+ 
+  15:09  up 6h32m  scan 56 -----------------------------------------------------------------------
+  EQUITY    $253.08  unreal $+0.47
+  OPEN      2 pos $67.22 (27%)  free $185.39
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  SEI      LONG    0.066190  0.066950  +1.15%   +0.32   16m  + 45% left
+  PENDLE   LONG      2.6163    2.6292  +0.49%   +0.15   16m  + 53% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+2.94 +1.17%
+  CURVE     ===========================================++++++++
+  DAY       real $-0.03  limit $9.44 (3.74%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.20 of $37.92  from $252.81
+  RECORD    2 closed  2W 0L  win 100%  avg $+1.23/tr  best $+1.45  worst $+1.01
+  LIFETIME  131tr 42W 89L 32%  $+2.61
+  FEES      $0.05  mk8/tk0  0.020% of eq
+  SCAN      805 > 22 > 0 passed  top SPK 1.02 (mtf_disagree)  56 scans, 2257 analysed
+  MARKET    TRENDING  bias +0.69  breadth +0.76  taker flow -0.02
+  NEWS      65 articles  - tone -0.08  ONE +0.26  BNB +0.21  NEAR -0.18
+  INFO      10 tilted  flow/fund/news/oi on 162
+            info>0 1tr $+1.01 win 100%  info≤0 1tr $+1.45 win 100%
+  MOVERS    QNT +37% cut  XPL +33% #13  ONDO +31% #5  PHA +26% cut
+  TAPE      + +
+  ------------------------------------------------------------------------------------------------
+ 
+15:12:13 | 📈 C398: pack extended +2.22 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
+15:15:33 | 📈 C398: pack extended +2.22 ATR over 3h UP — no tilt (the up-side mirror failed
+    out-of-sample by design)
