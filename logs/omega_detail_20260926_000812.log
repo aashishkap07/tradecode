@@ -1,0 +1,143 @@
+00:08:12 | 📊 Paper Mode
+00:08:14 | ✅ Connected | 805 futures markets
+00:08:14 | 📊 Bitget Fees: Maker 0.02% | Taker 0.06%
+00:08:14 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+00:08:14 | 📋 Limit Orders: ENABLED (offset 0.1%)
+00:08:14 | 📂 Loaded state: $252.26 | 0 positions | available $228.53 (locked $23.73)
+00:08:14 | 📐 RISK @ $252.26: monthly dial 15% = $37.92/month  |  per-trade risk 0.341% = $0.86  |  break-even win rate 32% at the measured 2.10 payoff [C482]
+00:08:14 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C490  PAPER  Bitget perps
+  26 Sep 2026   00:08
+  start $252.26  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $252.26  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.55
+  DAY       limit $9.34  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      +0.0474 blended  44W 95L realised
+  NEED      32% win at 2.10 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+00:08:14 |    (legacy Flask page not installed — the dashboard is the control panel)
+00:08:14 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+00:08:14 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+00:08:14 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+00:08:14 |        See deploy/DEPLOY.md — one command, no open ports, free.
+00:08:14 | ============================================================
+00:08:14 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+00:08:14 |    🧪 C364 PAPER=LIVE PARITY — costs modelled in paper:
+00:08:14 |       • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)
+00:08:14 |       • market fills: lift the ASK / hit the BID — never the last price
+00:08:14 |       • exit fee: taker on current notional
+00:08:14 |       • funding: charged per 8h settlement crossed
+00:08:14 |       NOT modelled: partial fills, API outages, queue position.
+00:08:14 | ============================================================
+00:08:14 | 🔒 Score floor reset: 0.32 (single mode — HP retired at C403-3)
+00:08:14 | 🧮 C458 EDGE STATE — what the ledger permits today:
+00:08:14 |    realised 6W/14L → shrunk base rate 0.400; fair odds for a 2.00R target are 0.333
+00:08:14 |    blended edge +0.0474  (prior +0.0467 x0.60 + realised +0.0485 x0.40 (n=20; anchored on realised payoff 2.10 (7W/13L in R) (break-even wr 0.322 vs realised 0.400 = e +0.0776) x extrapolation shrink 0.63 to T 1.41R))
+00:08:14 |    ✅ edge is positive — the expectancy gate is open on merit, and exploration should stay idle.
+00:08:14 | 📋 Version history: see CHANGELOG.md (auto-updated each revision)
+00:08:14 | ============================================================
+00:08:14 | 📊 ARCHITECTURE — what is actually running:
+00:08:14 |   1 SCANNER    756 markets → volume floor → top 30 by liveliness
+00:08:14 |   2 ENTRY      11 signal components → one score; only 3 hard vetoes
+00:08:14 |                (can't pay fees / no room to stop / not tradeable).
+00:08:14 |                Everything else is a weighted penalty [C403-5].
+00:08:14 |                EXPECTANCY GATE [C404/C405]: R = proj×√t ÷ stop,
+00:08:14 |                E = p(R×0.60)−(1−p); E must clear 0 AND the live percentile bar.
+00:08:14 |                TRADES/DAY [C467]: NO CAP. No count target, no hard cap, no per-scan limit. 2/pair still applies (that is concentration, not pace).
+00:08:14 |                What refuses a trade now: the three hard vetoes only — can't pay fees, no room to stop, not tradeable. E<0 is a PENALTY while p has no measured skill [C467].
+00:08:14 |   3 MONITOR    SPLIT LOOP [C397]: prices every 0.8s (stop, floors);
+00:08:14 |                OHLCV/DRI every 20s; regime every 90s, AFTER positions.
+00:08:14 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+00:08:14 |                · PROFIT FLOOR (C397 runner floor binds) · TIME.
+00:08:14 |                Loss patience is BOUNDED at 1.35× the soft limit [C404-2].
+00:08:14 |   SESSIONS     when each market DISCOVERS its price, in IST (US is currently on EDT):
+00:08:14 |                crypto        24/7        · metals+energy  Globex ~24/5
+00:08:14 |                US equity     19:00–01:30 IST  (a NIGHT session from India)
+00:08:14 |                index futures Globex ~24/5 (SP500/NDX100 are futures, not cash)
+00:08:14 |                Korea (KRX)   05:30–12:00 IST · HK  07:00–13:30 IST (lunch 09:30–10:30)
+00:08:14 |                ● OPEN  crypto        24/7
+00:08:14 |                ● OPEN  us_equity     US cash
+00:08:14 |                ● OPEN  index_future  Globex index
+00:08:14 |                ● OPEN  metal         Globex
+00:08:14 |                ○ shut  korea_equity  KRX closed
+00:08:14 |                ○ shut  hk_equity     HKEX closed
+00:08:14 |   UNIVERSE     crypto + 294 RWA perps (stocks/metals/energy/ETFs),
+00:08:14 |                session-gated; leverage scaled to each instrument's own ATR;
+00:08:14 |                fee burden inside E. ONE POOL, no per-class quota [C409].
+00:08:14 |                WHY: crypto alive 39.3% of bars, ANY asset alive 59.8%
+00:08:14 |                (+20.5pp). Cross-class aliveness corr +0.04/+0.14 vs
+00:08:14 |                crypto's OWN internal factor corr +0.925 — real diversification.
+00:08:14 |   EDGES        C398 capitulation tilt (down-side only, +4.67pp measured)
+00:08:14 |                C396 session tilt · C401 taker-flow (instrumented)
+00:08:14 |                C403-7 flow term ±10% on direction
+00:08:14 |   RETIRED      HP phase ladder (C403-3: 5 incident classes, 0 benefit)
+00:08:14 |                Guardian + C329 (C403-4: 4 controllers, none knew the risk)
+00:08:14 |                per-symbol learning (C403-2: needs ~10 months of trades)
+00:08:14 |                DSI+DRI divergence / DRI HARD (C399: unreachable by construction)
+00:08:14 | ============================================================
+00:08:14 | ============================================================
+00:08:14 | ✅ DRI SYSTEM (11 components, renormalised to exactly 1.0 [C400]):
+00:08:14 |    Threshold: 0.3 | Hard: 0.5
+00:08:14 |    Weights: Mom=0.18 Tech=0.16 Vol=0.11
+00:08:14 |    ML=0.04 Wave=0.04 OFI=0.06
+00:08:14 |    Fund=0.05 MTF=0.06 RVS=0.07
+00:08:14 |    PA=0.15(dyn→0.45) Time=0.10 — nominal sum 1.02, rescaled to 1.00 at runtime [C400: was 1.113]
+00:08:14 |    DSI = 6 of those 11 (Mom/Vol/Tech/ML/Wave/MTF, sum 0.59) inverted, Hurst-modulated, now unit-scaled [C400]
+00:08:14 |    READ THEM AS: DRI negative = reversal thesis STRONG; DRI→0 = thesis DYING. DSI positive = sustainable; DSI→0 = spent.
+00:08:14 |    Updates: every 20s (15m candles do not move faster; prices stay on the 0.8s leg)
+00:08:14 | ============================================================
+00:08:14 | 📋 CONFIGURATION:
+00:08:14 |    💰 Equity: $252.26 | Available: $228.53
+00:08:14 |    📊 Position Sizing: Dynamic allocation, min $5.0 | 3-5 positions
+00:08:14 |    🎲 Leverage: 1x-10x  (single mode — HP retired, C403-3)
+00:08:14 |    📋 Limit Orders: ON | Maker 0.02% Taker 0.06%
+00:08:14 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left (C482)
+00:08:14 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+00:08:14 |    ⏱️ Prices 0.8s | DRI 20s | Summary 480s | Min age 15min
+00:08:14 |    🧠 Shared learning ON (Markov chains, calibration). Per-symbol memory OFF [C403-2].
+00:08:14 | ============================================================
+00:08:14 | 📊 MODE: NORMAL
+00:08:14 |    Normal start: $250.00
+00:08:14 | ============================================================
+00:08:14 | 💡 Press Ctrl+C to stop safely
+00:08:14 | ============================================================
+00:08:14 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before)
+00:08:35 |    💱 C490 carry (paper ledger) 2026-09-25: day -0.40 -> $251.86 (-0.16%) | 8 held, 17 of 37 eligible above 10%/yr | in FARTCOIN,FET,APT,XLM,UNI,PENGU,XPL,ONDO [19s]
+00:08:35 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it)
+ 
+  00:16  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.38  unreal $+0.12
+  OPEN      flat  free $228.53
+  SHADOW    intraday M1 $250.00 (+0.00%)  M1g $250.00 (+0.00%)  1d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      9 pos gross $119.44 (0.47x)  open $+0.12  funding $-0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $+0.12 +0.05%
+  DAY       real $+0.00  limit $9.34 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.55 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+00:16:12 | 
+00:16:12 | ============================================================
+00:16:12 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+00:16:12 | 💰 Equity: $252.26 | Unrealized: $+0.12
+00:16:12 | 💵 Available: $228.53 | Locked: $23.73
+00:16:12 | 📈 Session: $+0.12 (+0.0%)
+00:16:12 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+00:16:12 | ============================================================
+00:16:12 | ============================================================
+00:16:12 | 🔵 Day: +0.00% realised (loss limit $9.34, 0% used · dial 15%/month) [C483]
+00:16:12 | ============================================================
+00:16:12 | 
