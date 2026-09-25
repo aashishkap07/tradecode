@@ -273,6 +273,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C463',
         'C487',                     # whether a resting order really filled
         'C488',                     # the portfolio engine: rebalances, guard, fills
+        'C489',                     # the intraday shadow's hourly record
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
         'NEWS',                     # C463-3 news panel
@@ -1671,6 +1672,16 @@ class _C462Report:
             else:
                 self._pack('OPEN', ['flat',
                                     f"free {_c462_money(st.get('available', 0))}"])
+            # C489: the intraday shadow, one line
+            try:
+                _s489 = getattr(bot, 'c489', None)
+                if _s489 is not None and _s489.active() and _s489.last_hour:
+                    _a489, _b489 = _s489.record('M1'), _s489.record('M1g')
+                    self._pack('SHADOW', [f"intraday M1 {100 * (_a489['equity'] - 1):+.2f}%",
+                                          f"M1g {100 * (_b489['equity'] - 1):+.2f}%",
+                                          f"{_a489['days']}d paper only"])
+            except Exception:
+                pass
             # C488: the portfolio engine's book, one line
             try:
                 if _e488 is not None and _e488.active():
@@ -2097,7 +2108,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C488'
+_OMEGA_VERSION = 'C489'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2838,6 +2849,13 @@ class Config:
         self.C488_TRADE_BAND = 0.30             # within 30% of its target a position is left alone
         self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
         self.C488_LIVE_OK = False               # no real money until live fills and funding are reconciled
+        # ═══ C489: THE INTRADAY ENGINE, SHADOW ONLY ══════════════════════
+        # Built on the operator's principles and tested first: all 10
+        # pre-registered intraday designs and the round-2 holdout FAILED after
+        # costs (research/c489_preregistration.md). It runs live every hour on
+        # its own paper ledgers and never touches the account.
+        self.C489_SHADOW = True
+        self.C489_TOPN = 40
 
         # === Monitoring ===
         # ═══ C368: THE CONSISTENCY BUDGET ═══════════════════════════════
@@ -19011,6 +19029,520 @@ class C488Engine:
                     funding=round(sum(p['funding'] for p in self.book.values()), 3))
 
 
+# ════════════════════════════════════════════════════════════════════════════
+#  C489: THE INTRADAY ENGINE (SHADOW)
+# ════════════════════════════════════════════════════════════════════════════
+# The research functions of research/omega_c489_research.py, copied verbatim
+# with a prefix (omega_c489_test.py proves they return identical arrays), and
+# the probability model's final fit (research/c489_model.json: trained on the
+# 180 days to 2026-08-31, L2 C=0.1). See C489Shadow for what it is and why it
+# trades a paper ledger of its own.
+
+_C489_HOLD = 4
+_C489_MODEL = {"feats": ["z_r1", "z_r4", "z_r24", "xs_r4", "flow1", "flow4", "vsurp", "volreg", "resid4", "btc4", "fundz", "pe", "hurst", "mk1", "mk2", "rpos"], "w": [-0.0051219772, -0.0292645808, 0.0118304462, 0.0085167685, -0.0140142481, -0.0029938288, -0.021142967, 0.0024832055, 0.0226928366, -0.0523244284, 0.000872484, 0.0118216006, -0.0209127153, -0.0189549776, -0.0030283305, -0.0093308092, 0.0049236964], "gate": [0.000246593, 0.0197105262]}
+
+
+def _c489_roll_sum(x, w):
+    c = np.nancumsum(np.nan_to_num(x), axis=0)
+    out = np.full_like(x, np.nan, dtype=float)
+    out[w:] = c[w:] - c[:-w]
+    out[w - 1] = c[w - 1]
+    return out
+
+
+def _c489_roll_mean(x, w):
+    s = _c489_roll_sum(np.nan_to_num(x), w)
+    n = _c489_roll_sum((~np.isnan(x)).astype(float), w)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        return np.where(n >= w * 0.8, s / n, np.nan)
+
+
+def _c489_roll_std(x, w):
+    m = _c489_roll_mean(x, w)
+    m2 = _c489_roll_mean(x * x, w)
+    with np.errstate(invalid='ignore'):
+        return np.sqrt(np.maximum(m2 - m * m, 0.0))
+
+
+def _c489_roll_median(x, w, step=1):
+    """rolling median via sliding windows, per column (exact)"""
+    out = np.full_like(x, np.nan, dtype=float)
+    from numpy.lib.stride_tricks import sliding_window_view
+    for j in range(x.shape[1]):
+        v = sliding_window_view(x[:, j], w)
+        out[w - 1:, j] = np.nanmedian(v, axis=1)
+    return out
+
+
+def _c489_lag(x, n):
+    out = np.full_like(x, np.nan, dtype=float)
+    out[n:] = x[:-n]
+    return out
+
+
+def _c489_perm_entropy(r, w=48):
+    """normalised permutation entropy, order 3, over the last w returns"""
+    a, b, c = r[:-2], r[1:-1], r[2:]
+    pat = np.full(r.shape, -1, dtype=np.int8)
+    code = np.select([(a < b) & (b < c), (a < c) & (c <= b), (c <= a) & (a < b),
+                      (b <= a) & (a < c), (b < c) & (c <= a), (c <= b) & (b <= a)],
+                     [0, 1, 2, 3, 4, 5], default=-1)
+    code[np.isnan(a) | np.isnan(b) | np.isnan(c)] = -1
+    pat[2:] = code
+    m = w - 2
+    P = np.stack([_c489_roll_sum((pat == p).astype(float), m) for p in range(6)])
+    tot = P.sum(0)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        q = P / tot
+        h = -np.nansum(np.where(q > 0, q * np.log(q), 0.0), axis=0) / math.log(6)
+    return np.where(tot >= m * 0.9, h, np.nan)
+
+
+def _c489_dfa_hurst(r, rows, w=168, scales=(8, 14, 28, 56)):
+    """DFA Hurst exponent of the last w returns, computed only at `rows`"""
+    out = np.full(len(r), np.nan)
+    rows = rows[rows >= w]
+    if len(rows) == 0:
+        return out
+    from numpy.lib.stride_tricks import sliding_window_view
+    v = sliding_window_view(np.nan_to_num(r), w)[rows - w + 1]           # (m, w)
+    ok = ~np.isnan(sliding_window_view(r, w)[rows - w + 1]).any(1)
+    y = np.cumsum(v - v.mean(1, keepdims=True), axis=1)
+    logF = []
+    for s in scales:
+        seg = y[:, : (w // s) * s].reshape(len(rows), w // s, s)
+        x = np.arange(s, dtype=float); xm = x.mean(); xv = ((x - xm) ** 2).sum()
+        ym = seg.mean(2, keepdims=True)
+        b = ((seg - ym) * (x - xm)).sum(2, keepdims=True) / xv
+        res = seg - ym - b * (x - xm)
+        F = np.sqrt((res ** 2).mean(axis=(1, 2)))
+        logF.append(np.log(np.maximum(F, 1e-18)))
+    ls = np.log(np.array(scales, dtype=float)); lsm = ls.mean()
+    LF = np.stack(logF, 1)
+    slope = ((LF - LF.mean(1, keepdims=True)) * (ls - lsm)).sum(1) / ((ls - lsm) ** 2).sum()
+    out[rows] = np.where(ok, slope, np.nan)
+    return out
+
+
+def _c489_markov_edges(z, w=720):
+    """per-column Markov edge P(up) - P(down) next hour, 1st and 2nd order,
+    rolling w transitions, Laplace-smoothed. States: z < -0.5, middle, > 0.5."""
+    n, k = z.shape
+    s = np.where(np.isnan(z), -1, np.where(z < -0.5, 0, np.where(z > 0.5, 2, 1))).astype(np.int8)
+    mk1 = np.full((n, k), np.nan); mk2 = np.full((n, k), np.nan)
+    for j in range(k):
+        st = s[:, j]
+        prev = np.r_[-1, st[:-1]]; prev2 = np.r_[-1, -1, st[:-2]]
+        valid1 = (prev >= 0) & (st >= 0)
+        valid2 = valid1 & (prev2 >= 0)
+        # counts of transitions (a -> b) completed by hour u, windowed
+        c1 = np.zeros((3, 3, n)); c2 = np.zeros((3, 3, 3, n))
+        for a in range(3):
+            for b in range(3):
+                c1[a, b] = _c489_roll_sum(((prev == a) & (st == b) & valid1).astype(float)[:, None], w)[:, 0]
+                for c in range(3):
+                    c2[a, b, c] = _c489_roll_sum(((prev2 == a) & (prev == b) & (st == c) & valid2).astype(float)[:, None], w)[:, 0]
+        cur = st; last = prev
+        ok1 = cur >= 0
+        idx = np.where(ok1, cur, 0)
+        up = c1[idx, 2, np.arange(n)]; dn = c1[idx, 0, np.arange(n)]; tot = c1[idx, :, np.arange(n)].sum(1)
+        mk1[:, j] = np.where(ok1, (up + 1) / (tot + 3) - (dn + 1) / (tot + 3), np.nan)
+        ok2 = ok1 & (last >= 0)
+        li = np.where(ok2, last, 0)
+        up2 = c2[li, idx, 2, np.arange(n)]; dn2 = c2[li, idx, 0, np.arange(n)]; tot2 = c2[li, idx, :, np.arange(n)].sum(1)
+        mk2[:, j] = np.where(ok2, (up2 + 1) / (tot2 + 3) - (dn2 + 1) / (tot2 + 3), np.nan)
+    return mk1, mk2
+
+
+def _c489_features(T, syms, O, Hh, L, C, QV, TB, U, F):
+    t0 = time.time()
+    r1 = C / _c489_lag(C, 1) - 1
+    sig = _c489_roll_std(r1, 168)
+    f = {}
+    f['z_r1'] = r1 / sig
+    f['z_r4'] = (C / _c489_lag(C, 4) - 1) / (sig * 2.0)
+    f['z_r24'] = (C / _c489_lag(C, 24) - 1) / (sig * math.sqrt(24))
+    r4 = C / _c489_lag(C, 4) - 1
+    x = np.where(U, r4, np.nan)
+    f['xs_r4'] = (np.argsort(np.argsort(np.where(np.isnan(x), np.inf, x), axis=1), axis=1)
+                  / np.maximum((~np.isnan(x)).sum(1, keepdims=True) - 1, 1))
+    f['xs_r4'] = np.where(np.isnan(x), np.nan, f['xs_r4'])
+    with np.errstate(invalid='ignore', divide='ignore'):
+        share1 = TB / QV
+        share4 = _c489_roll_sum(TB, 4) / _c489_roll_sum(QV, 4)
+    f['flow1'] = (share1 - _c489_roll_mean(share1, 168)) / _c489_roll_std(share1, 168)
+    f['flow4'] = (share4 - _c489_roll_mean(share4, 168)) / _c489_roll_std(share4, 168)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        f['vsurp'] = np.log(QV / _c489_roll_median(QV, 168))
+    f['volreg'] = _c489_roll_std(r1, 24) / sig
+    b = syms.index('BTCUSDT')
+    rb = r1[:, [b]]
+    cov = _c489_roll_mean(r1 * rb, 168) - _c489_roll_mean(r1, 168) * _c489_roll_mean(rb, 168)
+    var = _c489_roll_mean(rb * rb, 168) - _c489_roll_mean(rb, 168) ** 2
+    beta = cov / var
+    res1 = r1 - beta * rb
+    f['resid4'] = (r4 - beta * r4[:, [b]]) / (_c489_roll_std(res1, 168) * 2.0)
+    f['btc4'] = np.repeat(f['z_r4'][:, [b]], len(syms), axis=1)
+    # funding: the latest rate, z-scored against the coin's own past 30 days
+    last = np.where(F != 0, F, np.nan)
+    for j in range(F.shape[1]):
+        v = last[:, j]; m = ~np.isnan(v)
+        if m.any():
+            idx = np.where(m, np.arange(len(v)), 0); np.maximum.accumulate(idx, out=idx)
+            last[:, j] = np.where(np.arange(len(v)) >= np.argmax(m), v[idx], np.nan)
+    f['fundz'] = (last - _c489_roll_mean(last, 720)) / _c489_roll_std(last, 720)
+    f['pe'] = np.column_stack([_c489_perm_entropy(r1[:, j]) for j in range(r1.shape[1])])
+    f['hurst'] = np.column_stack([_c489_dfa_hurst(r1[:, j], np.nonzero(U[:, j])[0]) for j in range(r1.shape[1])])
+    f['mk1'], f['mk2'] = _c489_markov_edges(f['z_r1'])
+    from numpy.lib.stride_tricks import sliding_window_view
+    hi24 = np.full_like(Hh, np.nan); lo24 = np.full_like(L, np.nan)
+    hi24[23:] = np.nanmax(sliding_window_view(Hh, 24, axis=0), axis=-1)
+    lo24[23:] = np.nanmin(sliding_window_view(L, 24, axis=0), axis=-1)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        f['rpos'] = (C - lo24) / (hi24 - lo24)
+    return r1, f
+
+
+def _c489_quintile_book(sig, U, frac=0.2):
+    """one cohort per hour: +1/n_long top fifth, -1/n_short bottom fifth, gross 1"""
+    q = np.zeros_like(sig)
+    for i in range(len(sig)):
+        m = U[i] & ~np.isnan(sig[i])
+        if m.sum() < 10:
+            continue
+        v = sig[i][m]
+        lo, hi = np.quantile(v, [frac, 1 - frac])
+        o = np.zeros(m.sum())
+        L_ = v >= hi; S_ = v <= lo
+        if hi == lo:
+            continue
+        o[L_] = 0.5 / L_.sum(); o[S_] = -0.5 / S_.sum()
+        q[i][m] = o
+    return q
+
+
+def _c489_overlap(q, hold=_C489_HOLD):
+    w = np.zeros_like(q)
+    for k in range(hold):
+        w[k:] += q[:len(q) - k] / hold
+    return w
+
+
+def _c489_logit_predict(w, X):
+    return 1.0 / (1.0 + np.exp(-np.clip(np.hstack([np.ones((len(X), 1)), X]) @ w, -30, 30)))
+
+
+def _c489_xs_standardise(Fm, U):
+    out = {}
+    for k, v in Fm.items():
+        x = np.where(U, v, np.nan)
+        mu = np.nanmean(x, axis=1, keepdims=True); sd = np.nanstd(x, axis=1, keepdims=True)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            out[k] = np.clip((x - mu) / sd, -5, 5)
+    return out
+
+
+class C489Shadow:
+    """C489: THE INTRADAY ENGINE, IN SHADOW -- it keeps its own record and
+    never touches the account.
+
+    The operator asked for a profitable intraday engine: relativistic, predictive,
+    a rigorous probability estimator, chaos theory and Markov chains, alongside
+    the C488 book. It was built exactly that way and tested before it was allowed
+    anywhere near money (research/c489_preregistration.md, committed first):
+
+      16 relativistic features -- returns in units of the coin's own volatility,
+      cross-sectional ranks, taker-flow z-scores, volume surprise, volatility
+      regime, beta-residual to BTC, funding z-score, permutation entropy (order 3),
+      DFA Hurst exponent, first- and second-order Markov edges, range position --
+      feeding a walk-forward L2 logistic probability model (M1), and a cost-gated
+      version that trades only when the predicted spread beats the round trip (M1g).
+
+    RESULT, 2021-07 -> 2026-08, 383 coins incl. delisted, hourly, real funding:
+    every one of 10 pre-registered designs FAILED (t -4 to -35). The raw edges are
+    real -- 24h continuation earns +13..+56%/yr BEFORE costs in every year -- but
+    rebuilding the book hourly turns the account over 4-9x a day and costs
+    100-270%/yr. A low-turnover redesign chosen on 2021-23 failed its untouched
+    2024-26 holdout (t -2.52). Bitget's stock, metal, oil and index perps lose
+    after costs too. At retail taker fees there is no intraday edge to trade.
+
+    So, as pre-registered: the engine RUNS, live, every hour, on the real market,
+    and books its trades to its own paper ledgers (M1 and M1g) with honest costs
+    and funding. Its equity index starts at 1.0 and nothing it does reaches the
+    Portfolio. The dashboard shows its forward record; it is marked ELIGIBLE only
+    if that record passes the project's bar (>= 120 days, >= 3/4 quarters, t >= 2).
+    Promotion to real (paper-account) money would be a separate, explicit change.
+    """
+
+    STATE_FILE = 'c489_shadow.json'
+    API = 'https://api.bitget.com/api/v2/mix/market/'
+    CACHE_H = 1000
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.cfg = bot.cfg
+        self._lock = threading.RLock()
+        self.model = dict(_C489_MODEL)
+        self.syms = []                  # raw symbols, e.g. BTCUSDT
+        self.candles = {}               # raw -> {hour_ms: [o, h, l, c, quote_vol]}
+        self.flow = {}                  # raw -> {hour_ms: taker-buy share}
+        self.fund = {}                  # raw -> {ms: rate}
+        self.led = {k: dict(eq=1.0, w={}, cohorts=[], daily={}, trades=0, cost=0.0, funding=0.0)
+                    for k in ('M1', 'M1g')}
+        self.last_hour = 0
+        self.last_universe = ''
+        self.gate_last = False
+        self._tick_at = 0.0
+        self._fail_at = 0.0
+        self._said = set()
+        self.path = os.path.join(BASE_PATH, self.STATE_FILE)
+        self.load()
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C489_SHADOW', True))
+
+    # ── persistence ──────────────────────────────────────────────────────
+    def load(self):
+        try:
+            if os.path.exists(self.path):
+                d = json.load(open(self.path))
+                self.led = d.get('led') or self.led
+                for k in self.led.values():
+                    k['daily'] = {int(a): b for a, b in (k.get('daily') or {}).items()}
+                self.flow = {s: {int(a): b for a, b in v.items()} for s, v in (d.get('flow') or {}).items()}
+                self.last_hour = int(d.get('last_hour') or 0)
+                self.syms = list(d.get('syms') or [])
+        except Exception as e:
+            logger.warning(f"⚠️ C489 shadow state not loaded ({type(e).__name__}) -- starting fresh")
+
+    def save(self):
+        try:
+            with self._lock:
+                cut = (int(time.time()) // 3600 - self.CACHE_H) * 3600000
+                d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms,
+                         flow={s: {str(t): v for t, v in f.items() if t >= cut} for s, f in self.flow.items()})
+            tmp = self.path + '.tmp'
+            json.dump(d, open(tmp, 'w'))
+            os.replace(tmp, self.path)
+        except Exception as e:
+            logger.warning(f"⚠️ C489 shadow save failed: {type(e).__name__}: {e}")
+
+    def reset(self):
+        with self._lock:
+            self.led = {k: dict(eq=1.0, w={}, cohorts=[], daily={}, trades=0, cost=0.0, funding=0.0)
+                        for k in ('M1', 'M1g')}
+            self.flow, self.last_hour = {}, 0
+        self.save()
+
+    # ── data ─────────────────────────────────────────────────────────────
+    def _get(self, path, params, tries=3):
+        for k in range(tries):
+            try:
+                d = requests.get(self.API + path, params=params, timeout=12).json()
+                if d.get('data') is not None:
+                    return d.get('data')
+            except Exception:
+                pass
+            time.sleep(0.5 * (k + 1))
+        return None
+
+    def universe(self):
+        """the 40 most liquid crypto perps now, plus BTC (the market anchor)"""
+        e = self.bot.c488
+        e.refresh_marks()
+        rows = sorted(((v.get('vol', 0.0), s) for s, v in e.marks.items() if e._is_crypto(s)), reverse=True)
+        n = int(getattr(self.cfg, 'C489_TOPN', 40))
+        raw = [C488Engine._raw(s) for _, s in rows[:n]]
+        if 'BTCUSDT' not in raw:
+            raw.append('BTCUSDT')
+        return raw
+
+    def _pull(self, raw, hours):
+        end = int(time.time() * 1000)
+        start = end - hours * 3600000
+        got = {}
+        while end > start:
+            d = self._get('history-candles', {'symbol': raw, 'productType': 'USDT-FUTURES',
+                                              'granularity': '1H', 'endTime': end, 'limit': 200})
+            if not d:
+                break
+            for x in d:
+                got[int(x[0])] = [float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[6])]
+            first = min(int(x[0]) for x in d)
+            if first >= end or len(d) < 2:
+                break
+            end = first - 1
+        f = self._get('taker-buy-sell', {'symbol': raw, 'productType': 'USDT-FUTURES', 'period': '1h', 'limit': 50}) or []
+        flow = {}
+        for x in f:
+            b, s_ = float(x.get('buyVolume') or 0), float(x.get('sellVolume') or 0)
+            if b + s_ > 0:
+                flow[int(x['ts'])] = b / (b + s_)
+        fund = {}
+        if hours > 48 or raw not in self.fund:
+            for pn in (1, 2):              # two pages: a 4-hour-funding coin needs 180 events for 30 days
+                d = self._get('history-fund-rate', {'symbol': raw, 'productType': 'USDT-FUTURES',
+                                                    'pageSize': 100, 'pageNo': pn}) or []
+                fund.update({int(x['fundingTime']): float(x['fundingRate']) for x in d})
+                if len(d) < 100:
+                    break
+        return raw, got, flow, fund
+
+    def refresh(self):
+        syms = self.universe()
+        now_h = int(time.time() * 1000) // 3600000 * 3600000
+        new = [s for s in syms if s not in self.candles]
+        jobs = [(s, self.CACHE_H if s in new else 6) for s in syms]
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for raw, got, flow, fund in pool.map(lambda a: self._pull(*a), jobs):
+                c = self.candles.setdefault(raw, {})
+                c.update({t: v for t, v in got.items() if t < now_h})          # completed hours only
+                self.flow.setdefault(raw, {}).update(flow)
+                if fund:
+                    self.fund.setdefault(raw, {}).update(fund)
+        cut = now_h - self.CACHE_H * 3600000
+        for raw in list(self.candles):
+            self.candles[raw] = {t: v for t, v in self.candles[raw].items() if t >= cut}
+        self.syms = syms
+        return now_h
+
+    def matrices(self, now_h):
+        T = np.arange(now_h - self.CACHE_H * 3600000, now_h, 3600000, dtype=np.int64)
+        idx = {int(t): i for i, t in enumerate(T)}
+        k = len(self.syms)
+        O = np.full((len(T), k), np.nan); Hh = O.copy(); L = O.copy(); C = O.copy(); QV = O.copy(); TB = O.copy()
+        F = np.zeros((len(T), k))
+        for j, s in enumerate(self.syms):
+            for t, v in self.candles.get(s, {}).items():
+                i = idx.get(int(t))
+                if i is not None:
+                    O[i, j], Hh[i, j], L[i, j], C[i, j], QV[i, j] = v
+            for t, sh in self.flow.get(s, {}).items():
+                i = idx.get(int(t))
+                if i is not None and not np.isnan(QV[i, j]):
+                    TB[i, j] = sh * QV[i, j]
+            for t, rate in self.fund.get(s, {}).items():
+                i = idx.get(int(t) // 3600000 * 3600000)
+                if i is not None:
+                    F[i, j] += rate
+        U = ~np.isnan(C)
+        return T, O, Hh, L, C, QV, TB, U, F
+
+    # ── the model ────────────────────────────────────────────────────────
+    def predict(self, now_h):
+        T, O, Hh, L, C, QV, TB, U, F = self.matrices(now_h)
+        r1, Fm = _c489_features(T, self.syms, O, Hh, L, C, QV, TB, U, F)
+        # Bitget serves only the last 30 hours of taker flow, so the shadow
+        # collects it. Until a coin has a real week of it, its flow features are
+        # UNKNOWN, not zero: the shared feature code reads a missing hour as
+        # 'no buying', which on the first live run put the median flow4 at +2.4.
+        have = (~np.isnan(TB[-172:])).sum(0)
+        for f in ('flow1', 'flow4'):
+            Fm[f][-1, have < 140] = np.nan
+        Z = _c489_xs_standardise(Fm, U)
+        X = np.stack([Z[f][-1] for f in self.model['feats']], -1)            # the last completed hour
+        p = _c489_logit_predict(np.array(self.model['w']), np.nan_to_num(X))
+        p[np.isnan(X).any(-1) | ~U[-1]] = np.nan
+        gate = False
+        m = ~np.isnan(p)
+        if m.sum() >= 10:
+            v = p[m]; lo, hi = np.quantile(v, [0.2, 0.8])
+            g0, g1 = self.model['gate']
+            gate = (g0 + g1 * (v[v >= hi].mean() - v[v <= lo].mean())) > 2 * 0.0008
+        return p, gate, r1[-1], int(m.sum())
+
+    # ── the ledgers ──────────────────────────────────────────────────────
+    def step(self, now_h, p, gate, r_last):
+        """book the hour that just closed, then form this hour's cohort"""
+        day = now_h // 86400000 * 86400000
+        settle = (datetime.utcfromtimestamp(now_h / 1000).hour % 8) == 0
+        rets = {s: float(r_last[j]) for j, s in enumerate(self.syms) if not np.isnan(r_last[j])}
+        rates = {C488Engine._raw(s): float(v.get('fr', 0.0)) for s, v in self.bot.c488.marks.items()}
+        q = np.zeros(len(self.syms))
+        m = ~np.isnan(p)
+        if m.sum() >= 10:
+            v = p[m]; lo, hi = np.quantile(v, [0.2, 0.8])
+            o = np.zeros(m.sum()); L_ = v >= hi; S_ = v <= lo
+            if hi > lo:
+                o[L_] = 0.5 / L_.sum(); o[S_] = -0.5 / S_.sum()
+            q[m] = o
+        cohort = {s: float(q[j]) for j, s in enumerate(self.syms) if q[j] != 0.0}
+        for name, led in self.led.items():
+            w = led['w']
+            pnl = sum(wt * rets.get(s, 0.0) for s, wt in w.items())
+            fu = -sum(wt * rates.get(s, 0.0) for s, wt in w.items()) if settle else 0.0
+            c_new = cohort if (name == 'M1' or gate) else {}
+            led['cohorts'] = (led['cohorts'] + [c_new])[-_C489_HOLD:]
+            nw = {}
+            for c in led['cohorts']:
+                for s, wt in c.items():
+                    nw[s] = nw.get(s, 0.0) + wt / _C489_HOLD
+            turn = sum(abs(nw.get(s, 0.0) - w.get(s, 0.0)) for s in set(nw) | set(w))
+            cost = turn * 0.0008
+            r = pnl + fu - cost
+            led['eq'] *= (1.0 + r)
+            led['daily'][day] = led['daily'].get(day, 0.0) + r
+            led['cost'] += cost; led['funding'] += fu
+            led['trades'] += sum(1 for s in set(nw) | set(w) if abs(nw.get(s, 0.0) - w.get(s, 0.0)) > 1e-12)
+            led['w'] = nw
+        self.gate_last = bool(gate)
+
+    def record(self, name):
+        led = self.led[name]
+        days = sorted(led['daily'])
+        x = np.array([led['daily'][d] for d in days])
+        out = dict(equity=round(led['eq'], 4), days=len(days), trades=led['trades'],
+                   cost=round(led['cost'], 4), funding=round(led['funding'], 4), eligible=False)
+        if len(x) >= 20 and x.std() > 0:
+            n = len(x); m = x.mean(); e = x - m
+            s = (e @ e) / n
+            for l in range(1, 6):
+                s += 2 * (1 - l / 6) * (e[l:] @ e[:-l]) / n
+            t = m / math.sqrt(s / n) if s > 0 else 0.0
+            npos = int(sum(q.mean() > 0 for q in np.array_split(x, 4)))
+            out.update(ann=round(float(m * 365), 4), sharpe=round(float(m / x.std() * math.sqrt(365)), 2),
+                       t=round(float(t), 2), npos=npos,
+                       eligible=bool(len(x) >= 120 and npos >= 3 and t >= 2.0))
+        return out
+
+    # ── the loop ─────────────────────────────────────────────────────────
+    def tick(self):
+        if not self.active() or time.time() - self._tick_at < 30:
+            return
+        self._tick_at = time.time()
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        now_h = int(time.time() * 1000) // 3600000 * 3600000
+        if now_h <= self.last_hour or datetime.utcnow().minute < 2 or time.time() - self._fail_at < 300:
+            return
+        try:
+            t0 = time.time()
+            with self._lock:
+                self.refresh()
+                p, gate, r_last, n = self.predict(now_h)
+                if self.last_hour:                       # never book an hour it did not hold
+                    self.step(now_h, p, gate, r_last)
+                else:
+                    self.step(now_h, p, gate, np.full(len(self.syms), np.nan))
+                self.last_hour = now_h
+            self.save()
+            a, b = self.record('M1'), self.record('M1g')
+            logger.info(f"   \U0001f47b C489 shadow hour {datetime.utcfromtimestamp(now_h/1000):%H}:00 UTC: "
+                        f"{n} coins scored, gate {'OPEN' if gate else 'shut'} | M1 {100 * (a['equity'] - 1):+.2f}% "
+                        f"M1g {100 * (b['equity'] - 1):+.2f}% over {a['days']}d [{time.time() - t0:.0f}s]")
+        except Exception as e:
+            self._fail_at = time.time()
+            logger.warning(f"⚠️ C489 shadow hour failed ({type(e).__name__}: {e}) -- retrying in 5 min")
+
+    def status(self):
+        with self._lock:
+            flow_h = min((len(v) for v in self.flow.values()), default=0)
+            return dict(mode='shadow' if self.active() else 'off', coins=len(self.syms),
+                        last_hour=datetime.utcfromtimestamp(self.last_hour / 1000).strftime('%Y-%m-%d %H:00') if self.last_hour else '',
+                        flow_hours=flow_h, warming=flow_h < 172, gate=self.gate_last,
+                        M1=self.record('M1'), M1g=self.record('M1g'))
+
+
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
@@ -19018,6 +19550,7 @@ class TradingBot:
         self.portfolio = Portfolio(cfg)
         self.c488 = C488Engine(self)            # C488: the medium-term portfolio engine
         self.portfolio._c488 = self.c488
+        self.c489 = C489Shadow(self)            # C489: the intraday engine, shadow ledger only
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -19744,6 +20277,10 @@ class TradingBot:
                         self.c488.tick(can_trade=self.mode_mgr.can_trade())
                     except Exception as _e488:
                         logger.warning(f"⚠️ C488 tick failed: {type(_e488).__name__}: {_e488}")
+                    try:                                  # C489: the intraday shadow, hourly
+                        self.c489.tick()
+                    except Exception as _e489:
+                        logger.warning(f"⚠️ C489 tick failed: {type(_e489).__name__}: {_e489}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -37100,6 +37637,7 @@ def startup():
     bot = TradingBot(cfg)
     if fresh:
         bot.c488.reset()                     # C488: a fresh account starts flat
+        bot.c489.reset()                     # C489: and a fresh shadow record
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -37792,6 +38330,12 @@ class RemoteControl:
                                                for k, v in _g482.items()}
                         except Exception:
                             pass
+                        try:      # C489: the intraday shadow's record
+                            _e489 = getattr(bot_ref, 'c489', None)
+                            if _e489 is not None:
+                                _out469['c489'] = _e489.status()
+                        except Exception as _x489:
+                            _out469['c489'] = {'error': f"{type(_x489).__name__}: {_x489}"}
                         try:      # C488: the portfolio engine's book
                             _e488 = getattr(bot_ref, 'c488', None)
                             if _e488 is not None:
@@ -37997,6 +38541,8 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <!-- C488: the portfolio engine's book -- the daily trend + momentum + carry
      positions it holds for days to weeks, separate from any intraday position. -->
 <section><h2>Portfolio book <span class="muted" id="bookmode"></span></h2><div id="book" class="muted">&mdash;</div></section>
+<!-- C489: the intraday engine runs in SHADOW: its own paper ledger, never the account -->
+<section><h2>Intraday engine <span class="muted">(shadow)</span></h2><div id="shadow" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -38196,6 +38742,21 @@ async function pull(){
       q('scans').textContent='next rebalance '+String(d.c488.next_rebal_utc||'').slice(11)+' UTC';
     }
     drawCurve(d.curve);
+    /* C489: the intraday shadow -- a record, not money */
+    var sh=d.c489;
+    if(sh){
+      if(sh.error){q('shadow').innerHTML='<span class="'+cls(-1)+'">shadow unavailable: '+sh.error+'</span>'}
+      else if(sh.mode!=='shadow'){q('shadow').innerHTML='<span class="muted">off</span>'}
+      else{
+        var line=function(n,r){var pc=100*(r.equity-1);
+          return '<div style="margin:4px 0"><b>'+n+'</b> <span class="'+cls(pc)+'">'+(pc>=0?'+':'')+pc.toFixed(2)+'%</span>'+
+            ' <span class="muted">'+r.days+'d \u00b7 '+r.trades+' trades'+(r.t!==undefined?' \u00b7 t '+r.t+' \u00b7 '+r.npos+'/4':'')+
+            (r.eligible?' \u00b7 <b class="good">ELIGIBLE</b>':'')+'</span></div>'};
+        q('shadow').innerHTML='<div class="s muted">paper ledger only \u2014 never touches the account \u00b7 '+sh.coins+' coins \u00b7 last hour '+
+          (sh.last_hour||'pending')+(sh.warming?' \u00b7 warming up flow data ('+sh.flow_hours+'h of 172)':'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
+          line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g);
+      }
+    }
     /* C488: the portfolio engine. An error is SHOWN, never rendered as flat. */
     var b=d.c488;
     if(b){

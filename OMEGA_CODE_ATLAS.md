@@ -1,6 +1,138 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 👻 2026-09-25 — C489: THE INTRADAY ENGINE, BUILT AS ASKED, TESTED FIRST, RUN IN SHADOW
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C489.**
+- **C488 is unchanged.** The daily trend + momentum + carry book is still the
+  only engine that trades.
+- **New: `C489Shadow`.** An intraday engine built on the operator's principles:
+  - relativistic inputs only;
+  - predictive, forecasting the next 4 hours;
+  - a walk-forward L2 logistic probability model;
+  - chaos measures (permutation entropy, DFA Hurst exponent);
+  - first- and second-order Markov chains.
+- **It runs live every hour** on the 40 most liquid crypto perpetuals and books
+  its trades to its **own paper ledgers**:
+  - M1: the model;
+  - M1g: the model, only when its predicted spread beats the round trip.
+  Costs are 0.08% per unit of turnover, plus funding at settlements.
+- **It never touches the account.** There is no order and no Portfolio call in
+  its code, and the test proves it.
+- **Warm-up:** Bitget serves only 30 hours of taker flow, so the shadow collects
+  it and scores nothing until it has a week (~172 h).
+- **Promotion rule:** the dashboard marks it ELIGIBLE only if its own forward
+  record passes the bar (at least 120 days, at least 3/4 quarters, t ≥ 2).
+  Promotion to money would be a separate, explicit change.
+- **Switches:** `C489_SHADOW` (on by default) and `C489_TOPN = 40`.
+- **The old C487 intraday scanner** stays dormant, reachable only via
+  `OMEGA_ENGINE=intraday`.
+
+---
+
+## 🔬 WHY IT IS A SHADOW (all in `research/`, pre-registered in `c489_preregistration.md`)
+
+**The literature** says intraday crypto edges are real but smaller than retail
+costs:
+- 15-minute reversal: about 1.3 bp gross against about 5 bp of cost
+  (arXiv 2608.21888);
+- the quarter-hour effect: about 0.5 bp (arXiv 2607.09426).
+
+So the plan fixed hourly decisions and 4-hour holds, and required every trade to
+beat a 0.16% taker round trip.
+
+**Round 1.** Data: 383 coins (every coin that has been in the daily top 60 since
+2021, delisted ones included), 49,656 hours, real funding. The out-of-sample
+window is 2021-07 → 2026-08.
+
+| item | net / yr | t | gross / yr | cost / yr |
+|---|---|---|---|---|
+| H1 1-hour reversal | −274% | −34.7 | −1% | 272% |
+| H2 24-hour continuation | −78% | −6.0 | **+40%** | 117% |
+| H3 taker-flow persistence | −260% | −29.6 | +12% | 271% |
+| H4 Markov, 1st order | −196% | −21.4 | **+20%** | 221% |
+| H5 Markov, 2nd order | −244% | −33.7 | +12% | 260% |
+| H6 chaos switch (Hurst / entropy) | −265% | −21.3 | +5% | 269% |
+| H7 catch-up to BTC | −280% | −24.8 | −3% | 276% |
+| H8 fade crowded funding | −86% | −7.6 | −5% | 99% |
+| M1 probability model (63 walk-forward fits) | −100% | −22.7 | +6% | 105% |
+| M1g cost-gated (trades 2% of hours) | −5.6% | −4.2 | +2% | 8% |
+
+- **The harness is sound:** a look-ahead signal makes +4,161%/yr gross and a
+  random signal about 0.
+- **The raw edges are real:** 24-hour continuation earns +13% to +56% a year
+  gross, in every year.
+- **What kills it is turnover:** the account is rebuilt 4–9 times a day.
+
+**Round 2** used low-turnover hysteresis books (24 designs) and an execution-
+timing overlay on the C488 book. They were explored on 2021-07 → 2023-12 only.
+- The best design, H2x, was committed and then tested once on the untouched
+  2024-01 → 2026-08 holdout: **−121%/yr, t −2.52, 0/4.**
+- The timing overlay did no better than random deferral.
+
+**RWA:** 24 Bitget contracts (metals, oil, gas, indices, US stocks) over 4–13
+months of hourly data. **Every one is net negative after costs**; the best gross
+edge was 0.13% a trade (AMD).
+
+**Conclusion:** at Bitget's retail taker fees there is no intraday edge to trade,
+on any asset available to this account. That applies to relativistic, Markov,
+chaos and probability-model designs alike, and to the operator's asset list.
+
+> **→ Standing Rule 52: A REAL EDGE IS NOT A TRADABLE EDGE.** Gross
+> predictability (+40%/yr) and net profitability (−78%/yr) are different
+> quantities; the gap between them is turnover × cost. Measure both, and
+> report the gross beside the net so nobody mistakes one for the other.
+
+## 🎯 THE OPERATOR'S 2–4% A MONTH
+
+- **The only engine with an edge is C488.**
+  - At dial 15%: +2.5% a month historically (2020–26), max drawdown 31%.
+  - Recent years suggest 1.5–2% a month.
+  - At the maximum dial (20%): +3.3% a month historically, drawdown 40%.
+- **4% a month is not reachable at an acceptable risk.**
+- **Indian tax:** under the conservative reading (s.115BBH, 30% flat, no loss
+  offset), after-tax returns are about 70% of pre-tax.
+- **Bitget has paused new Indian sign-ups;** existing accounts are unaffected.
+
+## 🧪 VERIFICATION
+
+- **`omega_c489_test.py`, 27 checks:**
+  - **Parity:** all 16 features, standardisation, scorer, book and overlap are
+    identical to research.
+  - **Model:** the shipped coefficients equal `c489_model.json`.
+  - **Ledger arithmetic:** turnover cost, funding at settlement, 4 cohorts,
+    M1g idle while the gate is shut.
+  - **Promotion bar:** holds, including "never before 120 days".
+  - **Isolation:** there is no order or Portfolio call in the code, and 30
+    shadow hours leave equity untouched.
+  - **Warm-up:** nothing is scored with 30 h of flow; coins are scored with
+    300 h.
+  - **Persistence and wiring:** persistence, reset, tick order, status payload,
+    and the Chromium panel with no JavaScript errors.
+  - **Pre-registration:** both rounds were committed before the engine.
+- **The first live run found a real bug before it shipped.** A missing flow hour
+  was read as "no buying", which put the live median flow z at +2.4. Missing
+  flow is now unknown until a week has been collected. Coins on 4-hour funding
+  now get two pages of funding history.
+- **The full bot (C488 + C489) ran in paper against live Bitget:**
+  - the book built 9 positions;
+  - the shadow booked its first hour (warming up);
+  - the dashboard showed both.
+- The full battery passes (27 files) and the sweeps are clean.
+
+## ⚠️ LIMITS
+
+- **The shadow uses fixed coefficients** (trained on the 180 days to
+  2026-08-31). It does not refit live, so its forward record is a clean
+  out-of-sample test of that one fit.
+- **Its universe is today's top 40 by 24-hour volume,** not the research's
+  point-in-time 30-day median rule.
+- **Its funding uses the current rate at each settlement.**
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 📊 2026-09-25 — C488: A PRE-REGISTERED PORTFOLIO ENGINE (TREND + MOMENTUM + CARRY)
 # ═══════════════════════════════════════════════════════════════════════════
 
