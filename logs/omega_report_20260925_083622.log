@@ -216,3 +216,104 @@
   ------------------------------------------------------------------------------------------------
 
   .. 13:11  flat  $250.14  $-0.00 -0.00%  0W 0L  76 analysed
+  .. 13:20  flat  $250.14  $-0.00 -0.00%  0W 0L  76 analysed
+  .. 13:28  flat  $250.14  $-0.00 -0.00%  0W 0L  11 analysed
+
+
+  13:36  up 5h00m  scan 39 -----------------------------------------------------------------------
+  EQUITY    $250.14
+  OPEN      flat  free $250.14
+  SESSION   $-0.00 -0.00%
+  CURVE     +=====================================
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      no fills yet this run
+  SCAN      805 > 69 > 0 passed  top QNT 0.41 (score 0.491 < 0.58)  39 scans, 1751 analysed
+  MARKET    MIXED  bias -0.15  breadth -0.09  taker flow +0.33
+  NEWS      65 articles  + tone +0.26  BNB +0.54  TRUMP +0.34  ONDO +0.28
+  INFO      1 tilted  flow/fund/news/oi on 152
+  MOVERS    QNT +41% #14  ONDO +28% #3  XPL +26% #10  BROCCOLI +24% #25
+  ------------------------------------------------------------------------------------------------
+
+  .. 13:44  flat  $250.14  $-0.00 -0.00%  0W 0L  13 analysed
+  >> 13:49  OPEN   ARK LONG @0.214400  x1 $20.75
+       target +18.0%  stop -3.5%  entry score 0.42  maker
+
+
+  13:52  up 5h16m  scan 41 -----------------------------------------------------------------------
+  EQUITY    $249.76  unreal $-0.38
+  OPEN      1 pos $20.75 (8%)  free $229.39
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.210600  -1.77%   -0.38    3m  - 73% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $-0.38 -0.15%  peak $250.14  dd 0.15%
+  CURVE     +++++++++++++++++++++++++++++++++++++++=
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      $0.00  mk1/tk0  0.002% of eq
+  SCAN      805 > 69 > 2 passed  top JTO 0.50 (viable)  41 scans, 1833 analysed
+  MARKET    MIXED  bias +0.27  breadth +0.00  taker flow -0.20
+  NEWS      62 articles  ~ tone +0.04  BNB +0.54  TRUMP +0.34  ONDO +0.28
+  INFO      2 tilted  flow/fund/news/oi on 155
+  MOVERS    QNT +42% #14  ONDO +32% #3  BROCCOLI +29% #20  XPL +29% #9
+  ------------------------------------------------------------------------------------------------
+
+  >> 14:02  OPEN   JTO LONG @0.511200  x3 $22.64
+       target +4.5%  stop -1.0%  entry score 0.63  maker
+
+
+  14:02  up 5h26m  scan 43 -----------------------------------------------------------------------
+  EQUITY    $250.62  unreal $+0.48
+  OPEN      2 pos $43.39 (17%)  free $206.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.220100  +2.66%   +0.53   12m  + 69% left
+  JTO      LONG    0.511200  0.511200  +0.00%   -0.05    0m  - 100% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.48 +0.19%
+  CURVE     ========================================+
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      $0.02  mk2/tk0  0.007% of eq
+  SCAN      805 > 70 > 3 passed  top JTO 0.63 (viable)  43 scans, 1905 analysed
+  MARKET    TRENDING  bias +0.55  breadth +0.00  taker flow -0.46
+  NEWS      62 articles  ~ tone +0.04  TRUMP +0.34  ONDO +0.27  UNI -0.26
+  INFO      3 tilted  flow/fund/news/oi on 156
+  MOVERS    QNT +42% cut  XPL +36% #9  ONDO +34% #3  BROCCOLI +33% #18
+  ------------------------------------------------------------------------------------------------
+
+
+
+  14:10  up 5h34m  scan 45 -----------------------------------------------------------------------
+  EQUITY    $250.79  unreal $+0.65
+  OPEN      2 pos $43.39 (17%)  free $206.75
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE       ENTRY      MARK    MOVE     P&L   AGE  THESIS
+  ARK      LONG    0.214400  0.220200  +2.71%   +0.54   20m  + 76% left
+  JTO      LONG    0.511200  0.512400  +0.23%   +0.10    8m  + 51% left
+  ------------------------------------------------------------------------------------------------
+  SESSION   $+0.65 +0.26%
+  CURVE     ========================================++
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      $0.02  mk2/tk0  0.007% of eq
+  SCAN      805 > 4 > 1 passed  top ZEN 0.63 (viable)  45 scans, 1912 analysed
+  MARKET    TRENDING  bias +0.59  breadth +0.00  taker flow +0.46
+  NEWS      65 articles  + tone +0.30  TRUMP +0.34  ONDO +0.27  UNI -0.26
+  INFO      1 tilted  flow/fund/news/oi on 158
+  MOVERS    QNT +39% cut  XPL +38% #9  BROCCOLI +36% #16  ONDO +31% #5
+  ------------------------------------------------------------------------------------------------
+
