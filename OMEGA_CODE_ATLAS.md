@@ -141,6 +141,41 @@ deliberately does not reach it.
 > order silently removes most of the positions. Measure at the capital that
 > will actually trade.
 
+### Would an intraday engine on top of the book help? (operator's question, measured)
+
+`research/c488_intraday_mix.py` runs on the overlap of the 15-minute corpus (32
+coins) and the C488 backtest: 200 days, 13 Feb → 31 Aug 2026.
+
+- **The intraday style the bot trades** is the "chase" entry: a +2% 3-hour run
+  in the top quarter of the range, held 1 hour. Measured per trade:
+  - before costs: −0.035%;
+  - after a 0.16% taker round trip: −0.195%.
+  At the bot's pace (~23 trades a day, ~$80 each) that is −47% a month,
+  Sharpe −16.
+- **The book over the same window:** +1.92% a month, Sharpe 1.06.
+- **Daily correlation between the two: −0.18.** A genuinely profitable intraday
+  engine would diversify the book well.
+
+| If an intraday engine had Sharpe (honest, after costs) | Best mix reaches |
+|---|---|
+| 0 | 1.08 |
+| +0.5 | 1.27 |
+| +1.0 | 1.61 |
+
+The book alone is 1.06. At a small weight, adding a strategy helps only if its
+Sharpe exceeds ρ × 1.06 ≈ −0.19. This one is far below that.
+
+**The verdict:**
+- Integration pays **only** for an intraday engine that passes the standing bar
+  on honest fills, with a gross edge of at least ~0.2% per trade to clear
+  taker costs.
+- The present engine does not: honest fills gave −$6.66 over 164 trades, and
+  its entries lose at every fixed hold.
+- It also shares the monthly dial, so its losses would spend the book's month
+  budget and could trigger the flatten.
+- It stays off for money. A paper-only shadow record is the way to test a
+  candidate.
+
 ## 🧪 VERIFICATION
 
 - **`omega_c488_test.py`, 41 checks:**
