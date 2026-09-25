@@ -274,6 +274,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C487',                     # whether a resting order really filled
         'C488',                     # the portfolio engine: rebalances, guard, fills
         'C489',                     # the intraday shadow's hourly record
+        'C490',                     # the carry ledger's daily run
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
         'NEWS',                     # C463-3 news panel
@@ -1677,9 +1678,17 @@ class _C462Report:
                 _s489 = getattr(bot, 'c489', None)
                 if _s489 is not None and _s489.active() and _s489.last_hour:
                     _a489, _b489 = _s489.record('M1'), _s489.record('M1g')
-                    self._pack('SHADOW', [f"intraday M1 {100 * (_a489['equity'] - 1):+.2f}%",
-                                          f"M1g {100 * (_b489['equity'] - 1):+.2f}%",
+                    self._pack('SHADOW', [f"intraday M1 {_c462_money(_a489['usd'])} ({100 * (_a489['equity'] - 1):+.2f}%)",
+                                          f"M1g {_c462_money(_b489['usd'])} ({100 * (_b489['equity'] - 1):+.2f}%)",
                                           f"{_a489['days']}d paper only"])
+            except Exception:
+                pass
+            # C490: the carry ledger, one line
+            try:
+                _s490 = getattr(bot, 'c490', None)
+                if _s490 is not None and _s490.active() and _s490.last_run:
+                    self._pack('CARRY', [f"{_c462_money(_s490.eq)} ({100 * (_s490.eq / (_s490.start_equity or 1) - 1):+.2f}%)",
+                                         f"{len(_s490.pos)} held", 'paper only'])
             except Exception:
                 pass
             # C488: the portfolio engine's book, one line
@@ -2108,7 +2117,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C489'
+_OMEGA_VERSION = 'C490'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2856,6 +2865,17 @@ class Config:
         # its own paper ledgers and never touches the account.
         self.C489_SHADOW = True
         self.C489_TOPN = 40
+        # ═══ C490: SPOT-PERP CASH-AND-CARRY, ITS OWN PAPER LEDGER ═════════
+        # Round 3's one admitted item (t 2.78, 3/4 quarters), run exactly as
+        # tested on a dollar ledger of its own. It never touches the account:
+        # moving it in needs a spot order path and a CA's view on the tax.
+        self.C490_CARRY = True
+        self.C490_CARRY_TOPN = 40               # the 40 most liquid perps that also trade spot
+        self.C490_CARRY_ENTER = 0.10            # in above 10%/yr trailing 3-day funding
+        self.C490_CARRY_EXIT = 0.05             # out below 5%/yr
+        self.C490_CARRY_SIZE = 0.10             # 10% of the ledger per coin, each leg
+        self.C490_CARRY_CAP = 8
+        self.C490_CARRY_RUN_UTC = (0, 10)       # 00:10 UTC, after the C488 rebalance
 
         # === Monitoring ===
         # ═══ C368: THE CONSISTENCY BUDGET ═══════════════════════════════
@@ -19039,6 +19059,9 @@ class C488Engine:
 # trades a paper ledger of its own.
 
 _C489_HOLD = 4
+# the warm-up model: the same fit without flow1/flow4 (research/c489_model_noflow.json),
+# used until the shadow has collected a week of Bitget taker flow (only 30 h is served)
+_C489_MODEL_NOFLOW = {"feats": ["z_r1", "z_r4", "z_r24", "xs_r4", "vsurp", "volreg", "resid4", "btc4", "fundz", "pe", "hurst", "mk1", "mk2", "rpos"], "w": [-0.005112929, -0.0304657974, 0.0064555911, 0.0084276895, -0.0190231158, 0.0023574995, 0.0222224495, -0.0503842414, 0.0008760664, 0.0112450023, -0.0207727701, -0.0191296238, -0.0024703202, -0.0091136456, 0.0035520794], "gate": [-0.0026351746, 0.0715908368]}
 _C489_MODEL = {"feats": ["z_r1", "z_r4", "z_r24", "xs_r4", "flow1", "flow4", "vsurp", "volreg", "resid4", "btc4", "fundz", "pe", "hurst", "mk1", "mk2", "rpos"], "w": [-0.0051219772, -0.0292645808, 0.0118304462, 0.0085167685, -0.0140142481, -0.0029938288, -0.021142967, 0.0024832055, 0.0226928366, -0.0523244284, 0.000872484, 0.0118216006, -0.0209127153, -0.0189549776, -0.0030283305, -0.0093308092, 0.0049236964], "gate": [0.000246593, 0.0197105262]}
 
 
@@ -19272,6 +19295,14 @@ class C489Shadow:
     Portfolio. The dashboard shows its forward record; it is marked ELIGIBLE only
     if that record passes the project's bar (>= 120 days, >= 3/4 quarters, t >= 2).
     Promotion to real (paper-account) money would be a separate, explicit change.
+
+    C490: A DUPLICATE ACCOUNT IN DOLLARS, SCORING FROM THE FIRST HOUR. The index
+    is shown as dollars from the account's equity when the shadow began (read
+    once, never written). And it no longer waits a week: Bitget serves only 30 h
+    of taker flow, so until 30 coins have a real week of it the shadow scores
+    with the same model refitted without the two flow inputs
+    (research/c489_noflow.py -> research/c489_model_noflow.json; on 2021-26 it
+    fails exactly like the full model, t -22.8 / -4.3 gated), then switches.
     """
 
     STATE_FILE = 'c489_shadow.json'
@@ -19290,6 +19321,8 @@ class C489Shadow:
         self.led = {k: dict(eq=1.0, w={}, cohorts=[], daily={}, trades=0, cost=0.0, funding=0.0)
                     for k in ('M1', 'M1g')}
         self.last_hour = 0
+        self.start_equity = 0.0         # $: the real account's equity when the shadow began
+        self.model_used = ''
         self.last_universe = ''
         self.gate_last = False
         self._tick_at = 0.0
@@ -19312,6 +19345,7 @@ class C489Shadow:
                 self.flow = {s: {int(a): b for a, b in v.items()} for s, v in (d.get('flow') or {}).items()}
                 self.last_hour = int(d.get('last_hour') or 0)
                 self.syms = list(d.get('syms') or [])
+                self.start_equity = float(d.get('start_equity') or 0.0)
         except Exception as e:
             logger.warning(f"⚠️ C489 shadow state not loaded ({type(e).__name__}) -- starting fresh")
 
@@ -19319,7 +19353,7 @@ class C489Shadow:
         try:
             with self._lock:
                 cut = (int(time.time()) // 3600 - self.CACHE_H) * 3600000
-                d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms,
+                d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms, start_equity=self.start_equity,
                          flow={s: {str(t): v for t, v in f.items() if t >= cut} for s, f in self.flow.items()})
             tmp = self.path + '.tmp'
             json.dump(d, open(tmp, 'w'))
@@ -19331,7 +19365,7 @@ class C489Shadow:
         with self._lock:
             self.led = {k: dict(eq=1.0, w={}, cohorts=[], daily={}, trades=0, cost=0.0, funding=0.0)
                         for k in ('M1', 'M1g')}
-            self.flow, self.last_hour = {}, 0
+            self.flow, self.last_hour, self.start_equity = {}, 0, 0.0
         self.save()
 
     # ── data ─────────────────────────────────────────────────────────────
@@ -19439,21 +19473,31 @@ class C489Shadow:
         have = (~np.isnan(TB[-172:])).sum(0)
         for f in ('flow1', 'flow4'):
             Fm[f][-1, have < 140] = np.nan
+        # the full model once 30+ coins have a real week of flow; until then the
+        # no-flow fit, so the duplicate account trades from its first hour
+        warm = int((have >= 140).sum()) >= 30
+        mdl = self.model if warm else _C489_MODEL_NOFLOW
+        self.model_used = 'full (16 features)' if warm else 'warm-up (14, no flow)'
         Z = _c489_xs_standardise(Fm, U)
-        X = np.stack([Z[f][-1] for f in self.model['feats']], -1)            # the last completed hour
-        p = _c489_logit_predict(np.array(self.model['w']), np.nan_to_num(X))
+        X = np.stack([Z[f][-1] for f in mdl['feats']], -1)                   # the last completed hour
+        p = _c489_logit_predict(np.array(mdl['w']), np.nan_to_num(X))
         p[np.isnan(X).any(-1) | ~U[-1]] = np.nan
         gate = False
         m = ~np.isnan(p)
         if m.sum() >= 10:
             v = p[m]; lo, hi = np.quantile(v, [0.2, 0.8])
-            g0, g1 = self.model['gate']
+            g0, g1 = mdl['gate']
             gate = (g0 + g1 * (v[v >= hi].mean() - v[v <= lo].mean())) > 2 * 0.0008
         return p, gate, r1[-1], int(m.sum())
 
     # ── the ledgers ──────────────────────────────────────────────────────
     def step(self, now_h, p, gate, r_last):
         """book the hour that just closed, then form this hour's cohort"""
+        if not self.start_equity:
+            try:
+                self.start_equity = float(self.bot.portfolio.equity) or 250.0    # read once: a seed, never a write
+            except Exception:
+                self.start_equity = 250.0
         day = now_h // 86400000 * 86400000
         settle = (datetime.utcfromtimestamp(now_h / 1000).hour % 8) == 0
         rets = {s: float(r_last[j]) for j, s in enumerate(self.syms) if not np.isnan(r_last[j])}
@@ -19491,7 +19535,10 @@ class C489Shadow:
         led = self.led[name]
         days = sorted(led['daily'])
         x = np.array([led['daily'][d] for d in days])
-        out = dict(equity=round(led['eq'], 4), days=len(days), trades=led['trades'],
+        base = float(self.start_equity or 250.0)
+        out = dict(equity=round(led['eq'], 4), usd=round(base * led['eq'], 2), pnl_usd=round(base * (led['eq'] - 1.0), 2),
+                   open=len(led['w']), gross=round(sum(abs(v) for v in led['w'].values()), 3),
+                   days=len(days), trades=led['trades'],
                    cost=round(led['cost'], 4), funding=round(led['funding'], 4), eligible=False)
         if len(x) >= 20 and x.std() > 0:
             n = len(x); m = x.mean(); e = x - m
@@ -19528,8 +19575,9 @@ class C489Shadow:
             self.save()
             a, b = self.record('M1'), self.record('M1g')
             logger.info(f"   \U0001f47b C489 shadow hour {datetime.utcfromtimestamp(now_h/1000):%H}:00 UTC: "
-                        f"{n} coins scored, gate {'OPEN' if gate else 'shut'} | M1 {100 * (a['equity'] - 1):+.2f}% "
-                        f"M1g {100 * (b['equity'] - 1):+.2f}% over {a['days']}d [{time.time() - t0:.0f}s]")
+                        f"{n} coins scored ({self.model_used}), gate {'OPEN' if gate else 'shut'} | "
+                        f"M1 ${a['usd']:.2f} ({100 * (a['equity'] - 1):+.2f}%) M1g ${b['usd']:.2f} "
+                        f"({100 * (b['equity'] - 1):+.2f}%) over {a['days']}d [{time.time() - t0:.0f}s]")
         except Exception as e:
             self._fail_at = time.time()
             logger.warning(f"⚠️ C489 shadow hour failed ({type(e).__name__}: {e}) -- retrying in 5 min")
@@ -19540,7 +19588,371 @@ class C489Shadow:
             return dict(mode='shadow' if self.active() else 'off', coins=len(self.syms),
                         last_hour=datetime.utcfromtimestamp(self.last_hour / 1000).strftime('%Y-%m-%d %H:00') if self.last_hour else '',
                         flow_hours=flow_h, warming=flow_h < 172, gate=self.gate_last,
+                        model=self.model_used, start_equity=round(float(self.start_equity or 0.0), 2),
                         M1=self.record('M1'), M1g=self.record('M1g'))
+
+
+# ═══ C490: SPOT-PERP CASH-AND-CARRY, ON A PAPER LEDGER OF ITS OWN ══════════
+# research/c490_preregistration.md, item R3c, committed before the test:
+# 2021-07 -> 2026-08, net +2.2%/yr, vol 1.4%, Sharpe 1.55, t 2.78, 3/4 quarters
+# -> ADMITTED (and past the Bonferroni t 2.6). Correlation with the C488 book
+# -0.01. BUT: 2025 -4.6%, 2026 -2.0% (the trade became crowded), and a hedged
+# two-leg trade can be taxed on its winning leg alone under s.115BBH. So it runs
+# on its own paper ledger, sized exactly as tested, never in the account, until
+# the operator's CA has seen it and the C488 implementation check is done.
+_C490_SPOT_COST = 0.0012        # spot taker 0.10% + half-spread 0.02%
+_C490_PERP_COST = 0.0008        # perp taker 0.06% + half-spread 0.02%
+
+
+def _c490_decide(held, f3, ok, enter=0.10, exit_=0.05, cap=8):
+    """one daily decision at a close -> (exits, entries) as index arrays.
+    Out: no longer eligible, or funding under exit_. In: the highest funding
+    above enter, while fewer than cap are held (hysteresis 10% in, 5% out)."""
+    f = np.nan_to_num(f3)
+    exits = np.nonzero(held & (~ok | (f < exit_)))[0]
+    h = held.copy()
+    h[exits] = False
+    free = cap - int(h.sum())
+    entries = np.array([], dtype=int)
+    if free > 0:
+        cand = np.nonzero(ok & ~h & (f > enter))[0]
+        entries = cand[np.argsort(-f3[cand])][:free]
+    return exits, entries
+
+
+def _c490_carry_sim(close, spot, qv, fund, size=0.10, cap=8, enter=0.10, exit_=0.05, topn=40):
+    """the research's daily loop on the bot's own functions: long spot, short
+    the perp, equal notional, day by day. omega_c490_test.py holds it to
+    research/omega_c490_research.py carry() on the same data."""
+    el = _c488_universe(close, qv, topn)
+    f3 = np.full_like(fund, np.nan)
+    for i in range(3, len(fund)):
+        f3[i] = fund[i - 2:i + 1].sum(0) / 3 * 365          # the last three days, annualised
+    rp, rs = _c488_returns(close), _c488_returns(spot)
+    held = np.zeros(close.shape[1], bool)
+    pnl = np.zeros(len(close))
+    npos = np.zeros(len(close))
+    rt = _C490_SPOT_COST + _C490_PERP_COST
+    for i in range(4, len(close)):
+        for j in np.nonzero(held)[0]:
+            if np.isnan(rp[i, j]) or np.isnan(rs[i, j]):
+                held[j] = False                                  # forced out: a gap or a delisting
+                pnl[i] -= rt * size
+                continue
+            pnl[i] += (fund[i, j] + rs[i, j] - rp[i, j]) * size
+        ok = el[i] & ~np.isnan(spot[i]) & ~np.isnan(f3[i])
+        ex, en = _c490_decide(held, f3[i], ok, enter, exit_, cap)
+        held[ex] = False
+        held[en] = True
+        pnl[i] -= rt * size * (len(ex) + len(en))
+        npos[i] = held.sum()
+    return pnl, npos
+
+
+def _c490_record(x):
+    """the project's bar on a daily return series: Newey-West t (5 lags), quarters positive"""
+    out = dict(days=int(len(x)))
+    if len(x) >= 20 and x.std() > 0:
+        n = len(x); m = x.mean(); e = x - m
+        s = (e @ e) / n
+        for l in range(1, 6):
+            s += 2 * (1 - l / 6) * (e[l:] @ e[:-l]) / n
+        out.update(ann=round(float(m * 365), 4), sharpe=round(float(m / x.std() * math.sqrt(365)), 2),
+                   t=round(float(m / math.sqrt(s / n)) if s > 0 else 0.0, 2),
+                   npos=int(sum(q.mean() > 0 for q in np.array_split(x, 4))))
+    return out
+
+
+class C490Carry:
+    """C490: SPOT-PERP CASH-AND-CARRY -- the one round-3 item that passed.
+
+    When traders pay a lot to hold a coin's perpetual long, the funding rate is
+    high. Buy the coin on spot and short the same amount of its perpetual: the
+    price moves cancel, and the short collects the funding. Pre-registered rule,
+    run exactly as tested, once a day at 00:10 UTC (after the C488 rebalance):
+
+      universe  the 40 most liquid crypto perps (30-day median quote volume, 90+
+                days old) that Bitget also lists on spot
+      signal    trailing three-day funding, annualised
+      in        above 10%/yr, highest first, at most 8 held
+      out       below 5%/yr (hysteresis), or no longer eligible
+      size      10% of the ledger's equity per coin, both legs equal
+      costs     spot 0.12% + perp 0.08% on the way in and again on the way out
+
+    IT NEVER TOUCHES THE ACCOUNT. Its ledger is in dollars, seeded once from
+    the account's equity (a read, never a write), and marked daily: spot move,
+    minus perp move, plus every funding settlement since the last run. Moving it
+    into the account needs a spot order path, the C488 implementation check,
+    and the operator's CA on how India taxes a hedged two-leg trade.
+    """
+
+    STATE_FILE = 'c490_carry.json'
+    SPOT_API = 'https://api.bitget.com/api/v2/spot/market/tickers'
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.cfg = bot.cfg
+        self._lock = threading.RLock()
+        self.pos = {}                   # raw perp symbol -> the position
+        self.eq = 0.0                   # $ ledger equity
+        self.start_equity = 0.0
+        self.daily = {}                 # UTC day ms -> the day's return
+        self.last_run = ''              # UTC date of the last completed run
+        self.last_ms = 0                # when that run marked the book
+        self.closed = []                # the last 50 closed positions
+        self.info = {}
+        self.fees = 0.0
+        self.funding = 0.0
+        self.trades = 0
+        self._tick_at = 0.0
+        self._fail_at = 0.0
+        self.path = os.path.join(BASE_PATH, self.STATE_FILE)
+        self.load()
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C490_CARRY', True))
+
+    def params(self):
+        g = lambda k, d: float(getattr(self.cfg, k, d))
+        return dict(size=g('C490_CARRY_SIZE', 0.10), cap=int(g('C490_CARRY_CAP', 8)),
+                    enter=g('C490_CARRY_ENTER', 0.10), exit_=g('C490_CARRY_EXIT', 0.05),
+                    topn=int(g('C490_CARRY_TOPN', 40)))
+
+    # ── persistence ──────────────────────────────────────────────────────
+    def load(self):
+        try:
+            if os.path.exists(self.path):
+                d = json.load(open(self.path))
+                self.pos = {k: dict(v) for k, v in (d.get('pos') or {}).items()}
+                self.eq = float(d.get('eq') or 0.0)
+                self.start_equity = float(d.get('start_equity') or 0.0)
+                self.daily = {int(a): float(b) for a, b in (d.get('daily') or {}).items()}
+                self.last_run = str(d.get('last_run') or '')
+                self.last_ms = int(d.get('last_ms') or 0)
+                self.closed = list(d.get('closed') or [])[-50:]
+                self.info = d.get('info') or {}
+                self.fees = float(d.get('fees') or 0.0)
+                self.funding = float(d.get('funding') or 0.0)
+                self.trades = int(d.get('trades') or 0)
+        except Exception as e:
+            logger.warning(f"⚠️ C490 carry ledger not loaded ({type(e).__name__}) -- starting fresh")
+
+    def save(self):
+        try:
+            with self._lock:
+                d = dict(pos=self.pos, eq=self.eq, start_equity=self.start_equity,
+                         daily={str(a): b for a, b in self.daily.items()}, last_run=self.last_run,
+                         last_ms=self.last_ms, closed=self.closed[-50:], info=self.info,
+                         fees=self.fees, funding=self.funding, trades=self.trades)
+            tmp = self.path + '.tmp'
+            json.dump(d, open(tmp, 'w'))
+            os.replace(tmp, self.path)
+        except Exception as e:
+            logger.warning(f"⚠️ C490 carry save failed: {type(e).__name__}: {e}")
+
+    def reset(self):
+        with self._lock:
+            self.pos, self.eq, self.start_equity, self.daily = {}, 0.0, 0.0, {}
+            self.last_run, self.last_ms, self.closed, self.info = '', 0, [], {}
+            self.fees = self.funding = 0.0
+            self.trades = 0
+        self.save()
+
+    # ── market data ──────────────────────────────────────────────────────
+    def spot_prices(self):
+        """Bitget spot mids, one call: {'BTCUSDT': 64000.5, ...}"""
+        for k in range(3):
+            try:
+                d = requests.get(self.SPOT_API, timeout=12).json().get('data') or []
+                out = {}
+                for x in d:
+                    b, a = float(x.get('bidPr') or 0), float(x.get('askPr') or 0)
+                    px = (b + a) / 2.0 if b > 0 and a > 0 else float(x.get('lastPr') or 0)
+                    if px > 0:
+                        out[str(x.get('symbol', ''))] = px
+                if out:
+                    return out
+            except Exception:
+                pass
+            time.sleep(0.6 * (k + 1))
+        return {}
+
+    @staticmethod
+    def spot_of(raw, spot):
+        """the spot pair for a perp: the same name, or without a size prefix
+        (1000PEPEUSDT -> PEPEUSDT). The P&L is booked in each leg's own units,
+        so the multiplier never enters it."""
+        if raw in spot:
+            return raw
+        m = re.match(r'^(?:1000000|100000|10000|1000|100|10|1M|1K)([A-Z].*)$', raw)
+        if m and m.group(1) in spot:
+            return m.group(1)
+        return None
+
+    def history(self, syms, days=120):
+        """daily closes, quote volumes and funding: (T, keep, close, qv, fund, raw funding events)"""
+        e = self.bot.c488
+        hist = {}
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for s, h in zip(syms, pool.map(lambda s: e._history(s, days), syms)):
+                if h and h[0]:
+                    hist[s] = h
+        if not hist:
+            return None
+        keep = sorted(hist)
+        T = np.array(sorted(set().union(*[set(hist[s][0]) for s in keep])), dtype=np.int64)
+        idx = {int(t): i for i, t in enumerate(T)}
+        close = np.full((len(T), len(keep)), np.nan)
+        qv = np.full_like(close, np.nan)
+        fund = np.zeros_like(close)
+        for j, s in enumerate(keep):
+            for t, (c, v) in hist[s][0].items():
+                close[idx[int(t)], j], qv[idx[int(t)], j] = c, v
+            for t, rate in hist[s][1].items():
+                i = idx.get(int(t) // _C488_DAY * _C488_DAY)
+                if i is not None:
+                    fund[i, j] += rate
+        return T, keep, close, qv, fund, {s: hist[s][1] for s in keep}
+
+    # ── the ledger ───────────────────────────────────────────────────────
+    def _close(self, raw, s_px, p_px, why, now_ms):
+        p = self.pos.pop(raw)
+        cost = (_C490_SPOT_COST + _C490_PERP_COST) * p['qp'] * p_px
+        self.fees += cost
+        self.trades += 1
+        self.closed = (self.closed + [dict(coin=raw[:-4], why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
+                                           pnl=round(p['pnl'] - cost, 4), funding=round(p['funding'], 4))])[-50:]
+        return cost
+
+    def step(self, now_ms, spot, perp, events, T, keep, close, qv, fund):
+        """mark what is held, then make the day's decision. spot/perp: {raw: mid};
+        events: {raw: {ms: rate}}. Returns the day's $ P&L."""
+        if not self.start_equity:
+            try:
+                self.start_equity = float(self.bot.portfolio.equity) or 250.0    # read once: a seed, never a write
+            except Exception:
+                self.start_equity = 250.0
+            self.eq = self.start_equity
+        P = self.params()
+        eq0 = self.eq
+        pnl = 0.0
+        today = now_ms // _C488_DAY * _C488_DAY
+        # 1. mark: spot move - perp move + every settlement since the last mark
+        for raw in list(self.pos):
+            p = self.pos[raw]
+            s1, p1 = spot.get(p['spot']) or 0.0, perp.get(raw) or 0.0
+            if s1 <= 0 or p1 <= 0:                               # a gap or a delisting: out at the last marks
+                pnl -= self._close(raw, p['s'], p['p'], 'no price', now_ms)
+                continue
+            fu = sum(r for t, r in (events.get(raw) or {}).items() if p['marked'] < t <= now_ms) * p['qp'] * p1
+            d = p['qs'] * (s1 - p['s']) - p['qp'] * (p1 - p['p']) + fu
+            p.update(s=s1, p=p1, marked=now_ms, pnl=p['pnl'] + d, funding=p['funding'] + fu)
+            self.funding += fu
+            pnl += d
+        # 2. decide, on the last completed day
+        i = len(T) - 1
+        el = _c488_universe(close, qv, P['topn'])[i] if len(T) > 31 else np.zeros(len(keep), bool)
+        f3 = np.full(len(keep), np.nan)
+        if len(T) >= 3:
+            f3 = fund[-3:].sum(0) / 3 * 365
+        raws = [C488Engine._raw(s) for s in keep]
+        sp_ok = np.array([bool(self.spot_of(r, spot)) and (perp.get(r) or 0) > 0 for r in raws], bool)
+        ok = el & sp_ok & ~np.isnan(f3)
+        held = np.array([r in self.pos for r in raws], bool)
+        for raw in [r for r in self.pos if r not in raws]:       # held, but no history today: not eligible
+            pnl -= self._close(raw, spot.get(self.pos[raw]['spot']) or self.pos[raw]['s'],
+                               perp.get(raw) or self.pos[raw]['p'], 'not eligible', now_ms)
+        ex, en = _c490_decide(held, f3, ok, P['enter'], P['exit_'], P['cap'])
+        for j in ex:
+            r = raws[j]
+            pnl -= self._close(r, self.pos[r]['s'], self.pos[r]['p'],
+                               'funding fell' if ok[j] else 'not eligible', now_ms)
+        eq_now = eq0 + pnl
+        for j in en:
+            r = raws[j]
+            sym_s = self.spot_of(r, spot)
+            n = P['size'] * eq_now
+            cost = (_C490_SPOT_COST + _C490_PERP_COST) * n
+            self.pos[r] = dict(spot=sym_s, qs=n / spot[sym_s], qp=n / perp[r], s=spot[sym_s], p=perp[r],
+                               n=n, f3=float(f3[j]), opened=now_ms, marked=now_ms, pnl=-cost, funding=0.0)
+            self.fees += cost
+            self.trades += 1
+            pnl -= cost
+        for r in self.pos:                                        # today's funding reading, for the panel
+            if r in raws:
+                self.pos[r]['f3'] = float(np.nan_to_num(f3[raws.index(r)]))
+        self.eq = eq0 + pnl
+        if eq0 > 0:
+            self.daily[today] = self.daily.get(today, 0.0) + pnl / eq0
+        self.info = dict(eligible=int(ok.sum()), above=int((np.nan_to_num(f3) > P['enter'])[ok].sum()),
+                         entered=[raws[j][:-4] for j in en], exited=[raws[j][:-4] for j in ex])
+        return pnl
+
+    def due(self, now=None):
+        now = now or datetime.utcnow()
+        h, m = getattr(self.cfg, 'C490_CARRY_RUN_UTC', (0, 10))
+        return (now.hour, now.minute) >= (h, m) and self.last_run != now.strftime('%Y-%m-%d')
+
+    def run(self):
+        e = self.bot.c488
+        e.refresh_marks(force=True)
+        spot = self.spot_prices()
+        if not spot:
+            raise RuntimeError('Bitget spot tickers unavailable')
+        P = self.params()
+        syms = list(dict.fromkeys(e.candidates(P['topn']) + [C488Engine._ccxt(r) for r in self.pos]))
+        h = self.history(syms)
+        if h is None:
+            raise RuntimeError('no daily history')
+        T, keep, close, qv, fund, events = h
+        now_ms = int(time.time() * 1000)
+        perp = {C488Engine._raw(s): e.mark(s) for s in set(keep) | {C488Engine._ccxt(r) for r in self.pos}}
+        ev = {C488Engine._raw(s): v for s, v in events.items()}
+        pnl = self.step(now_ms, spot, perp, ev, T, keep, close, qv, fund)
+        self.last_run = datetime.utcfromtimestamp(now_ms / 1000).strftime('%Y-%m-%d')
+        self.last_ms = now_ms
+        return pnl
+
+    def tick(self):
+        if not self.active() or time.time() - self._tick_at < 30:
+            return
+        self._tick_at = time.time()
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        if not self.due() or time.time() - self._fail_at < 300:
+            return
+        try:
+            t0 = time.time()
+            with self._lock:
+                pnl = self.run()
+            self.save()
+            inf = self.info
+            logger.info(f"   \U0001f4b1 C490 carry (paper ledger) {self.last_run}: day {pnl:+.2f} -> ${self.eq:.2f} "
+                        f"({100 * (self.eq / (self.start_equity or 1) - 1):+.2f}%) | {len(self.pos)} held, "
+                        f"{inf.get('above', 0)} of {inf.get('eligible', 0)} eligible above 10%/yr"
+                        f"{' | in ' + ','.join(inf['entered']) if inf.get('entered') else ''}"
+                        f"{' | out ' + ','.join(inf['exited']) if inf.get('exited') else ''} [{time.time() - t0:.0f}s]")
+        except Exception as ex:
+            self._fail_at = time.time()
+            logger.warning(f"⚠️ C490 carry run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def status(self):
+        with self._lock:
+            P = self.params()
+            h, m = getattr(self.cfg, 'C490_CARRY_RUN_UTC', (0, 10))
+            x = np.array([self.daily[d] for d in sorted(self.daily)])
+            base = float(self.start_equity or 0.0)
+            now_ms = int(time.time() * 1000)
+            return dict(mode='paper' if self.active() else 'off', start_equity=round(base, 2),
+                        usd=round(self.eq, 2), pnl_usd=round(self.eq - base, 2) if base else 0.0,
+                        pct=round(100 * (self.eq / base - 1), 2) if base else 0.0,
+                        n=len(self.pos), cap=P['cap'], fees=round(self.fees, 4), funding=round(self.funding, 4),
+                        trades=self.trades, last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}",
+                        positions=[dict(coin=r[:-4], f3=round(100 * p.get('f3', 0.0), 1),
+                                        days=round((now_ms - p['opened']) / _C488_DAY, 1), pnl=round(p['pnl'], 2))
+                                   for r, p in sorted(self.pos.items())],
+                        info=self.info, record=_c490_record(x))
+
 
 
 class TradingBot:
@@ -19551,6 +19963,7 @@ class TradingBot:
         self.c488 = C488Engine(self)            # C488: the medium-term portfolio engine
         self.portfolio._c488 = self.c488
         self.c489 = C489Shadow(self)            # C489: the intraday engine, shadow ledger only
+        self.c490 = C490Carry(self)             # C490: spot-perp carry, its own paper ledger
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -20281,6 +20694,10 @@ class TradingBot:
                         self.c489.tick()
                     except Exception as _e489:
                         logger.warning(f"⚠️ C489 tick failed: {type(_e489).__name__}: {_e489}")
+                    try:                                  # C490: the carry ledger, daily
+                        self.c490.tick()
+                    except Exception as _e490:
+                        logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -37638,6 +38055,7 @@ def startup():
     if fresh:
         bot.c488.reset()                     # C488: a fresh account starts flat
         bot.c489.reset()                     # C489: and a fresh shadow record
+        bot.c490.reset()                     # C490: and a fresh carry ledger
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -38330,6 +38748,12 @@ class RemoteControl:
                                                for k, v in _g482.items()}
                         except Exception:
                             pass
+                        try:      # C490: the carry ledger
+                            _e490 = getattr(bot_ref, 'c490', None)
+                            if _e490 is not None:
+                                _out469['c490'] = _e490.status()
+                        except Exception as _x490:
+                            _out469['c490'] = {'error': f"{type(_x490).__name__}: {_x490}"}
                         try:      # C489: the intraday shadow's record
                             _e489 = getattr(bot_ref, 'c489', None)
                             if _e489 is not None:
@@ -38543,6 +38967,8 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <section><h2>Portfolio book <span class="muted" id="bookmode"></span></h2><div id="book" class="muted">&mdash;</div></section>
 <!-- C489: the intraday engine runs in SHADOW: its own paper ledger, never the account -->
 <section><h2>Intraday engine <span class="muted">(shadow)</span></h2><div id="shadow" class="muted">&mdash;</div></section>
+<!-- C490: spot-perp cash-and-carry, a paper ledger of its own -->
+<section><h2>Cash-and-carry <span class="muted">(paper ledger)</span></h2><div id="carry" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -38749,12 +39175,27 @@ async function pull(){
       else if(sh.mode!=='shadow'){q('shadow').innerHTML='<span class="muted">off</span>'}
       else{
         var line=function(n,r){var pc=100*(r.equity-1);
-          return '<div style="margin:4px 0"><b>'+n+'</b> <span class="'+cls(pc)+'">'+(pc>=0?'+':'')+pc.toFixed(2)+'%</span>'+
+          return '<div style="margin:4px 0"><b>'+n+'</b> '+money(r.usd)+' <span class="'+cls(pc)+'">'+sgn(r.pnl_usd)+' ('+(pc>=0?'+':'')+pc.toFixed(2)+'%)</span>'+
+            ' <span class="muted">'+r.open+' open \u00b7 gross '+r.gross+'x</span>'+
             ' <span class="muted">'+r.days+'d \u00b7 '+r.trades+' trades'+(r.t!==undefined?' \u00b7 t '+r.t+' \u00b7 '+r.npos+'/4':'')+
             (r.eligible?' \u00b7 <b class="good">ELIGIBLE</b>':'')+'</span></div>'};
-        q('shadow').innerHTML='<div class="s muted">paper ledger only \u2014 never touches the account \u00b7 '+sh.coins+' coins \u00b7 last hour '+
-          (sh.last_hour||'pending')+(sh.warming?' \u00b7 warming up flow data ('+sh.flow_hours+'h of 172)':'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
+        q('shadow').innerHTML='<div class="s muted">duplicate paper account from '+money(sh.start_equity)+' \u2014 never touches the real one \u00b7 '+sh.coins+' coins \u00b7 model '+
+          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model after 172h of flow (now '+sh.flow_hours+'h)':'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
           line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g);
+      }
+    }
+    /* C490: the cash-and-carry ledger -- a record, not the account */
+    var cy=d.c490;
+    if(cy){
+      if(cy.error){q('carry').innerHTML='<span class="'+cls(-1)+'">carry unavailable: '+cy.error+'</span>'}
+      else if(cy.mode!=='paper'){q('carry').innerHTML='<span class="muted">off</span>'}
+      else{
+        var rc=cy.record||{},ch='<div class="s muted">buy the coin, short its perpetual, collect the funding \u00b7 paper ledger from '+
+          money(cy.start_equity)+' \u2014 never touches the account \u00b7 runs daily '+cy.next_run_utc+' UTC'+(cy.last_run?' \u00b7 last '+cy.last_run:' \u00b7 first run pending')+'</div>'+
+          '<div style="margin:4px 0"><b>'+money(cy.usd)+'</b> <span class="'+cls(cy.pnl_usd)+'">'+sgn(cy.pnl_usd)+' ('+(cy.pct>=0?'+':'')+Number(cy.pct).toFixed(2)+'%)</span>'+
+          ' <span class="muted">'+cy.n+' of '+cy.cap+' held \u00b7 funding '+sgn(cy.funding)+' \u00b7 fees '+money(cy.fees)+' \u00b7 '+(rc.days||0)+'d'+(rc.t!==undefined?' \u00b7 t '+rc.t+' \u00b7 '+rc.npos+'/4':'')+'</span></div>';
+        (cy.positions||[]).forEach(function(p){ch+='<div class="s">'+p.coin+' <span class="muted">funding '+p.f3+'%/yr \u00b7 '+p.days+'d</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span></div>'});
+        q('carry').innerHTML=ch;
       }
     }
     /* C488: the portfolio engine. An error is SHOWN, never rendered as flat. */

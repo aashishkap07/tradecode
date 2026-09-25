@@ -10,10 +10,12 @@
    settlements; four overlapping cohorts; M1g holds nothing while the gate is
    shut; the record's t-statistic and ELIGIBLE flag follow the project's bar.
 4. ISOLATION: the shadow can never touch the account -- no order, no Portfolio
-   call anywhere in its code, and running it leaves equity and balance exactly
-   as they were.
-5. WARM-UP: a coin without a real week of taker flow is not scored; with it,
-   it is.
+   call anywhere in its code (one read of equity, to seed its dollar ledger),
+   and running it leaves equity and balance exactly as they were.
+5. WARM-UP (C490): from the first hour it scores with the no-flow model
+   (research/c489_model_noflow.json); once 30 coins have a real week of taker
+   flow it switches to the full model. A coin's flow is never read as zero.
+   THE DUPLICATE ACCOUNT: in dollars from the account's equity at the start.
 6. PERSISTENCE, reset on a fresh start, the main-loop tick after the book, the
    status payload, and the dashboard panel in Chromium.
 7. THE PRE-REGISTRATION (rounds 1 and 2) was committed before the engine.
@@ -144,15 +146,26 @@ sh.led['M1']['daily'] = {i * 86400000: float(x) for i, x in enumerate(g.normal(0
 ok("  but never before 120 days, however good", not sh.record('M1')['eligible'])
 
 print("\n4. ISOLATION")
-cls_src = src[src.index('class C489Shadow:'):src.index('\nclass TradingBot:')]
-ok("no order and no Portfolio call anywhere in the shadow's code",
-   'place_order' not in cls_src and 'release_margin' not in cls_src and 'portfolio' not in cls_src and 'c488_lock' not in cls_src)
+cls_src = src[src.index('class C489Shadow:'):src.index('\n# ═══ C490:')]
+pf_lines = [l.strip() for l in cls_src.splitlines() if 'portfolio' in l and not l.strip().startswith('#')]
+ok("no order and no Portfolio call anywhere in the shadow's code: one read of equity, to seed the dollar ledger",
+   'place_order' not in cls_src and 'release_margin' not in cls_src and 'c488_lock' not in cls_src
+   and pf_lines == ['self.start_equity = float(self.bot.portfolio.equity) or 250.0    # read once: a seed, never a write']
+   and not re.search(r'portfolio\.\w+\s*[-+*/]?=(?!=)', cls_src), f"{pf_lines}")
 bot, sh = mkshadow(); sh.syms = [f'S{j:02d}USDT' for j in range(20)] + ['AUSDT', 'BUSDT']
 e0, a0 = bot.portfolio.equity, bot.portfolio.available_balance
 for i in range(30):
     sh.step(h0 + i * 3600000, p, True, np.random.default_rng(i).normal(0, 0.02, k))
 ok("thirty shadow hours leave equity and balance exactly as they were",
    bot.portfolio.equity == e0 and bot.portfolio.available_balance == a0 and sh.led['M1']['eq'] != 1.0)
+rec = sh.record('M1')
+ok("the duplicate account: seeded from the account's $1000 once, shown in dollars",
+   sh.start_equity == 1000.0 and abs(rec['usd'] - round(1000.0 * sh.led['M1']['eq'], 2)) < 1e-9
+   and abs(rec['pnl_usd'] - round(1000.0 * (sh.led['M1']['eq'] - 1), 2)) < 1e-9 and rec['open'] == len(sh.led['M1']['w'])
+   and abs(rec['gross'] - round(sum(abs(v) for v in sh.led['M1']['w'].values()), 3)) < 1e-9, f"{rec['usd']} {rec['pnl_usd']}")
+bot.portfolio.equity = 5.0
+sh.step(h0 + 30 * 3600000, p, True, np.zeros(k))
+ok("  and the seed never moves with the account afterwards", sh.start_equity == 1000.0)
 
 print("\n5. WARM-UP")
 bot, sh = mkshadow()
@@ -164,11 +177,30 @@ sh.candles = {s: {int(T[i]): [O[i, j], Hh[i, j], L[i, j], C[i, j], QV[i, j]] for
 sh.fund = {s: {int(T[i]): float(F[i, j]) for i in range(0, len(T), 8)} for j, s in enumerate(syms)}
 sh.flow = {s: {int(T[i]): float(TB[i, j] / QV[i, j]) for i in range(len(T) - 30, len(T))} for j, s in enumerate(syms)}
 pr, gate, rl, n30 = sh.predict(now_h)
+m30 = sh.model_used
+Tm, Om, Hm, Lm, Cm, QVm, TBm, Um, Fx = sh.matrices(now_h)
+r_, Fm_ = om._c489_features(Tm, sh.syms, Om, Hm, Lm, Cm, QVm, TBm, Um, Fx)
+have = (~np.isnan(TBm[-172:])).sum(0)
+for f in ('flow1', 'flow4'):
+    Fm_[f][-1, have < 140] = np.nan
+Z_ = om._c489_xs_standardise(Fm_, Um)
+mn = om._C489_MODEL_NOFLOW
+Xn = np.stack([Z_[f][-1] for f in mn['feats']], -1)
+pn = om._c489_logit_predict(np.array(mn['w']), np.nan_to_num(Xn)); pn[np.isnan(Xn).any(-1) | ~Um[-1]] = np.nan
+ok("with 30 hours of flow it scores at once, with the no-flow model, and exactly that model's numbers",
+   n30 >= 30 and m30.startswith('warm-up') and np.allclose(pr, pn, equal_nan=True, rtol=0, atol=1e-15), f"{n30} coins, {m30}")
+ok("  the flow inputs are UNKNOWN there, not zero: no flow feature feeds the warm-up model",
+   'flow1' not in mn['feats'] and 'flow4' not in mn['feats'] and np.isnan(Fm_['flow4'][-1]).all())
 sh.flow = {s: {int(T[i]): float(TB[i, j] / QV[i, j]) for i in range(len(T) - 300, len(T))} for j, s in enumerate(syms)}
 pr2, gate2, rl2, n300 = sh.predict(now_h)
-ok("with 30 hours of flow nothing is scored; with 300 hours the coins are", n30 == 0 and n300 >= 30, f"{n30} -> {n300}")
+ok("with 300 hours of flow it switches to the full 16-feature model", n300 >= 30 and sh.model_used.startswith('full'),
+   f"{n300} coins, {sh.model_used}")
 ok("  and the scores are probabilities near 0.5 (the model is weak, as the research found)",
-   np.nanmin(pr2) > 0.4 and np.nanmax(pr2) < 0.6, f"{np.nanmin(pr2):.3f}..{np.nanmax(pr2):.3f}")
+   np.nanmin(pr2) > 0.4 and np.nanmax(pr2) < 0.6 and np.nanmin(pr) > 0.4 and np.nanmax(pr) < 0.6,
+   f"{np.nanmin(pr2):.3f}..{np.nanmax(pr2):.3f}")
+mj2 = json.load(open(os.path.join(REPO, 'research', 'c489_model_noflow.json')))
+ok("the bot's warm-up coefficients are research/c489_model_noflow.json's",
+   mn['feats'] == mj2['feats'] and np.allclose(mn['w'], mj2['w'], atol=1e-9) and np.allclose(mn['gate'], mj2['gate'], atol=1e-9))
 
 print("\n6. PERSISTENCE AND WIRING")
 bot, sh = mkshadow(); sh.syms = [f'S{j:02d}USDT' for j in range(20)] + ['AUSDT', 'BUSDT']
@@ -176,10 +208,11 @@ for i in range(5):
     sh.step(h0 + i * 3600000, p, True, np.full(k, 0.001))
 sh.last_hour = h0 + 4 * 3600000; sh.flow = {'AUSDT': {h0: 0.55}}; sh.save()
 sh2 = om.C489Shadow(bot)
-ok("the ledgers, the last hour and the collected flow survive a restart",
-   abs(sh2.led['M1']['eq'] - sh.led['M1']['eq']) < 1e-15 and sh2.last_hour == sh.last_hour and sh2.flow.get('AUSDT') == {h0: 0.55})
+ok("the ledgers, the last hour, the dollar seed and the collected flow survive a restart",
+   abs(sh2.led['M1']['eq'] - sh.led['M1']['eq']) < 1e-15 and sh2.last_hour == sh.last_hour and sh2.flow.get('AUSDT') == {h0: 0.55}
+   and sh2.start_equity == 1000.0)
 sh2.reset()
-ok("reset (fresh start) empties the record", sh2.led['M1']['eq'] == 1.0 and not sh2.flow and sh2.last_hour == 0)
+ok("reset (fresh start) empties the record", sh2.led['M1']['eq'] == 1.0 and not sh2.flow and sh2.last_hour == 0 and sh2.start_equity == 0.0)
 i_488 = src.find("self.c488.tick(can_trade=self.mode_mgr.can_trade())"); i_489 = src.find("self.c489.tick()")
 i_pause = src.find("# 2. Check if paused (NO scanning when paused)")
 ok("the shadow ticks right after the book, before the pause check", 0 < i_488 < i_489 < i_pause)
@@ -205,8 +238,9 @@ port = free_port(); om.RemoteControl(fbot, port=port).start(); time.sleep(0.6)
 import urllib.request
 st = json.loads(urllib.request.urlopen(f'http://127.0.0.1:{port}/api/status?t={TOKEN}', timeout=6).read())
 c = st.get('c489') or {}
-ok("/api/status carries the shadow's record", c.get('mode') == 'shadow' and 'M1' in c and 'M1g' in c and c['coins'] == 22,
-   f"{ {k2: c.get(k2) for k2 in ('mode', 'coins', 'warming', 'gate', 'last_hour')} }")
+ok("/api/status carries the shadow's record, in dollars", c.get('mode') == 'shadow' and 'M1' in c and 'M1g' in c and c['coins'] == 22
+   and c.get('start_equity') == 1000.0 and 'usd' in c['M1'] and 'pnl_usd' in c['M1g'] and 'model' in c,
+   f"{ {k2: c.get(k2) for k2 in ('mode', 'coins', 'warming', 'gate', 'last_hour', 'start_equity', 'model')} }")
 try:
     from playwright.sync_api import sync_playwright
     exe = (glob.glob('/opt/pw-browsers/chromium-*/chrome-linux/chrome') or [None])[0]
@@ -216,8 +250,9 @@ try:
         pg.on('pageerror', lambda x: errs.append(str(x)))
         pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3500)
         txt = pg.inner_text('#shadow'); b.close()
-    ok("the Intraday engine (shadow) panel says it never touches the account and shows both ledgers",
-       'never touches the account' in txt and 'M1 probability model' in txt and 'M1g cost-gated' in txt, txt.replace('\n', ' | ')[:160])
+    ok("the Intraday engine (shadow) panel: a duplicate paper account in dollars that never touches the real one",
+       'duplicate paper account from $1000.00' in txt and 'never touches the real one' in txt
+       and 'M1 probability model $' in txt and 'M1g cost-gated $' in txt, txt.replace('\n', ' | ')[:220])
     ok("no JavaScript errors", not errs, f"{errs}")
 except ImportError:
     ok("Chromium/playwright available for the page check", False)

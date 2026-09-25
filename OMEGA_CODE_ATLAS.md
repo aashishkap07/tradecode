@@ -8,20 +8,193 @@
 - **C489 has run on the VPS since 25 Sep 17:46 IST.**
 - **The C488 book built its first 9 positions:** $118.63 traded, 0.41× gross on
   $252.63.
-- **The C489 shadow logged its first hour** (flow warm-up, ~7 days).
 - **An 18:43 restart resumed cleanly,** with no second rebalance the same UTC
   day.
+- **C490 is pushed but not yet deployed** (see the Termius commands in
+  `reports/2026-09-25_round3_carry.md`).
 
 | # | task | when | notes |
 |---|---|---|---|
-| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. |
+| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. |
 | 2 | **Live-mode build for C488** | when the operator wants real money (after #1 passes) | (a) Read actual funding from Bitget account bills and stop booking the paper estimate live, so funding is never counted twice. (b) Sync equity and available balance with the venue each cycle, and reconcile any drift loudly. (c) Set one-way position mode and a margin mode per symbol before the first order. (d) Handle partial fills in `trade_to`. (e) Re-check contract minimums and steps from the live market table. (f) Only then does `C488_LIVE_OK = True` make sense. Then go live small: dial 5–10%, raised towards 15% over weeks as live tracks paper. |
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS. Never put keys in the Python file. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
-| 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. |
+| 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
 | 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. |
 | 6 | **Risk dial choice** | operator | Dial 15% → about +2.5%/month historically (1.5–2% realistic), worst drawdown −31%. Dial 20% → +3.3%, −40%. 4% a month is not reachable at acceptable risk. |
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
-| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. |
+| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
+| 9 | **C491: the limit-order (LP) test on 1-minute prices** | in progress | Pre-registered in `research/c491_preregistration.md` (commit a0c3c9b) before any minute data. On hourly bars the verdict flips with the order of prices inside the hour: −480%/yr stop-first, +165%/yr target-first. It is admitted only on the stop-first minute path (≥ 3/4 half-year quarters, t ≥ 2). If only target-first passes, it is inconclusive and nothing ships. |
+| 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 💱 2026-09-25 — C490: ROUND 3, THE CARRY LEDGER, AND THE SHADOW AS A DOLLAR ACCOUNT
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C490** (`_OMEGA_VERSION = 'C490'`). C488 is unchanged and is still
+the only thing that trades the account.
+
+**1. The C489 shadow no longer waits a week, and it shows dollars.**
+- **Warm-up model.** Until 30 coins have ≥ 140 of the last 172 hours of taker
+  flow, it scores with the same model refitted without the two flow inputs
+  (`research/c489_noflow.py` → `research/c489_model_noflow.json`, embedded as
+  `_C489_MODEL_NOFLOW`).
+  - On 2021-07 → 2026-08 that model fails exactly as the full one does:
+    M1nf −102.2%/yr, t −22.78; M1nfg −6.6%/yr, t −4.34.
+  - It then switches to the full model; `status()['model']` says which one is
+    in use.
+- **Duplicate paper account.** `start_equity` is seeded once from
+  `portfolio.equity` (a read, never a write, and the test pins that exact line).
+  `record()` adds `usd`, `pnl_usd`, `open` and `gross`. The panel reads
+  "duplicate paper account from $X — never touches the real one"; the report
+  line and the hourly log line show dollars.
+
+**2. New `C490Carry` (spot-perp cash-and-carry).** It runs on its own paper
+ledger (`c490_carry.json`), exactly as round 3 tested it:
+- **When:** daily at 00:10 UTC (05:40 IST), after the C488 rebalance.
+- **Universe:** the top 40 crypto perps (30-day median quote volume, 90+ days
+  old), taken from C488's `candidates`, that Bitget also lists on spot.
+  `spot_of` maps names, e.g. 1000PEPE → PEPE; quantities are per leg, so the
+  multiplier never enters the P&L.
+- **Signal:** the trailing 3-day funding, annualised, over the last three
+  completed UTC days (today's 00:00 settlement is excluded, as in the research).
+- **Rule:** in above 10%/yr, highest first, at most 8 held; out below 5%/yr, or
+  when no longer eligible (`_c490_decide`).
+- **Sizing and costs:** 10% of the ledger per coin, both legs equal; spot 0.12%
+  plus perp 0.08% of notional, in and out.
+- **Marking:** spot move − perp move + every settlement after the last mark.
+- **Account:** it is never touched. There is one read of `portfolio.equity`, to
+  seed the ledger.
+- **Wiring:**
+  - config `C490_CARRY` (on), `_TOPN` 40, `_ENTER` 0.10, `_EXIT` 0.05, `_SIZE`
+    0.10, `_CAP` 8, `_RUN_UTC` (0, 10);
+  - it ticks after C489 and before the pause check; a fresh start resets it;
+  - `/api/status['c490']`, a "Cash-and-carry (paper ledger)" panel, a report
+    `CARRY` line, and `C490` lines in the readable log.
+- **Research parity:** `_c490_carry_sim` is the research loop on the bot's own
+  functions.
+
+**3. Round 4 is pre-registered** (C491, see pending task #9) and is the next
+step.
+
+---
+
+## 🔬 ROUND 3 (pre-registered in `research/c490_preregistration.md`, commit c593967)
+
+Out of sample 2021-07 → 2026-08, costs as declared.
+
+| item | net / yr | t | quarters + | verdict |
+|---|---|---|---|---|
+| R3a LP limit orders at 2σ (hourly bars, stop first) | −480% | −11.8 | 0/4 | fail |
+| R3a LPh (Hurst < 0.5 filter) | −329% | −10.9 | 0/4 | fail |
+| R3a LPm (Markov expects reversion) | −382% | −11.6 | 0/4 | fail |
+| R3b per-coin choice of trend / revert / flat | −59% | −4.6 | 0/4 | fail |
+| **R3c spot-perp carry** | **+2.2%** (vol 1.4%) | **+2.78** | **3/4** | **ADMIT** (past Bonferroni 2.6) |
+| R3d per-coin trend lookback vs pooled C1 (difference) | −3.2% | −1.5 | 1/4 | fail |
+
+Carry against the book: ρ = −0.01. Book + carry at equal risk would be +44.8%/yr,
+Sharpe 1.94, but that needs more than 10× leverage on fully paid spot, which is
+impossible. At the tested size the result is additive: +27.3% → +29.5%/yr,
+Sharpe 1.18 → 1.28, monthly +2.28% → +2.46%.
+
+**Diagnostics (not admission tests):**
+
+Carry by year:
+
+| 2021 H2 | 2022 | 2023 | 2024 | 2025 | 2026 to Aug |
+|---|---|---|---|---|---|
+| +7.3% | −3.4% | +6.1% | +8.3% | **−4.6%** | **−2.0%** |
+
+The last 20 months are negative. Funding has been compressed since large
+delta-neutral funds (e.g. Ethena) crowded this trade.
+
+Threshold sensitivity:
+
+| enter / exit | t |
+|---|---|
+| 5% / 2% | +0.8 |
+| 10% / 5% (as registered) | +2.8 |
+| 15% / 8% | +5.5 |
+| 20% / 10% | +5.2 |
+
+It is monotone, which supports a real effect, but the higher thresholds are
+post hoc and are not used.
+
+**LP under the optimistic intra-hour ordering** (no fill-hour stop, target
+before stop): +165%/yr, t +7.1, 4/4. The same rule under the registered
+ordering: −480%/yr. So hourly bars cannot decide it, and that is why round 4
+exists.
+
+**Live observation on 25 Sep 2026:**
+- 37 of the 40 are eligible (they have spot);
+- 17 are above 10%/yr, and those are mostly at Bitget's baseline of
+  0.01%/8h = 10.95%/yr.
+
+At the baseline a position earns about 0.03%/day against a 0.40% round trip,
+so it breaks even in about 13 days.
+
+## 🧭 WHY CARRY IS A LEDGER AND NOT A 4TH C488 SLEEVE (a declared deviation)
+
+The C490 integration rule said an admitted R3c becomes a fourth C488 sleeve "at
+equal risk", starting as paper. It was not done that way, for four reasons:
+1. **Equal risk is physically impossible.** It would need more than 10× on fully
+   paid spot, and borrowing for it costs more than the carry.
+2. **The last 16-month quarter is negative.**
+3. **It would muddy the C488 paper implementation check** (pending #1).
+4. **The Indian tax hazard on hedged legs** (pending #10).
+
+So it runs exactly as tested, on its own paper ledger. This is a conservative
+deviation: it ships less than the rule allowed, never more.
+
+## 🧪 VERIFICATION
+
+- **`omega_c490_test.py`, 23 checks. Parity:**
+  - the bot's `_c490_carry_sim` equals the research's `carry()` day for day
+    (atol 1e-15), on a synthetic market that enters, exits and fills the book of
+    8;
+  - `step()` driven daily holds the same number of coins as the research on
+    every one of 416 days, with returns ρ 0.995.
+- **`omega_c490_test.py`, arithmetic:** one position by hand, 1000PEPE against
+  PEPE spot:
+  - 10% per leg, 0.20% in;
+  - a 5% move nets to zero;
+  - the settlements after the mark are paid, the one before is not;
+  - it exits after 3 zero-funding days at 0.20% of current value.
+- **`omega_c490_test.py`, isolation, wiring and history:**
+  - isolation: exactly one `portfolio` line, and 200 days leave the account
+    unchanged;
+  - the schedule, persistence, reset, tick order, config, report and
+    `/api/status`;
+  - the Chromium panel shows no JS errors;
+  - the pre-registration predates the class, and the committed results admit
+    R3c and nothing else.
+- **`omega_c489_test.py`, now 30 checks.**
+  - The isolation check now pins the single seed line.
+  - Warm-up: 30 h of flow → scored at once by the no-flow model (numbers equal
+    to a hand computation); 300 h → the full model; the flow inputs are NaN,
+    never 0.
+  - The dollar seed is fixed at $1000 even when the account later moves.
+  - It survives restarts, and the panel text is checked.
+- **Regression:** c487 (56), c488 (41) and every older suite all pass.
+- **Real data:**
+  - `C490Carry.run()` against live Bitget with the real market table: 24 s, 37
+    eligible, 17 above 10%, 8 entered, account unchanged;
+  - a full headless boot on live data (fresh $50): C488 first rebalance → C489
+    "38 coins scored (warm-up (14, no flow))" → C490 "8 held, 17 of 37 eligible
+    above 10%/yr", with no traceback.
+
+## ⚠️ LIMITS
+
+- **Prices:** carry marks use mids (the half-spread is inside the 0.12% / 0.08%
+  costs). A settlement is valued at the current perp mark, not the mark at
+  settlement.
+- **Timing:** the first run happens at boot if that UTC day has not run yet;
+  after that, at 00:10 UTC. After downtime the next run books every settlement
+  since the last mark.
+- **Positions:** fixed quantities per leg, whereas the research resets each day
+  to 10% of equity (ρ 0.995 on the synthetic check).
+- **Tax:** the carry ledger ignores tax. See pending #10.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 👻 2026-09-25 — C489: THE INTRADAY ENGINE, BUILT AS ASKED, TESTED FIRST, RUN IN SHADOW
@@ -46,7 +219,8 @@
 - **It never touches the account.** There is no order and no Portfolio call in
   its code, and the test proves it.
 - **Warm-up:** Bitget serves only 30 hours of taker flow, so the shadow collects
-  it and scores nothing until it has a week (~172 h).
+  it and scores nothing until it has a week (~172 h). *(C490: it now scores from
+  the first hour with a no-flow model; see C490.)*
 - **Promotion rule:** the dashboard marks it ELIGIBLE only if its own forward
   record passes the bar (at least 120 days, at least 3/4 quarters, t ≥ 2).
   Promotion to money would be a separate, explicit change.
