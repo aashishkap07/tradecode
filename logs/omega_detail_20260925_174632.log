@@ -1,0 +1,275 @@
+17:46:32 | 📊 Paper Mode
+17:46:35 | ✅ Connected | 805 futures markets
+17:46:35 | 📊 Bitget Fees: Maker 0.02% | Taker 0.06%
+17:46:35 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+17:46:35 | 📋 Limit Orders: ENABLED (offset 0.1%)
+17:46:35 | 📂 Loaded state: $253.13 | 1 positions | available $206.44 (locked $46.69)
+17:46:35 | 📐 RISK @ $253.13: monthly dial 15% = $37.92/month  |  per-trade risk 0.341% = $0.86  |  break-even win rate 35% at the measured 1.87 payoff [C482]
+17:46:35 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C489  PAPER  Bitget perps
+  25 Sep 2026   17:46
+  start $253.13  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $253.13  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.00
+  DAY       limit $9.44  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      +0.0496 blended  44W 94L realised
+  NEED      35% win at 1.87 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+17:46:35 |    🔒 C378 stop level $0.2364 recorded (paper — C377 enforces it in-process) [C397 tick-legal]
+17:46:35 |    (legacy Flask page not installed — the dashboard is the control panel)
+17:46:35 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+17:46:35 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+17:46:35 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+17:46:35 |        See deploy/DEPLOY.md — one command, no open ports, free.
+17:46:35 | ============================================================
+17:46:35 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+17:46:35 |    🧪 C364 PAPER=LIVE PARITY — costs modelled in paper:
+17:46:35 |       • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)
+17:46:35 |       • market fills: lift the ASK / hit the BID — never the last price
+17:46:35 |       • exit fee: taker on current notional
+17:46:35 |       • funding: charged per 8h settlement crossed
+17:46:35 |       NOT modelled: partial fills, API outages, queue position.
+17:46:35 | ============================================================
+17:46:35 | 🔒 Score floor reset: 0.32 (single mode — HP retired at C403-3)
+17:46:35 | 🧮 C458 EDGE STATE — what the ledger permits today:
+17:46:35 |    realised 7W/13L → shrunk base rate 0.425; fair odds for a 2.00R target are 0.333
+17:46:35 |    blended edge +0.0496  (prior +0.0467 x0.60 + realised +0.0540 x0.40 (n=20; anchored on realised payoff 1.87 (8W/12L in R) (break-even wr 0.348 vs realised 0.425 = e +0.0769) x extrapolation shrink 0.70 to T 1.41R))
+17:46:35 |    ✅ edge is positive — the expectancy gate is open on merit, and exploration should stay idle.
+17:46:35 | 📋 Version history: see CHANGELOG.md (auto-updated each revision)
+17:46:35 | ============================================================
+17:46:35 | 📊 ARCHITECTURE — what is actually running:
+17:46:35 |   1 SCANNER    756 markets → volume floor → top 30 by liveliness
+17:46:35 |   2 ENTRY      11 signal components → one score; only 3 hard vetoes
+17:46:35 |                (can't pay fees / no room to stop / not tradeable).
+17:46:35 |                Everything else is a weighted penalty [C403-5].
+17:46:35 |                EXPECTANCY GATE [C404/C405]: R = proj×√t ÷ stop,
+17:46:35 |                E = p(R×0.60)−(1−p); E must clear 0 AND the live percentile bar.
+17:46:35 |                TRADES/DAY [C467]: NO CAP. No count target, no hard cap, no per-scan limit. 2/pair still applies (that is concentration, not pace).
+17:46:35 |                What refuses a trade now: the three hard vetoes only — can't pay fees, no room to stop, not tradeable. E<0 is a PENALTY while p has no measured skill [C467].
+17:46:35 |   3 MONITOR    SPLIT LOOP [C397]: prices every 0.8s (stop, floors);
+17:46:35 |                OHLCV/DRI every 20s; regime every 90s, AFTER positions.
+17:46:35 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+17:46:35 |                · PROFIT FLOOR (C397 runner floor binds) · TIME.
+17:46:35 |                Loss patience is BOUNDED at 1.35× the soft limit [C404-2].
+17:46:35 |   SESSIONS     when each market DISCOVERS its price, in IST (US is currently on EDT):
+17:46:35 |                crypto        24/7        · metals+energy  Globex ~24/5
+17:46:35 |                US equity     19:00–01:30 IST  (a NIGHT session from India)
+17:46:35 |                index futures Globex ~24/5 (SP500/NDX100 are futures, not cash)
+17:46:35 |                Korea (KRX)   05:30–12:00 IST · HK  07:00–13:30 IST (lunch 09:30–10:30)
+17:46:35 |                ● OPEN  crypto        24/7
+17:46:35 |                ○ shut  us_equity     US cash closed
+17:46:35 |                ● OPEN  index_future  Globex index
+17:46:35 |                ● OPEN  metal         Globex
+17:46:35 |                ○ shut  korea_equity  KRX closed
+17:46:35 |                ○ shut  hk_equity     HKEX closed
+17:46:35 |   UNIVERSE     crypto + 294 RWA perps (stocks/metals/energy/ETFs),
+17:46:35 |                session-gated; leverage scaled to each instrument's own ATR;
+17:46:35 |                fee burden inside E. ONE POOL, no per-class quota [C409].
+17:46:35 |                WHY: crypto alive 39.3% of bars, ANY asset alive 59.8%
+17:46:35 |                (+20.5pp). Cross-class aliveness corr +0.04/+0.14 vs
+17:46:35 |                crypto's OWN internal factor corr +0.925 — real diversification.
+17:46:35 |   EDGES        C398 capitulation tilt (down-side only, +4.67pp measured)
+17:46:35 |                C396 session tilt · C401 taker-flow (instrumented)
+17:46:35 |                C403-7 flow term ±10% on direction
+17:46:35 |   RETIRED      HP phase ladder (C403-3: 5 incident classes, 0 benefit)
+17:46:35 |                Guardian + C329 (C403-4: 4 controllers, none knew the risk)
+17:46:35 |                per-symbol learning (C403-2: needs ~10 months of trades)
+17:46:35 |                DSI+DRI divergence / DRI HARD (C399: unreachable by construction)
+17:46:35 | ============================================================
+17:46:35 | ============================================================
+17:46:35 | ✅ DRI SYSTEM (11 components, renormalised to exactly 1.0 [C400]):
+17:46:35 |    Threshold: 0.3 | Hard: 0.5
+17:46:35 |    Weights: Mom=0.18 Tech=0.16 Vol=0.11
+17:46:35 |    ML=0.04 Wave=0.04 OFI=0.06
+17:46:35 |    Fund=0.05 MTF=0.06 RVS=0.07
+17:46:35 |    PA=0.15(dyn→0.45) Time=0.10 — nominal sum 1.02, rescaled to 1.00 at runtime [C400: was 1.113]
+17:46:35 |    DSI = 6 of those 11 (Mom/Vol/Tech/ML/Wave/MTF, sum 0.59) inverted, Hurst-modulated, now unit-scaled [C400]
+17:46:35 |    READ THEM AS: DRI negative = reversal thesis STRONG; DRI→0 = thesis DYING. DSI positive = sustainable; DSI→0 = spent.
+17:46:35 |    Updates: every 20s (15m candles do not move faster; prices stay on the 0.8s leg)
+17:46:35 | ============================================================
+17:46:35 | 📋 CONFIGURATION:
+17:46:35 |    💰 Equity: $253.13 | Available: $206.44
+17:46:35 |    📊 Position Sizing: Dynamic allocation, min $5.0 | 3-5 positions
+17:46:35 |    🎲 Leverage: 1x-10x  (single mode — HP retired, C403-3)
+17:46:35 |    📋 Limit Orders: ON | Maker 0.02% Taker 0.06%
+17:46:35 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left (C482)
+17:46:35 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+17:46:35 |    ⏱️ Prices 0.8s | DRI 20s | Summary 480s | Min age 15min
+17:46:35 |    🧠 Shared learning ON (Markov chains, calibration). Per-symbol memory OFF [C403-2].
+17:46:35 | ============================================================
+17:46:35 | 📊 MODE: NORMAL
+17:46:35 |    Normal start: $250.00
+17:46:35 | ============================================================
+17:46:35 | 💡 Press Ctrl+C to stop safely
+17:46:35 | ============================================================
+17:46:35 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before)
+17:46:35 |    🛡 FET: trail held OFF — target $0.258598 not reached yet (-1.0%). Banking early is the worst-paying exit there is [C415]
+17:46:56 |    💸 C364 market fill crossed the book: ARB buy @$0.222060 (2.70bp worse than mid, src=book)
+17:46:56 | 📉 FILL: ARB BUY @$0.222060 | paper=True
+17:46:56 |    💼 C488 first: BUY ARB 27.81 @ $0.222060 ($6.18; fee $0.004) -> holding +27.81
+17:46:56 |    💸 C364 market fill crossed the book: ETH buy @$2691.98 (0.02bp worse than mid, src=book)
+17:46:56 | 📉 FILL: ETH BUY @$2691.98 | paper=True
+17:46:56 |    💼 C488 first: BUY ETH 0.01 @ $2691.98 ($26.92; fee $0.016) -> holding +0.01
+17:46:56 |    💸 C364 market fill crossed the book: LINK sell @$13.9450 (0.36bp worse than mid, src=book)
+17:46:56 | 📉 FILL: LINK SELL @$13.9450 | paper=True
+17:46:56 |    💼 C488 first: SELL LINK 1 @ $13.9450 ($13.95; fee $0.008) -> holding -1
+17:46:56 |    💸 C364 market fill crossed the book: NEAR buy @$4.9602 (0.10bp worse than mid, src=book)
+17:46:56 | 📉 FILL: NEAR BUY @$4.9602 | paper=True
+17:46:56 |    💼 C488 first: BUY NEAR 2 @ $4.9602 ($9.92; fee $0.006) -> holding +2
+17:46:56 |    💸 C364 market fill crossed the book: PEPE buy @$0.0000044713 (2.13bp worse than mid, src=book)
+17:46:56 | 📉 FILL: PEPE BUY @$0.0000044713 | paper=True
+17:46:56 |    💼 C488 first: BUY PEPE 2.732e+06 @ $0.0000044713 ($12.22; fee $0.007) -> holding +2.732e+06
+17:46:57 |    💸 C364 market fill crossed the book: PUMP sell @$0.00413800 (2.42bp worse than mid, src=book)
+17:46:57 | 📉 FILL: PUMP SELL @$0.00413800 | paper=True
+17:46:57 |    💼 C488 first: SELL PUMP 3046 @ $0.00413800 ($12.60; fee $0.008) -> holding -3046
+17:46:57 |    💸 C364 market fill crossed the book: SOL buy @$119.03 (0.04bp worse than mid, src=book)
+17:46:57 | 📉 FILL: SOL BUY @$119.03 | paper=True
+17:46:57 |    💼 C488 first: BUY SOL 0.1 @ $119.03 ($11.90; fee $0.007) -> holding +0.1
+17:46:57 |    💸 C364 market fill crossed the book: UNI buy @$9.6440 (2.07bp worse than mid, src=book)
+17:46:57 | 📉 FILL: UNI BUY @$9.6440 | paper=True
+17:46:57 |    💼 C488 first: BUY UNI 1 @ $9.6440 ($9.64; fee $0.006) -> holding +1
+17:46:57 |    💸 C364 market fill crossed the book: WLD sell @$0.450100 (1.11bp worse than mid, src=book)
+17:46:57 | 📉 FILL: WLD SELL @$0.450100 | paper=True
+17:46:57 |    💼 C488 first: SELL WLD 34 @ $0.450100 ($15.30; fee $0.009) -> holding -34
+17:46:57 | 💼 C488 REBALANCE (first): 9 positions targeted, gross 0.41x of $252.63, 9 trades $118.63, top 20, vol target 20.0% [22s]
+17:47:10 |    🏁 C467: the day is 1.00% against its 0.68% target — noted, and trading CONTINUES. Only a loss can end a day now; a good one is left to run.
+17:47:29 |    👻 C489 shadow hour 12:00 UTC: 0 coins scored, gate shut | M1 +0.00% M1g +0.00% over 1d [32s]
+17:47:29 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it)
+17:47:33 | ⚡ FLASH: FET Δ=-0.17% DRI=-0.084
+17:47:49 | ⚡ FLASH: FET Δ=-0.67% DRI=-0.083
+17:48:10 | ⚡ FLASH: FET Δ=-0.17% DRI=-0.079
+17:48:36 | ⚡ FLASH: FET Δ=-0.21% DRI=-0.076
+17:49:33 |    🛑 C377 HARD STOP FET: -1.62% <= -1.59% (0.8R, R=2.12%) — arithmetic, not opinion
+17:49:33 | ⚠️ Hard stop: FET blocked 2hrs
+17:49:33 |    💸 C376 taker exit FET: not a profit-taking exit — a stop must always be able to cross [throttled 5min]
+17:49:33 |    💸 C364 market fill crossed the book: FET sell @$0.236300 (4.23bp worse than mid, src=book)
+17:49:33 | 📉 FILL: FET SELL @$0.236300 | paper=True
+17:49:33 | ============================================================
+17:49:33 | ❌ LOSS: FET/USDT:USDT | C377_RISK_STOP: -1.62% = -0.77R
+17:49:33 |    📊 LONG | Entry: $0.240200 → Exit: $0.236300
+17:49:33 |    🧮 C443 exit index: 0.43 at close (spent) — banked -1.62%, peaked +1.12% [recorded for scoring]
+17:49:33 |    📐 C422-3 capture: banked -1.62% of the +1.12% peak (-144%) | gave back 1.30R | session: CAPTURE -144% over 1 trades that peaked, mean giveback 1.30R over all 1 [instrumented only]
+17:49:33 |    📈 Price Move: -1.62% | PnL%: -1.62%
+17:49:33 |    💰 Net PnL: $-0.79
+  << 17:49  CLOSE  FET LONG @0.236300  -1.62% $-0.79  LOSS
+       held 13m  C377_RISK_STOP: -1.62% =  round trip from +1.12%  -0.77R  TAKER
+17:49:33 |    💸 Fees: Entry $0.009 + Exit $0.028 = $0.037
+17:49:33 |    ⏱️  Duration: 13.1min
+17:49:33 |    🎲 Final DRI: -0.074 | Threshold: 0.416
+17:49:33 |    📊 DRI Components:
+17:49:33 |       Momentum: -0.175
+17:49:33 |       Volume: -0.006
+17:49:33 |       Technical: -0.195
+17:49:33 |       Ml: -0.070
+17:49:33 |       Wavefunction: -0.159
+17:49:33 |       Ofi: -0.201
+17:49:33 |       Funding: 0.600
+17:49:33 |       Multi_tf: -0.740
+17:49:33 |       Price_action: 0.145
+17:49:33 |       Time_pressure: 0.000
+17:49:33 |       Rvs: 0.000
+17:49:33 |       _hurst: 0.657
+17:49:33 |       _dsi: 0.217
+17:49:33 |    🎯 Strategy: trend_following | Leverage: 1x
+17:49:33 |    📊 Flow(proxy): L/S 1h=1.4 4h=1.3 12h=1.5 | R=-0.25 taker=-0.05
+17:49:33 |    📈 OI: neutral Δ=+0.0%
+17:49:33 |    📋 Limit Order (Maker fees)
+17:49:33 | ============================================================
+ 
+ 
+  17:54  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.45  unreal $+0.19
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.35 (0.47x)  open $+0.19  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.68 -0.27%  peak $253.13  dd 0.27%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+17:54:33 | 
+17:54:33 | ============================================================
+17:54:33 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:54:33 | 💰 Equity: $252.26 | Unrealized: $+0.19
+17:54:33 | 💵 Available: $228.54 | Locked: $23.73
+17:54:33 | 📈 Session: $-0.68 (-0.3%)
+17:54:33 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+17:54:33 | ============================================================
+17:54:33 | ============================================================
+17:54:33 | 🔻 Day: -0.15% realised (loss limit $9.44, 4% used · dial 15%/month) [C483]
+17:54:33 | ============================================================
+17:54:33 | 
+ 
+  18:02  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.61  unreal $+0.35
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.77 (0.47x)  open $+0.35  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.52 -0.20%  peak $253.13  dd 0.20%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+18:02:33 | 
+18:02:33 | ============================================================
+18:02:33 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+18:02:33 | 💰 Equity: $252.26 | Unrealized: $+0.35
+18:02:33 | 💵 Available: $228.54 | Locked: $23.73
+18:02:33 | 📈 Session: $-0.52 (-0.2%)
+18:02:33 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+18:02:33 | ============================================================
+18:02:33 | ============================================================
+18:02:33 | 🔻 Day: -0.15% realised (loss limit $9.44, 4% used · dial 15%/month) [C483]
+18:02:33 | ============================================================
+18:02:33 | 
+ 
+  18:10  up 0h24m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.62  unreal $+0.36
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $120.50 (0.48x)  open $+0.36  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.51 -0.20%  peak $253.13  dd 0.20%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+18:10:33 | 
+18:10:33 | ============================================================
+18:10:33 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+18:10:33 | 💰 Equity: $252.26 | Unrealized: $+0.36
+18:10:33 | 💵 Available: $228.54 | Locked: $23.73
+18:10:33 | 📈 Session: $-0.51 (-0.2%)
+18:10:33 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+18:10:33 | ============================================================
+18:10:33 | ============================================================
+18:10:33 | 🔻 Day: -0.15% realised (loss limit $9.44, 4% used · dial 15%/month) [C483]
+18:10:33 | ============================================================
+18:10:33 | 
