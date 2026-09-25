@@ -19,12 +19,97 @@
 | 2 | **Live-mode build for C488** | when the operator wants real money (after #1 passes) | (a) Read actual funding from Bitget account bills and stop booking the paper estimate live, so funding is never counted twice. (b) Sync equity and available balance with the venue each cycle, and reconcile any drift loudly. (c) Set one-way position mode and a margin mode per symbol before the first order. (d) Handle partial fills in `trade_to`. (e) Re-check contract minimums and steps from the live market table. (f) Only then does `C488_LIVE_OK = True` make sense. Then go live small: dial 5–10%, raised towards 15% over weeks as live tracks paper. |
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS. Never put keys in the Python file. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
-| 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. |
+| 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. **At the next refresh, add Binance's 2026 stock and commodity perps to `EXCLUDE`** (the list is in `research/c488_tradfi_check.py`). The live bot already excludes them, via Bitget's `isRwa` flag. |
 | 6 | **Risk dial choice** | operator | Dial 15% → about +2.5%/month historically (1.5–2% realistic), worst drawdown −31%. Dial 20% → +3.3%, −40%. 4% a month is not reachable at acceptable risk. |
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
-| 9 | **C491: the limit-order (LP) test on 1-minute prices** | in progress | Pre-registered in `research/c491_preregistration.md` (commit a0c3c9b) before any minute data. On hourly bars the verdict flips with the order of prices inside the hour: −480%/yr stop-first, +165%/yr target-first. It is admitted only on the stop-first minute path (≥ 3/4 half-year quarters, t ≥ 2). If only target-first passes, it is inconclusive and nothing ships. |
+| 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ⏱️ 2026-09-25 — C491: ROUND 4, THE LIMIT-ORDER STRATEGY ON 1-MINUTE PRICES — FAIL
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**No bot change** (still C490). This round was research only.
+- **Pre-registered:** `research/c491_preregistration.md`, commit a0c3c9b, pushed
+  before any minute data existed locally.
+- **Code:**
+  - `research/omega_c491_research.py` (engine);
+  - `research/c491_fetch_1m.py` (Binance 1m archive);
+  - `research/c491_breakdown.py`.
+- **Results:** `research/c491_results.txt` / `.json`.
+
+**Data and coverage:**
+- 109 coins (every coin in the point-in-time top 20 from 2024-09 to 2026-08,
+  delisted ones included);
+- 633 coin-months of 1-minute klines, 100% minute coverage of every candidate
+  hour;
+- the minute closes at each hour end equal the hourly archive exactly (checked
+  on BTC, WIF and FARTCOIN).
+
+## 🔬 RESULT (2024-09 → 2026-08, the R3a rule unchanged)
+
+| item | net / yr | t | quarters + | fills |
+|---|---|---|---|---|
+| R4-H hourly bars, stop first (R3a code) | −353% | −7.92 | 0/4 | 32,783 |
+| R4-Ho hourly bars, optimistic | +36% | +1.17 | 3/4 | 30,008 |
+| **R4-M 1-minute path, stop first (PRIMARY)** | **−209%** | **−5.30** | **0/4** | 33,612 |
+| R4-Mo 1-minute path, target first | −209% | −5.30 | 0/4 | 33,612 |
+
+By year (R4-M): 2024 (4 months) −60%, 2025 −158%, 2026 to Aug −201%.
+
+**Verdict: FAIL.** It is not inconclusive: at 1-minute resolution the stop and
+the target (about 4σ₁ₕ apart) never touch in the same minute, so the ordering
+assumption no longer matters. The hourly "optimistic" +165%/yr was an artefact of
+not seeing inside the hour.
+
+**Why it loses** (every candidate trade, before the cap):
+
+| exit | share | mean per trade |
+|---|---|---|
+| target | 47.1% | +2.08% |
+| stop | 48.5% | −2.19% |
+| time | 4.3% | −0.23% |
+| **all** | | **−0.09%** |
+
+After a 2σ hourly move the price is as likely to run another 2σ as to snap back.
+At this scale there is no reversal to harvest, only fees. That agrees with the
+literature: the reversal premium lives at 1–15 minute horizons, where one
+round trip costs more than it pays.
+
+**Integration rule applied:** not admitted, so nothing ships. The C489 shadow
+continues.
+
+## 🧾 SIDE FINDING: stock and commodity perps in the C488 research universe
+
+Binance listed about 60 stock, ETF and commodity perpetuals from Dec 2025
+(TSLA, NVDA, MU, CL, BZ, QQQ, SOXL and others). The research's `EXCLUDE` list
+did not know them, so they entered the top-20 universe on 92 days in 2026. The
+live bot never trades them, because Bitget flags them `isRwa`.
+
+Excluding them makes the research better, not worse
+(`research/c488_tradfi_check.py`):
+
+| window | as researched | crypto only |
+|---|---|---|
+| 2020–26 | +33.0%/yr, t 3.55 | +36.0%/yr, t 3.96 |
+| 2021-07 → 2026-08 | +27.3%/yr, t 2.57 | +31.0%/yr, t 2.99 |
+| 2026 | +29%/yr | +58%/yr |
+
+So the numbers quoted to the operator are, if anything, slightly conservative
+for what the live bot actually trades. There is nothing to change in the bot;
+the research list gets updated at the next quarterly refresh (pending #5).
+
+## ⚠️ LIMITS
+
+- 24 months and the top 20 only: the pre-registered scope, chosen to keep the
+  minute archive at about 1 GB.
+- Fills need a trade through the limit price (the conservative queue
+  assumption). A maker who is first in the queue at the exact price would fill
+  more often, but those are exactly the adverse fills: the price touches and
+  keeps going.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 💱 2026-09-25 — C490: ROUND 3, THE CARRY LEDGER, AND THE SHADOW AS A DOLLAR ACCOUNT
@@ -75,8 +160,8 @@ ledger (`c490_carry.json`), exactly as round 3 tested it:
 - **Research parity:** `_c490_carry_sim` is the research loop on the bot's own
   functions.
 
-**3. Round 4 is pre-registered** (C491, see pending task #9) and is the next
-step.
+**3. Round 4 (C491) has run: the limit-order strategy FAILS on 1-minute paths**
+(see C491).
 
 ---
 

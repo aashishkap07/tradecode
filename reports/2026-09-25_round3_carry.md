@@ -1,4 +1,4 @@
-# Round 3, the carry ledger, and the shadow as a dollar account — 25 Sep 2026 (C490)
+# Rounds 3 and 4, the carry ledger, and the shadow as a dollar account — 25 Sep 2026 (C490, C491)
 
 ## Your three questions
 
@@ -35,7 +35,7 @@ covers 2021–2026, with all coins including dead ones and real fees and funding
 
 | Idea | What it does | Result |
 |---|---|---|
-| **Limit-order market making** | Leave buy/sell orders 2 "normal moves" away from the price, take profit when the price snaps back | ❌ −480%/yr (see below: not settled) |
+| **Limit-order market making** | Leave buy/sell orders 2 "normal moves" away from the price, take profit when the price snaps back | ❌ −480%/yr (re-tested on 1-minute prices: still fails) |
 | **Per-coin strategy choice** | Each coin picks its own best style (trend / reversal / flat) from the last 60 days | ❌ −59%/yr |
 | **Cash-and-carry** | Buy the coin on spot, short the same amount of its futures, collect the funding | ✅ **+2.2%/yr, very low risk. PASSED** |
 | **Per-coin trend speed** | Each coin gets its own trend lookback instead of the average of four | ❌ worse than the average |
@@ -63,20 +63,39 @@ and short its future. The price moves cancel out, and you collect the fee.
   - the book's implementation check (due 29 Sep);
   - your CA's view on the tax.
 
-### The market-making idea: failed, but not settled
+### The market-making idea: re-tested on 1-minute prices, and it fails
 
-- **My test used hourly price bars, which can't show what happened inside the
-  hour.** Did the price hit your stop-loss first, or your profit target?
-  - Assuming "stop first" (the cautious assumption): **−480% a year**.
-  - Assuming "target first": **+165% a year**.
-  - The truth lies somewhere between.
-- **This is the one intraday idea with a real chance.** It is the only design
-  that avoids paying the taker fee to get in, and the research literature says
-  short-term reversals are exactly a reward for providing liquidity.
-- **So I have already committed Round 4:** the same rule, re-tested on
-  **1-minute prices**, with the cautious assumption as the pass bar.
-  - If it passes, it becomes the intraday engine on the paper account.
-  - If it fails, or the answer is "can't tell", nothing ships.
+- **The hourly test couldn't see inside each hour.** Did the price hit the
+  stop-loss first, or the profit target? The answer swung from −480% a year to
+  +165% a year depending on the assumption.
+  - This mattered because it was the one intraday design that never pays the
+    taker fee to get in.
+- **So I ran Round 4.** The plan was committed before downloading anything. It
+  used 1-minute prices for all 109 coins that were ever in the top 20, from
+  Sep 2024 to Aug 2026: about 1 GB of data.
+
+**Result: −209% a year, t −5.3, losing in all four half-years.** It is the same
+under either assumption, because at 1-minute detail the stop and the target
+never happen in the same minute. The "+165%" was just hourly bars hiding what
+really happened.
+
+**Why it loses, in one line:**
+
+| Outcome | How often | Average |
+|---|---|---|
+| Price snapped back (profit) | 47% | +2.08% |
+| Price kept going (stop) | 48.5% | −2.19% |
+
+After a big hourly move, the price is as likely to keep running as to come back.
+There is no bounce to harvest, only fees. **Nothing new ships from Round 4.**
+
+**Side finding (good news):**
+- In 2026 Binance started listing stock and oil perpetuals (Tesla, Nvidia, crude
+  and others), and my research had counted them as crypto.
+- Your bot never trades them.
+- Removing them from the research makes the daily book look *better*: +31% a
+  year instead of +27% (2021–26). So the numbers I've given you are slightly on
+  the cautious side.
 
 ## The best way to 2–4% a month
 
@@ -86,15 +105,16 @@ and short its future. The price moves cancel out, and you collect the fee.
 | Same book at dial 20% | +3.3% (realistic 2–2.5%), worst drop −40% | Your choice |
 | Cash-and-carry | +0.2%, recently negative | Paper ledger |
 | Intraday probability engine (C489) | loses after fees | Shadow (dollar ledger) |
-| Limit-order market making | unknown: −480% to +165%/yr on hourly data | Round 4 (1-minute test) next |
+| Limit-order market making | −209%/yr on 1-minute data | Rejected (Round 4) |
 
 **My honest view as a trader:**
 1. **The daily book is the engine that makes money.** 2–3% a month is realistic
    only at dial 15–20%, and only with drawdowns of 30–40% along the way.
 2. **4% a month is not reachable** without risking the account.
-3. **Intraday trading at retail fees is a fee-paying machine** unless you are
-   the one providing liquidity. That is why market making is the one intraday
-   idea still worth testing.
+3. **Intraday trading at retail fees is a fee-paying machine.** I have now
+   tested predicting (Rounds 1–2) and providing liquidity (Rounds 3–4) on 5
+   years of hourly and 2 years of 1-minute data. Neither survives Bitget's
+   retail fees. The shadow keeps watching the live market in case that changes.
 4. **Tuning each coin separately made things worse** (tested twice this
    round). With only a few years of data per coin, "individual" settings mostly
    fit noise. One rule for all coins, scaled to each coin's own volatility, is
