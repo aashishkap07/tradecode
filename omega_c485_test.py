@@ -7,9 +7,8 @@
 2. OFF is exactly what production ran on: _n52_defaults() == the pre-C485
    engine's output, the switch defaults to False, and the scan's only call to
    the engine sits behind it -- so the repair changes no live decision.
-3. tier_model and score_accel cast no vote. They read result['direction']
-   before it is set; the pre-C485 source casts -0.25 (a SHORT) on BTC in a
-   rising tape, +0.20 (a LONG) in a falling one, +0.05 on every other coin.
+3. (superseded by C486, which restored tier_model and score_accel to their
+   exact pre-C485 values -- see omega_c486_test.py)
 4. the unbound-local sweep is clean now, and flags the pre-C485 source.
 """
 import os, sys, io, types, contextlib, importlib.util, subprocess, tempfile, shutil
@@ -102,29 +101,9 @@ gate = src.rfind("if getattr(self.cfg, 'C485_N52_LIVE', False):", 0, calls[0]) i
 ok("the scan's one call to the engine sits directly behind the switch",
    len(calls) == 1 and gate > 0 and calls[0] - gate < 120, f"{len(calls)} call(s)")
 
-print("\n3. TIER_MODEL AND SCORE_ACCEL CAST NO VOTE")
-STEPS = (0, 7, 19, 26, 33, 47)
-wins = [bars('BTC', 3000 + k, 3120 + k) for k in STEPS]
-alt = [bars('AVAX', 3000 + k, 3120 + k) for k in STEPS]
-for R in (+0.6, -0.6):
-    t, sa, n = votes(om, 'BTC/USDT:USDT', R, wins)
-    ok(f"BTC, market R={R:+.1f}: tier_model 0 and score_accel 0 (after 6 scans)",
-       t == 0.0 and sa == 0.0 and isinstance(sa, float) and n > 15,
-       f"tier={t} accel={sa} ({n} components computed)")
-t, sa, n = votes(om, 'AVAX/USDT:USDT', 0.6, alt)
-ok("AVAX (not tier-1): no constant +0.05 long nudge", t == 0.0 and sa == 0.0, f"tier={t}")
-if om_old:
-    tu, _, _ = votes(om_old, 'BTC/USDT:USDT', +0.6, wins)
-    td, _, _ = votes(om_old, 'BTC/USDT:USDT', -0.6, wins)
-    ta_, _, _ = votes(om_old, 'AVAX/USDT:USDT', +0.6, alt)
-    ok("NEGATIVE CONTROL: pre-C485 votes SHORT on BTC in a rising tape (-0.25)", tu == -0.25, f"{tu}")
-    ok("NEGATIVE CONTROL: pre-C485 votes LONG on BTC in a falling tape (+0.20)", td == 0.20, f"{td}")
-    ok("NEGATIVE CONTROL: pre-C485 nudges every other coin long (+0.05)", ta_ == 0.05, f"{ta_}")
-    seen = set()
-    for k in range(12):
-        seq = [bars('ETH', 2000 + 40 * k + j, 2120 + 40 * k + j) for j in STEPS]
-        seen.add(votes(om_old, 'ETH/USDT:USDT', 0.0, seq)[1])
-    ok("NEGATIVE CONTROL: pre-C485 score_accel does vote (non-zero somewhere)", any(v for v in seen if v), f"{sorted(seen)}")
+print("\n3. TIER_MODEL AND SCORE_ACCEL")
+print("  (superseded: C486 restored both votes to their exact pre-C485 values --")
+print("   omega_c486_test.py proves the equivalence against the pre-C485 source)")
 
 print("\n4. THE UNBOUND-LOCAL SWEEP")
 r = subprocess.run([sys.executable, 'omega_unbound_local_sweep.py'], capture_output=True, text=True, cwd=REPO)

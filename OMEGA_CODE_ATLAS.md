@@ -1,6 +1,140 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🔬 2026-09-25 — C486: THE WORST 34 TRADES ON RECORD, TRACED TRADE BY TRADE
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C486.** What changes live:
+
+- **`tier_model` and `score_accel` are back.** They cast exactly their pre-C485
+  votes, now written out explicitly as the contrarian votes they always were.
+  Both values ride in each trade's entry view (`accel=` and `tier=` on the C422-3
+  close line) so their worth can finally be measured.
+- **The dashboard session tile is fixed.** It read
+  `getattr(mode_mgr, 'session_start_equity', eq)` — a field the mode manager
+  does not have — so it showed +$0.00 from the day it was built. The page now
+  shows **this run**, **today** (anchored at midnight, survives a restart) and
+  the **all-time** record.
+- **The RISK log line** prints the guard's fixed month budget (it printed
+  dial × today's equity: $38.41 beside a $37.92 guard).
+- **`SCAN_INTERVAL = 480`** is now stated in Config. The C435 cap read it
+  through `getattr` with that default, and the default happens to match the
+  measured scan cadence (231 scans in 29h38m), so nothing changes.
+- **N52 stays OFF** (C485), and no other rule changed.
+
+---
+
+## 📉 WHAT HAPPENED: 24 SEP 00:36 → 25 SEP 07:17
+
+**34 trades, 9W 25L, −$5.92.** In dollars this is worse than any earlier run of
+34 consecutive trades (worst before: −$4.09). Size-free, as the sum of % return on
+notional, it is −23.5%, and 6% of earlier 34-trade runs were as bad, so it is not
+unprecedented: 22 Sep, before any recent change, was as bad per trade
+(−0.61% vs −0.55%). The causes, ranked by the strength of the evidence:
+
+1. **Sizing (certain).** Since C482 every trade is full size all day. The old day
+   barrier shrank per-trade risk as the day's losses grew, down to the $5
+   minimum. Hard stops hit the same distance before and after (−2.43% vs −2.39%
+   of price), but cost **$0.50 → $0.80** each. Mean notional rose $29.5 → $36.5.
+2. **The market on 25 Sep (strong).** Across all 104 coins the bot has traded,
+   its entry style (a long bought after a +2% 3-hour run, in the top quarter of
+   the range) lost 0.49% in the next hour that morning.
+3. **24 Sep (possible C485 effect, reverted).** The market *rewarded* that style
+   (+0.24%/entry, like 21 Sep, when the bot made +$5.42), yet the bot lost $3.33.
+   Its picks trailed same-style market entries in the same hour by **0.88%**
+   (mean, 95% CI [−1.43, −0.53]; median gap −0.45, CI includes 0). Before C485 the
+   gap was −0.002%. Entry scores, trade rate and pre-entry acceleration did not
+   change, so the mechanism is not visible. The only selection change in that
+   window was C485's removal of the two votes, so C486 restores them.
+
+**What it was NOT:** entry-score quality (unchanged distribution, median
+0.61–0.64 in every era); the exits (next section); N52 (OFF equals exactly what
+production always ran on).
+
+> **→ Standing Rule 48: A SWITCH-OFF IS A CHANGE TOO.** Turning off an unproven
+> rule that the live record was earned WITH changes an unmeasured thing, exactly
+> like turning one on. Keep what the record was earned with until evidence says
+> otherwise, and log it so the evidence can arrive. (C485 got this right for N52
+> — OFF equals production — and wrong for the two votes.)
+
+### ⛔ Corrections to my own C482 record
+- **"The Guardian blocked ALL longs for 30 min 53 times" was wrong.** The scan
+  enforces that block only if `C403_GUARDIAN` is on, and it has been
+  `False` all along: **0 "BLOCKED by Guardian" lines** exist. I counted its
+  announcements, not its effects. Its only live actions were the 10-minute pauses
+  (57 in the C479 session) and setting tweaks.
+- **Rule 43 missed at C482.** The per-trade budget stop (half the remaining day
+  budget, C174) reads `_c467_day_barrier()['limit']`, whose meaning C482 changed
+  from a small volatility-scaled day cap to 25% of the month left. It went from
+  occasionally binding to inert. Stop distances did not measurably change (the
+  C377 stop dominates), so it is dormant, not a cause. Recorded, not changed.
+
+---
+
+## 🔁 WHY THE NUMBERS "RESET"
+
+The bot received **SIGTERM** at 06:14:55 on 25 Sep and at 06:54:11 on 23 Sep. Both
+fall inside 06:00–07:00 IST: `setup.sh` set the server clock to IST, Ubuntu's
+`apt-daily-upgrade` runs at 06:00 plus up to 60 minutes, and `needrestart`
+restarts services whose libraries were updated. No new version was deployed at
+either time. The quick-tunnel URL did not change, so the server did not reboot.
+The watchdog is ruled out: scans were 4 minutes old, and its cron fires on the
+5-minute mark. Every other SIGTERM on record was an operator deploy. The restarts
+are clean (positions and stops carry over). What looked like a reset was the
+per-run tiles plus the always-$0.00 session tile. Confirm on the server with
+`journalctl`, and optionally exempt `omega.service` from needrestart (commands in
+the C486 reply).
+
+> **→ Standing Rule 49: A DEFAULT THAT EQUALS A HEALTHY VALUE HIDES A MISSING
+> FIELD FOREVER.** `getattr(obj, 'field', eq)` on a field `obj` never has returns
+> a plausible number on every call (C483 positions, C486 session tile).
+> `omega_getattr_receiver_sweep.py` learns each component's class (including
+> chains like `bot_ref.mode_mgr`, and `cfg`) and flags any getattr/hasattr for a
+> field the class never has. It flagged the session tile on the C485 source,
+> finds 0 now, and found one Config miss (SCAN_INTERVAL, above).
+
+---
+
+## 🔎 THE TRADES AGAINST BITGET (`omega_live_forensics.py`, new)
+
+Every trade since 19 Sep (164) against 1-minute Bitget candles, from 3 h before
+entry to 4 h after exit. Per-trade table: `reports/2026-09-25_trade_forensics.md`.
+
+- **Entries are chases.** The median entry sits at 84–87% of the 3-hour range,
+  after the coin already ran about +4% the trade's way.
+- **That style loses on its own.** On the 7-month corpus (32 coins) it loses
+  −0.10% (longs) / −0.14% (shorts) per trade in the next hour, net of fees
+  (`omega_c486_regime_bench.py`).
+- **The bot's picks add nothing over a random same-style entry** in the same hour
+  (selection edge −0.002% before C485).
+- **The entry score predicts nothing.** The lowest bucket did best, and the bot's
+  own C451 tally agrees ("NOT monotonic").
+- **29% of all trades never went ≥ +0.5%.** No exit can rescue those.
+- **The exits are not the leak.** The bot's actual exits (−0.014%/trade) beat
+  every simple alternative on the same candles: own bracket −0.28, breakeven at
+  +0.5% −0.09, breakeven at +1% −0.19, lock 30% −0.16, trail 50% −0.04, trail
+  60% at +1.5% +0.01 (2/4), time stop −0.31. **None passes 3/4.**
+- **PEAK_FLOOR is protective.** It costs −$0.10 against −$0.57 for a hard stop,
+  and 4 h later price is still below entry on average.
+- **Winners were sold near local tops.** Price fell 0.6% / 1.1% in the 1 h / 4 h
+  after exit; 57% of the time it ended more than 1% below the exit within 4 h.
+- **A regime gate fails.** "Take chases only while chases have recently worked
+  market-wide" helps longs in 3/4 splits at K = 2 h, but t ≈ 1.0; shorts 0/4. Not
+  admitted.
+
+**The honest bottom line:** entries carry no demonstrated edge. The P&L on record
+(+$7.02 over 130 trades before C485) came from favourable stretches plus exits
+that beat simple alternatives. The next real gain has to come from an **entry
+edge**, and none of the quick filters tested here is one.
+
+**Verified:** `omega_c486_test.py` (15/15). The restored votes equal the pre-C485
+source on 240/240 real-window evaluations and cast all their values; each
+negative control is rebuilt from git. The two new sweeps are clean, with positive
+controls. Also run: full battery, headless boot, Chromium render.
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🧪 2026-09-24 — C484 + C485: TWO VOTES THAT READ THE FUTURE, AND AN ENGINE DEAD SINCE C432
 # ═══════════════════════════════════════════════════════════════════════════
 

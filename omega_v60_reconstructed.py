@@ -2079,7 +2079,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C485'
+_OMEGA_VERSION = 'C486'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2820,6 +2820,12 @@ class Config:
         self.SUMMARY_INTERVAL = 480           # C353 (operator): 8-min position summaries (C332 was 420 = 7min; before that 600 = 10min)
         self.MIN_POSITION_AGE = 900           # C11: 15min Normal (C12: HP uses 25min dynamically) — DRI/DSI need time to stabilize for regression (Document7). DRI needs time to stabilize
         self.SCAN_COOLDOWN = 300              # C99: 5min base (was 2min — too frequent!)
+        # C486: the AVERAGE time between scan starts (cooldown + ~3 min of
+        # scanning; measured 29h38m / 231 scans = 7.7 min on 24-25 Sep). The
+        # C435 score cap has read getattr(cfg, 'SCAN_INTERVAL', 480) since it
+        # shipped with no such setting, so it ran on the silent default. The
+        # default happens to be right; it is now a stated value, not an accident.
+        self.SCAN_INTERVAL = 480
         self.SCAN_COOLDOWN_VOLATILE = 180       # C99: 3min in volatile (was 90s)
         self.SCAN_COOLDOWN_CALM = 300           # C99: 5min in calm (was 3min)
 
@@ -13575,18 +13581,23 @@ class TechnicalAnalysis:
             result['components']['wavelet_multiscale'] = ws
         except: result['components']['wavelet_multiscale'] = 0
 
-        # N31: Three-tier model -- C485: NEUTRALISED.  This runs before
-        # result['direction'] is set, so the 'alignment' read dir as -1 on
-        # every call and the vote reaching avg_sig was a SHORT in a rising
-        # tape and a LONG in a falling one on the majors (the opposite of its
-        # design), plus a constant +0.05 long nudge on every other coin.
-        # omega_c485_tier1_bench.py: backing the majors WITH R loses (0/4
-        # splits at 2h); fading R shows no edge at the 60-min hold (t=-0.9,
-        # two of four splits at 0.000; 2/4 in strong tapes).  Neither sign
-        # earns a vote, so none is cast.  The key stays
-        # so the family table and displays read a defined 0.
+        # N31: Three-tier model.  WHAT IT ACTUALLY DOES (C485 found it; C486
+        # keeps it): it runs before result['direction'] exists, so the vote
+        # that reaches avg_sig has always been CONTRARIAN on the majors --
+        # SHORT when the market resultant R > +0.20, LONG when R < -0.20 --
+        # plus a flat +0.05 on every other coin.  C485 switched it off on
+        # principle; C486 RESTORES it, written out explicitly, because the
+        # +$7.02 / 130-trade live record was earned WITH it and the 34 trades
+        # after the switch-off picked 0.9%/trade worse than same-hour market
+        # chases (mean; the median gap is not significant).  Neither version
+        # is proven -- the entry view now carries the value so it can be.
+        _s = symbol.split('/')[0]; _t1 = {'BTC','ETH','SOL','BNB','XRP','DOGE','ADA'}
         _bot = getattr(self, '_bot_ref', None)   # read below by PCA (N42) and N49
-        result['components']['tier_model'] = 0.0
+        _mr = getattr(_bot, '_market_bias_resultant', 0) if _bot else 0
+        if _s in _t1:
+            result['components']['tier_model'] = -0.25 if _mr > 0.20 else (0.20 if _mr < -0.20 else 0)
+        else:
+            result['components']['tier_model'] = 0.05
 
         # N32: O-U mean reversion
         try:
@@ -13799,16 +13810,22 @@ class TechnicalAnalysis:
                     if len(dsh)>5: dsh = dsh[-5:]
                     _bot._delta_slopes_history[symbol] = dsh
                     if len(dsh)>=2:
-                        # C485: NEUTRALISED.  Same wrong-time read as N31 --
-                        # result['direction'] is still 0 here, so ds was -1 on
-                        # every call and 'bulls winning AND accelerating' cast
-                        # a -0.20 SHORT vote.  The inputs need the bot's own
-                        # scan-to-scan component history, which no offline
-                        # corpus holds, so neither sign can be tested; an
-                        # untestable inverted vote does not trade.  dW/d2W are
-                        # still measured and kept on the result.
+                        # C486: RESTORED, written out.  It has always been a
+                        # CONTRARIAN vote on the bot's own signal momentum (the
+                        # direction it read was never set yet, so dir was -1):
+                        # signals turning bullish and accelerating -> -0.20,
+                        # bullish but slowing -> -0.10, bearish and
+                        # accelerating -> +0.25, bearish but slowing -> +0.10.
+                        # A brake on chasing a signal stack that is still
+                        # heating up.  Switched off at C485 on principle; back
+                        # because the live record was earned with it (see N31).
                         dd = dsh[-1]-dsh[-2]
-                        result['components']['score_accel'] = 0.0
+                        if dsl < 0 and dd < 0: sa = 0.25
+                        elif dsl < 0: sa = 0.10
+                        elif dsl > 0 and dd > 0: sa = -0.20
+                        elif dsl > 0: sa = -0.10
+                        else: sa = 0
+                        result['components']['score_accel'] = sa
                         result['_dW'] = round(float(dsl),4); result['_d2W'] = round(float(dd),4)
                     else: result['components']['score_accel'] = 0
                 else: result['components']['score_accel'] = 0
@@ -24295,8 +24312,18 @@ class TradingBot:
             _be483 = (f"break-even win rate {100.0 / (1.0 + _po483):.0f}% at the measured "
                       f"{_po483:.2f} payoff" if _po483 else
                       "break-even win rate 50% at 1:1 until a payoff is measured")
+            # C486: the month's budget is FIXED at the month-start equity (that
+            # is what the guard enforces). This line recomputed dial x TODAY's
+            # equity, so on 24 Sep it printed $38.41/month beside a tile and a
+            # guard both at $37.92 -- two numbers for one limit.
+            try:
+                _mb486 = float(self._c482_risk_guard().get('month_budget', 0.0) or 0.0)
+            except Exception:
+                _mb486 = 0.0
+            if _mb486 <= 0:
+                _mb486 = _eq483 * _dd483 / 100.0
             logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
-                        f"${_eq483 * _dd483 / 100.0:.2f}/month  |  per-trade risk "
+                        f"${_mb486:.2f}/month  |  per-trade risk "
                         f"{p['per_trade_pct']:.3f}% = ${_eq483 * p['per_trade_pct'] / 100.0:.2f}  |  {_be483} [C482]")
             logger.info("   today's loss limit is 25% of what the month has left, fixed at midnight (C482)"
                         + ("  |  the $5 minimum order BINDS at this size" if p['binding'] else ""))
@@ -27868,7 +27895,11 @@ class TradingBot:
                             'proj_cap': analysis.get('_c420_proj_capped'),
                             'fcast': analysis.get('_c420_fcast_mult'),
                             'why': (str(analysis.get('_c436_p_note', ''))[:60] or None),
-                            'tilt': analysis.get('_c439_tilt')}
+                            'tilt': analysis.get('_c439_tilt'),
+                            # C486: the two restored contrarian votes, printed
+                            # beside every outcome so their worth can be measured
+                            'accel': (analysis.get('components') or {}).get('score_accel'),
+                            'tier': (analysis.get('components') or {}).get('tier_model')}
                         # C405: the bar is now RELATIVE and closed-loop. The
                         # absolute R>=1.7 / E>=0.15 pair admitted 1 candidate in
                         # 1000 across four live sessions (3 trades in 24h), and
@@ -36560,7 +36591,15 @@ class RemoteControl:
                         _m = getattr(bot_ref.mode_mgr, 'mode', 'unknown')
                         # C151: clean label — was showing raw 'TradingMode.PAUSED'
                         mode = getattr(_m, 'value', str(_m)).upper()
-                        pnl = round(eq - getattr(bot_ref.mode_mgr, 'session_start_equity', eq), 2)
+                        # C486: the session baseline lives on the PORTFOLIO -- set at
+                        # every start by _c462_mark_session_start, the same figure the
+                        # report's SESSION line reads. TradingModeManager has no
+                        # session_start_equity, so the getattr default (the current
+                        # equity) came back on every poll and the tile said +$0.00
+                        # from the day it was built (25 Sep: +$0.00 beside a report
+                        # reading -$1.40). Realised only -- open P&L has its own panel.
+                        _ss486 = float(getattr(bot_ref.portfolio, 'session_start_equity', 0.0) or 0.0)
+                        pnl = round(float(eq) - _ss486, 2) if _ss486 > 0 else 0.0
                         # C483: was getattr(positions, '_positions', {}) -- a field that
                         # does not exist (PositionsManager keeps self.positions), so
                         # this was ALWAYS 0. Ask through the public method.
@@ -36630,6 +36669,16 @@ class RemoteControl:
                                 'vol': round(float(_b469.get('vol', 1.0)), 2),
                                 'trust': round(float(_b469.get('trust', 1.0)), 2),
                                 'capped': _b469.get('capped', ''),
+                            }
+                        except Exception:
+                            pass
+                        try:      # C486: the record that a restart cannot reset
+                            _pf486 = bot_ref.portfolio
+                            _out469['life'] = {
+                                'n': int(getattr(_pf486, 'lifetime_trades', 0) or 0),
+                                'w': int(getattr(_pf486, 'lifetime_wins', 0) or 0),
+                                'l': int(getattr(_pf486, 'lifetime_losses', 0) or 0),
+                                'pnl': round(float(getattr(_pf486, 'lifetime_pnl', 0.0) or 0.0), 2),
                             }
                         except Exception:
                             pass
@@ -36987,7 +37036,10 @@ async function pull(){
       (d.scans||0)+' scans · '+(d.analyses||0)+' pair looks';
 
     q('eq').innerHTML=money(d.equity);
-    q('eqs').innerHTML='session <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>';
+    /* C486: "this run" resets on every restart (the server's nightly updates
+       restart the bot); "today" is anchored at midnight and survives it. */
+    q('eqs').innerHTML='this run <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>'+
+      (d.day?' \u00b7 today <span class="'+cls(d.day.realised)+'">'+sgn(d.day.realised)+'</span>':'');
 
     if(d.risk){
       /* C482-B: one guard, set by the dial. The bar is the TIGHTER of the
@@ -37014,9 +37066,12 @@ async function pull(){
     }
     if(d.trades!==undefined){
       q('rec').textContent=d.wins+'W '+d.losses+'L';
-      q('recs').textContent=(d.trades?d.wr_journal+'% win · ':'')+
-        'payoff '+(d.payoff===null||d.payoff===undefined?'n/a':d.payoff)+
-        ' · mk'+d.maker+'/tk'+d.taker;
+      q('recs').innerHTML='this run'+(d.trades?' \u00b7 '+d.wr_journal+'% win':'')+
+        ' \u00b7 payoff '+(d.payoff===null||d.payoff===undefined?'n/a':d.payoff)+
+        ' \u00b7 mk'+d.maker+'/tk'+d.taker+
+        /* C486: the all-time record, which no restart touches */
+        (d.life&&d.life.n?'<br>all-time '+d.life.w+'W '+d.life.l+'L \u00b7 <span class="'+
+          cls(d.life.pnl)+'">'+sgn(d.life.pnl)+'</span>':'');
     }
     q('scan').textContent=(age<90?age+'s':(age/60).toFixed(0)+'m')+' ago';
     var ls=d.last_scan||{};
