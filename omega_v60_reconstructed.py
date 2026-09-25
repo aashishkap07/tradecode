@@ -272,6 +272,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C462-6',
         'C463',
         'C487',                     # whether a resting order really filled
+        'C488',                     # the portfolio engine: rebalances, guard, fills
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
         'NEWS',                     # C463-3 news panel
@@ -1593,7 +1594,10 @@ class _C462Report:
             # CHANGED since the last one, or every 30 minutes regardless so the
             # record never goes quiet for long. Otherwise: one heartbeat line
             # carrying the three figures that were missing in the first place.
-            _sig = (pf.positions.count(), len(self.trades), self.n_maker + self.n_taker)
+            # C488: the portfolio book counts as open -- a held book prints in full
+            _e488 = getattr(bot, 'c488', None)
+            _n488 = len(getattr(_e488, 'book', {}) or {}) if _e488 is not None else 0
+            _sig = (pf.positions.count() + _n488, len(self.trades), self.n_maker + self.n_taker)
             _quiet = (_sig == self._last_sig and _sig[0] == 0
                       and (time.time() - self._last_full) < 1800.0)
             if _quiet:
@@ -1667,6 +1671,19 @@ class _C462Report:
             else:
                 self._pack('OPEN', ['flat',
                                     f"free {_c462_money(st.get('available', 0))}"])
+            # C488: the portfolio engine's book, one line
+            try:
+                if _e488 is not None and _e488.active():
+                    _b488 = _e488.status()
+                    _i488 = _b488.get('info') or {}
+                    self._pack('BOOK', [f"{_b488['n']} pos gross {_c462_money(_b488['gross'])} ({_b488['gross_x']:.2f}x)",
+                                        f"open {_c462_money(_b488['unrealized'], sign=True)}",
+                                        f"funding {_c462_money(_b488['funding'], sign=True)}",
+                                        f"vol {100 * _b488['target_vol']:.0f}% top {_i488.get('topn', '?')}",
+                                        f"rebal {_b488['last_rebal'] or 'pending'}"]
+                               + ([f"HALTED {_b488['halt']}"] if _b488.get('halt') else []))
+            except Exception:
+                pass
             # --- open-position table, one row each ---
             if open_pos:
                 self._rule(mid=True)
@@ -2080,7 +2097,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C487'
+_OMEGA_VERSION = 'C488'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2804,6 +2821,23 @@ class Config:
         # False restores the C486 behaviour exactly.
         self.C487_HONEST_FILLS = True
         self.C487_EXIT_REST_S = 5               # a maker EXIT rests this long, then crosses
+        # ═══ C488: THE MEDIUM-TERM PORTFOLIO ENGINE ══════════════════════
+        # 'portfolio': the pre-registered trend + momentum + carry book
+        #   (research/c488_preregistration.md), rebalanced once a day; the
+        #   intraday scanner opens nothing new while it runs.
+        # 'intraday': the C487 engine exactly as it was (the book is closed first).
+        # OMEGA_ENGINE=portfolio|intraday in the environment overrides this at start.
+        self.C488_ENGINE = 'portfolio'
+        self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
+        self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
+        self.C488_TOPN_40_FROM = 1000.0
+        self.C488_LEV_CAP = 3.0                 # gross notional never above 3x equity
+        self.C488_LEVERAGE = 5                  # exchange leverage: margin = notional / 5
+        self.C488_MIN_NOTIONAL = 6.0            # a position worth less than this is not held
+        self.C488_EXCHANGE_MIN = 5.0            # Bitget's minimum order, USDT
+        self.C488_TRADE_BAND = 0.30             # within 30% of its target a position is left alone
+        self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
+        self.C488_LIVE_OK = False               # no real money until live fills and funding are reconciled
 
         # === Monitoring ===
         # ═══ C368: THE CONSISTENCY BUDGET ═══════════════════════════════
@@ -7450,6 +7484,14 @@ class Portfolio:
 
         # Learning
         self.trades_since_learn = 0
+        self._c488 = None       # C488: the portfolio engine, attached by TradingBot
+
+    def c488_lock(self, amount: float):
+        """C488: margin for the portfolio engine leaves the free balance. It comes
+        back through release_margin, and get_locked_margin counts it meanwhile, so
+        the C427 invariant (available <= equity - locked) holds throughout."""
+        with self._c429_lock:
+            self.available_balance = self.available_balance - float(amount)
 
     def _c462_mark_session_start(self):
         """
@@ -7610,7 +7652,13 @@ class Portfolio:
     def get_locked_margin(self) -> float:
         # C159: list() snapshot — called from multiple threads incl dashboard; a bare
         # generator over .values() can also raise 'dict changed size' mid-sum.
-        return round(sum(p.initial_margin for p in list(self.positions.get_all().values())), 2)
+        _m = sum(p.initial_margin for p in list(self.positions.get_all().values()))
+        try:                                            # C488: the portfolio book's margin
+            if self._c488 is not None:
+                _m += self._c488.locked_margin()
+        except Exception:
+            pass
+        return round(_m, 2)
 
     def allocate_margin(self, margin: float, allow_below_min: bool = False) -> float:
         with self._c429_lock:                      # C429-0: read-modify-write
@@ -7795,6 +7843,11 @@ class Portfolio:
                     total += gross - pos.entry_fee - exit_fee
             except:
                 pass
+        try:                                            # C488: the portfolio book, marked
+            if self._c488 is not None:
+                total += self._c488.unrealized()
+        except Exception:
+            pass
         return round(total, 2)
 
     def get_live_equity(self, exchange) -> float:
@@ -18229,11 +18282,742 @@ class CategoryClassifier:
 #                   MAIN TRADING BOT
 #   (Document7.py flow: clean, sequential, no race conditions)
 # ================================================================
+# ════════════════════════════════════════════════════════════════════════════
+#  C488: THE MEDIUM-TERM PORTFOLIO ENGINE
+# ════════════════════════════════════════════════════════════════════════════
+# The operator asked for the combination of strategies most likely to earn
+# 2-4%% a month over short-to-medium horizons. The answer was pre-registered
+# (research/c488_preregistration.md, committed before any test was run) and
+# measured on the Binance USDT-M archive 2020-2026: every contract, delisted
+# ones included, 40 most liquid each day, actual funding, 0.08%% per unit of
+# turnover.
+#
+#   C1 trend       sign-average of 1/2/4/8-week returns, daily, 30%% no-trade band
+#   C2 momentum    2-week return rank, long top fifth / short bottom fifth, weekly
+#   C3 carry       7-day funding rank, long lowest fifth / short highest, weekly
+#   COMBO          equal trailing-60-day risk per sleeve, whole book to a
+#                  volatility target, gross <= 3x
+#
+#   COMBO: +30.0%%/yr, Sharpe 1.33, Newey-West t +3.19, 4/4 quarters positive,
+#   max drawdown 31%%, +2.51%%/month, 62%% of months positive. Survives double
+#   costs (t +2.57), one day of extra execution lag (t +2.72) and ignoring
+#   funding income (t +2.42). The three sleeves correlate at about 0.05, which
+#   is why the combination is worth more than any sleeve alone. Weaker lately:
+#   Sharpe 1.13 over the last 12 months, 0.87 over the last 24; carry alone
+#   was negative over the last year. 2022 was the one losing year (-8.9%%).
+#
+# Everything the intraday engine tried was short-horizon trading on price, and
+# C487 measured that as worth about nothing after costs. This engine holds for
+# days to weeks, trades about once a day, and gets its edge from three
+# independent, documented sources rather than from any single signal.
+#
+# The functions below are the research engine's own functions, copied
+# verbatim with a prefix; omega_c488_test.py proves they return identical
+# numbers, so what trades is exactly what was measured.
+
+_C488_DAY = 86400000
+_C488_NOT_CRYPTO = {'USDC', 'BUSD', 'TUSD', 'USDP', 'FDUSD', 'USDE', 'USD1', 'RLUSD', 'XUSD', 'BFUSD',
+                    'DAI', 'PYUSD', 'EUR', 'GBP', 'AUD', 'BTCDOM', 'DEFI', 'BLUEBIRD', 'FOOTBALL',
+                    'XAUT', 'PAXG', 'XAU', 'XAG'}
+
+
+def _c488_returns(close):
+    r = np.full_like(close, np.nan)
+    r[1:] = close[1:] / close[:-1] - 1
+    return r
+
+
+def _c488_trailing_std(r, win):
+    out = np.full_like(r, np.nan)
+    for i in range(win, len(r)):
+        out[i] = np.nanstd(r[i - win + 1:i + 1], axis=0)
+    return out
+
+
+def _c488_lagret(close, n):
+    out = np.full_like(close, np.nan)
+    out[n:] = close[n:] / close[:-n] - 1
+    return out
+
+
+def _c488_universe(close, qv, topn, age_min=90, volwin=30):
+    """point-in-time top-N by 30-day median quote volume through the previous day"""
+    n, k = close.shape
+    age = np.cumsum(~np.isnan(close), axis=0)
+    elig = np.zeros((n, k), bool)
+    for i in range(volwin + 1, n):
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            med = np.nanmedian(qv[i - volwin:i], axis=0)
+        ok = (age[i] >= age_min) & ~np.isnan(close[i]) & ~np.isnan(med)
+        if ok.sum() == 0:
+            continue
+        rank = np.argsort(-np.where(ok, med, -1))
+        elig[i, rank[:min(topn, ok.sum())]] = True
+    return elig
+
+
+def _c488_vol_scale(sd):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.clip(0.02 / np.where(sd > 0, sd, np.nan), 0, 1.0)
+
+
+def _c488_banded(target, band=0.30):
+    w = np.zeros_like(target)
+    for i in range(len(target)):
+        prev = w[i - 1] if i else np.zeros(target.shape[1])
+        tg = target[i]
+        move = (np.sign(tg) != np.sign(prev)) | (np.abs(tg - prev) > band * np.maximum(np.abs(tg), 1e-12))
+        w[i] = np.where(move, tg, prev)
+    return w
+
+
+def _c488_weekly(target, T):
+    """hold the target chosen on Mondays (UTC) all week"""
+    w = np.zeros_like(target)
+    for i in range(len(target)):
+        if i == 0 or datetime.utcfromtimestamp(T[i] / 1000).weekday() == 0:
+            w[i] = target[i]
+        else:
+            w[i] = w[i - 1]
+    return w
+
+
+def _c488_xs_rank(sig, elig, frac=0.2):
+    out = np.zeros_like(sig)
+    for i in range(len(sig)):
+        m = elig[i] & ~np.isnan(sig[i])
+        if m.sum() < 10:
+            continue
+        v = sig[i][m]
+        lo, hi = np.quantile(v, [frac, 1 - frac])
+        o = np.zeros(m.sum())
+        o[v >= hi] = 1.0
+        o[v <= lo] = -1.0
+        out[i][m] = o
+    return out
+
+
+def _c488_pnl(w, r, fund, lag=1, cost=0.0008):
+    wl = np.zeros_like(w)
+    wl[lag:] = w[:-lag]
+    g = np.nansum(wl * np.nan_to_num(r), axis=1)
+    f = -np.nansum(wl * fund, axis=1)
+    dw = np.abs(np.diff(np.vstack([np.zeros(w.shape[1]), wl]), axis=0))
+    c = dw.sum(axis=1) * cost
+    return g + f - c, dict(gross=g, funding=f, cost=c, gross_exp=np.abs(wl).sum(1), turnover=dw.sum(1))
+
+
+def _c488_sleeves(T, close, qv, fund, topn):
+    r = _c488_returns(close)
+    sd = _c488_trailing_std(r, 30)
+    elig = _c488_universe(close, qv, topn)
+    sc = np.nan_to_num(_c488_vol_scale(sd))
+    N = topn
+    trend = sum(np.sign(np.nan_to_num(_c488_lagret(close, d))) for d in (7, 14, 28, 56)) / 4.0
+    W = {}
+    W['C1'] = _c488_banded(np.where(elig, trend * sc / N, 0.0))
+    W['C2'] = _c488_weekly(_c488_xs_rank(_c488_lagret(close, 14), elig) * sc / (2 * N * 0.2), T)
+    f7 = np.full_like(fund, np.nan)
+    for i in range(7, len(fund)):
+        f7[i] = fund[i - 6:i + 1].sum(axis=0)
+    f7[np.isnan(close)] = np.nan
+    W['C3'] = _c488_weekly(-_c488_xs_rank(f7, elig) * sc / (2 * N * 0.2), T)
+    return r, W, elig
+
+
+def _c488_combine(parts, r, fund, lag, target_vol=0.20, lev_cap=3.0, win=60, periods=365):
+    unit = {k: _c488_pnl(w, r, fund, lag)[0] for k, w in parts.items()}
+    n = len(r)
+    sw = {}
+    for k, u in unit.items():
+        s = np.full(n, np.nan)
+        for i in range(win, n):
+            x = u[i - win:i]
+            s[i] = x.std() if x.std() > 0 else np.nan
+        sw[k] = np.nan_to_num(1.0 / s) / len(unit)
+    comb_unit = sum(sw[k] * unit[k] for k in unit)
+    L = np.zeros(n)
+    for i in range(2 * win, n):
+        x = comb_unit[i - win:i]
+        v = x.std() * math.sqrt(periods)
+        L[i] = target_vol / v if v > 0 else 0.0
+    W = sum((sw[k] * L)[:, None] * parts[k] for k in parts)
+    gross = np.abs(W).sum(1)
+    capf = np.where(gross > lev_cap, lev_cap / np.maximum(gross, 1e-12), 1.0)
+    W = W * capf[:, None]
+    return W
+
+
+def _c488_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0):
+    """today's book: the LAST row of the combined weights, plus each sleeve's
+    share of it for the dashboard. The rows are indexed by the day whose CLOSE
+    they were decided at, exactly as in the research (lag 1)."""
+    r, W, elig = _c488_sleeves(T, close, qv, fund, topn)
+    parts = {k: W[k] for k in ('C1', 'C2', 'C3')}
+    Wc = _c488_combine(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+    return Wc[-1], {k: parts[k][-1] for k in parts}, elig[-1]
+
+
+class C488Engine:
+    """C488: holds the pre-registered portfolio in the bot's own account.
+
+    Once a day, five minutes after the UTC close, it downloads ~330 days of
+    Bitget daily candles and funding for the most liquid crypto perpetuals,
+    computes the same weights the research measured, and trades the
+    difference between what it holds and what it should hold -- market orders,
+    confirmed by C487's read-back. Between rebalances it marks the book, pays
+    or collects funding at each settlement (paper), and watches the month
+    guard. It never touches the intraday engine's positions.
+
+    Its money goes through the Portfolio's own ledger: margin locked on the
+    way in, realised P&L, fees and funding booked through release_margin, and
+    its margin and open P&L counted in get_locked_margin and
+    get_unrealized_pnl, so equity, the risk guard and the dashboard all see it.
+    """
+
+    STATE_FILE = 'c488_book.json'
+    API = 'https://api.bitget.com/api/v2/mix/market/'
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.cfg = bot.cfg
+        self._lock = threading.RLock()
+        self.book = {}            # ccxt symbol -> qty, avg, fees, funding, realized, opened
+        self.last_rebal = ''      # UTC date of the last completed rebalance
+        self.halt = ''            # '' | 'month:YYYY-MM' | 'dial'
+        self.marks = {}           # ccxt symbol -> dict(bid, ask, last, fr, vol)
+        self._marks_at = 0.0
+        self.fund_iv = {}         # symbol -> (interval hours, fetched at)
+        self.fund_next = {}       # symbol -> next settlement, ms
+        self.plan = {}            # symbol -> target weight and sleeve split
+        self.info = {}            # the last rebalance, for the dashboard
+        self.closed = []          # the last 50 closed positions
+        self._tick_at = 0.0
+        self._fail_at = 0.0
+        self._saved_at = 0.0
+        self._said = set()
+        self.path = os.path.join(BASE_PATH, self.STATE_FILE)
+        self.load()
+
+    # ── settings ──────────────────────────────────────────────────────────
+    def mode(self):
+        return str(getattr(self.cfg, 'C488_ENGINE', 'portfolio') or 'portfolio').lower()
+
+    def active(self):
+        return self.mode() == 'portfolio'
+
+    def lev(self):
+        return max(1, int(getattr(self.cfg, 'C488_LEVERAGE', 5) or 5))
+
+    def dial(self):
+        return max(0.0, min(20.0, float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 15.0) or 0.0)))
+
+    def target_vol(self):
+        """the operator's dial sets the risk: 15%% a month of drawdown room ->
+        20%% annual volatility (the level the research measured). The ratio keeps
+        a -dial%% month at about 2.6 monthly standard deviations at every dial."""
+        return self.dial() * float(getattr(self.cfg, 'C488_VOL_PER_DIAL', 4.0 / 3.0)) / 100.0
+
+    def topn(self, equity):
+        """how many coins the book spreads across. 'auto': 20 below $1000 of
+        equity (at $250 the median position of a 40-coin book is $3.80, under the
+        venue's $5 minimum), 40 from there. WITH HYSTERESIS: up at $1000, back
+        down only under $900 -- an account hovering at $999-$1001 would otherwise
+        rebuild the whole book every day (omega_c488_test.py caught exactly that)."""
+        v = getattr(self.cfg, 'C488_TOPN', 'auto')
+        if str(v).lower() != 'auto':
+            return max(10, int(v))
+        thr = float(getattr(self.cfg, 'C488_TOPN_40_FROM', 1000.0))
+        cur = int(getattr(self, '_topn', 0) or 0) or (40 if equity >= thr else 20)
+        if cur == 20 and equity >= thr:
+            cur = 40
+        elif cur == 40 and equity < 0.9 * thr:
+            cur = 20
+        self._topn = cur
+        return cur
+
+    def _say(self, key, msg, level='info'):
+        if key not in self._said:
+            self._said.add(key)
+            getattr(logger, level)(msg)
+
+    # ── persistence ───────────────────────────────────────────────────────
+    def load(self):
+        try:
+            if os.path.exists(self.path):
+                d = json.load(open(self.path))
+                self.book = {k: dict(v) for k, v in (d.get('book') or {}).items()}
+                self.last_rebal = str(d.get('last_rebal') or '')
+                self.halt = str(d.get('halt') or '')
+                self.fund_next = {k: int(v) for k, v in (d.get('fund_next') or {}).items()}
+                self.plan = d.get('plan') or {}
+                self.info = d.get('info') or {}
+                self.closed = list(d.get('closed') or [])[-50:]
+                self._topn = int(d.get('topn') or 0)
+        except Exception as e:
+            logger.warning(f"⚠️ C488 book could not be loaded ({type(e).__name__}: {e}) -- starting flat")
+            self.book = {}
+
+    def save(self):
+        try:
+            with self._lock:
+                d = dict(book=self.book, last_rebal=self.last_rebal, halt=self.halt,
+                         fund_next=self.fund_next, plan=self.plan, info=self.info,
+                         closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
+                         saved=time.time())
+            tmp = self.path + '.tmp'
+            json.dump(d, open(tmp, 'w'))
+            os.replace(tmp, self.path)
+            self._saved_at = time.time()
+        except Exception as e:
+            logger.warning(f"⚠️ C488 book save failed: {type(e).__name__}: {e}")
+
+    # ── market data ───────────────────────────────────────────────────────
+    def _get(self, path, params, tries=3):
+        for k in range(tries):
+            try:
+                r = requests.get(self.API + path, params=params, timeout=12)
+                d = r.json()
+                if str(d.get('code')) in ('00000', '0') or d.get('data') is not None:
+                    return d.get('data')
+            except Exception:
+                pass
+            time.sleep(0.6 * (k + 1))
+        return None
+
+    @staticmethod
+    def _ccxt(raw):
+        return raw[:-4] + '/USDT:USDT' if raw.endswith('USDT') else raw
+
+    @staticmethod
+    def _raw(sym):
+        return sym.replace('/USDT:USDT', 'USDT').replace('/', '')
+
+    def refresh_marks(self, force=False):
+        if not force and time.time() - self._marks_at < 30:
+            return bool(self.marks)
+        d = self._get('tickers', {'productType': 'USDT-FUTURES'})
+        if not d:
+            return bool(self.marks)
+        m = {}
+        for x in d:
+            try:
+                raw = x.get('symbol', '')
+                if not raw.endswith('USDT'):
+                    continue
+                bid, ask = float(x.get('bidPr') or 0), float(x.get('askPr') or 0)
+                last = float(x.get('lastPr') or 0)
+                m[self._ccxt(raw)] = dict(bid=bid, ask=ask, last=last,
+                                          fr=float(x.get('fundingRate') or 0),
+                                          vol=float(x.get('usdtVolume') or x.get('quoteVolume') or 0))
+            except Exception:
+                continue
+        if m:
+            self.marks = m
+            self._marks_at = time.time()
+        return bool(self.marks)
+
+    def mark(self, sym):
+        x = self.marks.get(sym) or {}
+        if x.get('bid') and x.get('ask'):
+            return (x['bid'] + x['ask']) / 2.0
+        return x.get('last') or 0.0
+
+    def _is_crypto(self, sym):
+        base = sym.split('/')[0].upper()
+        if base in _C488_NOT_CRYPTO:
+            return False
+        try:
+            return self.bot._c408_asset_class(sym) == 'crypto'
+        except Exception:
+            return True
+
+    def candidates(self, topn):
+        mk = getattr(self.bot.exchange, 'markets', {}) or {}
+        rows = [(v.get('vol', 0.0), s) for s, v in self.marks.items()
+                if (not mk or s in mk) and self._is_crypto(s)]
+        rows.sort(reverse=True)
+        return [s for _, s in rows[:2 * topn]]
+
+    def _history(self, sym, days=330):
+        """completed UTC days: {day_ms: (close, quote volume)} and funding {ms: rate}"""
+        raw = self._raw(sym)
+        out, end = {}, int(time.time() * 1000)
+        start = end - days * _C488_DAY
+        while end > start:
+            d = self._get('history-candles', {'symbol': raw, 'productType': 'USDT-FUTURES',
+                                              'granularity': '1Dutc', 'endTime': end, 'limit': 200})
+            if not d:
+                break
+            for x in d:
+                out[int(x[0])] = (float(x[4]), float(x[6]))
+            first = min(int(x[0]) for x in d)
+            if first >= end or len(d) < 2:
+                break
+            end = first - 1
+        fund = {}
+        for pn in (1, 2):
+            d = self._get('history-fund-rate', {'symbol': raw, 'productType': 'USDT-FUTURES',
+                                                'pageSize': 100, 'pageNo': pn})
+            if not d:
+                break
+            for x in d:
+                fund[int(x['fundingTime'])] = float(x['fundingRate'])
+            if len(d) < 100:
+                break
+        today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        return {t: v for t, v in out.items() if t < today}, fund
+
+    def matrices(self, syms):
+        hist = {}
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for s, h in zip(syms, pool.map(self._history, syms)):
+                if h and h[0]:
+                    hist[s] = h
+        if not hist:
+            return None
+        keep = sorted(hist)
+        days = sorted(set().union(*[set(hist[s][0]) for s in keep]))
+        T = np.array(days, dtype=np.int64)
+        idx = {t: i for i, t in enumerate(days)}
+        close = np.full((len(T), len(keep)), np.nan)
+        qv = np.full_like(close, np.nan)
+        fund = np.zeros_like(close)
+        for j, s in enumerate(keep):
+            for t, (c, v) in hist[s][0].items():
+                close[idx[t], j], qv[idx[t], j] = c, v
+            for t, rate in hist[s][1].items():
+                i = idx.get(t // _C488_DAY * _C488_DAY)
+                if i is not None:
+                    fund[i, j] += rate
+        return T, keep, close, qv, fund
+
+    # ── the book ──────────────────────────────────────────────────────────
+    def unrealized(self):
+        tot = 0.0
+        taker = float(self.cfg.TAKER_FEE_PCT) / 100.0
+        for s, p in list(self.book.items()):
+            px = self.mark(s)
+            if px > 0:
+                tot += p['qty'] * (px - p['avg']) - abs(p['qty']) * px * taker
+        return tot
+
+    def locked_margin(self):
+        return sum(abs(p['qty']) * p['avg'] for p in list(self.book.values())) / self.lev()
+
+    def gross(self):
+        return sum(abs(p['qty']) * (self.mark(s) or p['avg']) for s, p in list(self.book.items()))
+
+    def live_equity(self):
+        try:
+            return float(self.bot.portfolio.get_live_equity(self.bot.exchange))
+        except Exception:
+            return float(self.bot.portfolio.equity) + self.unrealized()
+
+    def _book_fill(self, sym, side, qty, px, why):
+        """one confirmed fill -> the ledger and the Portfolio"""
+        pf = self.bot.portfolio
+        dq = qty if side == 'buy' else -qty
+        fee = qty * px * float(self.cfg.TAKER_FEE_PCT) / 100.0
+        with self._lock:
+            p = self.book.get(sym) or dict(qty=0.0, avg=0.0, fees=0.0, funding=0.0, realized=0.0,
+                                          opened=time.time())
+            q0, avg = float(p['qty']), float(p['avg'])
+            realized = released = added = 0.0
+            if q0 == 0 or (q0 > 0) == (dq > 0):
+                nq = q0 + dq
+                p['avg'] = (abs(q0) * avg + qty * px) / abs(nq)
+                added = qty * px / self.lev()
+            else:
+                closed = min(qty, abs(q0))
+                realized = closed * (px - avg) * (1 if q0 > 0 else -1)
+                released = closed * avg / self.lev()
+                nq = q0 + dq
+                if abs(nq) * px < 0.01 or (q0 > 0) != (nq > 0):
+                    nq = 0.0                    # dust, or rounding past zero: flat
+            p['qty'] = nq
+            p['fees'] += fee
+            p['realized'] += realized
+            if added:
+                pf.c488_lock(added)
+            pf.release_margin(released, realized - fee, fee, count_trade=False)
+            if nq == 0.0:
+                whole = p['realized'] + p['funding'] - p['fees']
+                self.closed.append(dict(sym=sym, pnl=round(whole, 4), fees=round(p['fees'], 4),
+                                        funding=round(p['funding'], 4), days=round((time.time() - p['opened']) / 86400, 1),
+                                        t=time.time()))
+                self.closed = self.closed[-50:]
+                self.book.pop(sym, None)
+                self.fund_next.pop(sym, None)
+            else:
+                self.book[sym] = p
+        logger.info(f"   \U0001f4bc C488 {why}: {side.upper()} {sym.split('/')[0]} {qty:.6g} @ ${_fmt_px(px)} "
+                    f"(${qty * px:.2f}; fee ${fee:.3f}"
+                    f"{'; realised $%+.3f' % realized if realized else ''}) -> holding {nq:+.6g}")
+
+    def _step(self, sym):
+        """the contract's quantity step and minimum, from the exchange's own
+        market table (ccxt TICK_SIZE mode: precision.amount IS the step)"""
+        try:
+            m = self.bot.exchange.exchange.markets[sym]
+            return (float((m.get('precision') or {}).get('amount') or 0.0),
+                    float(((m.get('limits') or {}).get('amount') or {}).get('min') or 0.0))
+        except Exception:
+            return 0.0, 0.0
+
+    def round_qty(self, sym, qty):
+        """a signed target quantity, rounded to the NEAREST step (truncating
+        lost up to 40%% of a small target: 0.0174 ETH became 0.01); below the
+        contract minimum it is zero -- an order the venue would refuse"""
+        st, mn = self._step(sym)
+        a = abs(float(qty))
+        if st > 0:
+            a = float(f"{round(a / st) * st:.12g}")
+        if a < mn or a <= 0:
+            return 0.0
+        return a if qty > 0 else -a
+
+    def _fill(self, sym, side, qty, reduce_only, why):
+        ex = self.bot.exchange
+        st, mn = self._step(sym)
+        if st > 0:
+            qty = float(f"{round(qty / st) * st:.12g}")    # already a multiple: this only removes float dust
+        if qty <= 0 or (not reduce_only and qty < mn):
+            return 0.0
+        px_est = self.mark(sym)
+        if not reduce_only and qty * px_est < float(getattr(self.cfg, 'C488_EXCHANGE_MIN', 5.0)):
+            return 0.0
+        o = ex.place_order(sym, side, qty, self.lev(), 'market', reduce_only=reduce_only)
+        f, px, how = ex.c487_settle(sym, o, side, 0.0, qty, 3.0)
+        if f <= 0 or px <= 0:
+            logger.warning(f"   ⚠️ C488 {side} {sym.split('/')[0]} {qty:.6g} NOT filled ({how}) -- "
+                           f"the book is unchanged and the next rebalance will try again")
+            return 0.0
+        self._book_fill(sym, side, f, px, why)
+        return f * px
+
+    def trade_to(self, sym, target_qty, why):
+        cur = float((self.book.get(sym) or {}).get('qty', 0.0))
+        d = target_qty - cur
+        if abs(d) < 1e-12:
+            return 0.0
+        side = 'buy' if d > 0 else 'sell'
+        done = 0.0
+        if cur != 0 and (d > 0) != (cur > 0):
+            red = min(abs(d), abs(cur))
+            done += self._fill(sym, side, red, True, why)
+            rest = abs(d) - red
+            if rest > 0 and target_qty != 0:
+                done += self._fill(sym, side, rest, False, why)
+        else:
+            done += self._fill(sym, side, abs(d), False, why)
+        return done
+
+    def flatten(self, why):
+        n = 0
+        for s in list(self.book):
+            self.trade_to(s, 0.0, why)
+            n += 1
+        self.save()
+        return n
+
+    # ── the daily rebalance ───────────────────────────────────────────────
+    def rebalance(self, why='daily'):
+        t0 = time.time()
+        if not self.refresh_marks(force=True):
+            raise RuntimeError('no tickers')
+        eq = self.live_equity()
+        n_top = self.topn(eq)
+        syms = self.candidates(n_top)
+        M = self.matrices(syms)
+        if M is None:
+            raise RuntimeError('no history')
+        T, keep, close, qv, fund = M
+        w, sleeves, elig = _c488_targets(T, close, qv, fund, n_top, self.target_vol(),
+                                          float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)))
+        mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        band = float(getattr(self.cfg, 'C488_TRADE_BAND', 0.30))
+        plan = {}
+        for j, s in enumerate(keep):
+            wj = float(np.nan_to_num(w[j]))
+            if abs(wj) * eq < mn:
+                wj = 0.0
+            if wj != 0.0:
+                plan[s] = dict(w=round(wj, 6), c1=round(float(sleeves['C1'][j]), 6),
+                               c2=round(float(sleeves['C2'][j]), 6), c3=round(float(sleeves['C3'][j]), 6))
+        # reductions first: they free the margin the increases need
+        def _shrinks(s):
+            held = abs(float((self.book.get(s) or {}).get('qty', 0.0))) * (self.mark(s) or 0.0)
+            return 0 if abs(plan.get(s, {}).get('w', 0.0)) * eq < held else 1
+        order = sorted(set(plan) | set(self.book), key=lambda s: (_shrinks(s), s))
+        traded, n = 0.0, 0
+        for s in order:
+            px = self.mark(s)
+            if px <= 0:
+                continue
+            tq = self.round_qty(s, plan.get(s, {}).get('w', 0.0) * eq / px)
+            cq = float((self.book.get(s) or {}).get('qty', 0.0))
+            dn = abs(tq - cq) * px
+            closing = tq == 0.0 and cq != 0.0
+            flip = cq != 0.0 and tq != 0.0 and (tq > 0) != (cq > 0)
+            if not (closing or flip) and (dn < mn or dn < band * abs(tq) * px):
+                continue
+            traded += self.trade_to(s, tq, why)
+            n += 1
+        self.plan = plan
+        self.last_rebal = datetime.utcnow().strftime('%Y-%m-%d')
+        gross_t = sum(abs(v['w']) for v in plan.values())
+        self.info = dict(at=time.time(), why=why, n_trades=n, traded=round(traded, 2),
+                         equity=round(eq, 2), topn=n_top, universe=int(elig.sum()),
+                         target_vol=round(self.target_vol(), 4), gross_target=round(gross_t, 3),
+                         n_targets=len(plan), secs=round(time.time() - t0, 1),
+                         sleeves={k: round(float(np.abs(sleeves[k]).sum()), 3) for k in sleeves})
+        self.save()
+        logger.info(f"\U0001f4bc C488 REBALANCE ({why}): {len(plan)} positions targeted, gross "
+                    f"{gross_t:.2f}x of ${eq:.2f}, {n} trades ${traded:.2f}, top {n_top}, "
+                    f"vol target {100 * self.target_vol():.1f}% [{time.time() - t0:.0f}s]")
+
+    # ── funding (paper) ───────────────────────────────────────────────────
+    def accrue_funding(self):
+        if not self.book:
+            return
+        now = int(time.time() * 1000)
+        for s, p in list(self.book.items()):
+            iv = self.fund_iv.get(s)
+            if not iv or time.time() - iv[1] > 43200:
+                d = self._get('current-fund-rate', {'symbol': self._raw(s), 'productType': 'USDT-FUTURES'}, tries=2)
+                try:
+                    hrs = int((d or [{}])[0].get('fundingRateInterval') or 8)
+                except Exception:
+                    hrs = 8
+                self.fund_iv[s] = iv = (max(1, hrs), time.time())
+            step = iv[0] * 3600000
+            nxt = self.fund_next.get(s)
+            if not nxt:
+                self.fund_next[s] = (now // step + 1) * step
+                continue
+            k = 0
+            while now >= nxt and k < 30:
+                rate = float((self.marks.get(s) or {}).get('fr', 0.0))
+                px = self.mark(s) or p['avg']
+                amt = -p['qty'] * px * rate                 # a long pays a positive rate
+                if amt:
+                    p['funding'] += amt
+                    self.bot.portfolio.release_margin(0.0, amt, 0.0, count_trade=False)
+                nxt += step
+                k += 1
+            self.fund_next[s] = nxt
+
+    # ── the loop ──────────────────────────────────────────────────────────
+    def guard(self):
+        try:
+            g = self.bot._c482_risk_guard()
+        except Exception:
+            return ''
+        if float(g.get('pct', 0.0)) <= 0.0:
+            return 'dial'
+        eq0 = float(g.get('month_eq0', 0.0) or 0.0)
+        if eq0 > 0 and eq0 - self.live_equity() >= eq0 * float(g['pct']) / 100.0:
+            return 'month:' + datetime.now().strftime('%Y-%m')
+        return ''
+
+    def due(self):
+        now = datetime.utcnow()
+        h, m = getattr(self.cfg, 'C488_REBAL_UTC', (0, 5))
+        return (self.last_rebal != now.strftime('%Y-%m-%d')
+                and (now.hour, now.minute) >= (int(h), int(m)))
+
+    def reset(self):
+        """a fresh start begins flat: the book goes with the old account"""
+        with self._lock:
+            self.book, self.plan, self.info, self.closed = {}, {}, {}, []
+            self.last_rebal, self.halt, self.fund_next = '', '', {}
+            self._topn = 0
+        self.save()
+
+    def tick(self, can_trade=True):
+        """called on every pass of the main loop; does real work at most every 20 s.
+        A pause (can_trade False) stops rebalancing only: an open book is still
+        marked, still pays funding and is still under the month guard."""
+        if time.time() - self._tick_at < 20:
+            return
+        self._tick_at = time.time()
+        if not self.active():
+            if self.book:
+                self._say('off', f"\U0001f4bc C488 engine is '{self.mode()}' -- closing its "
+                                 f"{len(self.book)} positions")
+                self.flatten('engine switched off')
+            return
+        if not self.cfg.PAPER_MODE and not bool(getattr(self.cfg, 'C488_LIVE_OK', False)):
+            self._say('live', "\U0001f6d1 C488 engine will NOT trade live money until C488_LIVE_OK = True "
+                              "(its funding and fills are reconciled against paper only)", 'warning')
+            return
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        self.refresh_marks()
+        try:
+            self.accrue_funding()
+        except Exception as e:
+            self._say('fund' + type(e).__name__, f"⚠️ C488 funding accrual failed: {e}", 'warning')
+        # the month guard: the operator's dial, on LIVE equity
+        g = self.guard()
+        if g and g != self.halt:
+            self.halt = g
+            n = self.flatten('guard ' + g)
+            logger.warning(f"\U0001f6d1 C488 {('RISK DIAL AT 0%' if g == 'dial' else 'MONTH LOSS LIMIT REACHED')} "
+                           f"-- {n} positions closed; no new positions until "
+                           f"{'the dial is raised' if g == 'dial' else 'next month'}")
+        elif not g and self.halt:
+            if self.halt == 'dial' or self.halt != 'month:' + datetime.now().strftime('%Y-%m'):
+                logger.info(f"\U0001f4bc C488 trading resumes ({self.halt} cleared)")
+                self.halt = ''
+                self.last_rebal = ''            # rebuild the book now, not tomorrow
+        if can_trade and not self.halt and self.due() and time.time() - self._fail_at > 600:
+            try:
+                self.rebalance('daily' if self.info else 'first')
+            except Exception as e:
+                self._fail_at = time.time()
+                logger.warning(f"⚠️ C488 rebalance failed ({type(e).__name__}: {e}) -- retrying in 10 min")
+        if time.time() - self._saved_at > 300:
+            self.save()
+
+    def status(self):
+        with self._lock:
+            return self._status()
+
+    def _status(self):
+        eq = self.live_equity() or 1.0
+        pos = []
+        for s, p in sorted(self.book.items(), key=lambda kv: -abs(kv[1]['qty']) * (self.mark(kv[0]) or kv[1]['avg'])):
+            px = self.mark(s) or p['avg']
+            pl = self.plan.get(s) or {}
+            sl = max(('C1', 'C2', 'C3'), key=lambda k: abs(pl.get(k.lower(), 0.0))) if pl else ''
+            pos.append(dict(symbol=s.split('/')[0], side='long' if p['qty'] > 0 else 'short',
+                            notional=round(abs(p['qty']) * px, 2), weight=round(p['qty'] * px / eq, 4),
+                            upnl=round(p['qty'] * (px - p['avg']), 3), funding=round(p['funding'], 3),
+                            days=round((time.time() - p['opened']) / 86400, 1), sleeve=sl))
+        now = datetime.utcnow()
+        h, m = getattr(self.cfg, 'C488_REBAL_UTC', (0, 5))
+        nxt = now.replace(hour=int(h), minute=int(m), second=0, microsecond=0)
+        if self.last_rebal == now.strftime('%Y-%m-%d') or now >= nxt:
+            nxt = nxt + timedelta(days=1)
+        return dict(mode=self.mode(), n=len(self.book), gross=round(self.gross(), 2),
+                    gross_x=round(self.gross() / eq, 3), unrealized=round(self.unrealized(), 3),
+                    margin=round(self.locked_margin(), 2), target_vol=round(self.target_vol(), 4),
+                    halt=self.halt, last_rebal=self.last_rebal, info=self.info,
+                    next_rebal_utc=nxt.strftime('%Y-%m-%d %H:%M'), positions=pos[:40],
+                    closed=self.closed[-10:],
+                    funding=round(sum(p['funding'] for p in self.book.values()), 3))
+
+
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
         self.exchange = ExchangeManager(cfg)
         self.portfolio = Portfolio(cfg)
+        self.c488 = C488Engine(self)            # C488: the medium-term portfolio engine
+        self.portfolio._c488 = self.c488
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -18952,6 +19736,14 @@ class TradingBot:
         try:
             while True:
                 try:
+                    # 0. C488: the portfolio engine -- marks, funding, the month
+                    #    guard and the daily rebalance. It runs whatever the
+                    #    intraday pause state is, because an open book still needs
+                    #    watching; a pause only stops it rebalancing.
+                    try:
+                        self.c488.tick(can_trade=self.mode_mgr.can_trade())
+                    except Exception as _e488:
+                        logger.warning(f"⚠️ C488 tick failed: {type(_e488).__name__}: {_e488}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -26010,6 +26802,16 @@ class TradingBot:
             return False, 0.0, 0
 
     def _run_scan_and_trade(self):
+        # C488: while the portfolio engine runs, the intraday scanner opens
+        # nothing -- C487 measured it as losing after honest fills. Positions it
+        # already holds are still managed by the monitor thread to their close.
+        # Checked HERE, so the dashboard's "Force scan" obeys it too.
+        if getattr(self, 'c488', None) is not None and self.c488.active():
+            if not getattr(self, '_c488_scan_said', False):
+                self._c488_scan_said = True
+                logger.info("💼 C488: portfolio engine ON -- the intraday scanner "
+                            "opens no new positions (OMEGA_ENGINE=intraday restores it)")
+            return
         # C98: Reset monitor-triggered-close flag at scan start
         self._monitor_triggered_close = False
         
@@ -36287,8 +37089,17 @@ def startup():
         except:
             pass
 
+    # C488: which engine trades. OMEGA_ENGINE overrides the Config default.
+    _eng488 = os.environ.get('OMEGA_ENGINE', '').strip().lower()
+    if _eng488 in ('portfolio', 'intraday'):
+        cfg.C488_ENGINE = _eng488
+    print(f"  💼 engine: {cfg.C488_ENGINE.upper()}"
+          f"{' (daily trend + momentum + carry book, C488)' if cfg.C488_ENGINE == 'portfolio' else ' (C487 intraday scanner)'}")
+
     # Initialize bot
     bot = TradingBot(cfg)
+    if fresh:
+        bot.c488.reset()                     # C488: a fresh account starts flat
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -36981,6 +37792,12 @@ class RemoteControl:
                                                for k, v in _g482.items()}
                         except Exception:
                             pass
+                        try:      # C488: the portfolio engine's book
+                            _e488 = getattr(bot_ref, 'c488', None)
+                            if _e488 is not None:
+                                _out469['c488'] = _e488.status()
+                        except Exception as _x488:
+                            _out469['c488'] = {'error': f"{type(_x488).__name__}: {_x488}"}
                         try:      # the last scan, as the report saw it
                             _ls469 = _c462_report.last_scan or {}
                             _out469['last_scan'] = {
@@ -37177,6 +37994,9 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
      The operator asked for this: the chart is history, the book is the thing
      you might have to act on, and it was below the fold on a phone. -->
 <section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
+<!-- C488: the portfolio engine's book -- the daily trend + momentum + carry
+     positions it holds for days to weeks, separate from any intraday position. -->
+<section><h2>Portfolio book <span class="muted" id="bookmode"></span></h2><div id="book" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -37370,7 +38190,31 @@ async function pull(){
     q('scans').textContent=(ls.analyzed!=null)
       ? (ls.analyzed+' looked, '+(ls.passed||0)+' viable')
       : ('R '+d.market_R);
+    /* C488: with the portfolio engine on, the scanner is idle -- say what runs instead */
+    if(d.c488&&d.c488.mode==='portfolio'&&!d.c488.error){
+      q('scan').textContent='daily book';
+      q('scans').textContent='next rebalance '+String(d.c488.next_rebal_utc||'').slice(11)+' UTC';
+    }
     drawCurve(d.curve);
+    /* C488: the portfolio engine. An error is SHOWN, never rendered as flat. */
+    var b=d.c488;
+    if(b){
+      q('bookmode').textContent='('+b.mode+')';
+      if(b.error){q('book').innerHTML='<span class="'+cls(-1)+'">book unavailable: '+b.error+'</span>'}
+      else if(b.mode!=='portfolio'){q('book').innerHTML='<span class="muted">engine off \u2014 the intraday scanner trades</span>'}
+      else{
+        var inf=b.info||{},h='<div class="s">'+b.n+' positions \u00b7 gross '+money(b.gross)+' ('+b.gross_x+'x) \u00b7 open <span class="'+
+          cls(b.unrealized)+'">'+sgn(b.unrealized)+'</span> \u00b7 funding <span class="'+cls(b.funding)+'">'+sgn(b.funding)+'</span></div>'+
+          '<div class="s muted">vol target '+(100*b.target_vol).toFixed(0)+'% \u00b7 top '+(inf.topn||'?')+' coins \u00b7 last rebalance '+
+          (b.last_rebal||'not yet')+' \u00b7 next '+b.next_rebal_utc+' UTC'+(b.halt?' \u00b7 <b class="bad">HALTED '+b.halt+'</b>':'')+'</div>';
+        (b.positions||[]).slice(0,12).forEach(function(x){
+          h+='<div style="margin:5px 0"><b>'+x.symbol+'</b> '+x.side.toUpperCase()+' '+money(x.notional)+
+             ' <span class="'+cls(x.upnl)+'">'+sgn(x.upnl)+'</span> <span class="muted">'+x.sleeve+' \u00b7 '+x.days+'d</span></div>'});
+        if((b.positions||[]).length>12)h+='<div class="s muted">+ '+(b.positions.length-12)+' more</div>';
+        if(!b.n)h+='<div class="s muted">flat \u2014 '+(b.last_rebal?'nothing to hold today':'first rebalance pending')+'</div>';
+        q('book').innerHTML=h;
+      }
+    }
 
     var p=await (await fetch('/api/positions'+Q)).json();
     /* C483: two lines per position, the same facts as the report's table.

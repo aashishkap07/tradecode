@@ -1,6 +1,196 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 📊 2026-09-25 — C488: A PRE-REGISTERED PORTFOLIO ENGINE (TREND + MOMENTUM + CARRY)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C488.** The operator asked for the combination of strategies most
+likely to earn 2–4% a month on short-to-medium horizons across the assets OMEGA
+trades, and for the bot to be changed to trade it.
+
+- **New default engine: `C488_ENGINE = 'portfolio'`.** Once a day, at 00:05 UTC
+  (05:35 IST), it rebalances a book of the most liquid crypto perpetuals. Three
+  sleeves are combined at equal risk:
+  - **C1 trend**: the sign of the 1/2/4/8-week returns;
+  - **C2 momentum**: long the top fifth of 2-week returns, short the bottom
+    fifth, rebalanced weekly;
+  - **C3 funding carry**: long the lowest 7-day funding, short the highest,
+    rebalanced weekly.
+  The whole book is scaled to a volatility target, with gross exposure at most
+  3× and exchange leverage 5.
+- **Positions are held for days to weeks.** Orders are market orders, confirmed
+  by C487's read-back. Funding is paid or received at each settlement (paper),
+  and the book shows on the dashboard (Portfolio book panel) and in the report
+  (BOOK line).
+- **The intraday scanner opens nothing new while the engine runs,** Force scan
+  included. Open intraday positions are still managed to their close.
+  `OMEGA_ENGINE=intraday` (environment) or `C488_ENGINE = 'intraday'` restores
+  C487 exactly, and the engine closes its own book first.
+- **The risk dial now sets the book's volatility:** volatility = dial × 4/3, so
+  15%/month → 20% a year. The month limit is checked on live equity; when it is
+  breached the book is flattened and stays flat until next month. At dial 0 the
+  book is flattened. The day cap still governs intraday entries only; the
+  research had no day cap, so the engine does not use one.
+- **Universe size:** `C488_TOPN = 'auto'` — 20 coins below $1,000 of equity, 40
+  from $1,000, with hysteresis (back to 20 only under $900). Positions worth
+  under `C488_MIN_NOTIONAL` = $6 are not held. Targets round to the nearest
+  exchange quantity step.
+- **Live money is refused until `C488_LIVE_OK = True`.** Paper funding and fills
+  have not yet been reconciled against a live account.
+
+---
+
+## 🔬 THE RESEARCH (all reproducible from `research/`)
+
+**The literature, briefly.**
+- Trend-following has been positive in every decade since 1880 across asset
+  classes (Hurst, Ooi & Pedersen, *A Century of Evidence on Trend-Following*).
+- Short-term trend has collapsed on small-tick contracts since about 2009
+  (arXiv 2607.01550).
+- Crypto market returns predict themselves up to 8 weeks ahead (Liu &
+  Tsyvinski, NBER w24877).
+- Cross-sectional 2-week momentum earns +2.1%/week post-2020, t 3.70, gross, on
+  a broad universe (arXiv 2510.14435).
+- Cash-and-carry (spot versus perpetual) funding had a Sharpe ratio of 6.45 over
+  2020–25, falling to 4.06 in 2024 and negative in 2025 (same source). It needs
+  spot holdings, so this bot cannot run it.
+- Volatility management roughly doubles the Sharpe ratio of crypto momentum by
+  cutting its crashes.
+- BTC's 22:00–24:00 UTC effect: +33%/yr over 2015–21, before costs (Quantpedia).
+
+**Pre-registered before any test** (`research/c488_preregistration.md`, commit
+d81f8f3). The test checks that this file was committed once, never edited, and
+that it predates the engine.
+
+**Data.**
+- The Binance USDT-M archive, 2020-01 → 2026-08, **every contract (860),
+  delisted ones included**, with actual 8-hour funding.
+- Each day's universe is the top-N by 30-day median quote volume. This is
+  point-in-time and survivorship-free: 296 different coins passed through the
+  top 40.
+- RWA proxies: Yahoo daily futures, 2000–2026.
+- Bitget's own gold, oil and index contracts have only 4–12 months of history,
+  too little to test.
+
+| (net of 0.08%/turnover and real funding) | net / yr | Sharpe | t (NW) | quarters + | max DD | avg month |
+|---|---|---|---|---|---|---|
+| C1 trend | +11.0% | 0.62 | 1.69 | 4/4 | 18% | +0.91% |
+| C2 2-week momentum | +5.3% | 0.57 | 1.46 | 3/4 | 17% | +0.44% |
+| C3 funding carry | +9.5% | 0.99 | **2.24** | 3/4 | 16% | +0.79% |
+| **COMBO-C (pre-registered, 20% vol)** | **+30.0%** | **1.33** | **3.19** | **4/4** | 31% | **+2.51%** (62% of months up) |
+| T1 trend on the 9 RWA proxies | −2.1% | −0.19 | −0.86 | 2/4 | 58% | — |
+| COMBO with T1 | +19.0% | 0.88 | 2.17 | 3/4 | 39% | +1.59% |
+| C4 BTC evening effect, taker | −57.1% | — | −7.93 | 0/4 | — | before costs +1.3%/yr, t 0.17 |
+
+- **Why the combination works:** the three sleeves correlate at +0.05 to
+  +0.09. Three modest, independent edges add up to one strong one.
+- **Robustness of COMBO-C:**
+  - Years: +34.5% (2020), +33.3%, **−8.9% (2022)**, +56.4%, +49.2%, +16.6%,
+    and +9.3% (2026 to date).
+  - Double costs: t 2.57. Triple costs fail (t 1.94).
+  - One day of extra lag: t 2.72.
+  - With funding income ignored: t 2.42. Funding contributes +6.8%/yr.
+  - Top 20 / 30 / 40 coins all pass: t 3.55 / 3.50 / 3.19.
+- **It is fading.** Over the last 12 months the Sharpe ratio is 1.13; over the
+  last 24 it is 0.87. Carry alone was −3.3% over the last year. August 2026 was
+  its second-worst month on record (−12.8%).
+- **What failed, and is not traded:**
+  - Trend on gold, silver, copper, platinum, palladium, oil and the indices
+    earned about nothing from 2007 to 2026, even with classic 1/3/12-month
+    lookbacks (+1.0%/yr, t 0.40). Trend funds get most of their return from
+    bonds and currencies, which Bitget does not list.
+  - Bitget's RWA funding is also large: long gold pays about 10%/yr and long
+    copper about 21%/yr, while short oil pays about 50%/yr.
+  - The BTC evening effect is gone since 2020.
+- **Capacity:** at $250 the median position of a 40-coin book would be $3.80,
+  under Bitget's $5 minimum.
+
+| $250 of equity | net / yr | Sharpe | t |
+|---|---|---|---|
+| top 40, positions under $6 dropped | +26.0% | 1.33 | 3.13 |
+| top 40, positions under $10 dropped | +11.4% | 0.64 | 1.46 ✗ |
+| **top 20, positions under $6 dropped (what runs)** | +30.0% | 1.44 | 3.43 |
+| top 20, positions under $10 dropped | +24.7% | 1.22 | 2.85 |
+
+The top-20 rows are exploratory, but every N from 20 to 40 passes. This is why
+the book uses 20 coins below $1,000.
+
+### What 2–4% a month costs (top 20, $6 minimum, month guard included)
+
+| dial | volatility | avg month 2020–26 | max drawdown | months stopped by guard |
+|---|---|---|---|---|
+| 10% | 13% | +1.66% | 22% | 0 |
+| **15% (default)** | **20%** | **+2.50%** | **31%** | 0 |
+| 20% (max) | 27% | +3.34% | 40% | 0 |
+
+**The honest forward estimate is lower.** At the last 24 months' Sharpe of
+0.87, dial 15% gives about 1.5% a month. 4% a month would need about 36%
+volatility and a drawdown of about 45–60%, so the dial's 20% ceiling
+deliberately does not reach it.
+
+> **→ Standing Rule 50b: TEST THE COMBINATION AS DECLARED, OR NOT AT ALL.**
+> COMBO-C passes where only one of its three parts passes on its own. The
+> reason is diversification, not selection. That is legitimate only because
+> the weights (equal risk) and the members were fixed and committed before a
+> single number was seen.
+
+> **→ Standing Rule 51: CAPITAL IS PART OF THE STRATEGY.** A 40-coin book is
+> not the same strategy at $250 as at $5,000, because the venue's minimum
+> order silently removes most of the positions. Measure at the capital that
+> will actually trade.
+
+## 🧪 VERIFICATION
+
+- **`omega_c488_test.py`, 41 checks:**
+  - **Parity:** the bot's functions return *identical* arrays to the research
+    engine (universe, three sleeves, combination, today's row) at 20 and 40
+    coins.
+  - **Ledger:** open, add, reduce, flip, close. Equity moves by exactly
+    realised − fees; available + locked = equity throughout; open P&L appears
+    in the Portfolio.
+  - **Funding:** long pays, short receives, once per settlement.
+  - **Rebalance:** targets met to within half a step; nothing under $6;
+    reductions before increases; a second pass trades nothing.
+  - **Guard:** a month breach flattens and halts until next month; dial 0
+    flattens.
+  - **Modes and safety:** switching to intraday closes the book; live mode
+    without `C488_LIVE_OK` refuses; a pause stops rebalancing only.
+  - **Wiring:** scanner stand-down, tick placement, fresh start, restart
+    persistence.
+  - **Page:** the dashboard renders the panel in Chromium with no JavaScript
+    errors.
+  - **Pre-registration:** committed once, before the engine.
+- **The test found two real bugs before they shipped:**
+  - At $999–$1,001 of equity the 20/40-coin switch rebuilt the whole book every
+    day. Fixed with hysteresis.
+  - Quantities truncated to the exchange step lost up to 40% of a target
+    (0.0174 ETH → 0.01). Fixed by rounding to the nearest step and skipping
+    anything under the minimum.
+- **Real market, paper, through the bot's own Bitget connection:**
+  - The full bot booted, built its first book 20 s after start (12 positions,
+    0.76× gross), served it on the dashboard and printed the BOOK line.
+  - A same-day second pass made 0 trades.
+  - A full flatten cost $0.20 on $178 gross.
+- The full battery passes and both sweeps are clean.
+
+## ⚠️ LIMITS
+
+- **A daily strategy needs months to judge.** Compare its monthly results
+  against the research's distribution: 62% of months up, worst −14.6%, a
+  typical month about ±6%. Do not judge it on days.
+- **Paper funding uses Bitget's current rate at each settlement.** Live funding
+  is charged by the venue, which is why `C488_LIVE_OK` defaults to False.
+- **The trailing risk estimates are computed on the 2×N coins that are liquid
+  today.** The research used the full point-in-time universe. Today's targets
+  are unaffected; only the volatility-scaling window differs.
+- **At $250 the book is lumpy.** One ETH step (0.01) is about $27, and Bitget's
+  minimum order is $5.
+- **The rebalance blocks the main loop for about 20 s once a day.** The monitor
+  thread is unaffected.
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 💧 2026-09-25 — C487: HONEST FILLS, AND WHERE THE MONEY ACTUALLY GOES
 # ═══════════════════════════════════════════════════════════════════════════
 
