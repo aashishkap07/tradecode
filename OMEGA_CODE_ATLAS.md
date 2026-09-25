@@ -1,6 +1,29 @@
 # OMEGA V60 — CODE ATLAS
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 📌 PENDING TASKS — the operator asked for these to be remembered (25 Sep 2026)
+# ═══════════════════════════════════════════════════════════════════════════
+
+**Deployed state (checked in the server's own logs):**
+- **C489 has run on the VPS since 25 Sep 17:46 IST.**
+- **The C488 book built its first 9 positions:** $118.63 traded, 0.41× gross on
+  $252.63.
+- **The C489 shadow logged its first hour** (flow warm-up, ~7 days).
+- **An 18:43 restart resumed cleanly,** with no second rebalance the same UTC
+  day.
+
+| # | task | when | notes |
+|---|---|---|---|
+| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. |
+| 2 | **Live-mode build for C488** | when the operator wants real money (after #1 passes) | (a) Read actual funding from Bitget account bills and stop booking the paper estimate live, so funding is never counted twice. (b) Sync equity and available balance with the venue each cycle, and reconcile any drift loudly. (c) Set one-way position mode and a margin mode per symbol before the first order. (d) Handle partial fills in `trade_to`. (e) Re-check contract minimums and steps from the live market table. (f) Only then does `C488_LIVE_OK = True` make sense. Then go live small: dial 5–10%, raised towards 15% over weeks as live tracks paper. |
+| 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS. Never put keys in the Python file. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
+| 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. |
+| 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. |
+| 6 | **Risk dial choice** | operator | Dial 15% → about +2.5%/month historically (1.5–2% realistic), worst drawdown −31%. Dial 20% → +3.3%, −40%. 4% a month is not reachable at acceptable risk. |
+| 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
+| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. |
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 👻 2026-09-25 — C489: THE INTRADAY ENGINE, BUILT AS ASKED, TESTED FIRST, RUN IN SHADOW
 # ═══════════════════════════════════════════════════════════════════════════
 
