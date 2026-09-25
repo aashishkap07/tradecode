@@ -1,0 +1,51 @@
+06:15:00 | 📊 Paper Mode
+06:15:04 | ✅ Connected | 805 futures markets
+06:15:04 | 📐 RISK @ $251.54: monthly dial 15% = $37.73/month  |  per-trade risk 0.341% = $0.86  |
+    break-even win rate 49% at the measured 1.04 payoff [C482]
+06:15:04 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C485  PAPER  Bitget perps
+  25 Sep 2026   06:15
+  start $251.54  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $251.54  805 markets
+  MONTH     dial 15% = $37.92 this month  used $1.26
+  DAY       limit $9.44  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      +0.0172 blended  40W 86L realised
+  NEED      49% win at 1.04 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+06:15:04 |    🔒 C378 stop level $0.003727 recorded (paper — C377 enforces it in-process) [C397
+    tick-legal]
+06:15:04 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+06:15:04 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+06:15:04 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+06:15:04 |        See deploy/DEPLOY.md — one command, no open ports, free.
+06:15:04 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+06:15:04 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left
+    (C482)
+06:15:04 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+06:15:04 | 💡 Press Ctrl+C to stop safely
+06:15:11 |    🪞 C266 board-parity (top movers vs screen): 龙虾 -31%[#28] | QNT +29%[#31] | ONDO
+    +28%[#4] | XPL +27%[Live=0.55<cut] | BROCCOLI +24%[#27]
+06:15:54 |    🎢→⚖️ LSK: C292 stands down — parabola BROKEN (range 16×ATR, 8.4 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:16:00 |    🎢→⚖️ BROCCOLI: C292 stands down — parabola BROKEN (range 22×ATR, 8.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:16:01 |    ⚖️ C462-7 龙虾: penalties 0.72→0.29 (×0.40) vs bar 0.47 — the stack decided
+06:16:04 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 16×ATR, 8.7 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:16:24 |    🎢→⚖️ PLUME: C292 stands down — parabola BROKEN (range 22×ATR, 6.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:16:26 |    🎢→⚖️ ARK: C292 stands down — parabola BROKEN (range 13×ATR, 4.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+06:16:40 | 📊 Step 3 result: 71 analyzed → 1 viable → Step 4 DRI/DSI
