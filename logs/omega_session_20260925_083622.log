@@ -350,3 +350,114 @@
 11:07:52 |    📌 Nearest miss: BILL score=1.194 conf=0.843 quality=1.007/0.26 reason=vol_floor
   .. 11:10  flat  $250.14  $-0.00 -0.00%  0W 0L  14 analysed
 11:12:53 | ⊥ C97 TF-CONFLICT: 1h=+0.39×4h=-0.47=d14=-0.18 — only shorts allowed (4h dominant)
+11:18:14 |    🪞 C266 board-parity (top movers vs screen): QNT +36%[#15] | XPL +27%[Live=0.30<cut] |
+    ONDO +24%[Live=0.23<cut] | BROCCOLI +21%[#24] | ARK +19%[#38]
+11:18:51 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 30×ATR, 17.3 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:18:55 |    ⚖️ C462-7 ARK: penalties 0.51→0.46 (×0.90) vs bar 0.51 — the stack decided
+11:19:04 |    ⚖️ C462-7 PHA: penalties 0.47→0.35 (×0.75) vs bar 0.46 — the stack decided
+11:19:17 |    ⚖️ C462-7 BEAT: penalties 0.50→0.37 (×0.75) vs bar 0.46 — the stack decided
+11:19:31 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=4, low_score=50,
+    no_structural_room=5, flat_projection=12, session_short=2, post_penalty_low=1, vol_floor=2,
+    micro_wave=1, dir_proj_conflict=1
+11:19:31 |    📌 Nearest miss: BILL score=1.340 conf=0.931 quality=1.247/0.26 reason=vol_floor
+  .. 11:19  flat  $250.14  $-0.00 -0.00%  0W 0L  78 analysed
+ 
+ 
+  11:27  up 2h51m  scan 23 -----------------------------------------------------------------------
+  EQUITY    $250.14
+  OPEN      flat  free $250.14
+  SESSION   $-0.00 -0.00%
+  CURVE     +=====================
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      no fills yet this run
+  SCAN      805 > 78 > 0 passed  top BILL 1.34 (vol_floor)  23 scans, 992 analysed
+  MARKET    MIXED  bias +0.01  breadth -0.08  taker flow -0.34
+  NEWS      65 articles  + tone +0.20  ARB +0.58  PUMP +0.50  OP +0.32
+  INFO      2 tilted  flow/news/oi on 136
+  MOVERS    QNT +36% #15  XPL +27% cut  ONDO +24% cut  BROCCOLI +21% #24
+  ------------------------------------------------------------------------------------------------
+ 
+11:29:56 |    🪞 C266 board-parity (top movers vs screen): QNT +36%[#16] | XPL +29%[Live=0.32<cut] |
+    ONDO +26%[Live=0.24<cut] | ARK +19%[#39] | FET +17%[#15]
+11:30:35 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 30×ATR, 18.0 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:31:20 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=10, low_score=43,
+    flat_projection=13, no_structural_room=3, session_short=2, low_agreement=1, micro_exhaustion=1,
+    post_penalty_low=2, leg_exhausted=1, vol_floor=1, poor_reward_risk=1
+11:31:20 |    📌 Nearest miss: AKE score=0.543 (pre-pen 0.85) conf=0.947 quality=0.514/0.26
+    reason=low_agreement 62%<65%
+  .. 11:35  flat  $250.14  $-0.00 -0.00%  0W 0L  78 analysed
+11:41:42 |    🪞 C266 board-parity (top movers vs screen): QNT +35%[#16] | XPL +30%[#7] | ONDO
+    +24%[Live=0.33<cut] | ARK +19%[#36] | PHA +17%[#37]
+11:42:09 | 📊 Step 3 result: 13 analyzed (+65 cached this 15m candle) → 0 passed | low_confidence=9,
+    low_score=46, flat_projection=11, no_structural_room=2, session_short=2, low_agreement=1,
+    micro_exhaustion=1, post_penalty_low=2, leg_exhausted=1, vol_floor=1, capitulation=1,
+    poor_reward_risk=1
+11:42:09 |    📌 Nearest miss: AERO score=0.384 conf=0.621 quality=0.239/0.26 reason=score 0.384 <
+    0.482
+  .. 11:43  flat  $250.14  $-0.00 -0.00%  0W 0L  13 analysed
+11:47:39 |    ⚖️ C462-7 QNT: penalties 0.84→0.34 (×0.40) vs bar 0.52 — the stack decided
+11:47:50 |    🎢→⚖️ XAI: C292 stands down — parabola BROKEN (range 31×ATR, 18.5 ATR off the day
+    extreme): the 24h 'trend' already failed structurally; counter-trend entry re-enters the TURNING
+    path [C299]
+11:48:24 |    🧭 C458-17: exploration is due but the best refusal (absorption cvd=+0.60) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+11:48:24 | 📊 Step 3 result: 78 analyzed → 0 passed | low_confidence=3, low_score=23, mtf_disagree=1,
+    ct_noisy_block=32, flat_projection=7, no_structural_room=4, late_leg_no_forward=3,
+    capitulation=1, absorption_at_extreme=1, session_short=2, low_quality=1
+11:48:24 |    📌 Nearest miss: BTW score=0.677 conf=0.653 quality=0.442/0.26 reason=absorption
+    cvd=+0.60
+  .. 11:51  flat  $250.14  $-0.00 -0.00%  0W 0L  78 analysed
+11:53:31 |    🪞 C266 board-parity (top movers vs screen): QNT +36%[#18] | XPL +31%[#7] | ONDO
+    +26%[Live=0.38<cut] | PHA +20%[#39] | FET +17%[#20]
+11:54:05 |    🧭 C458-17: exploration is due but the best refusal (post_penalty_quality) is a RISK
+    gate, not a measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY,
+    never DANGER.
+11:54:05 | 📊 Step 3 result: 18 analyzed (+58 cached this 15m candle) → 0 passed | low_confidence=2,
+    low_score=23, ct_noisy_block=30, flat_projection=6, no_structural_room=4, poor_reward_risk=1,
+    late_leg_no_forward=3, capitulation=4, absorption_at_extreme=1, post_penalty_quality=1,
+    low_quality=1
+11:54:05 |    📌 Nearest miss: CVC score=0.508 conf=0.775 quality=0.394/0.26
+    reason=post_penalty_quality
+ 
+ 
+  11:59  up 3h23m  scan 27 -----------------------------------------------------------------------
+  EQUITY    $250.14
+  OPEN      flat  free $250.14
+  SESSION   $-0.00 -0.00%
+  CURVE     +=========================
+  DAY       real $-2.49  limit $9.44 (3.74%)  26% used
+            #######...................
+  MONTH     dial 15%  used $2.66 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  129tr 40W 89L 31%  $+0.14
+  FEES      no fills yet this run
+  SCAN      805 > 18 > 0 passed  top CVC 0.51 (post_penalty_quali)  27 scans, 1179 analysed
+  MARKET    TRENDING  bias -0.22  breadth +0.06  taker flow -0.37
+  NEWS      65 articles  + tone +0.33  ARB +0.58  TRUMP +0.34  OP +0.32
+  INFO      2 tilted  flow/news/oi on 136
+  MOVERS    QNT +36% #18  XPL +31% #7  ONDO +26% cut  PHA +20% #39
+  ------------------------------------------------------------------------------------------------
+ 
+12:04:30 |    🪞 C266 board-parity (top movers vs screen): QNT +36%[#17] | XPL +31%[#8] | ONDO
+    +25%[#3] | PHA +19%[#36] | BOME -16%[#46]
+12:05:05 |    ⚖️ C462-7 QNT: penalties 0.62→0.24 (×0.39) vs bar 0.54 — the stack decided
+12:05:47 |    🧭 C458-17: exploration is due but the best refusal (final_gate) is a RISK gate, not a
+    measurement gate — standing down. Exploration is a reason to accept UNCERTAINTY, never DANGER.
+12:05:47 | 📊 Step 3 result: 76 analyzed → 0 passed | low_confidence=10, low_score=20,
+    mtf_disagree=1, ct_noisy_block=35, absorption_at_extreme=2, final_gate=1, flat_projection=2,
+    exhaustion_hard=1, capitulation=2, no_structural_room=2
+12:05:47 |    📌 Nearest miss: NIL score=0.375 conf=0.528 quality=0.198/0.26 reason=final_gate
+  .. 12:07  flat  $250.14  $-0.00 -0.00%  0W 0L  76 analysed
+  .. 12:15  flat  $250.14  $-0.00 -0.00%  0W 0L  76 analysed
+12:16:09 |    🪞 C266 board-parity (top movers vs screen): QNT +38%[#16] | XPL +31%[#8] | ONDO
+    +26%[#3] | PHA +18%[#39] | MUBARAK -17%[Live=0.40<cut]
+12:16:38 |    ⚖️ C462-7 QNT: penalties 0.54→0.28 (×0.52) vs bar 0.54 — the stack decided
