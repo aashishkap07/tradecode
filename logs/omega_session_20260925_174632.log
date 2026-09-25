@@ -103,3 +103,107 @@
   TAPE      -
   ------------------------------------------------------------------------------------------------
  
+ 
+  18:18  up 0h32m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.42  unreal $+0.16
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $120.22 (0.48x)  open $+0.16  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.71 -0.28%  peak $253.13  dd 0.28%
+  CURVE     +=====
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+18:19:34 |    📓 C444: FET exited on C377_RISK_STOP: -1.62% = at index 0.43 — 30min later the price
+    is +2.58% (+1.22R) FURTHER IN OUR FAVOUR — held would have been better
+ 
+  18:26  up 0h40m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.37  unreal $+0.11
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $120.46 (0.48x)  open $+0.10  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.76 -0.30%  peak $253.13  dd 0.30%
+  CURVE     +======
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+18:32:42 |    👻 C489 shadow hour 13:00 UTC: 0 coins scored, gate shut | M1 +0.00% M1g +0.00% over 1d
+    [18s]
+ 
+  18:34  up 0h48m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.54  unreal $+0.28
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $120.58 (0.48x)  open $+0.28  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.59 -0.23%  peak $253.13  dd 0.23%
+  CURVE     +=======
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  18:42  up 0h56m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.56  unreal $+0.30
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $120.33 (0.48x)  open $+0.30  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $-0.57 -0.22%  peak $253.13  dd 0.22%
+  CURVE     +========
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    1 closed  0W 1L  win 0%  avg $-0.79/tr
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      $0.03  mk0/tk1  0.011% of eq
+  MARKET    MIXED  bias +0.00  breadth +0.00  taker flow -0.21
+  TAPE      -
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-25 18:43:08
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       0h56m  0 scans  0 pair-analyses  1 closed trades
+  P&L       $-0.57 (-0.22%)  $253.13 > $252.56  maxDD 0.34%
+  CURVE     @._==_.--
+  RECORD    0W 1L  win 0%  payoff n/a  profit factor n/a  avg win n/a  avg loss $-0.79
+            break-even n/a  expectancy $-0.79/tr  gross $0.00 won  $0.79 lost
+  HOLD      median 13m  range 13-13m
+  COST      fees $0.03  maker 0 / taker 1 fills  4% of gross  0% of fills maker  maker $0.00
+            taker $0.03
+  EXITS     C377_RISK_STOP: -1.6 1
+  ------------------------------------------------------------------------------------------------
+  PAIR     SIDE      MOVE      NET   HELD  EXIT
+  FET      LONG    -1.62%   $-0.79    13m  C377_RISK_STOP: -1.6 [L]
+  ------------------------------------------------------------------------------------------------
+ 
+
+============================================================
+📝 Log saved: 2026-09-25 18:43:08
+============================================================

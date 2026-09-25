@@ -1,0 +1,98 @@
+18:43:11 | 📊 Paper Mode
+18:43:14 | ✅ Connected | 805 futures markets
+18:43:14 | 📐 RISK @ $252.26: monthly dial 15% = $37.92/month  |  per-trade risk 0.341% = $0.86  |
+    break-even win rate 32% at the measured 2.10 payoff [C482]
+18:43:14 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C489  PAPER  Bitget perps
+  25 Sep 2026   18:43
+  start $252.26  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $252.26  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.54
+  DAY       limit $9.44  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      +0.0474 blended  44W 95L realised
+  NEED      32% win at 2.10 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+18:43:14 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+18:43:14 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+18:43:14 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+18:43:14 |        See deploy/DEPLOY.md — one command, no open ports, free.
+18:43:14 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+18:43:14 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left
+    (C482)
+18:43:14 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+18:43:14 | 💡 Press Ctrl+C to stop safely
+ 
+  18:51  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.63  unreal $+0.37
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.53 (0.47x)  open $+0.37  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $+0.37 +0.15%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  18:59  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.54  unreal $+0.28
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.60 (0.47x)  open $+0.28  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $+0.28 +0.11%  peak $252.63  dd 0.04%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  19:07  up 0h24m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.62  unreal $+0.36
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.95 (0.47x)  open $+0.36  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $+0.36 +0.14%  peak $252.63
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  19:15  up 0h32m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $252.56  unreal $+0.30
+  OPEN      flat  free $228.54
+  SHADOW    intraday M1 +0.00%  M1g +0.00%  1d paper only
+  BOOK      9 pos gross $119.17 (0.47x)  open $+0.30  funding $+0.00  vol 20% top 20
+            rebal 2026-09-25
+  SESSION   $+0.30 +0.12%  peak $252.63  dd 0.03%
+  DAY       real $-0.37  limit $9.44 (3.74%)  4% used
+            #.........................
+  MONTH     dial 15%  used $0.54 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.26
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
