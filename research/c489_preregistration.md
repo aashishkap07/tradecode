@@ -96,3 +96,37 @@ cross-section, never against an absolute level.
   - The intraday engine runs as a **shadow**: a separate paper ledger with zero
     effect on equity, trading M1 so its honest record accumulates.
   - C488 keeps the full risk budget.
+
+---
+
+## Round 2 — appended 2026-09-25, after round 1 and BEFORE any 2024-01 → 2026-08 test of the items below
+
+**Round 1 result.** All 10 items failed by a wide margin (t between −4 and −35).
+- Some raw edges are real and stable, before costs:
+  - 24-hour continuation: +13% to +56% a year, in every year;
+  - first-order Markov: positive in 5 of 6 years.
+- The look-ahead check shows +4,161%/yr gross and a random signal about 0, so
+  the harness is sound.
+- **Hourly rebuilds turn over the account 4–9 times a day, and costs of 100–270%
+  a year swamp those edges.**
+
+**Round 2 design.** Exploration used 2021-07 → 2023-12 only. The data from
+2024-01 → 2026-08 is the untouched holdout. Designs explored:
+- low-turnover hysteresis books: enter in the top or bottom 10% or 5%, exit at
+  the median or the 70th percentile, minimum hold 4 h or 24 h, fixed size per
+  position;
+- the signals H2, H4 and their combination with flow;
+- an execution-timing overlay on the C488 book's daily trades.
+
+**The one item carried to the holdout:** the best exploration Sharpe.
+- **H2x** = 24-hour continuation (z_r24 cross-sectional rank).
+- Enter long at a rank of 0.90 or above, short at 0.10 or below.
+- Exit when the rank crosses 0.5, after at least 4 hours.
+- Each position is 1/8 of equity; costs and funding as in round 1.
+- Exploration result: Sharpe +0.19, t +0.35.
+
+The timing overlay did no better than random deferral in exploration (at most
++1.3%/yr, t < 1), so it is **not** carried forward.
+
+**Holdout bar:** at least 3 of 4 quarters of 2024-01 → 2026-08 positive AND
+t ≥ 2. If H2x fails, the no-pass rule of round 1 applies: shadow only.
