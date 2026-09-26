@@ -15,8 +15,11 @@
   - C492 from 26 Sep 17:53 IST;
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
-  - C497 (display only) is pushed, not deployed. Its deploy commands are in
-    `reports/2026-09-26_c495_deployed.md`.
+  - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
+  - C498 is pushed, not deployed. It changes display and logging only. Its
+    deploy commands are in `reports/2026-09-26_c497_deployed.md`.
+- **The shadow is fixed on the server:** `C489 shadow hour 17:00 UTC: 38 coins
+  scored` under C495. C492 scored 0.
 - **26 Sep:** the operator held the C492 deploy for a full re-analysis
   (C493/C494), then deployed it. Their screenshots and the server logs led to
   C495 and round 6 (C496).
@@ -36,7 +39,60 @@
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
 | 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+| 13 | **C488 weekly-sleeve stability (why ETH was sold on 26 Sep)** | 27 Sep 00:07 UTC check-in (scheduled), then decide | The 26 Sep 00:05 UTC rebalance sold the 0.01 ETH. The same completed days, replayed on 26 Sep at 17:57 UTC with the bot's own code (`research/c498_plan_replay.py`), give ETH **+$17.42**, one step held. The server's "gross 0.40x of $250.72" is consistent only with ETH's target having been **under $6** that morning, i.e. **outside the carry-long fifth**. ETH's 7-day funding on Monday 21 Sep was 10.99bp against a cutoff of 11.42bp: **0.4bp inside**. **Ruled out:** a code change (C490's target code is identical), funding coverage (≥ 33 days on every coin), dial (log shows 20% vol), rounding (nearest-step since C488). **Suspect (not proven):** the weekly sleeves' Monday ranks are **re-derived every day inside that day's candidate list** (top 40 by live 24h volume). One extra low-funding coin in Monday's top 20 moves the cutoff. The research ranks Monday on the full universe once and holds it all week. **C498 logs the plan and the candidate list**, so the 27 Sep rebalance can be compared with a same-moment replay. If a candidate-list difference flips a C2/C3 rank, the fix is to freeze the Monday decisions for the week (research parity). Quantify it on research data first; the operator decides. Cost so far: one ETH round trip, about $0.03. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-26 — C498: C497 DEPLOYED; A SESSION IS MARKED TO MARKED; THE PLAN IS LOGGED
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**C497 is deployed and correct.** Checked against the operator's 5 screenshots
+and the server log `omega_*_20260926_224139`:
+- **Log lines:** `🔻 Book guard: $5.20 of $37.92 used this month on marked
+  equity`, and $252.81 − $247.61 = $5.20 ✓.
+- **Display:** OPEN reads "no intraday positions · book holds 8"; the boot
+  RISK and Loss control lines name the book guard; the banner label is present.
+- **No warnings** in 226 lines.
+
+**Every figure on the screens was reconciled:**
+- **Book rows vs "open":** the 8 rows sum to −$4.60. "Open −$4.66" also
+  deducts the $0.06 taker fee it would cost to close ($96.19 × 0.06%).
+- **Carry:** −$0.40 = −$0.40 fees + $0.03 funding − $0.03 of spot–perp basis
+  move.
+- **Marked equity:** $252.22 − $4.66 = $247.56.
+- **Month used:** $252.81 − $247.56 = $5.25.
+
+**Found and fixed in C498 (display and logging only):**
+
+| # | found | fixed |
+|---|---|---|
+| 1 | **A restart counted the book's standing open P&L as the new session's loss.** Twenty minutes into the C497 run, with the book barely moving: `SESSION $-4.18 -1.66% peak $252.22 dd 1.66%`, `Session: $-4.18 (-1.7%)`, and the web curve "high $252.22", $4 above anything the run ever marked. The session start is REALISED equity; the comparison is MARKED. | `C488Engine.open0`: the book's open P&L at its **first full mark** in this run. `carried_open()` adds it to the baseline, so the session runs marked to marked (the SESSION row, the 8-minute "Session:" line and the heartbeat). The header no longer seeds the marked curve with realised equity while the book trades, and an unpriced book is not sampled. The 8-minute figure also now sees the book's **realised** P&L (`session_pnl` only heard intraday closes). |
+| 2 | **The rebalance logged only its trades,** so the 26 Sep ETH sale could not be traced (pending #13). | `📋 C488 PLAN <date>: N candidates, M eligible, eq $X | COIN ±$target C1/C2/C3, … | under $6: k (…)` and `📋 C488 CANDIDATES (N with history): …` at every rebalance. |
+
+**Safety:** none of these affects trading. The session breaker is off, the
+Guardian only reports, and the emergency close returns at once with no
+intraday positions (all checked in code). The book's orders, sizes and guard
+are unchanged.
+
+**WLD, the book's biggest loser (−$3.22 of −$4.66), checked on Bitget:**
+- **The trade:** sold 34 at $0.4501 on 25 Sep; now $0.5418 (+20%), after
+  +51% since 15 Sep.
+- **The short is the rule's genuine output:**
+  - **C2:** its 14-day return on Monday 21 Sep was −4.1%, second-worst of the
+    top 20 (cutoff +8.3%);
+  - **C3:** its 7-day funding, 16.87bp, was in the top fifth (crowded longs).
+- **This is single-coin risk the research already contains, not a defect.** The
+  momentum rank refreshes with Monday 28 Sep's close (first traded at the
+  29 Sep 00:05 UTC rebalance).
+
+**Tests:**
+- `omega_c498_test.py`: 16 checks, including negative controls with the
+  intraday engine.
+- `omega_c488_test.py`: +1 check (the plan and candidate lines).
+- `omega_c497_test.py`: its version pin is now ≥ 497.
+- Full battery: see the commit.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-26 — C497: C495 DEPLOYED; THE LOG'S STATUS BLOCK DESCRIBES THE BOOK
@@ -56,8 +112,8 @@ branch, session `omega_*_20260926_215904`):
   bug) at 21:32 IST. C495 started at 21:59 IST, so its first hour is 17:00 UTC.
   **Checked live** with the deployed code on Bitget's live data: 16:00 UTC
   scores **39 coins** (C492 scored 0), and 17:00 UTC scores **39 coins**, with
-  `btc4` 0 blanks. The server's own line reaches the logs branch at the 17:47
-  UTC push.
+  `btc4` 0 blanks. **The server's own log confirms it:** `C489 shadow hour
+  17:00 UTC: 38 coins scored`.
 
 **Found in the new server log, fixed in C497 (display only):** the 8-minute
 status block and the recurring line still printed the idle scanner's figures

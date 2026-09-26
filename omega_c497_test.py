@@ -158,7 +158,7 @@ ok("boot RISK lines, intraday (negative control): per-trade risk, break-even and
 ok("the Loss control line names the book guard while the book trades",
    "no day limit applies to the book (C497)" in src)
 ok("the legacy banner is labelled as the scanner's", "The blocks below describe the " in src)
-ok("version C497", om._OMEGA_VERSION == 'C497')
+ok("version C497 or later", int(om._OMEGA_VERSION[1:]) >= 497)
 
 print()
 print("=" * 66)

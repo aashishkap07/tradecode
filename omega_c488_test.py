@@ -23,7 +23,7 @@
 7. THE PAGE (Chromium): /api/status carries the book and the panel draws it.
 8. THE PRE-REGISTRATION was committed once, before the engine, and never edited.
 """
-import os, sys, io, re, ast, json, time, types, socket, glob, contextlib, importlib.util, subprocess, tempfile, shutil, datetime as dt
+import logging, os, sys, io, re, ast, json, time, types, socket, glob, contextlib, importlib.util, subprocess, tempfile, shutil, datetime as dt
 import numpy as np
 REPO = os.path.dirname(os.path.abspath(__file__))
 BASE = tempfile.mkdtemp(prefix='c488_test_')
@@ -199,8 +199,17 @@ for j, s in enumerate(syms):
                                    limits={'amount': {'min': 0.0}})
 e.candidates = lambda n: syms
 e.matrices = lambda s: (T, syms, close, qv, fund)
+_plan_lines = []
+class _PlanH(logging.Handler):
+    def emit(self, r):
+        if 'C488 PLAN' in r.getMessage() or 'C488 CANDIDATES' in r.getMessage():
+            _plan_lines.append(r.getMessage())
+logging.getLogger('OmegaV60').addHandler(_PlanH())
 e.rebalance('test')
 eq = e.info['equity']
+ok("C498: the whole plan is logged -- every target with its sleeves, and what fell under $6",
+   len(_plan_lines) == 2 and 'C488 CANDIDATES (60 with history): C00 C01' in _plan_lines[1] and all(f"{s.split('/')[0]} {pl['w'] * eq:+.2f}" in _plan_lines[0] for s, pl in e.plan.items())
+   and 'candidates' in _plan_lines[0] and 'eligible' in _plan_lines[0], (_plan_lines or ['none'])[0][:160])
 bad = []
 for s, pl in e.plan.items():
     q = float((e.book.get(s) or {}).get('qty', 0.0)); px = e.mark(s); st = e._step(s)[0]

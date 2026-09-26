@@ -1269,7 +1269,13 @@ class _C462Report:
             self._raw(f"OMEGA {version}{self.g['sep']}{mode}"
                       f"{self.g['sep']}Bitget perps")
             self._raw(datetime.now().strftime('%d %b %Y   %H:%M'))
-            self.note_equity(equity)
+            # C498: `equity` here is REALISED; the curve is MARKED. With the
+            # book holding positions the two differ by its open P&L, and this
+            # first point drew a fall that never happened ("EQUITY THIS SESSION
+            # high $252.22" on 26 Sep, $4 above anything the run ever marked).
+            # The first status block, once the book is priced, starts the curve.
+            if str(getattr(_c467_cfg_ref[0], 'C488_ENGINE', '') or '').lower() != 'portfolio':
+                self.note_equity(equity)
             # C462-8: the start line lives INSIDE the box. Outside it, a line
             # that wrapped would begin "· universe ..." on its second row, and
             # "· " is C460-1's per-pair news DROP prefix -- the continuation
@@ -1616,9 +1622,21 @@ class _C462Report:
             _sig = (pf.positions.count() + _n488, len(self.trades), self.n_maker + self.n_taker)
             _quiet = (_sig == self._last_sig and _sig[0] == 0
                       and (time.time() - self._last_full) < 1800.0)
+            # C498: the session is measured MARKED to MARKED. The baseline is
+            # the realised start plus the open P&L the book carried in (fixed at
+            # its first full mark), and a sample is only taken once the book is
+            # fully priced -- an unpriced position silently drops out of the sum
+            # and would draw a step that never happened.
+            _carry498, _mok498 = 0.0, True
+            try:
+                if _e488 is not None and _e488.active():
+                    _carry498, _mok498 = _e488.carried_open(), _e488.marked_ok()
+            except Exception:
+                _carry498, _mok498 = 0.0, True
             if _quiet:
                 _s0 = self.stats()
                 _ss = float(getattr(pf, 'session_start_equity', 0.0) or 0.0)
+                _ss = _ss + _carry498 if _ss > 0 else _ss
                 _sp = float(st.get('live_equity', 0.0)) - _ss if _ss > 0 else 0.0
                 _ls = self.last_scan or {}
                 # C462-8: ONE line, always. A heartbeat that wraps to three is
@@ -1637,14 +1655,17 @@ class _C462Report:
                         break
                     _hb += self.g['sep'] + _part
                 self._emit(_hb)
-                self.note_equity(st.get('live_equity', 0))
+                if _mok498:
+                    self.note_equity(st.get('live_equity', 0))
                 return
             self._last_sig = _sig
             self._last_full = time.time()
             live = float(st.get('live_equity', st.get('equity', 0.0)))
-            self.note_equity(live)
+            if _mok498:
+                self.note_equity(live)
             s = self.stats()
             sess_start = float(getattr(pf, 'session_start_equity', 0.0) or 0.0)
+            sess_start = sess_start + _carry498 if sess_start > 0 else sess_start
             sess_pnl = live - sess_start if sess_start > 0 else 0.0
             sess_pct = (sess_pnl / sess_start * 100.0) if sess_start > 0 else 0.0
             dd = ((live - self.peak_equity) / self.peak_equity * 100.0) \
@@ -2175,7 +2196,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C497'
+_OMEGA_VERSION = 'C498'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -18642,6 +18663,7 @@ class C488Engine:
         self.bill_seen = []
         self.live = self._live_blank()
         self.month = {}           # C495: the book's own month anchor, on MARKED equity
+        self.open0 = None         # C498: the book's open P&L when THIS run first marked it
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
 
@@ -18786,6 +18808,24 @@ class C488Engine:
         if x.get('bid') and x.get('ask'):
             return (x['bid'] + x['ask']) / 2.0
         return x.get('last') or 0.0
+
+    def marked_ok(self):
+        """C498: every held position has a price, so unrealized() is the whole
+        book's. Before the first marks load it is not -- a position without a
+        price is simply left out of the sum."""
+        return all(self.mark(s) > 0 for s in list(self.book))
+
+    def carried_open(self):
+        """C498: the open P&L the book CARRIED INTO this run, fixed at its first
+        full mark. A session is one run of the program (C462-2), so a session's
+        P&L is marked equity now minus marked equity at the start -- and the
+        start's realised equity plus this. Without it, every restart reported
+        the book's standing open P&L as a loss (or gain) of the new run: on
+        26 Sep 'SESSION $-4.18 -1.66% dd 1.66%' twenty minutes after a restart
+        in which the book had moved a few cents."""
+        if self.active() and self.open0 is not None:
+            return float(self.open0)
+        return 0.0
 
     def _is_crypto(self, sym):
         base = sym.split('/')[0].upper()
@@ -19448,6 +19488,27 @@ class C488Engine:
             if wj != 0.0:
                 plan[s] = dict(w=round(wj, 6), c1=round(float(sleeves['C1'][j]), 6),
                                c2=round(float(sleeves['C2'][j]), 6), c3=round(float(sleeves['C3'][j]), 6))
+        # C498: the whole plan goes in the log. Only trades were logged, so the
+        # 26 Sep rebalance's decision to drop ETH (a +$17 target under the same
+        # data today) could not be reconstructed afterwards: what the rule
+        # targeted, and what fell under the $6 floor, must be on the record.
+        try:
+            _lbl = lambda d: '/'.join(k.upper() for k in ('c1', 'c2', 'c3') if abs(d.get(k, 0.0)) > 1e-9)
+            _pl = sorted(plan.items(), key=lambda kv: -abs(kv[1]['w']))
+            _dr = [(s, float(np.nan_to_num(w[j]))) for j, s in enumerate(keep)
+                   if s not in plan and abs(float(np.nan_to_num(w[j]))) > 1e-9]
+            logger.info(f"   \U0001f4cb C488 PLAN {datetime.utcnow():%Y-%m-%d}: {len(syms)} candidates, "
+                        f"{int(elig.sum())} eligible, eq ${eq:.2f} | "
+                        + ', '.join(f"{s.split('/')[0]} {d['w'] * eq:+.2f} {_lbl(d)}" for s, d in _pl)
+                        + (f" | under ${mn:.0f}: {len(_dr)} ("
+                           + ', '.join(f"{s.split('/')[0]} {x * eq:+.2f}" for s, x in
+                                       sorted(_dr, key=lambda z: -abs(z[1]))[:8]) + ")" if _dr else ""))
+            # the weekly sleeves' Monday ranks are re-derived inside TODAY's
+            # candidate list, so the list itself is part of the decision
+            logger.info(f"   \U0001f4cb C488 CANDIDATES ({len(keep)} with history): "
+                        + ' '.join(s.split('/')[0] for s in keep))
+        except Exception as _e498:
+            logger.warning(f"⚠️ C488 plan log failed: {type(_e498).__name__}: {_e498}")
         # reductions first: they free the margin the increases need
         def _shrinks(s):
             held = abs(float((self.book.get(s) or {}).get('qty', 0.0))) * (self.mark(s) or 0.0)
@@ -19564,6 +19625,7 @@ class C488Engine:
             self._topn = 0
             self.bill_since, self.bill_seen, self.live, self.prepared = 0, [], self._live_blank(), set()   # C492
             self.month = {}                                                # C495
+            self.open0 = None                                              # C498
         self.save()
 
     def tick(self, can_trade=True):
@@ -19600,6 +19662,9 @@ class C488Engine:
                 self.accrue_funding()
             except Exception as e:
                 self._say('fund' + type(e).__name__, f"⚠️ C488 funding accrual failed: {e}", 'warning')
+        # C498: the session's marked baseline -- fixed once, at the first full mark
+        if self.open0 is None and self.marked_ok():
+            self.open0 = round(self.unrealized(), 4)
         # the month guard: the operator's dial, on LIVE equity
         g = self.guard()
         if g and g != self.halt:
@@ -37523,6 +37588,27 @@ class TradingBot:
     #                   DISPLAY SUMMARY
     #  Matches Document7.py format exactly
     # ============================================================
+    def _c498_session_pnl(self, stats):
+        """The 8-minute summary's "Session:" figure. C498: while the book
+        trades, marked now minus marked at the start (the realised start plus
+        the open P&L the book carried in). The old sum -- intraday realised plus
+        ALL open P&L -- counted that carried-in open P&L as this run's, and
+        never saw the book's realised P&L (session_pnl only hears intraday
+        closes). With the intraday engine it is unchanged."""
+        pf = self.portfolio
+        pnl = pf.session_pnl + (stats.get('unrealized') or 0)
+        pct = (pnl / pf.session_start_equity * 100) if pf.session_start_equity > 0 else 0
+        try:
+            e = getattr(self, 'c488', None)
+            ss = float(pf.session_start_equity or 0.0)
+            if e is not None and e.active() and ss > 0:
+                b = ss + e.carried_open()
+                pnl = float(stats['live_equity']) - b
+                pct = pnl / b * 100.0 if b > 0 else 0.0
+        except Exception:
+            pass
+        return pnl, pct
+
     def _c497_day_line(self, dot, pnl, g):
         """C497: the recurring 'Day' line. While the book trades it reports
         ITS guard -- "loss limit $9.34" is the idle scanner's day limit; the
@@ -37592,9 +37678,7 @@ class TradingBot:
                     f"Locked: ${stats['locked']:.2f}")
 
         # Session PnL
-        session_pnl = self.portfolio.session_pnl + (stats['unrealized'] or 0)
-        session_pct = (session_pnl / self.portfolio.session_start_equity * 100) \
-            if self.portfolio.session_start_equity > 0 else 0
+        session_pnl, session_pct = self._c498_session_pnl(stats)
         logger.info(f"📈 Session: ${session_pnl:+.2f} ({session_pct:+.1f}%)")
 
         # Win Rate (Document7 format: Overall/Session/Open)
