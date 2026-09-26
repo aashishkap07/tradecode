@@ -12,9 +12,11 @@
   day.
 - **Running on the VPS (logs branch and screenshots):**
   - C490 from 26 Sep 00:08 IST;
-  - **C492 from 26 Sep 17:53 IST.**
-  - C495 is pushed, not deployed. Its deploy commands are in
-    `reports/2026-09-26_c495_and_round6.md`.
+  - C492 from 26 Sep 17:53 IST;
+  - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
+    `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
+  - C497 (display only) is pushed, not deployed. Its deploy commands are in
+    `reports/2026-09-26_c495_deployed.md`.
 - **26 Sep:** the operator held the C492 deploy for a full re-analysis
   (C493/C494), then deployed it. Their screenshots and the server logs led to
   C495 and round 6 (C496).
@@ -37,6 +39,62 @@
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-26 — C497: C495 DEPLOYED; THE LOG'S STATUS BLOCK DESCRIBES THE BOOK
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**C495 is deployed and correct** (the operator's 5 screenshots and the logs
+branch, session `omega_*_20260926_215904`):
+- **Anchor:** `C488 month anchor 2026-09: $252.81 (carried from C482; budget 15% = $37.92)`.
+- **Marked equity:** $247.96 = realised $252.22 − the book's open $4.26.
+- **Guard used:** $4.85 = $252.81 − $247.96, which is 13% of $37.92.
+- **Panels:** the positions panel points to the book, and the boot RISK FRAME
+  shows the BOOK row.
+- **The shadow panel's "model pending · last hour 16:00" came from before the
+  restart.** The C492 process scored the 16:00 UTC hour (0 coins, the old
+  bug) at 21:32 IST. C495 started at 21:59 IST, so its first hour is 17:00 UTC.
+  **Checked live** with the deployed code on Bitget's live data: 16:00 UTC
+  scores **39 coins** (C492 scored 0), and 17:00 UTC scores **39 coins**, with
+  `btc4` 0 blanks. The server's own line reaches the logs branch at the 17:47
+  UTC push.
+
+**Found in the new server log, fixed in C497 (display only):** the 8-minute
+status block and the recurring line still printed the idle scanner's figures
+next to the book:
+
+| log said | means | C497 prints |
+|---|---|---|
+| `OPEN flat`, above `BOOK 8 pos` | no intraday positions | `OPEN no intraday positions · book holds 8 (BOOK row)` |
+| `DAY limit $9.34 … 0% used` | the scanner's day limit; the book has none | (no DAY row while the book trades) |
+| `MONTH used $0.59 of $37.92` | realised, C482's view | `MONTH book guard $4.85 of $37.92 used · on marked equity · from $252.81` (+ `HALTED …`) |
+| `🔻 Day: -0.02% realised (loss limit $9.34 …)` every 8 min | same | `🔻 Book guard: $4.85 of $37.92 used this month on marked equity (13%, from $252.81) · realised today -0.02%` |
+| boot `📐 RISK … per-trade risk 0.341% … break-even win rate 32%` + `today's loss limit` | scanner figures | `📐 RISK … the portfolio book trades: its month guard closes the book if MARKED equity falls that far below the month's anchor` |
+| boot `🎚️ Loss control … today may lose 25% …` | same | `… the book's month guard on marked equity; no day limit applies to the book` |
+| the legacy banner (paper parity, EDGE STATE, ARCHITECTURE, CONFIGURATION) | the scanner's | one line first: "the blocks below describe the INTRADAY SCANNER, which is idle" |
+
+The intraday engine's output is unchanged; each change has a negative control.
+
+**Safety check made on the way (code behaviour, not display):** can any old
+intraday path close or pause the book? **No.**
+- `_close_all_positions` (target sweep, emergency close) iterates
+  `portfolio.positions`, the intraday positions only. The book lives in
+  `C488Engine.book`.
+- The "target achieved → pause for the day" path is off:
+  `C467_DAY_PROFIT_HALT = False`. The HP phase path is retired
+  (`C403_SINGLE_MODE`).
+- `can_trade()` therefore stays True, and the book's 00:05 UTC rebalance cannot
+  be held up by it.
+- The day loss limit feeds only intraday sizing and entry.
+- **The only thing that closes the book is its own month guard.**
+
+**Tests:**
+- `omega_c497_test.py`: 19 checks, all pass. They include the real boot RISK
+  line and the real status block built from the server's own figures.
+- Full battery: all pass except `omega_exit_test.py`, which needs `corpusL/`
+  (known and unrelated).
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-26 — C495/C496: THE FIRST C492 SCREENS, THE SERVER LOGS, AND ROUND 6
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -47,8 +105,8 @@ screenshots):**
 - **C490 since 26 Sep 00:08 IST.** The Atlas had said "not deployed"; that was
   stale.
 - **C492 since 26 Sep 17:53 IST.**
-- **C495 is pushed, not deployed** (Termius commands in
-  `reports/2026-09-26_c495_and_round6.md`). Nothing about money changes.
+- **C495: deployed 26 Sep 21:59 IST** and checked (see the C497 section
+  above). Nothing about money changed.
 
 **The screens are correct where it matters:**
 - **Equity:** $252.22 realised; available $233.88 = equity − the book's $18.34
