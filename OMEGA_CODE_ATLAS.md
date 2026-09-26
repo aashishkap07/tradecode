@@ -13,6 +13,9 @@
 - **C490 and C492 are pushed but not yet deployed.** One pull deploys both, in
   paper; see the Termius commands in `reports/2026-09-26_live_mode.md`. C492
   changes nothing about money in paper.
+- **26 Sep: the operator held the deploy and asked for a full re-analysis
+  first.** The answer (C493/C494) changed no trading code, and it recommends
+  deploying. See `reports/2026-09-26_round5_breadth.md`.
 - **Reminder set in the 26 Sep session:** 29 Sep 01:15 UTC (06:45 IST), to run
   pending #1.
 
@@ -22,12 +25,144 @@
 | 2 | ~~Live-mode build for C488~~ | **BUILT in C492 (26 Sep); still switched off** | (a)–(e) are all done and tested (see C492): funding from Bitget's bills, a sync every 60 s, one-way mode and cross margin at 5x per symbol, partial fills, and the live contract table. **`C488_LIVE_OK` stays False.** Going live takes two deliberate steps: a one-line commit setting it True (ask for it), and `OMEGA_MODE=live` in a unit override. The checklist is at the end of `reports/2026-09-26_live_mode.md`. Start at **dial 10% at $250**, not 5%: at 5% the average position is about $4.40, under Bitget's $5 minimum. Raise it towards 15% over weeks as live tracks paper. |
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
-| 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. **At the next refresh, add Binance's 2026 stock and commodity perps to `EXCLUDE`** (the list is in `research/c488_tradfi_check.py`). The live bot already excludes them, via Bitget's `isRwa` flag. |
-| 6 | **Risk dial choice** | operator | Dial 15% → about +2.5%/month historically (1.5–2% realistic), worst drawdown −31%. Dial 20% → +3.3%, −40%. 4% a month is not reachable at acceptable risk. |
+| 5 | **Refresh the C488 research** | quarterly (next: early Dec 2026) | Use `research/c493_target_probability.py` (crypto only, the `TRADFI` exclusion built in; `omega_c488_research.py` stays as the historical record). **Corrected at C493:** the "decay" (Sharpe 0.87 over 24 months) came from 2026 stock/commodity perps in the research universe. Crypto only: Sharpe 1.42 over 2020–26, 1.17 over 24 months, 1.69 over 12. Watch these three numbers each quarter. |
+| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. |
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
+| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧭 2026-09-26 — C493/C494: THE FULL RE-ANALYSIS — ROUND 5 (BREADTH) AND THE COST TEST
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**No trading change.**
+- The bot is still **C492**. The only edit is a C488 header comment, corrected
+  below.
+- The operator asked for a serious re-analysis of everything, from the
+  basics, aimed at 2–4% a month, before deploying.
+- **Report:** `reports/2026-09-26_round5_breadth.md` (plain English: basics,
+  the arithmetic, what was tested, the results, the dial table, and the Termius
+  commands).
+
+**The headline, and it corrects the Atlas:** the C488 book was **not
+fading**. The "decay" quoted since C488 (Sharpe 1.13 over the last 12
+months, 0.87 over 24) was measured on a research universe that included
+Binance's 2026 stock and commodity perps. The bot never trades those
+(Bitget's `isRwa` flag).
+
+| COMBO-C, top 40, dial 15% | 2020–26 | last 24 months | last 12 months |
+|---|---|---|---|
+| as researched (stock perps IN) | Sharpe 1.33, +2.51%/mo | 0.87, +1.57%/mo | 1.13, +2.15%/mo |
+| **crypto only (what trades)** | **1.42, +2.69%/mo** | **1.17, +2.17%/mo** | **1.69, +3.34%/mo** |
+
+**The operator's target, measured on what actually trades.** Crypto only,
+$250, top 20, positions under $6 dropped, compounded, 2020–26
+(`research/c493_target_probability.txt`):
+
+| dial | per month | 12-month windows ≥ 2%/mo | losing 12-month windows | worst 12 months | worst month | fees |
+|---|---|---|---|---|---|---|
+| 10% | +1.59% | 35% | 16% | −15% | −10.1% | 2.8%/yr |
+| **15% (now)** | **+2.57%** | **64%** | 16% | −23% | −14.6% | 4.6%/yr |
+| 20% (max) | +3.66% | 76% | 17% | −33% | −18.6% | 6.3%/yr |
+
+- **The target is inside the historical range of what is already built.** It
+  is 2–4% a month at dial 15–20%.
+- **The risk is real:** in about 1 of every 6 twelve-month windows the book
+  lost money.
+- **Expect less going forward.** Out-of-sample results usually give back about
+  a third of the backtest Sharpe, so plan on about 1.5–3% a month at dial 20%.
+
+> **→ Standing Rule 54: MEASURE THE UNIVERSE THAT ACTUALLY TRADES.** For a
+> month the Atlas said the edge was fading. It was measuring 2026's stock and
+> commodity perps, which the bot's own `isRwa` filter never lets it touch. A
+> research universe and a trading universe must be the same list, checked by
+> name.
+
+## 🔬 ROUND 5 — BREADTH (`research/c493_preregistration.md`, commit e8e0f1e, pushed before any signal was computed)
+
+**Why breadth.** A book's return is Sharpe × volatility. Only Sharpe can be
+researched, and independent sleeves add in quadrature:
+Sharpe ≈ √(Σ Sharpeᵢ²). One extra independent sleeve with Sharpe 0.5 would lift
+the book from 1.42 to about 1.5.
+
+- **Seven tests, signs declared in advance.**
+- **Bar:** Newey-West t ≥ 2.45 (Bonferroni 5%/7), ≥ 3/4 quarters positive,
+  and positive over 2024-01 → 2026-08.
+- **Data:** the Binance archive, 656 crypto contracts, delisted ones included,
+  2020-01 → 2026-08, plus the `metrics` archive for positioning (90,056
+  coin-days).
+
+| test | idea (field it came from) | net / yr | t | 2024+ | verdict |
+|---|---|---|---|---|---|
+| N1 new-listing short | supply overhang: unlocks, airdrops | +2.1% | +0.20 | +11.7% | fail: +29/+11/+6/+15/+9% in 2022–26, but **−41% in 2021**. It is a regime bet |
+| N2 low volatility | leverage constraints, lottery demand | +12.1% | **+2.23** | +9.7% | **near miss** (bar 2.45); 4/4 quarters; ρ ≈ 0 with C1–C3 |
+| N3 attention (abnormal volume) | behavioural overreaction | −10.4% | −2.66 | −13.7% | fail. The opposite sign is significant, but that is momentum again (ρ −0.48 with C2) |
+| N4a crowd contrarian | positioning, not price | +5.9% | +1.52 | +11.2% | fail (4/4 quarters, weak) |
+| N4b follow the top traders | "smart money" | −8.1% | −2.35 | −13.1% | fail. **Following Binance's biggest accounts LOSES** |
+| N5 path efficiency (fractal / Hurst proxy) − C1 | chaos theory at a daily horizon | +2.6% | +1.35 | +0.4% | fail |
+| N6 factor momentum − equal risk | a self-reinforcing ("Hebbian") loop | −14.6% | −2.25 | −19.4% | fail. **Sleeve returns mean-revert at 3 weeks** |
+
+- **Admitted: none.** COMBO-E = COMBO-C, so **nothing ships**, as declared.
+- **Controls (Rule 16):**
+  - on pure noise, nothing passes;
+  - a planted new-listing drift is found (t +6.21);
+  - a planted low-vol premium is found and admitted (t +11.96).
+- **Not testable, with the source named (Rule 17):**
+  - token unlocks: the calendars are paid only (`api.llama.fi/emissions`:
+    "Upgrade to the paid API plan"; Tokenomist is paid);
+  - stock perps: Bitget's list is chosen with hindsight, so any backtest on it
+    is survivorship-biased.
+
+> **→ Standing Rule 55: THE LOOP THAT WORKS HERE IS NEGATIVE FEEDBACK.** N6
+> reinforced whichever sleeve had just been winning, the "Hebbian" loop, and
+> lost 14.6%/yr against equal risk. The sleeves' own returns mean-revert over
+> weeks. The loop that earns is the homeostatic one already in C488: hold
+> risk at a set point (the vol target), and let no recent winner grow its
+> share.
+
+## 💸 C494 — CAN A PATIENT REBALANCE CUT THE FEES? (`research/c494_preregistration.md`, fixed before the minute data was fetched)
+
+- **Setup:** 7,663 real rebalance trades of the $250 book, 2024-09 → 2026-08,
+  replayed on Binance 1-minute paths. A post-only order rests at the touch
+  from 00:05 UTC, fills only if the price trades THROUGH it, and crosses at
+  00:35 if still unfilled.
+- **Result:** 93% of the volume filled. The cost fell from 0.080% to 0.049%,
+  a saving of **+0.018%** (t +2.65, 3/4 quarters), about **+1.1%/yr** at dial
+  15%.
+- **Adverse selection is real:** the 7% that missed ran 0.77% away first.
+- **Verdict: NOT adopted.** The declared materiality bar was 0.020%. The
+  60-minute variant (+0.028%, t 3.87) was declared a diagnostic and is not
+  used.
+- **Next:** forward re-test at the Q4 refresh (pending #11).
+
+## 🧪 VERIFICATION
+
+- **Reproduction:** the archive reproduces the published C488 numbers exactly
+  (+30.0%/yr, Sharpe 1.33, t 3.19, and the 1.13 / 0.87).
+- **Files:**
+  - `research/omega_c493_research.py` imports the C488 functions, so C1–C3
+    are what trades;
+  - `research/c493_fetch_metrics.py` (positioning);
+  - `research/omega_c494_research.py`: its fill and cost logic was
+    unit-checked on hand-made paths;
+  - results: `research/c493_results.txt/.json`,
+    `research/c494_results.txt/.json`, `research/c493_target_probability.txt`.
+- **Bot:** a comment-only change (the C488 header), syntax-checked; no
+  behaviour change. It stays C492.
+
+## ⚠️ LIMITS
+
+- **One path.** Every number is one historical path. The 12-month-window
+  shares overlap and are not independent trials.
+- **The crypto-only exclusion was spotted after the fact** (C491 found the
+  contamination). It is not a selection, because it is exactly the bot's
+  `isRwa` filter, but the 2026 improvement it shows was seen before it was
+  checked.
+- **Positioning history is short:** N4 runs from 2021-12 only.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔌 2026-09-26 — C492: LIVE-MODE PLUMBING FOR THE C488 BOOK (BUILT, STILL SWITCHED OFF)
@@ -537,7 +672,9 @@ chaos and probability-model designs alike, and to the operator's asset list.
 
 - **The only engine with an edge is C488.**
   - At dial 15%: +2.5% a month historically (2020–26), max drawdown 31%.
-  - Recent years suggest 1.5–2% a month.
+  - Recent years suggest 1.5–2% a month. *(⚠️ C493: on the crypto-only
+    universe the bot trades, the last 24 months are +2.17% a month and the last
+    12 +3.34%, at dial 15%.)*
   - At the maximum dial (20%): +3.3% a month historically, drawdown 40%.
 - **4% a month is not reachable at an acceptable risk.**
 - **Indian tax:** under the conservative reading (s.115BBH, 30% flat, no loss
@@ -675,6 +812,11 @@ that it predates the engine.
 - **It is fading.** Over the last 12 months the Sharpe ratio is 1.13; over the
   last 24 it is 0.87. Carry alone was −3.3% over the last year. August 2026 was
   its second-worst month on record (−12.8%).
+  - **⚠️ CORRECTED BY C493:** these figures were measured with Binance's 2026
+    stock/commodity perps inside the universe; the bot never trades them. On
+    crypto only (what trades), the Sharpe is 1.69 over the last 12 months and
+    1.17 over the last 24. August 2026 is +5.2% (sum of daily returns), against
+    −6.8% on the contaminated universe. See C493.
 - **What failed, and is not traded:**
   - Trend on gold, silver, copper, platinum, palladium, oil and the indices
     earned about nothing from 2007 to 2026, even with classic 1/3/12-month
@@ -705,7 +847,9 @@ the book uses 20 coins below $1,000.
 | 20% (max) | 27% | +3.34% | 40% | 0 |
 
 **The honest forward estimate is lower.** At the last 24 months' Sharpe of
-0.87, dial 15% gives about 1.5% a month. 4% a month would need about 36%
+0.87, dial 15% gives about 1.5% a month. *(⚠️ C493: 0.87 was the contaminated
+universe. Crypto-only, the last 24 months are Sharpe 1.17 and +2.17% a month
+at dial 15%.)* 4% a month would need about 36%
 volatility and a drawdown of about 45–60%, so the dial's 20% ceiling
 deliberately does not reach it.
 

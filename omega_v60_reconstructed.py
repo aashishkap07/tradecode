@@ -18383,9 +18383,14 @@ class CategoryClassifier:
 #   max drawdown 31%%, +2.51%%/month, 62%% of months positive. Survives double
 #   costs (t +2.57), one day of extra execution lag (t +2.72) and ignoring
 #   funding income (t +2.42). The three sleeves correlate at about 0.05, which
-#   is why the combination is worth more than any sleeve alone. Weaker lately:
-#   Sharpe 1.13 over the last 12 months, 0.87 over the last 24; carry alone
-#   was negative over the last year. 2022 was the one losing year (-8.9%%).
+#   is why the combination is worth more than any sleeve alone. 2022 was the
+#   one losing year (-8.9%%).
+#   C493 correction: the "weaker lately" figures once quoted here (Sharpe 1.13
+#   over 12 months, 0.87 over 24) were measured with Binance's 2026 stock and
+#   commodity perps inside the research universe. This bot never trades those
+#   (Bitget's isRwa flag). On crypto only -- what trades -- the book is Sharpe
+#   1.42 over 2020-26, 1.69 over the last 12 months and 1.17 over the last 24
+#   (research/c493_target_probability.txt).
 #
 # Everything the intraday engine tried was short-horizon trading on price, and
 # C487 measured that as worth about nothing after costs. This engine holds for

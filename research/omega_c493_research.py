@@ -93,7 +93,7 @@ def load_metrics(mdir, T, syms):
             continue
         for t, v in json.load(open(p)).items():
             i = idx.get(int(t))
-            if i is not None:
+            if i is not None and v:                       # a day with no file is stored as null
                 if v[0] and v[0] > 0: crowd[i, j] = math.log(v[0])
                 if v[1] and v[1] > 0: top[i, j] = math.log(v[1])
     return crowd, top
