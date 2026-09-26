@@ -131,6 +131,7 @@ def mkbot(guard=None, paper=True):
                'ETH/USDT:USDT': dict(bid=1999.0, ask=2001.0, last=2000.0, fr=0.0001, vol=5e9)}
     e._marks_at = time.time() + 1e6
     e.refresh_marks = lambda force=False: True   # tests never touch the network
+    e.refresh_rules = lambda force=False: True   # C492: nor the live contract table (omega_c492_test.py covers it)
     return bot, e
 
 
@@ -255,7 +256,10 @@ bot, e = mkbot(paper=False); calls = []; e.rebalance = lambda why='': calls.appe
 e._tick_at = 0; e.tick()
 ok("live mode without C488_LIVE_OK never rebalances", not calls)
 bot.cfg.C488_LIVE_OK = True; e._tick_at = 0; e.tick()
-ok("  and does once it is set", calls == ['first'])
+ok("  and once it is set, still nothing until the live preflight passes (C492)", not calls)
+e.live_ready = lambda: True; e.live_sync = lambda force=False: True
+e._tick_at = 0; e.tick()
+ok("  and rebalances once it does (the preflight itself: omega_c492_test.py)", calls == ['first'])
 bot, e = mkbot(); calls = []; e.rebalance = lambda why='': calls.append(why)
 e._tick_at = 0; e.tick(can_trade=False)
 ok("a pause stops the rebalance", not calls)

@@ -207,7 +207,7 @@ ok("it ticks after the book and the shadow, before the pause check", 0 < i88 < i
 cfg = om.Config()
 ok("a fresh start resets it; on by default, with the pre-registered numbers",
    "bot.c490.reset()" in src and cfg.C490_CARRY is True and (cfg.C490_CARRY_ENTER, cfg.C490_CARRY_EXIT, cfg.C490_CARRY_SIZE,
-   cfg.C490_CARRY_CAP, cfg.C490_CARRY_TOPN) == (0.10, 0.05, 0.10, 8, 40) and om._OMEGA_VERSION == 'C490')
+   cfg.C490_CARRY_CAP, cfg.C490_CARRY_TOPN) == (0.10, 0.05, 0.10, 8, 40) and int(om._OMEGA_VERSION[1:]) >= 490)
 ok("the report carries a CARRY line and the readable log keeps C490 lines",
    "self._pack('CARRY'," in src and "'C490',                     # the carry ledger's daily run" in src)
 

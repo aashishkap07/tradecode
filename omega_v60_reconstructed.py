@@ -1702,6 +1702,16 @@ class _C462Report:
                                         f"vol {100 * _b488['target_vol']:.0f}% top {_i488.get('topn', '?')}",
                                         f"rebal {_b488['last_rebal'] or 'pending'}"]
                                + ([f"HALTED {_b488['halt']}"] if _b488.get('halt') else []))
+                    _l492 = _b488.get('live') or {}
+                    if _l492.get('on'):                   # C492: live -- is Bitget in step with the book?
+                        self._pack('LIVE', ([f"NOT READY {_l492.get('why', '')[:60]}"] if not _l492.get('ready') else
+                                            [f"Bitget {_c462_money(_l492.get('venue_equity', 0.0))}",
+                                             f"drift {_c462_money(_l492.get('drift_total', 0.0), sign=True)}",
+                                             f"{_l492.get('corrections', 0)} fixes",
+                                             f"funding {_c462_money(_l492.get('funding_live', 0.0), sign=True)}",
+                                             (f"sync {_l492['synced_s']}s ago" if _l492.get('synced_s') is not None
+                                              else 'sync pending')])
+                                   + ([f"SYNC FAILING {_l492['sync_error'][:40]}"] if _l492.get('sync_error') else []))
             except Exception:
                 pass
             # --- open-position table, one row each ---
@@ -2117,7 +2127,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C490'
+_OMEGA_VERSION = 'C492'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2858,6 +2868,20 @@ class Config:
         self.C488_TRADE_BAND = 0.30             # within 30% of its target a position is left alone
         self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
         self.C488_LIVE_OK = False               # no real money until live fills and funding are reconciled
+        # ═══ C492: WHAT LIVE MONEY NEEDS (pending task #2) ════════════════
+        # The plumbing is built and tested; C488_LIVE_OK above stays False until
+        # the paper check (pending #1) and the key security (pending #3) pass.
+        # CROSS margin: the research held every position through its swings with
+        # no per-position stop. Isolated at 5x would liquidate a coin on a ~19%
+        # move against it -- a stop the research never had. Cross makes the whole
+        # account back the book, and the month guard is the book's stop.
+        # ccxt spelling: 'cross' becomes Bitget's 'crossed'. ccxt turns ANY other
+        # string, 'crossed' included, into ISOLATED -- omega_c492_test.py pins it.
+        self.C488_MARGIN_MODE = 'cross'
+        self.C488_SYNC_S = 60                   # live: read Bitget's balance, positions and funding bills
+        self.C488_DRIFT_USD = 0.50              # live: a ledger-vs-Bitget gap above this is logged loudly...
+        self.C488_DRIFT_PCT = 0.1               # ...or above this % of equity, whichever is larger (fees and
+                                                # funding come from Bitget itself, so honest drift is cents)
         # ═══ C489: THE INTRADAY ENGINE, SHADOW ONLY ══════════════════════
         # Built on the operator's principles and tested first: all 10
         # pre-registered intraday designs and the round-2 holdout FAILED after
@@ -8779,7 +8803,8 @@ class ExchangeManager:
 
     def place_order(self, symbol: str, side: str, size: float, leverage: int,
                     order_type: str = 'market', price: float = None,
-                    reduce_only: bool = False, post_only: bool = None) -> Optional[dict]:
+                    reduce_only: bool = False, post_only: bool = None,
+                    margin_mode: str = None) -> Optional[dict]:
         '''C402: THE FEE AND THE ORDER TYPE MUST COME FROM ONE BOOLEAN.
 
         THE DEFECT, caught in the operator's live log: C363 set postOnly on
@@ -8819,8 +8844,12 @@ class ExchangeManager:
             if self.cfg.PAPER_MODE:
                 return self._paper_order(symbol, side, size, leverage, order_type, price, reduce_only, post_only)
 
-            self.exchange.set_leverage(leverage, symbol)
-            params = {'marginMode': 'isolated'}
+            # C492: the C488 book passes its own margin mode ('cross'), and its
+            # leverage and margin mode were set once per symbol by C488Engine.
+            # _prepare before the first order. None is the intraday path, unchanged.
+            if not margin_mode:
+                self.exchange.set_leverage(leverage, symbol)
+            params = {'marginMode': margin_mode or 'isolated'}
             if reduce_only:
                 # C180-F3: closes must never open/extend in live one-way or
                 # hedge position modes — they only reduce the existing position.
@@ -9108,6 +9137,17 @@ class ExchangeManager:
         oid = order.get('id')
         if not oid:
             return 0.0, 0.0, 'unknown'
+
+        def _fee492(o):
+            # C492: the fee the venue actually charged, left on the caller's order
+            # dict (ccxt reports Bitget's negative fee as a positive cost). The
+            # C488 book books this instead of an estimate when it is there.
+            try:
+                c = (o.get('fee') or {}).get('cost')
+                if c is not None:
+                    order['c492_fee'] = abs(float(c))
+            except Exception:
+                pass
         deadline = time.time() + max(0.0, float(wait_s or 0))
         o = None
         while True:
@@ -9116,6 +9156,7 @@ class ExchangeManager:
                 f = float(o.get('filled') or 0)
                 if o.get('status') == 'closed' or (size > 0 and f >= size * 0.999):
                     f = f or size
+                    _fee492(o)
                     return f, float(o.get('average') or o.get('price') or price or 0), 'filled'
                 if o.get('status') == 'canceled':
                     break
@@ -9135,6 +9176,8 @@ class ExchangeManager:
                 o = self.exchange.fetch_order(oid, symbol)
                 f = float(o.get('filled') or 0)
                 px = float(o.get('average') or o.get('price') or price or 0) if f > 0 else 0.0
+                if f > 0:
+                    _fee492(o)
                 if size > 0 and f >= size * 0.999:
                     return f, px, 'filled'
                 return f, px, ('partial' if f > 0 else 'unfilled')
@@ -18535,8 +18578,25 @@ class C488Engine:
         self._fail_at = 0.0
         self._saved_at = 0.0
         self._said = set()
+        # C492: live mode. rules = the venue's contract table, read at each
+        # rebalance; prepared = symbols set to one-way / C488_MARGIN_MODE / the
+        # leverage this process; bills = Bitget funding settlements booked since
+        # bill_since (their ids, so none is ever booked twice).
+        self.rules = {}
+        self._rules_at = 0.0
+        self.prepared = set()
+        self.bill_since = 0
+        self.bill_seen = []
+        self.live = self._live_blank()
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
+
+    @staticmethod
+    def _live_blank():
+        return dict(ready=False, why='', checked_at=0.0, synced_at=0.0, sync_error='', pos_mode='',
+                    asset_mode='', venue_equity=0.0, venue_wallet=0.0, venue_free=0.0, drift=0.0,
+                    drift_total=0.0, drift_loud=0, corrections=0, funding_live=0.0, funding_other=0.0,
+                    bills=0)
 
     # ── settings ──────────────────────────────────────────────────────────
     def mode(self):
@@ -18593,6 +18653,12 @@ class C488Engine:
                 self.info = d.get('info') or {}
                 self.closed = list(d.get('closed') or [])[-50:]
                 self._topn = int(d.get('topn') or 0)
+                self.bill_since = int(d.get('bill_since') or 0)          # C492
+                self.bill_seen = [str(x) for x in (d.get('bill_seen') or [])][-2000:]
+                for k in ('drift_total', 'funding_live', 'funding_other'):
+                    self.live[k] = float((d.get('live') or {}).get(k) or 0.0)
+                for k in ('drift_loud', 'corrections', 'bills'):
+                    self.live[k] = int((d.get('live') or {}).get(k) or 0)
         except Exception as e:
             logger.warning(f"⚠️ C488 book could not be loaded ({type(e).__name__}: {e}) -- starting flat")
             self.book = {}
@@ -18603,6 +18669,9 @@ class C488Engine:
                 d = dict(book=self.book, last_rebal=self.last_rebal, halt=self.halt,
                          fund_next=self.fund_next, plan=self.plan, info=self.info,
                          closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
+                         bill_since=int(self.bill_since or 0), bill_seen=self.bill_seen[-2000:],
+                         live={k: self.live.get(k) for k in ('drift_total', 'funding_live', 'funding_other',
+                                                             'drift_loud', 'corrections', 'bills')},
                          saved=time.time())
             tmp = self.path + '.tmp'
             json.dump(d, open(tmp, 'w'))
@@ -18753,11 +18822,13 @@ class C488Engine:
         except Exception:
             return float(self.bot.portfolio.equity) + self.unrealized()
 
-    def _book_fill(self, sym, side, qty, px, why):
-        """one confirmed fill -> the ledger and the Portfolio"""
+    def _book_fill(self, sym, side, qty, px, why, fee=None):
+        """one confirmed fill -> the ledger and the Portfolio. C492: live passes
+        the fee Bitget actually charged; paper (and a live read with no fee in
+        it) books the taker estimate."""
         pf = self.bot.portfolio
         dq = qty if side == 'buy' else -qty
-        fee = qty * px * float(self.cfg.TAKER_FEE_PCT) / 100.0
+        fee = qty * px * float(self.cfg.TAKER_FEE_PCT) / 100.0 if fee is None else abs(float(fee))
         with self._lock:
             p = self.book.get(sym) or dict(qty=0.0, avg=0.0, fees=0.0, funding=0.0, realized=0.0,
                                           opened=time.time())
@@ -18796,7 +18867,12 @@ class C488Engine:
 
     def _step(self, sym):
         """the contract's quantity step and minimum, from the exchange's own
-        market table (ccxt TICK_SIZE mode: precision.amount IS the step)"""
+        market table (ccxt TICK_SIZE mode: precision.amount IS the step).
+        C492: the venue's live contract table first (refresh_rules), ccxt's
+        copy only when that could not be read."""
+        r = self.rules.get(sym)
+        if r and r.get('step', 0) > 0:
+            return float(r['step']), float(r.get('min_qty') or 0.0)
         try:
             m = self.bot.exchange.exchange.markets[sym]
             return (float((m.get('precision') or {}).get('amount') or 0.0),
@@ -18816,6 +18892,28 @@ class C488Engine:
             return 0.0
         return a if qty > 0 else -a
 
+    def _min_usdt(self, sym):
+        """the smallest order the venue takes on this contract (C492: its own
+        live figure, the config's $5 when the table could not be read)"""
+        v = float((self.rules.get(sym) or {}).get('min_usdt') or 0.0)
+        return v if v > 0 else float(getattr(self.cfg, 'C488_EXCHANGE_MIN', 5.0))
+
+    def _tradable(self, sym, reduce_only):
+        """C492: Bitget's own status for the contract. 'normal' trades; a
+        'limit_open' contract can still be CLOSED; 'maintain', 'restrictedAPI',
+        'off' and 'listed' take no order from this bot. A contract missing from
+        a table that did load is not opened. No table at all: as before C492."""
+        if not self.rules:
+            return True
+        r = self.rules.get(sym)
+        if r is None:
+            return bool(reduce_only)
+        st = str(r.get('status') or '')
+        return st == 'normal' or (reduce_only and st == 'limit_open')
+
+    def _qty(self, sym):
+        return float((self.book.get(sym) or {}).get('qty', 0.0))
+
     def _fill(self, sym, side, qty, reduce_only, why):
         ex = self.bot.exchange
         st, mn = self._step(sym)
@@ -18823,33 +18921,81 @@ class C488Engine:
             qty = float(f"{round(qty / st) * st:.12g}")    # already a multiple: this only removes float dust
         if qty <= 0 or (not reduce_only and qty < mn):
             return 0.0
+        if not self._tradable(sym, reduce_only):
+            self._say(f"status{sym}{datetime.utcnow():%Y%m%d}",
+                      f"   ⚠️ C488 {sym.split('/')[0]}: Bitget lists the contract as "
+                      f"'{(self.rules.get(sym) or {}).get('status', 'missing')}' -- no "
+                      f"{'close' if reduce_only else 'new position'} today", 'warning')
+            return 0.0
         px_est = self.mark(sym)
-        if not reduce_only and qty * px_est < float(getattr(self.cfg, 'C488_EXCHANGE_MIN', 5.0)):
+        if not reduce_only and qty * px_est < self._min_usdt(sym):
             return 0.0
-        o = ex.place_order(sym, side, qty, self.lev(), 'market', reduce_only=reduce_only)
-        f, px, how = ex.c487_settle(sym, o, side, 0.0, qty, 3.0)
-        if f <= 0 or px <= 0:
-            logger.warning(f"   ⚠️ C488 {side} {sym.split('/')[0]} {qty:.6g} NOT filled ({how}) -- "
-                           f"the book is unchanged and the next rebalance will try again")
+        live = not self.cfg.PAPER_MODE
+        # a close is never held up by a settings read: an exit must always get out
+        if live and not reduce_only and not self._prepare(sym):
             return 0.0
-        self._book_fill(sym, side, f, px, why)
-        return f * px
+        # C492: an order larger than the venue's biggest market order goes in pieces
+        cap = float((self.rules.get(sym) or {}).get('max_mkt') or 0.0)
+        if cap > 0 and st > 0:
+            cap = math.floor(cap / st) * st
+        pieces, left = [], qty
+        while left > 1e-12:
+            q = min(left, cap) if cap > 0 else left
+            if st > 0:
+                q = float(f"{q:.12g}")
+            if q <= 0 or (not reduce_only and q < mn):
+                break
+            pieces.append(q)
+            left = float(f"{left - q:.12g}")
+        done = 0.0
+        for q in pieces:
+            kw = {'margin_mode': self.margin_mode()} if live else {}
+            o = ex.place_order(sym, side, q, self.lev(), 'market', reduce_only=reduce_only, **kw)
+            f, px, how = ex.c487_settle(sym, o, side, 0.0, q, 3.0)
+            if f <= 0 or px <= 0:
+                logger.warning(f"   ⚠️ C488 {side} {sym.split('/')[0]} {q:.6g} NOT filled ({how}) -- "
+                               f"the book is unchanged and the next rebalance will try again")
+                break
+            self._book_fill(sym, side, f, px, why,
+                            fee=(o or {}).get('c492_fee') if (live and isinstance(o, dict)) else None)
+            done += f * px
+            if how == 'partial' or f < q * 0.999:
+                logger.warning(f"   ⚠️ C488 {side} {sym.split('/')[0]} PARTIAL fill: {f:.6g} of {q:.6g} "
+                               f"-- the book holds what filled; the rest waits for the next pass")
+                break
+        return done
 
     def trade_to(self, sym, target_qty, why):
-        cur = float((self.book.get(sym) or {}).get('qty', 0.0))
+        """move one position to its target. C492: a live fill can be PARTIAL.
+        The book records what filled (never what was asked), and a flip opens
+        the new side only once the old side is fully closed: in one-way mode an
+        opening order sent against a leftover would net against it, and the book
+        would believe it held something Bitget does not."""
+        cur = self._qty(sym)
         d = target_qty - cur
         if abs(d) < 1e-12:
             return 0.0
         side = 'buy' if d > 0 else 'sell'
+        base = sym.split('/')[0]
         done = 0.0
         if cur != 0 and (d > 0) != (cur > 0):
-            red = min(abs(d), abs(cur))
-            done += self._fill(sym, side, red, True, why)
-            rest = abs(d) - red
-            if rest > 0 and target_qty != 0:
-                done += self._fill(sym, side, rest, False, why)
+            done += self._fill(sym, side, min(abs(d), abs(cur)), True, why)
+            if target_qty == 0 or (target_qty > 0) != (cur > 0):     # a close or a flip, not a reduction
+                left = self._qty(sym)
+                if left != 0.0:
+                    if done > 0:
+                        logger.warning(f"   ⚠️ C488 {base}: the close filled only in part ({left:+.6g} still held)"
+                                       f"{' -- the flip to %+.6g waits' % target_qty if target_qty else ''}; "
+                                       f"the next pass finishes it")
+                    return done
+                if target_qty != 0:
+                    done += self._fill(sym, side, abs(target_qty), False, why)
         else:
             done += self._fill(sym, side, abs(d), False, why)
+        after = self._qty(sym)
+        if done > 0 and abs(after - target_qty) > 0.5 * max(self._step(sym)[0], 1e-12):
+            logger.warning(f"   ⚠️ C488 {base}: holding {after:+.6g} of a {target_qty:+.6g} target "
+                           f"(partial fill) -- the next rebalance tops it up")
         return done
 
     def flatten(self, why):
@@ -18857,14 +19003,376 @@ class C488Engine:
         for s in list(self.book):
             self.trade_to(s, 0.0, why)
             n += 1
+        # C492: live, a close can fill in part and a flatten must flatten: two
+        # more passes over what is left, then a loud line if anything remains
+        if not self.cfg.PAPER_MODE:
+            for _ in range(2):
+                if not self.book:
+                    break
+                time.sleep(1.0)
+                for s in list(self.book):
+                    self.trade_to(s, 0.0, why + ' (retry)')
+            if self.book:
+                logger.error(f"\U0001f6a8 C488 LIVE: {len(self.book)} positions still open after the flatten "
+                             f"({', '.join(s.split('/')[0] for s in self.book)}) -- CHECK BITGET BY HAND")
         self.save()
         return n
+
+    # ── C492: live mode ──────────────────────────────────────────────────
+    # What paper cannot know and live money needs (pending task #2):
+    #   (a) funding is what Bitget's account bills say was paid or received,
+    #       and the paper estimate is never booked live, so nothing counts twice;
+    #   (b) Bitget's balance and positions are read every C488_SYNC_S, and the
+    #       ledger follows the venue -- loudly whenever the gap is material;
+    #   (c) one-way position mode for the account, and C488_MARGIN_MODE and the
+    #       leverage for each symbol, set and read back before its first order;
+    #   (d) partial fills (trade_to, _fill, flatten);
+    #   (e) the venue's live contract table for steps, minimums, status and the
+    #       biggest market order (refresh_rules; used in paper too).
+    # None of it runs in paper except (e), and C488_LIVE_OK still gates it all.
+    PT = 'USDT-FUTURES'
+
+    def margin_mode(self):
+        """'cross' or 'isolated' in ccxt's spelling. 'crossed' (Bitget's own
+        word) is read as cross here, because ccxt would send it as ISOLATED."""
+        m = str(getattr(self.cfg, 'C488_MARGIN_MODE', 'cross') or 'cross').strip().lower()
+        return 'cross' if m.startswith('cross') else 'isolated'
+
+    def refresh_rules(self, force=False):
+        """(e) the contract table straight from Bitget: quantity step, minimum
+        quantity, minimum order value, the largest market order, and whether the
+        contract is trading at all. On 26 Sep 2026 ccxt's copy matched it on all
+        805 contracts, but ccxt carries neither the status nor the market-order
+        cap, and it is only as fresh as its last reload. A failed read keeps the
+        last table (or ccxt's, if there never was one)."""
+        if not force and self.rules and time.time() - self._rules_at < 600:
+            return True
+        d = self._get('contracts', {'productType': self.PT})
+        r = {}
+        for x in (d or []):
+            try:
+                raw = str(x.get('symbol') or '')
+                if not raw.endswith('USDT'):
+                    continue
+                r[self._ccxt(raw)] = dict(step=float(x.get('sizeMultiplier') or 0.0),
+                                          min_qty=float(x.get('minTradeNum') or 0.0),
+                                          min_usdt=float(x.get('minTradeUSDT') or 0.0),
+                                          max_mkt=float(x.get('maxMarketOrderQty') or 0.0),
+                                          status=str(x.get('symbolStatus') or ''))
+            except Exception:
+                continue
+        if len(r) >= max(50, len(self.rules) // 2):     # a short read never replaces a full table
+            self.rules, self._rules_at = r, time.time()
+        return bool(self.rules)
+
+    @staticmethod
+    def _venue(resp):
+        """a raw Bitget v2 reply through ccxt: its data, or an error saying why"""
+        if isinstance(resp, dict) and 'code' in resp:
+            if str(resp.get('code')) not in ('00000', '0'):
+                raise RuntimeError(f"Bitget {resp.get('code')}: {resp.get('msg')}")
+            return resp.get('data')
+        return resp
+
+    def _cx(self):
+        return getattr(self.bot.exchange, 'exchange', None)
+
+    _NEED = ('privateMixGetV2MixAccountAccount', 'privateMixGetV2MixAccountAccounts',
+             'privateMixPostV2MixAccountSetPositionMode', 'privateMixPostV2MixAccountSetMarginMode',
+             'privateMixPostV2MixAccountSetLeverage', 'privateMixGetV2MixPositionAllPosition',
+             'privateMixGetV2MixAccountBill')
+
+    def _account(self, raw='BTCUSDT'):
+        return self._venue(self._cx().privateMixGetV2MixAccountAccount(
+            dict(symbol=raw, productType=self.PT, marginCoin='USDT'))) or {}
+
+    def live_ready(self):
+        """(c), account-wide, before anything is traded live: this key reaches the
+        USDT futures account, and the account is in ONE-WAY position mode. The
+        book's orders carry no open/close side, which Bitget refuses in hedge
+        mode. A flat hedge-mode account is switched; one that holds anything
+        waits, says why, and is re-checked every 10 minutes."""
+        L = self.live
+        if L.get('ready'):
+            return True
+        if time.time() - float(L.get('checked_at') or 0.0) < 600:
+            return False
+        L['checked_at'] = time.time()
+        cx = self._cx()
+        try:
+            if cx is None or any(not callable(getattr(cx, n, None)) for n in self._NEED):
+                raise RuntimeError("this ccxt has no Bitget v2 account endpoints -- run: pip install -U ccxt")
+            a = self._account()
+            pm = str(a.get('posMode') or '')
+            if pm != 'one_way_mode':
+                logger.warning(f"\U0001f4bc C488 LIVE: Bitget position mode is '{pm}' -- switching to one-way")
+                self._venue(cx.privateMixPostV2MixAccountSetPositionMode(dict(productType=self.PT,
+                                                                                posMode='one_way_mode')))
+                a = self._account()
+                pm = str(a.get('posMode') or '')
+            if pm != 'one_way_mode':
+                raise RuntimeError(f"position mode is still '{pm}'")
+        except Exception as e:
+            L['why'] = f"{type(e).__name__}: {e}"[:300]
+            if type(e).__name__ in ('AuthenticationError', 'PermissionDenied', 'AccountSuspended'):
+                hint = ("Bitget refused the API key. Check api_keys.json: futures trading on, withdrawals "
+                        "OFF, the IP allow-list includes this server")
+            elif 'position mode' in str(e):
+                hint = ("The book needs ONE-WAY position mode, and Bitget only switches it with no open "
+                        "position or order in USDT-M futures. Close them, or switch it in the app")
+            else:
+                hint = "Bitget did not answer the account read"
+            logger.error(f"\U0001f6a8 C488 LIVE NOT READY: {L['why']}. {hint} -- re-checked every 10 min; "
+                         f"nothing is traded meanwhile.")
+            return False
+        L.update(ready=True, why='', pos_mode=pm, asset_mode=str(a.get('assetMode') or ''))
+        if not self.bill_since:
+            self.bill_since = int(time.time() * 1000)    # funding is booked from the first live check on
+        logger.info(f"\U0001f4bc C488 LIVE READY: one-way position mode; {self.margin_mode()} margin at "
+                    f"{self.lev()}x is set per symbol before its first order; funding from Bitget's bills "
+                    f"since {datetime.utcfromtimestamp(self.bill_since / 1000):%Y-%m-%d %H:%M} UTC")
+        if L['asset_mode'] == 'union':
+            logger.warning("⚠️ C488 LIVE: the futures account is in MULTI-ASSETS mode -- its equity counts "
+                           "other coins too, and the balance sync reads the USDT account only")
+        return True
+
+    def _prepare(self, sym):
+        """(c), per symbol, before its first live order: C488_MARGIN_MODE and the
+        book's leverage, read back from Bitget and changed only where they
+        differ. Bitget refuses a margin-mode change while the symbol holds a
+        position or an order (an intraday leftover, say): that symbol is
+        skipped, loudly, and never traded in the wrong mode."""
+        if sym in self.prepared:
+            return True
+        cx, raw = self._cx(), self._raw(sym)
+        want = 'crossed' if self.margin_mode() == 'cross' else 'isolated'
+        base = dict(symbol=raw, productType=self.PT, marginCoin='USDT')
+        try:
+            a = self._account(raw)
+            if str(a.get('marginMode') or '') != want:
+                self._venue(cx.privateMixPostV2MixAccountSetMarginMode(dict(base, marginMode=want)))
+            lev_key = 'crossedMarginLeverage' if want == 'crossed' else 'isolatedLongLever'
+            if int(float(a.get(lev_key) or 0)) != self.lev() or str(a.get('marginMode') or '') != want:
+                self._venue(cx.privateMixPostV2MixAccountSetLeverage(dict(base, leverage=str(self.lev()))))
+            a = self._account(raw)
+            got = (str(a.get('posMode') or ''), str(a.get('marginMode') or ''), int(float(a.get(lev_key) or 0)))
+            if got != ('one_way_mode', want, self.lev()):
+                raise RuntimeError(f"Bitget reads back {got}, not ('one_way_mode', '{want}', {self.lev()})")
+        except Exception as e:
+            self._say(f"prep{sym}{datetime.utcnow():%Y%m%d}",
+                      f"\U0001f6a8 C488 LIVE: {raw} could not be set to {want} margin at {self.lev()}x "
+                      f"({type(e).__name__}: {str(e)[:200]}) -- not traded until it can", 'error')
+            return False
+        self.prepared.add(sym)
+        logger.info(f"   \U0001f4bc C488 LIVE: {raw} ready -- one-way, {want} margin, {self.lev()}x")
+        return True
+
+    def live_sync(self, force=False):
+        """(a) + (b), every C488_SYNC_S live: Bitget's funding bills are booked
+        to the positions that paid or earned them; its positions are compared
+        with the book; its wallet balance with the ledger. Bitget is the truth:
+        any gap is corrected, and a material one is logged loudly."""
+        if not force and time.time() - float(self.live.get('synced_at') or 0.0) < \
+                float(getattr(self.cfg, 'C488_SYNC_S', 60) or 60):
+            return True
+        cx = self._cx()
+        try:
+            self._live_funding(cx)
+            pos = self._venue_positions(cx)
+            if self._reconcile(pos):
+                pos = self._venue_positions(cx)
+            self._sync_balance(cx, pos)
+        except Exception as e:
+            self.live['sync_error'] = f"{type(e).__name__}: {e}"[:200]
+            self._say(f"sync{datetime.utcnow():%Y%m%d%H}",
+                      f"⚠️ C488 LIVE sync failed ({self.live['sync_error']}) -- no rebalance until Bitget "
+                      f"answers again", 'warning')
+            return False
+        self.live['synced_at'] = time.time()
+        self.live['sync_error'] = ''
+        return True
+
+    def _live_funding(self, cx):
+        """(a) every funding settlement Bitget booked (businessType
+        contract_settle_fee) since bill_since, each booked exactly once by its
+        billId: to the held position it belongs to, else to the position closed
+        after it; anything else (a symbol the book never held) is left for the
+        balance sync to pick up, so it is never counted twice either."""
+        now = int(time.time() * 1000)
+        start = max(int(self.bill_since or now), now - 29 * _C488_DAY)   # Bitget: a window of <= 30 days
+        got, cursor = [], None
+        for _ in range(10):
+            q = dict(productType=self.PT, businessType='contract_settle_fee',
+                     startTime=str(start), endTime=str(now), limit='100')
+            if cursor:
+                q['idLessThan'] = cursor
+            d = self._venue(cx.privateMixGetV2MixAccountBill(q)) or {}
+            bills = d.get('bills') or []
+            got += bills
+            cursor = d.get('endId')
+            if len(bills) < 100 or not cursor:
+                break
+        seen = set(self.bill_seen)
+        n, booked = 0, 0.0
+        pf = self.bot.portfolio
+        for b in sorted(got, key=lambda x: int(x.get('cTime') or 0)):
+            bid = str(b.get('billId') or '')
+            if not bid or bid in seen or str(b.get('businessType')) != 'contract_settle_fee':
+                continue
+            seen.add(bid)
+            self.bill_seen.append(bid)
+            sym, amt, t = self._ccxt(str(b.get('symbol') or '')), float(b.get('amount') or 0.0), int(b.get('cTime') or 0)
+            with self._lock:
+                p = self.book.get(sym)
+                if p is not None and t >= int(float(p.get('opened') or 0) * 1000) - 60000:
+                    p['funding'] += amt
+                else:
+                    c = next((c for c in reversed(self.closed) if c.get('sym') == sym and
+                              0 <= c.get('t', 0) * 1000 - t < _C488_DAY), None)
+                    if c is None:
+                        self.live['funding_other'] += amt
+                        continue
+                    c['funding'] = round(c.get('funding', 0.0) + amt, 4)
+                    c['pnl'] = round(c.get('pnl', 0.0) + amt, 4)
+            pf.release_margin(0.0, amt, 0.0, count_trade=False)
+            n += 1
+            booked += amt
+        self.bill_seen = self.bill_seen[-2000:]
+        if n:
+            self.live['funding_live'] += booked
+            self.live['bills'] += n
+            logger.info(f"   \U0001f4bc C488 LIVE funding: {n} Bitget settlement{'s' if n > 1 else ''} booked, "
+                        f"{booked:+.4f} USDT")
+        return n
+
+    def _venue_positions(self, cx):
+        """Bitget's USDT-M positions, one signed quantity per symbol"""
+        out = {}
+        for x in (self._venue(cx.privateMixGetV2MixPositionAllPosition(
+                dict(productType=self.PT, marginCoin='USDT'))) or []):
+            tot = float(x.get('total') or 0.0)
+            if tot == 0:
+                continue
+            s = self._ccxt(str(x.get('symbol') or ''))
+            v = out.setdefault(s, dict(qty=0.0, avg=0.0, mode='', upl=0.0))
+            v['qty'] += tot if str(x.get('holdSide')) == 'long' else -tot
+            v['avg'] = float(x.get('openPriceAvg') or 0.0) or v['avg']
+            v['mode'] = str(x.get('marginMode') or '')
+            v['upl'] += float(x.get('unrealizedPL') or 0.0)
+        return out
+
+    def _reconcile(self, pos):
+        """(b) the book against Bitget, symbol by symbol. Symbols the intraday
+        engine holds are its own business. A position the book never opened and
+        that is not in the book's margin mode is not the book's: said, left
+        alone. Everything else must agree to half a quantity step; a gap is
+        re-read 2 s later (a position read can trail a fill) and, if it stands,
+        the book takes Bitget's quantity. Returns True if anything changed."""
+        want = 'crossed' if self.margin_mode() == 'cross' else 'isolated'
+        try:
+            intraday = set(self.bot.portfolio.positions.symbols())
+        except Exception:
+            intraday = set()
+        half = lambda s: 0.5 * max(self._step(s)[0], 1e-12)
+        gaps = {}
+        for s in set(self.book) | set(pos):
+            if s in intraday:
+                continue
+            v = pos.get(s)
+            if v and s not in self.book and v['mode'] != want:
+                self._say(f"foreign{s}", f"⚠️ C488 LIVE: Bitget holds {v['qty']:+.6g} {s.split('/')[0]} "
+                                         f"({v['mode']}) that the book did not open -- left alone", 'warning')
+                continue
+            if abs((v['qty'] if v else 0.0) - self._qty(s)) > half(s):
+                gaps[s] = v['qty'] if v else 0.0
+        if not gaps:
+            return False
+        time.sleep(2.0)
+        pos2 = self._venue_positions(self._cx())
+        changed = False
+        for s, vq in gaps.items():
+            v2 = pos2.get(s)
+            vq2 = v2['qty'] if v2 else 0.0
+            if abs(vq2 - vq) > half(s) or abs(vq2 - self._qty(s)) <= half(s):
+                continue                                   # still moving, or already agrees: next sync
+            self._adopt(s, vq2, v2)
+            changed = True
+        return changed
+
+    def _adopt(self, s, vq, v):
+        """the book takes Bitget's quantity for one symbol. The margin it locks
+        moves with it; the dollars are settled by the balance sync after it."""
+        pf = self.bot.portfolio
+        was = self._qty(s)
+        m0 = self.locked_margin()
+        with self._lock:
+            p = self.book.get(s)
+            if abs(vq) < 1e-15:
+                if p is not None:
+                    self.closed.append(dict(sym=s, pnl=round(p['realized'] + p['funding'] - p['fees'], 4),
+                                            fees=round(p['fees'], 4), funding=round(p['funding'], 4),
+                                            days=round((time.time() - p['opened']) / 86400, 1),
+                                            t=time.time(), why='gone at Bitget'))
+                    self.closed = self.closed[-50:]
+                self.book.pop(s, None)
+                self.fund_next.pop(s, None)
+            else:
+                if p is None or (p['qty'] > 0) != (vq > 0):
+                    p = dict(qty=vq, avg=(v or {}).get('avg') or self.mark(s), fees=0.0, funding=0.0,
+                             realized=0.0, opened=time.time())
+                else:
+                    p['qty'] = vq
+                    if (v or {}).get('avg'):
+                        p['avg'] = float(v['avg'])
+                self.book[s] = p
+        with pf._c429_lock:
+            pf.available_balance -= self.locked_margin() - m0
+        self.live['corrections'] += 1
+        logger.error(f"\U0001f6a8 C488 LIVE: the book held {was:+.6g} {s.split('/')[0]}, Bitget holds {vq:+.6g} "
+                     f"-- the book now follows Bitget (correction #{self.live['corrections']}; the dollars "
+                     f"are settled by the balance sync)")
+        self.save()
+
+    def _sync_balance(self, cx, pos):
+        """(b) the ledger's cash against Bitget's wallet (account equity less the
+        open positions' unrealised P&L -- both sides then count realised money
+        only: fills, fees, funding). The ledger takes Bitget's figure every
+        sync; a gap above C488_DRIFT_USD or C488_DRIFT_PCT is logged loudly. The
+        free balance is never more than Bitget says can open a position."""
+        acc = next((x for x in (self._venue(cx.privateMixGetV2MixAccountAccounts(
+            dict(productType=self.PT))) or []) if str(x.get('marginCoin') or '').upper() == 'USDT'), None)
+        if not acc:
+            raise RuntimeError('Bitget returned no USDT futures account')
+        eq_v = float(acc.get('accountEquity') or 0.0)
+        wallet = eq_v - sum(v['upl'] for v in pos.values())
+        free_v = float(acc.get('crossedMaxAvailable' if self.margin_mode() == 'cross'
+                               else 'isolatedMaxAvailable') or acc.get('available') or 0.0)
+        pf, L = self.bot.portfolio, self.live
+        old = float(pf.equity)
+        drift = wallet - old
+        tol = max(float(getattr(self.cfg, 'C488_DRIFT_USD', 0.5)),
+                  float(getattr(self.cfg, 'C488_DRIFT_PCT', 0.1)) / 100.0 * max(abs(old), abs(wallet)))
+        with pf._c429_lock:
+            pf.equity = wallet
+            pf.available_balance = max(0.0, min(pf.equity - pf.get_locked_margin(), free_v))
+        L.update(venue_equity=round(eq_v, 4), venue_wallet=round(wallet, 4), venue_free=round(free_v, 4),
+                 drift=round(drift, 4))
+        L['drift_total'] += drift
+        if abs(drift) > tol:
+            L['drift_loud'] += 1
+            logger.warning(f"\U0001f6a8 C488 LIVE: the ledger said ${old:.2f}, Bitget's wallet says ${wallet:.2f} "
+                           f"({drift:+.2f}) -- the ledger now follows Bitget. Fees, funding and slippage the "
+                           f"book did not see land here; so does a deposit or withdrawal.")
 
     # ── the daily rebalance ───────────────────────────────────────────────
     def rebalance(self, why='daily'):
         t0 = time.time()
         if not self.refresh_marks(force=True):
             raise RuntimeError('no tickers')
+        self.refresh_rules()                            # C492 (e): the venue's own steps, minimums, status
+        live = not self.cfg.PAPER_MODE
+        if live and not self.live_sync(force=True):     # C492 (b): trade from what Bitget holds, not a guess
+            raise RuntimeError('Bitget did not answer the pre-rebalance sync')
         eq = self.live_equity()
         n_top = self.topn(eq)
         syms = self.candidates(n_top)
@@ -18912,6 +19420,8 @@ class C488Engine:
                          n_targets=len(plan), secs=round(time.time() - t0, 1),
                          sleeves={k: round(float(np.abs(sleeves[k]).sum()), 3) for k in sleeves})
         self.save()
+        if live:
+            self.live_sync(force=True)                  # C492: a fill that could not be read back is caught here
         logger.info(f"\U0001f4bc C488 REBALANCE ({why}): {len(plan)} positions targeted, gross "
                     f"{gross_t:.2f}x of ${eq:.2f}, {n} trades ${traded:.2f}, top {n_top}, "
                     f"vol target {100 * self.target_vol():.1f}% [{time.time() - t0:.0f}s]")
@@ -18972,6 +19482,7 @@ class C488Engine:
             self.book, self.plan, self.info, self.closed = {}, {}, {}, []
             self.last_rebal, self.halt, self.fund_next = '', '', {}
             self._topn = 0
+            self.bill_since, self.bill_seen, self.live, self.prepared = 0, [], self._live_blank(), set()   # C492
         self.save()
 
     def tick(self, can_trade=True):
@@ -18994,10 +19505,20 @@ class C488Engine:
         if not bool(getattr(self.bot, '_c462_state_settled', False)):
             return
         self.refresh_marks()
-        try:
-            self.accrue_funding()
-        except Exception as e:
-            self._say('fund' + type(e).__name__, f"⚠️ C488 funding accrual failed: {e}", 'warning')
+        live = not self.cfg.PAPER_MODE
+        if live:
+            # C492: nothing live until the account is in one-way mode; then
+            # Bitget's bills are the funding (the paper estimate below is never
+            # booked live, so nothing is counted twice) and its balance and
+            # positions are the ledger's truth.
+            if not self.live_ready():
+                return
+            self.live_sync()
+        else:
+            try:
+                self.accrue_funding()
+            except Exception as e:
+                self._say('fund' + type(e).__name__, f"⚠️ C488 funding accrual failed: {e}", 'warning')
         # the month guard: the operator's dial, on LIVE equity
         g = self.guard()
         if g and g != self.halt:
@@ -19046,7 +19567,22 @@ class C488Engine:
                     halt=self.halt, last_rebal=self.last_rebal, info=self.info,
                     next_rebal_utc=nxt.strftime('%Y-%m-%d %H:%M'), positions=pos[:40],
                     closed=self.closed[-10:],
-                    funding=round(sum(p['funding'] for p in self.book.values()), 3))
+                    funding=round(sum(p['funding'] for p in self.book.values()), 3),
+                    live=self._live_status())
+
+    def _live_status(self):
+        """C492: what the dashboard and the report say about live mode"""
+        L = self.live
+        if self.cfg.PAPER_MODE:
+            return dict(on=False, rules=len(self.rules))
+        at = float(L.get('synced_at') or 0.0)
+        return dict(on=True, allowed=bool(getattr(self.cfg, 'C488_LIVE_OK', False)), ready=bool(L.get('ready')),
+                    why=L.get('why', ''), sync_error=L.get('sync_error', ''),
+                    synced_s=int(time.time() - at) if at else None, margin=self.margin_mode(),
+                    venue_equity=L.get('venue_equity', 0.0), drift=L.get('drift', 0.0),
+                    drift_total=round(float(L.get('drift_total') or 0.0), 4), drift_loud=L.get('drift_loud', 0),
+                    corrections=L.get('corrections', 0), funding_live=round(float(L.get('funding_live') or 0.0), 4),
+                    bills=L.get('bills', 0), rules=len(self.rules))
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -37891,6 +38427,13 @@ def startup():
                 cfg.API_SECRET = keys.get('api_secret', '')
                 cfg.API_PASSWORD = keys.get('api_password', '')
                 print(f"  ✅ API keys loaded from {api_file}")
+                # C492: keys live in this file and nowhere else -- never in the .py.
+                # A key another user of the machine can read is a key that leaks.
+                try:
+                    if os.name == 'posix' and os.stat(api_file).st_mode & 0o077:
+                        print(f"  🚨 {api_file} is readable by other users -- run: chmod 600 {api_file}")
+                except Exception:
+                    pass
             except:
                 print("  ⚠️ Could not load API keys")
                 return
@@ -39214,6 +39757,15 @@ async function pull(){
              ' <span class="'+cls(x.upnl)+'">'+sgn(x.upnl)+'</span> <span class="muted">'+x.sleeve+' \u00b7 '+x.days+'d</span></div>'});
         if((b.positions||[]).length>12)h+='<div class="s muted">+ '+(b.positions.length-12)+' more</div>';
         if(!b.n)h+='<div class="s muted">flat \u2014 '+(b.last_rebal?'nothing to hold today':'first rebalance pending')+'</div>';
+        /* C492: live -- whether Bitget and the book agree. A failure is SHOWN. */
+        var L=b.live||{};
+        if(L.on){
+          if(!L.ready)h+='<div class="s"><b class="bad">LIVE NOT READY</b> '+(L.why||'')+'</div>';
+          else h+='<div class="s muted">live \u00b7 Bitget '+money(L.venue_equity)+' \u00b7 drift so far <span class="'+cls(L.drift_total)+'">'+
+            sgn(L.drift_total)+'</span> \u00b7 '+L.corrections+' position fixes \u00b7 funding (Bitget bills) <span class="'+cls(L.funding_live)+'">'+
+            sgn(L.funding_live)+'</span> \u00b7 '+L.margin+' margin \u00b7 '+(L.synced_s===null?'sync pending':'synced '+L.synced_s+'s ago')+'</div>';
+          if(L.sync_error)h+='<div class="s"><b class="bad">SYNC FAILING</b> '+L.sync_error+'</div>';
+        }
         q('book').innerHTML=h;
       }
     }

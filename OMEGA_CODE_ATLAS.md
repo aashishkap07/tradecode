@@ -10,14 +10,17 @@
   $252.63.
 - **An 18:43 restart resumed cleanly,** with no second rebalance the same UTC
   day.
-- **C490 is pushed but not yet deployed** (see the Termius commands in
-  `reports/2026-09-25_round3_carry.md`).
+- **C490 and C492 are pushed but not yet deployed.** One pull deploys both, in
+  paper; see the Termius commands in `reports/2026-09-26_live_mode.md`. C492
+  changes nothing about money in paper.
+- **Reminder set in the 26 Sep session:** 29 Sep 01:15 UTC (06:45 IST), to run
+  pending #1.
 
 | # | task | when | notes |
 |---|---|---|---|
 | 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. |
-| 2 | **Live-mode build for C488** | when the operator wants real money (after #1 passes) | (a) Read actual funding from Bitget account bills and stop booking the paper estimate live, so funding is never counted twice. (b) Sync equity and available balance with the venue each cycle, and reconcile any drift loudly. (c) Set one-way position mode and a margin mode per symbol before the first order. (d) Handle partial fills in `trade_to`. (e) Re-check contract minimums and steps from the live market table. (f) Only then does `C488_LIVE_OK = True` make sense. Then go live small: dial 5–10%, raised towards 15% over weeks as live tracks paper. |
-| 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS. Never put keys in the Python file. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
+| 2 | ~~Live-mode build for C488~~ | **BUILT in C492 (26 Sep); still switched off** | (a)–(e) are all done and tested (see C492): funding from Bitget's bills, a sync every 60 s, one-way mode and cross margin at 5x per symbol, partial fills, and the live contract table. **`C488_LIVE_OK` stays False.** Going live takes two deliberate steps: a one-line commit setting it True (ask for it), and `OMEGA_MODE=live` in a unit override. The checklist is at the end of `reports/2026-09-26_live_mode.md`. Start at **dial 10% at $250**, not 5%: at 5% the average position is about $4.40, under Bitget's $5 minimum. Raise it towards 15% over weeks as live tracks paper. |
+| 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
 | 5 | **Refresh the C488 research** | quarterly | Re-run `research/omega_c488_research.py` on fresh archive data and watch the decay: Sharpe 1.33 over 2020–26, 0.87 over the last 24 months, carry negative over the last 12. **At the next refresh, add Binance's 2026 stock and commodity perps to `EXCLUDE`** (the list is in `research/c488_tradfi_check.py`). The live bot already excludes them, via Bitget's `isRwa` flag. |
 | 6 | **Risk dial choice** | operator | Dial 15% → about +2.5%/month historically (1.5–2% realistic), worst drawdown −31%. Dial 20% → +3.3%, −40%. 4% a month is not reachable at acceptable risk. |
@@ -25,6 +28,168 @@
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔌 2026-09-26 — C492: LIVE-MODE PLUMBING FOR THE C488 BOOK (BUILT, STILL SWITCHED OFF)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Shipped: C492** (`_OMEGA_VERSION = 'C492'`). It is pushed, not deployed, and
+is **pending task #2, built**.
+- **`C488_LIVE_OK` is still False,** so live money is still refused.
+- **In paper nothing changes about money.** The only paper-visible change: before
+  each rebalance, the book reads Bitget's own contract table. On 26 Sep it was
+  identical to ccxt's on all 805 contracts.
+- **Report for the operator:** `reports/2026-09-26_live_mode.md` (plain
+  English, deploy commands, and the go-live checklist).
+
+**What pending #2 asked for, and what was built:**
+
+| item | built |
+|---|---|
+| (a) funding from Bitget, never twice | Live, `accrue_funding` (the paper estimate) is **never called**. `_live_funding` reads `/api/v2/mix/account/bill?businessType=contract_settle_fee` since `bill_since` (set at the first live check). It pages with `idLessThan` over a window of at most 29 days, and books each `billId` once (the IDs are persisted, so this survives restarts). A bill goes to the held position (if the bill is not older than the position), else to the position closed within a day after the bill. Anything else is counted in `funding_other` and left to the balance sync. |
+| (b) sync equity and free balance, reconcile loudly | `live_sync` runs every `C488_SYNC_S` = 60 s, and is forced before and after each rebalance. **Positions:** `all-position` is compared with the book for each symbol. Skipped: symbols the intraday engine holds, and positions the book never opened that are not in its margin mode. Any gap over half a step is re-read after 2 s; if it holds, `_adopt` gives the book Bitget's quantity and price, logged at ERROR ("the book now follows Bitget"). **Money:** Bitget's wallet (accountEquity − Σ unrealisedPL) becomes `portfolio.equity` every sync, and the free balance becomes min(ledger free, `crossedMaxAvailable`). The log is loud above max(`C488_DRIFT_USD` $0.50, `C488_DRIFT_PCT` 0.1% of equity). If the sync fails, `rebalance()` raises (retried after 10 min). |
+| (c) one-way mode, margin mode per symbol | `live_ready()` (account-wide): the account must be in `one_way_mode`. It is switched if flat; otherwise NOT READY, re-checked every 10 min, with nothing traded meanwhile. The error text names the key when Bitget refuses it, and the position mode when that is the problem. `_prepare(sym)` runs before the first opening order on each symbol: it sets and reads back `C488_MARGIN_MODE` and leverage 5, once per process. A symbol Bitget will not switch (it holds a position or order) is skipped, loudly. **A close never waits for a settings read.** |
+| (d) partial fills | `_fill` books what filled, never what was asked. It uses the fee Bitget charged (`c487_settle` now leaves it on the order as `c492_fee`). `trade_to` opens the new side of a flip only once the old side is fully closed, because in one-way mode an opening order would net against the leftover. Live `flatten` makes two retry passes, then logs "CHECK BITGET BY HAND". |
+| (e) live contract minimums and steps | `refresh_rules()` reads `/api/v2/mix/market/contracts` (public) at each rebalance, **in paper too**. `_step` prefers its `sizeMultiplier` / `minTradeNum`; `_min_usdt` uses `minTradeUSDT`. Orders above `maxMarketOrderQty` are split. `_tradable`: `normal` trades; `limit_open` can only be reduced; everything else takes no order; a contract missing from a loaded table is not opened. A short read never replaces a full table. |
+
+**New config:**
+- `C488_MARGIN_MODE = 'cross'`: why cross, not isolated, is explained below;
+- `C488_SYNC_S = 60`;
+- `C488_DRIFT_USD = 0.50`;
+- `C488_DRIFT_PCT = 0.1`.
+
+**Other changes:**
+- `place_order(..., margin_mode=None)`: with None the intraday path is exactly
+  as before (isolated, and `set_leverage` on every order).
+- Start-up warns if `api_keys.json` is readable by other users and names
+  `chmod 600`.
+- **Dashboard:** in live mode the Portfolio book panel adds a line (Bitget
+  equity, drift so far, position fixes, funding from bills, margin, sync age),
+  or **LIVE NOT READY** / **SYNC FAILING**.
+- **Report:** a `LIVE` line.
+- **Fresh start:** `reset()` also clears `bill_since`, `bill_seen` and the live
+  counters.
+
+## 🧠 WHY CROSS MARGIN (a trading decision, made explicit)
+
+- **The research never had a per-coin stop.** It held every position through its
+  swings (COMBO-C, max drawdown 31%).
+- **Isolated 5x would add one.** Bitget liquidates an isolated 5x position after
+  a move of about 19% against it. That is roughly one to two weekly standard
+  deviations for an altcoin held for weeks, and each liquidation also pays
+  Bitget's fee.
+- **Cross is how a diversified book is run.** The whole account backs it, gross
+  exposure is at most 3×, and each coin is a small slice.
+- **The book's stop is the month guard.** It flattens at −dial% of the month's
+  starting equity and is checked every 20 s on live equity. A gap bigger than
+  that inside 20 seconds, on a top-40 coin, is the residual risk.
+- **Two margin modes can coexist:** intraday leftovers stay isolated on their own
+  symbols, and `_prepare` refuses to switch a symbol that holds one.
+
+> **→ Standing Rule 53: CHECK THE WORD ON THE WIRE, NOT THE WORD IN THE CONFIG.**
+> ccxt 4.5.84 builds Bitget's `marginMode` as `'crossed'` only from `'cross'`.
+> Anything else, **including Bitget's own `'crossed'`**, is sent as ISOLATED,
+> silently. A config that reads right can place the wrong order. The engine
+> normalizes the spelling, and `omega_c492_test.py` checks the actual request
+> dict the installed ccxt builds.
+
+## 🧪 VERIFICATION
+
+- **`omega_c492_test.py`, 69 checks, all pass. The real stack:**
+  `ExchangeManager` and `C488Engine` run against a simulated USDT-M account.
+  Every order is turned into the Bitget request by the installed ccxt
+  (`create_order_request`, on real ccxt market data for BTC and ETH saved in
+  `test_fixtures/c492_bitget_btc_eth.json`), and the venue acts on *that*
+  request. It models:
+  - one-way netting, and Bitget's 40774 error in hedge mode;
+  - a strict margin-mode match (40920) and a reduce-only that cannot open;
+  - fees, funding bills with `idLessThan` paging, and partial fills;
+  - `set-margin-mode` refused while a position is open (45117).
+- **What it covers:**
+  - the order on the wire, including the trap;
+  - the preflight: hedge mode switched when flat and waiting when not, a refused
+    key, an old ccxt, prepare-once, a refused symbol, and a close with the
+    settings read down;
+  - partials: 40% opens, a normal reduction that stays **quiet**, a partial
+    reduction that says so, a half-filled flip close, flatten retries and the
+    loud failure, 0.03 + 0.03 + 0.02 splitting, and the real 0.04% fee booked;
+  - funding: exact per-position bills, dedupe across a restart, no paper
+    estimate live, a bill after the close, a foreign bill, and 150 bills over
+    two pages;
+  - the sync: ledger == wallet after opens, reductions, flips and funding; a $2
+    gap followed and shouted and a 10-cent gap quietly; a read-back failure
+    adopted; a vanished position dropped; a one-read blip ignored; a foreign
+    isolated position and an intraday symbol left alone; a failed sync blocking
+    the rebalance;
+  - rules: the real rows parsed, a short read refused, `maintain` /
+    `limit_open` / missing contracts, and the per-contract $ minimum;
+  - **a whole 36-target live rebalance.** Every target was met to within half a
+    step, Bitget held exactly the book coin by coin, every order went crossed
+    and one-way, the ledger ended equal to the wallet to the cent with zero
+    corrections, a second pass traded nothing, and a flatten left Bitget flat;
+  - safety: `C488_LIVE_OK` defaults to False; no key in the .py; with the flag
+    off, **zero** private calls live; paper makes zero private calls;
+  - the page: the live line and NOT READY in Chromium, with no JS errors.
+- **A bug in my own first draft, caught on review before shipping.** Every
+  ordinary reduction (long 10 → long 4) went through the close branch, and
+  would have logged "the close filled only in part" on every rebalance: a
+  Rule 23 false alarm. It is fixed and pinned by the two quiet/partial reduction
+  checks.
+- **Negative controls (Rule 16), each run on a copy with the fault put back:**
+  - the reduction bug: fails exactly the 2 new checks;
+  - the pre-C492 flip: fails 3 checks, and shows the hazard itself (the ledger
+    called the position flat while Bitget held a 0.05 ETH short);
+  - the paper funding estimate also booked live (the double count): fails the
+    "never booked live" check.
+- **Against the real Bitget API, with no operator key:**
+  - All 7 private endpoints exist: a dummy key gets 40037 "Apikey does not
+    exist", while a made-up path gets 404 / 40404.
+  - The engine's own `live_ready()` with a wrong key gave NOT READY, the key
+    hint, and zero orders.
+  - `refresh_rules()`: 805 contracts in 0.5 s, all `normal`, and step + minimum
+    equal ccxt's for all 40 of today's candidates.
+  - The lumpiest step is ETH at $26.94; the smallest market-order cap among the
+    candidates is about $62k.
+- **Regression:**
+  - `omega_c488_test.py`'s harness now stubs `refresh_rules` (tests never touch
+    the network: unstubbed, it read the real table and correctly refused the
+    made-up coins "C00…"). Its live check now requires the preflight.
+  - `omega_c490_test.py` pins version ≥ C490 instead of == C490.
+  - Every test file passes, except `omega_exit_test.py`, which needs `corpusL/`
+    (not in the repo) and fails identically on the committed HEAD.
+  - `omega_c468_boot_test.sh`: `OMEGA C492 PAPER`, dashboard up in 3 s.
+  - **Full paper boot on live Bitget data** (fresh $250, 4 minutes): 805
+    markets; the first rebalance with the live table built 9 positions, 0.44×
+    gross, $121.70 traded (the server's own first book: 9 positions, 0.41×);
+    C489 and C490 ran; no `LIVE` line in paper; no traceback.
+  - The wrong-object sweep's one "new" line (`_budget_stop_pct` on Position) is
+    identical on HEAD: it is the C483 design (the stop lives on the position),
+    and the baseline was never updated. The other sweeps are clean.
+
+## ⚠️ LIMITS
+
+- **Never run against a funded account.** No operator key was used here. The
+  simulated venue models Bitget's documented behaviour, but the first live
+  days must be watched. Any `the book now follows Bitget` / `the ledger now
+  follows Bitget` / `LIVE NOT READY` / `SYNC FAILING` line is a reason to look
+  before the next rebalance.
+- **Classic account only.** These are the classic v2 endpoints; a Unified
+  Trading Account is refused by the preflight (loud NOT READY). In multi-assets
+  mode the bot warns that the sync reads the USDT account only.
+- **Transfers look like P&L.** A deposit or withdrawal shows up as drift. A
+  withdrawal of more than dial% of the month's starting equity trips the month
+  guard and flattens the book. Move money only while the bot is stopped. A
+  future version could read the transfer bills.
+- **Bills Bitget no longer keeps.** After more than 29 days of downtime, older
+  settlements reach the ledger only through the balance sync, not per
+  position.
+- **Maintenance blocks closes too.** A contract in `maintain` takes no order at
+  all (Bitget's rule), so a guard flatten cannot close it until maintenance
+  ends; the flatten says so loudly.
+- **Cost of syncing:** 3–4 private calls a minute, far under Bitget's limits (5–10
+  per second).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ⏱️ 2026-09-25 — C491: ROUND 4, THE LIMIT-ORDER STRATEGY ON 1-MINUTE PRICES — FAIL
