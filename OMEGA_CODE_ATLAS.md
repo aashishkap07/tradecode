@@ -16,8 +16,17 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - C498 is pushed, not deployed. It changes display and logging only. Its
-    deploy commands are in `reports/2026-09-26_c497_deployed.md`.
+  - **C498 from 26 Sep 23:48 IST, verified in the server log:**
+    - SESSION reads $−0.02 / $−0.01 / $+0.07 in its first three blocks (it
+      was "$−4.18 … peak $252.22 dd 1.66%" under C497);
+    - "Session:" agrees;
+    - the book guard adds up ($252.81 − $247.62 = $5.19);
+    - the web chart is hidden until the first marked sample, as coded. One
+      stale JS comment ("always one point to draw") is left for the next
+      version.
+  - The 00:17 IST push carried 107 files. That is the server's midnight log
+    rotation (`.part01.log` + `.log.1.gz`), logs only, plus `mode_v60.json` and
+    `state_v60.json`. No secrets.
 - **The shadow is fixed on the server:** `C489 shadow hour 17:00 UTC: 38 coins
   scored` under C495. C492 scored 0.
 - **26 Sep:** the operator held the C492 deploy for a full re-analysis
