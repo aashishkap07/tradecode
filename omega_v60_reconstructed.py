@@ -1684,6 +1684,12 @@ class _C462Report:
                 self._pack('OPEN', [f"{len(open_pos)} pos "
                                     f"{_c462_money(locked)} ({expo:.0f}%)",
                                     f"free {_c462_money(st.get('available', 0))}"])
+            elif _n488 and _e488 is not None and _e488.active():
+                # C497: "flat" sat above a BOOK row holding 8 positions -- the
+                # same contradiction C495 removed from the web page.
+                self._pack('OPEN', ["no intraday positions",
+                                    f"book holds {_n488} (BOOK row)",
+                                    f"free {_c462_money(st.get('available', 0))}"])
             else:
                 self._pack('OPEN', ['flat',
                                     f"free {_c462_money(st.get('available', 0))}"])
@@ -1805,42 +1811,70 @@ class _C462Report:
                 self._row('CURVE', spark)
 
             # --- the day's risk budget, as a fraction spent ---
+            # ═══ C497: WHILE THE BOOK TRADES, THE MONTH ROW IS ITS GUARD ═══
+            # This block printed "DAY limit $9.34" and "MONTH used $0.59" --
+            # the intraday scanner's realised figures -- while the web page
+            # (C495) showed the book's guard at $4.85 used on MARKED equity.
+            # Two numbers for one month is the C486 defect again. The book has
+            # no day limit; the one thing that can close it is the month guard.
+            _gv497 = None
             try:
-                # ═══ C467-B: THE DAY ROW SHOWS THE LOSS BARRIER ONLY ══════
-                # It used to show |day move| / fixed cap, so a WINNING day read
-                # "94% used" and looked like an emergency. Only losses spend the
-                # barrier now, and only REALISED ones, and the limit itself
-                # moves with the tape and with this bot's own record.
-                _b = bot._c467_day_barrier()
-                day0 = float(_b.get('day0', 0.0) or 0.0)
-                _lim = float(_b.get('limit', 0.0) or 0.0)
-                if day0 > 0 and _lim > 0:
-                    _pnl_d = float(_b.get('pnl', 0.0))
-                    used = float(_b.get('frac', 0.0))
-                    _bw = min(self.W - self.LW - 4, 26)
-                    # C482-B: the day's cap is FIXED at the day's start from the
-                    # monthly dial; vol and trust no longer move it.
-                    _g = _b.get('guard') or {}
-                    _halt = {'dial': 'NOT TRADING: dial at 0%',
-                             'month': 'NOT TRADING: month budget spent',
-                             'day': 'NOT TRADING until midnight'}.get(_b.get('capped', ''), '')
-                    self._pack('DAY', [
-                        f"real {_c462_money(_pnl_d, sign=True)}",
-                        f"limit {_c462_money(_lim)} ({_lim / day0 * 100.0:.2f}%)",
-                        f"{100.0 * used:.0f}% used"] + ([_halt] if _halt else []))
-                    self._day_used = used     # C466: the gauge's colour level
-                    self._row('', _c462_bar(used, _bw,
-                                            self.g['bar_on'], self.g['bar_off']))
-                    if _g:
-                        self._pack('MONTH', [
-                            f"dial {float(_g.get('pct', 0.0)):.0f}%",
-                            f"used {_c462_money(float(_g.get('month_used', 0.0)))} of "
-                            f"{_c462_money(float(_g.get('month_budget', 0.0)))}",
-                            f"from {_c462_money(float(_g.get('month_eq0', 0.0)))}"])
-                else:
-                    self._row('DAY', 'barrier not yet derived (no day anchor)')
+                if _e488 is not None and _e488.active():
+                    _gv497 = dict(getattr(_e488, '_guard_view', {}) or {})
             except Exception:
-                self._row('DAY', 'barrier unavailable')
+                _gv497 = None
+            if _gv497 and float(_gv497.get('budget', 0.0) or 0.0) > 0:
+                try:
+                    _bud497 = float(_gv497['budget'])
+                    _use497 = float(_gv497.get('used', 0.0) or 0.0)
+                    _h497 = str(getattr(_e488, 'halt', '') or '')
+                    self._pack('MONTH', [f"book guard {_c462_money(_use497)} of {_c462_money(_bud497)} used",
+                                         "on marked equity",
+                                         f"from {_c462_money(float(_gv497.get('eq0', 0.0) or 0.0))}",
+                                         f"dial {float(_gv497.get('pct', 0.0) or 0.0):.0f}%"]
+                               + ([f"HALTED {_h497}"] if _h497 else []))
+                    self._day_used = min(1.0, _use497 / _bud497)
+                    self._row('', _c462_bar(self._day_used, min(self.W - self.LW - 4, 26),
+                                            self.g['bar_on'], self.g['bar_off']))
+                except Exception:
+                    self._row('MONTH', 'book guard unavailable')
+            else:
+                try:
+                    # ═══ C467-B: THE DAY ROW SHOWS THE LOSS BARRIER ONLY ══════
+                    # It used to show |day move| / fixed cap, so a WINNING day read
+                    # "94% used" and looked like an emergency. Only losses spend the
+                    # barrier now, and only REALISED ones, and the limit itself
+                    # moves with the tape and with this bot's own record.
+                    _b = bot._c467_day_barrier()
+                    day0 = float(_b.get('day0', 0.0) or 0.0)
+                    _lim = float(_b.get('limit', 0.0) or 0.0)
+                    if day0 > 0 and _lim > 0:
+                        _pnl_d = float(_b.get('pnl', 0.0))
+                        used = float(_b.get('frac', 0.0))
+                        _bw = min(self.W - self.LW - 4, 26)
+                        # C482-B: the day's cap is FIXED at the day's start from the
+                        # monthly dial; vol and trust no longer move it.
+                        _g = _b.get('guard') or {}
+                        _halt = {'dial': 'NOT TRADING: dial at 0%',
+                                 'month': 'NOT TRADING: month budget spent',
+                                 'day': 'NOT TRADING until midnight'}.get(_b.get('capped', ''), '')
+                        self._pack('DAY', [
+                            f"real {_c462_money(_pnl_d, sign=True)}",
+                            f"limit {_c462_money(_lim)} ({_lim / day0 * 100.0:.2f}%)",
+                            f"{100.0 * used:.0f}% used"] + ([_halt] if _halt else []))
+                        self._day_used = used     # C466: the gauge's colour level
+                        self._row('', _c462_bar(used, _bw,
+                                                self.g['bar_on'], self.g['bar_off']))
+                        if _g:
+                            self._pack('MONTH', [
+                                f"dial {float(_g.get('pct', 0.0)):.0f}%",
+                                f"used {_c462_money(float(_g.get('month_used', 0.0)))} of "
+                                f"{_c462_money(float(_g.get('month_budget', 0.0)))}",
+                                f"from {_c462_money(float(_g.get('month_eq0', 0.0)))}"])
+                    else:
+                        self._row('DAY', 'barrier not yet derived (no day anchor)')
+                except Exception:
+                    self._row('DAY', 'barrier unavailable')
 
             # --- performance, THIS session, which is the part that was missing ---
             if s['n'] > 0:
@@ -2141,7 +2175,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C495'
+_OMEGA_VERSION = 'C497'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -21063,6 +21097,14 @@ class TradingBot:
         # PHASE4: Document7-style rich startup display
         logger.info("=" * 60)
         logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C466)")
+        # C497: the blocks from here to "Press Ctrl+C" describe the INTRADAY
+        # SCANNER -- its paper-parity costs, edge state, architecture, sizing
+        # and leverage. While the portfolio book trades the scanner opens
+        # nothing, so the operator is told once, here, which engine they read.
+        if str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio':
+            logger.info("   \u2139\ufe0f C497: the portfolio book trades. The blocks below describe the "
+                        "INTRADAY SCANNER, which is idle (OMEGA_ENGINE=intraday restores it); "
+                        "the book is summarised in the RISK FRAME above and the BOOK row every 8 min")
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
@@ -21296,7 +21338,9 @@ class TradingBot:
         logger.info(f"   🎲 Leverage: {p.MIN_LEVERAGE}x-{p.MAX_LEVERAGE_NORMAL}x  (single mode — HP retired, C403-3)")
         logger.info(f"   📋 Limit Orders: {'ON' if p.USE_LIMIT_ORDERS else 'OFF'} | Maker {p.MAKER_FEE_PCT}% Taker {p.TAKER_FEE_PCT}%")
         logger.info(f"   🎚️ Loss control: monthly risk dial {float(getattr(p, 'C380_MAX_MONTHLY_DD_PCT', 0) or 0):.0f}% "
-                    f"— today may lose 25% of what the month has left (C482)")
+                    + ("— the book's month guard on marked equity; no day limit applies to the book (C497)"
+                       if str(getattr(p, 'C488_ENGINE', '') or '').lower() == 'portfolio' else
+                       "— today may lose 25% of what the month has left (C482)"))
         logger.info(f"   🛡️ Session drawdown breaker: "
                     f"{'ON' if bool(getattr(p, 'C482_SESSION_BREAKER', False)) else 'off'} | Guardian: "
                     f"{'acts' if bool(getattr(p, 'C482_GUARDIAN_ACT', False)) else 'report only'} (C482)")
@@ -26957,11 +27001,19 @@ class TradingBot:
                 _mb486 = 0.0
             if _mb486 <= 0:
                 _mb486 = _eq483 * _dd483 / 100.0
-            logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
-                        f"${_mb486:.2f}/month  |  per-trade risk "
-                        f"{p['per_trade_pct']:.3f}% = ${_eq483 * p['per_trade_pct'] / 100.0:.2f}  |  {_be483} [C482]")
-            logger.info("   today's loss limit is 25% of what the month has left, fixed at midnight (C482)"
-                        + ("  |  the $5 minimum order BINDS at this size" if p['binding'] else ""))
+            if str(getattr(c, 'C488_ENGINE', '') or '').lower() == 'portfolio':
+                # C497: per-trade risk, break-even win rate and a day limit are
+                # the idle scanner's figures (C495 took them off the RISK FRAME
+                # for the same reason). The book has one limit: the month guard.
+                logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
+                            f"${_mb486:.2f}/month  |  the portfolio book trades: its month guard closes "
+                            f"the book if MARKED equity falls that far below the month's anchor [C497]")
+            else:
+                logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
+                            f"${_mb486:.2f}/month  |  per-trade risk "
+                            f"{p['per_trade_pct']:.3f}% = ${_eq483 * p['per_trade_pct'] / 100.0:.2f}  |  {_be483} [C482]")
+                logger.info("   today's loss limit is 25% of what the month has left, fixed at midnight (C482)"
+                            + ("  |  the $5 minimum order BINDS at this size" if p['binding'] else ""))
         except Exception as e:
             logger.warning(f"C369 budget derivation failed, keeping defaults: {e}")
 
@@ -37471,6 +37523,31 @@ class TradingBot:
     #                   DISPLAY SUMMARY
     #  Matches Document7.py format exactly
     # ============================================================
+    def _c497_day_line(self, dot, pnl, g):
+        """C497: the recurring 'Day' line. While the book trades it reports
+        ITS guard -- "loss limit $9.34" is the idle scanner's day limit; the
+        book has none, and the only thing that closes it is the month guard on
+        marked equity. With the intraday engine the line is C483's, unchanged."""
+        gv = {}
+        try:
+            e = getattr(self, 'c488', None)
+            if e is not None and e.active():
+                gv = dict(getattr(e, '_guard_view', {}) or {})
+        except Exception:
+            gv = {}
+        if float(gv.get('budget', 0.0) or 0.0) > 0:
+            bu = float(gv['budget'])
+            us = float(gv.get('used', 0.0) or 0.0)
+            return (f"{dot} Book guard: ${us:.2f} of ${bu:.2f} used this month on marked equity "
+                    f"({100.0 * us / bu:.0f}%, from ${float(gv.get('eq0', 0.0) or 0.0):.2f})"
+                    f" \u00b7 realised today {pnl:+.2f}% [C497]")
+        cap = float(g.get('day_cap', 0.0) or 0.0)
+        used = float(g.get('day_used', 0.0) or 0.0)
+        return (f"{dot} Day: {pnl:+.2f}% realised"
+                + (f" (loss limit ${cap:.2f}, {100.0 * used / cap:.0f}% used"
+                   f" \u00b7 dial {float(g.get('pct', 0) or 0):.0f}%/month)" if cap > 0 else "")
+                + " [C483]")
+
     def _display_summary(self):
         """PHASE4: Document7-style rich position summary."""
         stats = self.portfolio.get_stats(self.exchange)
@@ -37793,12 +37870,7 @@ class TradingBot:
             # five to seven times smaller. A progress bar toward a barrier reads as
             # a shortfall and invites over-trading toward a number that was never a
             # goal.
-            _cap483 = float(_g483.get('day_cap', 0.0) or 0.0)
-            _used483 = float(_g483.get('day_used', 0.0) or 0.0)
-            logger.info(f"{_dot} Day: {pnl:+.2f}% realised"
-                        + (f" (loss limit ${_cap483:.2f}, {100.0 * _used483 / _cap483:.0f}% used"
-                           f" \u00b7 dial {float(_g483.get('pct', 0) or 0):.0f}%/month)" if _cap483 > 0 else "")
-                        + " [C483]")
+            logger.info(self._c497_day_line(_dot, pnl, _g483))
         elif self.mode_mgr.mode == TradingMode.HIGH_PROFIT:
             pnl = self.mode_mgr.get_hp_pnl_pct(stats['live_equity'])
             _news_sent = 0.0
