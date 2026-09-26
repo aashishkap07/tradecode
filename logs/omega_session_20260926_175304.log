@@ -1,0 +1,66 @@
+17:53:04 | 📊 Paper Mode
+17:53:06 | ✅ Connected | 805 futures markets
+17:53:06 | 📐 RISK @ $252.22: monthly dial 15% = $37.92/month  |  per-trade risk 0.341% = $0.86  |
+    break-even win rate 32% at the measured 2.10 payoff [C482]
+17:53:06 |    today's loss limit is 25% of what the month has left, fixed at midnight (C482)
+ 
+  ================================================================================================
+  OMEGA C492  PAPER  Bitget perps
+  26 Sep 2026   17:53
+  start $252.22  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $252.22  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.59
+  DAY       limit $9.34  25% of what the month has left, fixed at midnight
+  RISK      0.341% = $0.86/trade  trades/day NO CAP
+  EDGE      +0.0474 blended  44W 95L realised
+  NEED      32% win at 2.10 payoff
+  ------------------------------------------------------------------------------------------------
+ 
+17:53:06 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+17:53:06 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+17:53:06 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+17:53:06 |        See deploy/DEPLOY.md — one command, no open ports, free.
+17:53:06 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+17:53:06 |    🎚️ Loss control: monthly risk dial 15% — today may lose 25% of what the month has left
+    (C482)
+17:53:06 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+17:53:06 | 💡 Press Ctrl+C to stop safely
+ 
+  18:01  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $249.25  unreal $-2.97
+  OPEN      flat  free $233.88
+  SHADOW    intraday M1 $254.10 (+0.73%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $94.18 (0.38x)  open $-2.97  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-2.97 -1.18%  peak $252.22  dd 1.18%
+  DAY       real $-0.04  limit $9.34 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.59 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  18:09  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $249.29  unreal $-2.93
+  OPEN      flat  free $233.88
+  SHADOW    intraday M1 $254.10 (+0.73%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $93.84 (0.38x)  open $-2.93  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-2.93 -1.16%  peak $252.22  dd 1.16%
+  DAY       real $-0.04  limit $9.34 (3.70%)  0% used
+            ..........................
+  MONTH     dial 15%  used $0.59 of $37.92  from $252.81
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
