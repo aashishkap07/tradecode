@@ -1424,15 +1424,29 @@ class _C462Report:
             # (_c482_risk_guard). "(DD / 22)" described the C467-B limit C482
             # retired -- a stale banner is misinformation (C468's own words).
             g = guard or {}
+            # C495: while the portfolio engine trades, the per-trade RISK, EDGE,
+            # NEED and DAY rows describe the IDLE intraday scanner -- the operator
+            # read "NEED 32% win" and "0.341%/trade" beside a book that has no
+            # trades, no win rate and no day limit. Show what governs the money.
+            _book495 = str(getattr(_c467_cfg_ref[0], 'C488_ENGINE', '') or '').lower() == 'portfolio'
             if g.get('month_budget'):
                 self._pack('MONTH', [f"dial {float(g.get('pct', 0)):.0f}% = "
                                      f"{_c462_money(float(g['month_budget']))} this month",
-                                     f"used {_c462_money(float(g.get('month_used', 0)))}"])
-                self._pack('DAY', [f"limit {_c462_money(float(g.get('day_cap', 0)))}",
-                                   "25% of what the month has left, fixed at midnight"])
+                                     f"used {_c462_money(float(g.get('month_used', 0)))}"
+                                     + (" realised" if _book495 else "")])
+                if not _book495:
+                    self._pack('DAY', [f"limit {_c462_money(float(g.get('day_cap', 0)))}",
+                                       "25% of what the month has left, fixed at midnight"])
             else:
                 self._pack('MONTH', [f"dial {dd:.0f}%" if dd else "dial not set",
                                      "day limit set once the month is anchored"])
+            if _book495:
+                self._pack('BOOK', ["daily trend + momentum + carry, rebalanced 00:05 UTC",
+                                    "month guard on MARKED equity (open P&L counts)",
+                                    "intraday scanner idle"])
+                self._rule(bottom=True)
+                self._emit('')
+                return
             self._pack('RISK', [
                 f"{float((plan or {}).get('per_trade_pct', 0.0) or 0.0):.3f}% = "
                 f"{_c462_money(eq * float((plan or {}).get('per_trade_pct', 0.0) or 0.0) / 100.0)}/trade",
@@ -2127,7 +2141,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C492'
+_OMEGA_VERSION = 'C495'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -18593,6 +18607,7 @@ class C488Engine:
         self.bill_since = 0
         self.bill_seen = []
         self.live = self._live_blank()
+        self.month = {}           # C495: the book's own month anchor, on MARKED equity
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
 
@@ -18659,6 +18674,7 @@ class C488Engine:
                 self.closed = list(d.get('closed') or [])[-50:]
                 self._topn = int(d.get('topn') or 0)
                 self.bill_since = int(d.get('bill_since') or 0)          # C492
+                self.month = dict(d.get('month') or {})                  # C495
                 self.bill_seen = [str(x) for x in (d.get('bill_seen') or [])][-2000:]
                 for k in ('drift_total', 'funding_live', 'funding_other'):
                     self.live[k] = float((d.get('live') or {}).get(k) or 0.0)
@@ -18675,6 +18691,7 @@ class C488Engine:
                          fund_next=self.fund_next, plan=self.plan, info=self.info,
                          closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
                          bill_since=int(self.bill_since or 0), bill_seen=self.bill_seen[-2000:],
+                         month=self.month,
                          live={k: self.live.get(k) for k in ('drift_total', 'funding_live', 'funding_other',
                                                              'drift_loud', 'corrections', 'bills')},
                          saved=time.time())
@@ -19464,15 +19481,39 @@ class C488Engine:
 
     # ── the loop ──────────────────────────────────────────────────────────
     def guard(self):
+        """the month guard: the operator's dial, on MARKED equity.
+
+        C495: the loss is measured on marked equity (open P&L counts, because
+        this book has no per-position stops), so the month's starting point must
+        be marked too. C482's anchor is REALISED equity, which let the open P&L
+        standing at a month turn leak into the new month's budget: a book $10
+        down at midnight on the 1st would start the month $10 "used"; one $10 up
+        would start with $10 of extra room. The book keeps its own anchor,
+        fixed at the first check of each calendar month (the same local
+        calendar as C482). The month already running when C495 first starts
+        keeps C482's anchor, so nothing jumps mid-month."""
         try:
             g = self.bot._c482_risk_guard()
         except Exception:
             return ''
-        if float(g.get('pct', 0.0)) <= 0.0:
+        pct = float(g.get('pct', 0.0) or 0.0)
+        if pct <= 0.0:
             return 'dial'
-        eq0 = float(g.get('month_eq0', 0.0) or 0.0)
-        if eq0 > 0 and eq0 - self.live_equity() >= eq0 * float(g['pct']) / 100.0:
-            return 'month:' + datetime.now().strftime('%Y-%m')
+        key = datetime.now().strftime('%Y-%m')
+        live = self.live_equity()
+        if self.month.get('key') != key or float(self.month.get('eq0', 0) or 0) <= 0:
+            eq0 = live
+            if not self.month and float(g.get('month_eq0', 0.0) or 0.0) > 0:
+                eq0 = float(g['month_eq0'])                  # the month C495 arrives in: unchanged
+            self.month = dict(key=key, eq0=round(float(eq0), 4))
+            logger.info(f"   \U0001f4c5 C488 month anchor {key}: ${eq0:.2f} "
+                        f"({'marked' if eq0 == live else 'carried from C482'}; budget {pct:.0f}% = ${eq0 * pct / 100:.2f})")
+            self.save()
+        eq0 = float(self.month['eq0'])
+        self._guard_view = dict(key=key, pct=pct, eq0=round(eq0, 2), marked=round(live, 2),
+                                budget=round(eq0 * pct / 100.0, 2), used=round(max(0.0, eq0 - live), 2))
+        if eq0 > 0 and eq0 - live >= eq0 * pct / 100.0:
+            return 'month:' + key
         return ''
 
     def due(self):
@@ -19488,6 +19529,7 @@ class C488Engine:
             self.last_rebal, self.halt, self.fund_next = '', '', {}
             self._topn = 0
             self.bill_since, self.bill_seen, self.live, self.prepared = 0, [], self._live_blank(), set()   # C492
+            self.month = {}                                                # C495
         self.save()
 
     def tick(self, can_trade=True):
@@ -19573,6 +19615,7 @@ class C488Engine:
                     next_rebal_utc=nxt.strftime('%Y-%m-%d %H:%M'), positions=pos[:40],
                     closed=self.closed[-10:],
                     funding=round(sum(p['funding'] for p in self.book.values()), 3),
+                    marked=round(eq, 2), guard=dict(getattr(self, '_guard_view', {}) or {}),
                     live=self._live_status())
 
     def _live_status(self):
@@ -19797,12 +19840,29 @@ def _c489_logit_predict(w, X):
 
 
 def _c489_xs_standardise(Fm, U):
+    """cross-sectional z-score of each feature, hour by hour.
+
+    C495 (found on the live server: the shadow scored 0 coins in 15 of 17
+    hours). Two holes, both silent:
+      - a feature that is the SAME for every coin -- btc4 is BTC's own move,
+        copied to all of them -- has zero spread, and 0/0 blanked it for EVERY
+        coin, so no coin could be scored. Only a floating-point residue in the
+        spread let an hour through (about 2 in 17). A feature with no spread
+        carries no cross-sectional information: it is 0, not missing.
+      - one coin's +/-inf (RARE's funding z on 25 Sep) made the mean infinite
+        and blanked the whole feature. An infinite value is missing for that
+        coin only.
+    The research engine shares this function and had both holes: its C489
+    results were computed on the hours that happened to survive."""
     out = {}
     for k, v in Fm.items():
         x = np.where(U, v, np.nan)
+        x = np.where(np.isinf(x), np.nan, x)
         mu = np.nanmean(x, axis=1, keepdims=True); sd = np.nanstd(x, axis=1, keepdims=True)
         with np.errstate(invalid='ignore', divide='ignore'):
-            out[k] = np.clip((x - mu) / sd, -5, 5)
+            z = (x - mu) / sd
+        flat = ~(sd > 1e-9 * np.maximum(1.0, np.abs(np.nan_to_num(mu))))
+        out[k] = np.clip(np.where(flat & ~np.isnan(x), 0.0, z), -5, 5)
     return out
 
 
@@ -19887,6 +19947,7 @@ class C489Shadow:
                 self.last_hour = int(d.get('last_hour') or 0)
                 self.syms = list(d.get('syms') or [])
                 self.start_equity = float(d.get('start_equity') or 0.0)
+                self.model_used = str(d.get('model_used') or '')         # C495: survives a restart
         except Exception as e:
             logger.warning(f"⚠️ C489 shadow state not loaded ({type(e).__name__}) -- starting fresh")
 
@@ -19895,6 +19956,7 @@ class C489Shadow:
             with self._lock:
                 cut = (int(time.time()) // 3600 - self.CACHE_H) * 3600000
                 d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms, start_equity=self.start_equity,
+                         model_used=self.model_used,
                          flow={s: {str(t): v for t, v in f.items() if t >= cut} for s, f in self.flow.items()})
             tmp = self.path + '.tmp'
             json.dump(d, open(tmp, 'w'))
@@ -20023,6 +20085,16 @@ class C489Shadow:
         X = np.stack([Z[f][-1] for f in mdl['feats']], -1)                   # the last completed hour
         p = _c489_logit_predict(np.array(mdl['w']), np.nan_to_num(X))
         p[np.isnan(X).any(-1) | ~U[-1]] = np.nan
+        # C495: what stopped a coin from being scored -- the server logged
+        # "0 coins scored" for 15 of 17 hours and said nothing about why
+        try:
+            b = self.syms.index('BTCUSDT')
+            nan = {f: int(np.isnan(Z[f][-1]).sum()) for f in mdl['feats']}
+            worst = sorted(((v, f) for f, v in nan.items() if v), reverse=True)[:3]
+            self._diag = (f"last-hour candle {int(U[-1].sum())}/{len(self.syms)}, BTC {'ok' if U[-1, b] else 'MISSING'}"
+                          + (", blank: " + ", ".join(f"{f} {v}" for v, f in worst) if worst else ""))
+        except Exception as e:
+            self._diag = f"diagnosis failed: {type(e).__name__}"
         gate = False
         m = ~np.isnan(p)
         if m.sum() >= 10:
@@ -20108,6 +20180,15 @@ class C489Shadow:
             with self._lock:
                 self.refresh()
                 p, gate, r_last, n = self.predict(now_h)
+                if n < 10 and datetime.utcnow().minute < 20:
+                    # C495: do not book a blind hour -- say why, and try again
+                    self._tick_at = time.time() + 90
+                    logger.warning(f"⚠️ C489 shadow hour {datetime.utcfromtimestamp(now_h/1000):%H}:00 UTC: only {n} "
+                                   f"coins scoreable ({getattr(self, '_diag', '?')}) -- retrying in 2 min")
+                    return
+                if n < 10:
+                    logger.warning(f"⚠️ C489 shadow hour {datetime.utcfromtimestamp(now_h/1000):%H}:00 UTC booked "
+                                   f"with {n} coins scoreable after 20 min ({getattr(self, '_diag', '?')})")
                 if self.last_hour:                       # never book an hour it did not hold
                     self.step(now_h, p, gate, r_last)
                 else:
@@ -20123,12 +20204,31 @@ class C489Shadow:
             self._fail_at = time.time()
             logger.warning(f"⚠️ C489 shadow hour failed ({type(e).__name__}: {e}) -- retrying in 5 min")
 
+    def flow_cover(self):
+        """C495: how close the full model is. It needs 30 coins with >= 140 of the
+        last 172 hours of taker flow. The old display showed the MINIMUM flow
+        count over all coins -- one coin new to the top 40 made it read '0h'.
+        And measured on 26 Sep 2026: Bitget's taker-buy-sell endpoint answers
+        "data ... is empty" (40054) for 25 of the top 40 coins (ADA, LINK, AVAX,
+        UNI, PEPE, ARB ...), so 30 coins with a week of flow may never exist."""
+        h_now = int(time.time() * 1000) // 3600000 * 3600000
+        lo, lo24 = h_now - 172 * 3600000, h_now - 24 * 3600000
+        week = served = 0
+        for s in self.syms:
+            f = self.flow.get(s, {})
+            if sum(1 for t in f if t >= lo) >= 140:
+                week += 1
+            if any(t >= lo24 for t in f):
+                served += 1
+        return week, served
+
     def status(self):
         with self._lock:
-            flow_h = min((len(v) for v in self.flow.values()), default=0)
+            week, served = self.flow_cover()
+            flow_h = week
             return dict(mode='shadow' if self.active() else 'off', coins=len(self.syms),
                         last_hour=datetime.utcfromtimestamp(self.last_hour / 1000).strftime('%Y-%m-%d %H:00') if self.last_hour else '',
-                        flow_hours=flow_h, warming=flow_h < 172, gate=self.gate_last,
+                        flow_hours=flow_h, flow_week=week, flow_served=served, warming=week < 30, gate=self.gate_last,
                         model=self.model_used, start_equity=round(float(self.start_equity or 0.0), 2),
                         M1=self.record('M1'), M1g=self.record('M1g'))
 
@@ -39672,6 +39772,13 @@ async function pull(){
        restart the bot); "today" is anchored at midnight and survives it. */
     q('eqs').innerHTML='this run <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>'+
       (d.day?' \u00b7 today <span class="'+cls(d.day.realised)+'">'+sgn(d.day.realised)+'</span>':'');
+    /* C495: the book holds its P&L open for days to weeks, so the realised
+       figure above can sit dollars away from what the account is worth. */
+    var bk=d.c488;
+    if(bk&&bk.mode==='portfolio'&&!bk.error&&bk.n&&bk.marked!==undefined){
+      q('eqs').innerHTML+='<br>marked <b>'+money(bk.marked)+'</b> \u00b7 book open <span class="'+
+        cls(bk.unrealized)+'">'+sgn(bk.unrealized)+'</span>';
+    }
 
     if(d.risk){
       /* C482-B: one guard, set by the dial. The bar is the TIGHTER of the
@@ -39684,6 +39791,14 @@ async function pull(){
       q('days').innerHTML='month '+money(R.month_used)+' of '+money(R.month_budget)+
         ' · today '+money(R.day_used)+' of '+money(R.day_cap)+
         (R.halt?' · <span class="'+cls(-1)+'">NOT TRADING: '+(why[R.halt]||R.halt)+'</span>':'');
+      /* C495: while the book trades, ITS guard is the one that acts -- on
+         MARKED equity, with no day limit (that governs the idle scanner). */
+      var gv=(d.c488&&d.c488.mode==='portfolio'&&!d.c488.error)?d.c488.guard:null;
+      if(gv&&gv.budget>0){
+        fR=Math.max(0,Math.min(1,gv.used/gv.budget));
+        q('days').innerHTML='month '+money(gv.used)+' of '+money(gv.budget)+' on marked equity \u00b7 book guard'+
+          (d.c488.halt?' \u00b7 <span class="'+cls(-1)+'">BOOK HALTED: '+d.c488.halt+'</span>':'');
+      }
       var bR=q('daybar');bR.style.width=(100*fR).toFixed(1)+'%';
       bR.className=fR>0.8?'b':(fR>0.5?'w':'');
       var sd=q('dial');fillDial();
@@ -39728,7 +39843,7 @@ async function pull(){
             ' <span class="muted">'+r.days+'d \u00b7 '+r.trades+' trades'+(r.t!==undefined?' \u00b7 t '+r.t+' \u00b7 '+r.npos+'/4':'')+
             (r.eligible?' \u00b7 <b class="good">ELIGIBLE</b>':'')+'</span></div>'};
         q('shadow').innerHTML='<div class="s muted">duplicate paper account from '+money(sh.start_equity)+' \u2014 never touches the real one \u00b7 '+sh.coins+' coins \u00b7 model '+
-          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model after 172h of flow (now '+sh.flow_hours+'h)':'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
+          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model needs 30 coins with a week of taker flow: '+(sh.flow_week||0)+' have it; Bitget serves flow for '+(sh.flow_served||0)+' of '+sh.coins:'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
           line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g);
       }
     }
@@ -39792,7 +39907,12 @@ async function pull(){
       });
       q('pos').innerHTML='<div class="s">'+p.positions.length+' open · unrealised <span class="'+cls(tot)+'">'+
         sgn(tot)+'</span></div>'+h;
-    }else{q('pos').innerHTML='<span class="muted">none — flat</span>'}
+    }else{
+      /* C495: "none -- flat" sat right above a book holding 8 positions. This
+         panel is the INTRADAY engine's; say where the book's positions are. */
+      var nb=(d.c488&&d.c488.mode==='portfolio'&&!d.c488.error)?(d.c488.n||0):0;
+      q('pos').innerHTML='<span class="muted">'+(nb?'no intraday positions \u2014 the portfolio book holds '+nb+
+        ' position'+(nb>1?'s':'')+' (below)':'none \u2014 flat')+'</span>'}
   }catch(e){q('err').textContent='connection error: '+e}
 }
 

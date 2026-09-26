@@ -242,6 +242,7 @@ ok("a month loss past the dial flattens the book and halts", not e.book and e.ha
 e._tick_at = 0; e.tick()
 ok("  and no rebalance while halted", not calls)
 e.halt = 'month:2000-01'
+e.month = {'key': '2000-01', 'eq0': 1200.0}     # C495: the book keeps its own (marked) month anchor
 bot._c482_risk_guard = lambda: {'pct': 15.0, 'month_eq0': 1000.0}
 e._tick_at = 0; e.tick()
 ok("  a new month clears it and rebuilds the book at once", e.halt == '' and len(calls) == 1)

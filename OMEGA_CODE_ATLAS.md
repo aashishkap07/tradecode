@@ -10,12 +10,14 @@
   $252.63.
 - **An 18:43 restart resumed cleanly,** with no second rebalance the same UTC
   day.
-- **C490 and C492 are pushed but not yet deployed.** One pull deploys both, in
-  paper; see the Termius commands in `reports/2026-09-26_live_mode.md`. C492
-  changes nothing about money in paper.
-- **26 Sep: the operator held the deploy and asked for a full re-analysis
-  first.** The answer (C493/C494) changed no trading code, and it recommends
-  deploying. See `reports/2026-09-26_round5_breadth.md`.
+- **Running on the VPS (logs branch and screenshots):**
+  - C490 from 26 Sep 00:08 IST;
+  - **C492 from 26 Sep 17:53 IST.**
+  - C495 is pushed, not deployed. Its deploy commands are in
+    `reports/2026-09-26_c495_and_round6.md`.
+- **26 Sep:** the operator held the C492 deploy for a full re-analysis
+  (C493/C494), then deployed it. Their screenshots and the server logs led to
+  C495 and round 6 (C496).
 - **Reminder set in the 26 Sep session:** 29 Sep 01:15 UTC (06:45 IST), to run
   pending #1.
 
@@ -32,6 +34,87 @@
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
 | 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+| 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-26 — C495/C496: THE FIRST C492 SCREENS, THE SERVER LOGS, AND ROUND 6
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Deployed on the VPS (checked in the logs branch and the operator's
+screenshots):**
+- **C490 since 26 Sep 00:08 IST.** The Atlas had said "not deployed"; that was
+  stale.
+- **C492 since 26 Sep 17:53 IST.**
+- **C495 is pushed, not deployed** (Termius commands in
+  `reports/2026-09-26_c495_and_round6.md`). Nothing about money changes.
+
+**The screens are correct where it matters:**
+- **Equity:** $252.22 realised; available $233.88 = equity − the book's $18.34
+  margin.
+- **The book:** 8 positions, gross 0.378×.
+- **Dial:** 15%.
+- **The daily rebalance ran at 05:35:35 IST** (log). It sold the 0.01 ETH,
+  because its target had fallen below one $27 step.
+- **C490 carry:** ran at start and at 05:40 IST.
+
+**Shipped in C495:** what the screens and logs showed was wrong or misleading.
+
+| # | found | fixed |
+|---|---|---|
+| 1 | **The shadow's full model can never switch on.** Bitget's `taker-buy-sell` answers 40054 "data … is empty" for **25 of the top 40 coins** (ADA, LINK, AVAX, UNI, PEPE, ARB …; measured paced, so it is not rate limiting). The switch needs 30 coins with a week of flow. | The panel says so: "needs 30 coins with a week of taker flow: N have it; Bitget serves flow for M of 40". `flow_cover()` counts exactly what the switch counts. The old "(now 0h)" was the MINIMUM over all coins. The no-flow model stays (it was pre-registered as the warm-up and fails in research like the full one). |
+| 2 | **The shadow scored 0 coins in 15 of 17 hours** on the server (logs), silently. A first guess (history-candles lagging the hour) was **disproved** by a probe: the new candle is served 1–3 s after the hour. **Root cause, reproduced on real Bitget data** (the same 2-in-17 pattern, matching the server's scored hours exactly): `btc4` is BTC's own move COPIED to every coin, so its cross-sectional spread is zero. `_c489_xs_standardise` computed 0/0, which blanked it for all 40 coins in **19 of 24 hours**. In the other 5 hours a floating-point residue turned it into **±5-clipped noise** fed to the model. A second hole: one coin's ±inf (RARE's funding z, 25 Sep) blanked a whole feature. | A feature with no spread standardises to **0**; an infinite value is missing for that coin only. After the fix, **24 of 24** real hours score 37–39 coins (3 of 24 before). Also, an hour with < 10 scoreable coins now logs **why** and is retried every 2 min until :20, not booked blind. **The research engine had the identical function** (`research/omega_c489_research.py`), now fixed identically so parity holds. Its C489 results were computed on the surviving hours (see pending #12). |
+| 3 | **The book's month guard compared MARKED equity with a REALISED anchor** (C482's), so open P&L at a month turn leaked into the new month. | The book keeps its own month anchor on marked equity (`C488Engine.month`, persisted). The month it arrives in keeps C482's anchor, so nothing jumps mid-month. |
+| 4 | **The equity tile hid the book's open P&L** ($252.22 shown, about $249.36 marked). | Tile adds "marked $X · book open ±$Y". |
+| 5 | **The risk tile showed realised "month used" and a day limit** that do not govern the book. | While the book runs: "month $X of $Y on marked equity · book guard". |
+| 6 | **"Open positions: none — flat" sat above a book of 8.** | "no intraday positions — the portfolio book holds 8 positions (below)". |
+| 7 | **The boot RISK FRAME printed the idle scanner's figures:** "0.341%/trade", "EDGE", "NEED 32% win". | While the book runs: a BOOK row (daily trend + momentum + carry; month guard on marked equity; scanner idle). The intraday frame is unchanged. |
+| 8 | **"model pending" after every restart.** | The model in use is saved. |
+
+**Tests:** `omega_c495_test.py`, 26 checks, all pass, including the page in
+Chromium. A negative control on the old function fails the new checks.
+
+> **→ Standing Rule 56: PROVE THE CAUSE BEFORE FIXING IT.** The shadow's empty
+> hours looked like a late candle. A 12-minute probe across a real hour
+> boundary showed the candle arrives within 3 s, so that "fix" would have
+> changed nothing. Replaying 24 real hours through the real code, feature by
+> feature, found the cause: a feature copied identically to every coin,
+> standardised by 0/0. The replay also turned up a second, unrelated fact:
+> Bitget serves taker flow for only 15 of 40 coins, so the full-model switch
+> can never happen.
+
+## 🔬 ROUND 6 (`research/c496_preregistration.md`, commit dcbe5c9, pushed before any of its data)
+
+**The gaps round 5 left:**
+- every futures asset a normal Bitget account can trade;
+- the methods popular bots use;
+- a self-adjusting loop.
+
+**What the account can trade** (live API, 26 Sep):
+- **805 USDT-M perpetuals** (466 crypto, 339 RWA: stocks, ETFs, metals,
+  energy, indices);
+- **49 USDC-M perpetuals** (duplicates);
+- **no delivery futures on any product line**, so a futures-only calendar
+  basis trade is impossible.
+- **RWA funding history is 90 days deep.** Oil longs were paid 28–34%/yr and
+  gold/silver longs paid 8–10%/yr. That is too short to test a carry trade
+  (t ≈ 0.5 even at Sharpe 1), so it is not tested (Rule 17).
+
+| test | what | result | verdict |
+|---|---|---|---|
+| W1 weekend clock | Bitget stock/ETF/commodity perps trade 24/7, their markets do not. Does the weekend drift predict Monday? 319 contracts, hourly, Aug 2025 → Sep 2026 | Discovery (to Feb 2026): continuation, slope +0.48, t +4.2 (net −0.14%/wknd even there). **Holdout (Mar → Sep 2026, 4,806 contract-weekends): the sign FLIPPED** (reversal, t −3.5); the rule nets −0.41%/weekend, t −3.55, 0/4 quarters | **FAIL**. Even the flipped rule would clear costs by only ~0.05%/weekend |
+| G1 neutral grid bot | ±15%, 20 steps, maker 0.02%; 513 coin-months of real 1-minute paths, 2024-09 → 2026-08 | **57% of coin-months won, median +1.31%**, but the **mean is −0.72%**; the worst coin-month is **−275%** of its allocation (a short grid on a coin that ran far out of range); monthly −0.67%, t −0.56 | **FAIL**. A grid is short volatility: many small wins, rare ruinous losses |
+| D1 drawdown loop | CPPI-like: risk × clip(1 − DD/30%, 0.25, 1) | Max DD 31% → 21%, but net +32.3% → +24.7%/yr; **Sharpe unchanged (1.41 vs 1.42)**; difference t −2.35 | **FAIL**. It is a lower dial with extra steps |
+
+**Not tested, by argument:**
+- **martingale:** the optional-stopping theorem;
+- **DCA:** a way of buying, not an edge;
+- **copying top traders:** round 5 N4b measured it at −8.1%/yr.
+
+**Files:** `research/omega_c496_research.py`,
+`research/c496_fetch_rwa1h.py`, `research/c496_results.txt/.json`. The grid
+and fill logic were unit-checked on hand-made paths before any real run.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧭 2026-09-26 — C493/C494: THE FULL RE-ANALYSIS — ROUND 5 (BREADTH) AND THE COST TEST

@@ -300,12 +300,29 @@ def logit_predict(w, X):
 
 
 def xs_standardise(Fm, U):
+    """cross-sectional z-score of each feature, hour by hour.
+
+    C495 (found on the live server: the shadow scored 0 coins in 15 of 17
+    hours). Two holes, both silent:
+      - a feature that is the SAME for every coin -- btc4 is BTC's own move,
+        copied to all of them -- has zero spread, and 0/0 blanked it for EVERY
+        coin, so no coin could be scored. Only a floating-point residue in the
+        spread let an hour through (about 2 in 17). A feature with no spread
+        carries no cross-sectional information: it is 0, not missing.
+      - one coin's +/-inf (RARE's funding z on 25 Sep) made the mean infinite
+        and blanked the whole feature. An infinite value is missing for that
+        coin only.
+    The research engine shares this function and had both holes: its C489
+    results were computed on the hours that happened to survive."""
     out = {}
     for k, v in Fm.items():
         x = np.where(U, v, np.nan)
+        x = np.where(np.isinf(x), np.nan, x)
         mu = np.nanmean(x, axis=1, keepdims=True); sd = np.nanstd(x, axis=1, keepdims=True)
         with np.errstate(invalid='ignore', divide='ignore'):
-            out[k] = np.clip((x - mu) / sd, -5, 5)
+            z = (x - mu) / sd
+        flat = ~(sd > 1e-9 * np.maximum(1.0, np.abs(np.nan_to_num(mu))))
+        out[k] = np.clip(np.where(flat & ~np.isnan(x), 0.0, z), -5, 5)
     return out
 
 
