@@ -1,0 +1,226 @@
+22:41:39 | 📊 Paper Mode
+22:41:42 | ✅ Connected | 805 futures markets
+22:41:42 | 📊 Bitget Fees: Maker 0.02% | Taker 0.06%
+22:41:42 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+22:41:42 | 📋 Limit Orders: ENABLED (offset 0.1%)
+22:41:42 | 📂 Loaded state: $252.22 | 0 positions | available $233.88 (locked $18.34)
+22:41:42 | 📐 RISK @ $252.22: monthly dial 15% = $37.92/month  |  the portfolio book trades: its month guard closes the book if MARKED equity falls that far below the month's anchor [C497]
+ 
+  ================================================================================================
+  OMEGA C497  PAPER  Bitget perps
+  26 Sep 2026   22:41
+  start $252.22  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $252.22  805 markets
+  MONTH     dial 15% = $37.92 this month  used $0.59 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+22:41:42 |    (legacy Flask page not installed — the dashboard is the control panel)
+22:41:42 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+22:41:42 |    📱 Same WiFi: http://10.0.0.160:8138/?t=<your token>
+22:41:42 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+22:41:42 |        See deploy/DEPLOY.md — one command, no open ports, free.
+22:41:42 | ============================================================
+22:41:42 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+22:41:42 |    ℹ️ C497: the portfolio book trades. The blocks below describe the INTRADAY SCANNER, which is idle (OMEGA_ENGINE=intraday restores it); the book is summarised in the RISK FRAME above and the BOOK row every 8 min
+22:41:42 |    🧪 C364 PAPER=LIVE PARITY — costs modelled in paper:
+22:41:42 |       • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)
+22:41:42 |       • market fills: lift the ASK / hit the BID — never the last price
+22:41:42 |       • exit fee: taker on current notional
+22:41:42 |       • funding: charged per 8h settlement crossed
+22:41:42 |       NOT modelled: partial fills, API outages, queue position.
+22:41:42 | ============================================================
+22:41:42 | 🔒 Score floor reset: 0.32 (single mode — HP retired at C403-3)
+22:41:42 | 🧮 C458 EDGE STATE — what the ledger permits today:
+22:41:42 |    realised 6W/14L → shrunk base rate 0.400; fair odds for a 2.00R target are 0.333
+22:41:42 |    blended edge +0.0474  (prior +0.0467 x0.60 + realised +0.0485 x0.40 (n=20; anchored on realised payoff 2.10 (7W/13L in R) (break-even wr 0.322 vs realised 0.400 = e +0.0776) x extrapolation shrink 0.63 to T 1.41R))
+22:41:42 |    ✅ edge is positive — the expectancy gate is open on merit, and exploration should stay idle.
+22:41:42 | 📋 Version history: see CHANGELOG.md (auto-updated each revision)
+22:41:42 | ============================================================
+22:41:42 | 📊 ARCHITECTURE — what is actually running:
+22:41:42 |   1 SCANNER    756 markets → volume floor → top 30 by liveliness
+22:41:42 |   2 ENTRY      11 signal components → one score; only 3 hard vetoes
+22:41:42 |                (can't pay fees / no room to stop / not tradeable).
+22:41:42 |                Everything else is a weighted penalty [C403-5].
+22:41:42 |                EXPECTANCY GATE [C404/C405]: R = proj×√t ÷ stop,
+22:41:42 |                E = p(R×0.60)−(1−p); E must clear 0 AND the live percentile bar.
+22:41:42 |                TRADES/DAY [C467]: NO CAP. No count target, no hard cap, no per-scan limit. 2/pair still applies (that is concentration, not pace).
+22:41:42 |                What refuses a trade now: the three hard vetoes only — can't pay fees, no room to stop, not tradeable. E<0 is a PENALTY while p has no measured skill [C467].
+22:41:42 |   3 MONITOR    SPLIT LOOP [C397]: prices every 0.8s (stop, floors);
+22:41:42 |                OHLCV/DRI every 20s; regime every 90s, AFTER positions.
+22:41:42 |   4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)
+22:41:42 |                · PROFIT FLOOR (C397 runner floor binds) · TIME.
+22:41:42 |                Loss patience is BOUNDED at 1.35× the soft limit [C404-2].
+22:41:42 |   SESSIONS     when each market DISCOVERS its price, in IST (US is currently on EDT):
+22:41:42 |                crypto        24/7        · metals+energy  Globex ~24/5
+22:41:42 |                US equity     19:00–01:30 IST  (a NIGHT session from India)
+22:41:42 |                index futures Globex ~24/5 (SP500/NDX100 are futures, not cash)
+22:41:42 |                Korea (KRX)   05:30–12:00 IST · HK  07:00–13:30 IST (lunch 09:30–10:30)
+22:41:42 |                ● OPEN  crypto        24/7
+22:41:42 |                ○ shut  us_equity     US cash closed (weekend)
+22:41:42 |                ○ shut  index_future  Globex closed (Sat)
+22:41:42 |                ○ shut  metal         Globex closed (Sat)
+22:41:42 |                ○ shut  korea_equity  KRX closed (weekend)
+22:41:42 |                ○ shut  hk_equity     HKEX closed (weekend)
+22:41:42 |   UNIVERSE     crypto + 294 RWA perps (stocks/metals/energy/ETFs),
+22:41:42 |                session-gated; leverage scaled to each instrument's own ATR;
+22:41:42 |                fee burden inside E. ONE POOL, no per-class quota [C409].
+22:41:42 |                WHY: crypto alive 39.3% of bars, ANY asset alive 59.8%
+22:41:42 |                (+20.5pp). Cross-class aliveness corr +0.04/+0.14 vs
+22:41:42 |                crypto's OWN internal factor corr +0.925 — real diversification.
+22:41:42 |   EDGES        C398 capitulation tilt (down-side only, +4.67pp measured)
+22:41:42 |                C396 session tilt · C401 taker-flow (instrumented)
+22:41:42 |                C403-7 flow term ±10% on direction
+22:41:42 |   RETIRED      HP phase ladder (C403-3: 5 incident classes, 0 benefit)
+22:41:42 |                Guardian + C329 (C403-4: 4 controllers, none knew the risk)
+22:41:42 |                per-symbol learning (C403-2: needs ~10 months of trades)
+22:41:42 |                DSI+DRI divergence / DRI HARD (C399: unreachable by construction)
+22:41:42 | ============================================================
+22:41:42 | ============================================================
+22:41:42 | ✅ DRI SYSTEM (11 components, renormalised to exactly 1.0 [C400]):
+22:41:42 |    Threshold: 0.3 | Hard: 0.5
+22:41:42 |    Weights: Mom=0.18 Tech=0.16 Vol=0.11
+22:41:42 |    ML=0.04 Wave=0.04 OFI=0.06
+22:41:42 |    Fund=0.05 MTF=0.06 RVS=0.07
+22:41:42 |    PA=0.15(dyn→0.45) Time=0.10 — nominal sum 1.02, rescaled to 1.00 at runtime [C400: was 1.113]
+22:41:42 |    DSI = 6 of those 11 (Mom/Vol/Tech/ML/Wave/MTF, sum 0.59) inverted, Hurst-modulated, now unit-scaled [C400]
+22:41:42 |    READ THEM AS: DRI negative = reversal thesis STRONG; DRI→0 = thesis DYING. DSI positive = sustainable; DSI→0 = spent.
+22:41:42 |    Updates: every 20s (15m candles do not move faster; prices stay on the 0.8s leg)
+22:41:42 | ============================================================
+22:41:42 | 📋 CONFIGURATION:
+22:41:42 |    💰 Equity: $252.22 | Available: $233.88
+22:41:42 |    📊 Position Sizing: Dynamic allocation, min $5.0 | 3-5 positions
+22:41:42 |    🎲 Leverage: 1x-10x  (single mode — HP retired, C403-3)
+22:41:42 |    📋 Limit Orders: ON | Maker 0.02% Taker 0.06%
+22:41:42 |    🎚️ Loss control: monthly risk dial 15% — the book's month guard on marked equity; no day limit applies to the book (C497)
+22:41:42 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+22:41:42 |    ⏱️ Prices 0.8s | DRI 20s | Summary 480s | Min age 15min
+22:41:42 |    🧠 Shared learning ON (Markov chains, calibration). Per-symbol memory OFF [C403-2].
+22:41:42 | ============================================================
+22:41:42 | 📊 MODE: NORMAL
+22:41:42 |    Normal start: $250.00
+22:41:42 | ============================================================
+22:41:42 | 💡 Press Ctrl+C to stop safely
+22:41:42 | ============================================================
+22:41:42 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before)
+22:41:44 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it)
+ 
+  22:49  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $248.04  unreal $-4.18
+  OPEN      no intraday positions  book holds 8 (BOOK row)  free $233.88
+  SHADOW    intraday M1 $254.04 (+0.71%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $95.57 (0.39x)  open $-4.18  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-4.18 -1.66%  peak $252.22  dd 1.66%
+  MONTH     book guard $4.77 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ###.......................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+22:49:40 | 
+22:49:40 | ============================================================
+22:49:40 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+22:49:40 | 💰 Equity: $252.22 | Unrealized: $-4.18
+22:49:40 | 💵 Available: $233.88 | Locked: $18.34
+22:49:40 | 📈 Session: $-4.18 (-1.7%)
+22:49:40 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+22:49:40 | ============================================================
+22:49:40 | ============================================================
+22:49:40 | 🔻 Book guard: $4.77 of $37.92 used this month on marked equity (13%, from $252.81) · realised today -0.02% [C497]
+22:49:40 | ============================================================
+22:49:40 | 
+ 
+  22:57  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $247.79  unreal $-4.43
+  OPEN      no intraday positions  book holds 8 (BOOK row)  free $233.88
+  SHADOW    intraday M1 $254.04 (+0.71%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $96.03 (0.39x)  open $-4.43  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-4.43 -1.76%  peak $252.22  dd 1.76%
+  MONTH     book guard $5.02 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ###.......................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+22:57:40 | 
+22:57:40 | ============================================================
+22:57:40 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+22:57:40 | 💰 Equity: $252.22 | Unrealized: $-4.43
+22:57:40 | 💵 Available: $233.88 | Locked: $18.34
+22:57:40 | 📈 Session: $-4.43 (-1.8%)
+22:57:40 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+22:57:40 | ============================================================
+22:57:40 | ============================================================
+22:57:40 | 🔻 Book guard: $5.02 of $37.92 used this month on marked equity (13%, from $252.81) · realised today -0.02% [C497]
+22:57:40 | ============================================================
+22:57:40 | 
+ 
+  23:05  up 0h24m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $247.65  unreal $-4.57
+  OPEN      no intraday positions  book holds 8 (BOOK row)  free $233.88
+  SHADOW    intraday M1 $254.04 (+0.71%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $95.97 (0.39x)  open $-4.57  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-4.57 -1.81%  peak $252.22  dd 1.81%
+  MONTH     book guard $5.16 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ####......................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+23:05:41 | 
+23:05:41 | ============================================================
+23:05:41 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+23:05:41 | 💰 Equity: $252.22 | Unrealized: $-4.57
+23:05:41 | 💵 Available: $233.88 | Locked: $18.34
+23:05:41 | 📈 Session: $-4.57 (-1.8%)
+23:05:41 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+23:05:41 | ============================================================
+23:05:41 | ============================================================
+23:05:41 | 🔻 Book guard: $5.16 of $37.92 used this month on marked equity (14%, from $252.81) · realised today -0.02% [C497]
+23:05:41 | ============================================================
+23:05:41 | 
+ 
+  23:13  up 0h32m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $247.61  unreal $-4.61
+  OPEN      no intraday positions  book holds 8 (BOOK row)  free $233.88
+  SHADOW    intraday M1 $254.04 (+0.71%)  M1g $252.26 (+0.00%)  2d paper only
+  CARRY     $251.86 (-0.16%)  8 held  paper only
+  BOOK      8 pos gross $95.97 (0.39x)  open $-4.61  funding $+0.01  vol 20% top 20
+            rebal 2026-09-26
+  SESSION   $-4.61 -1.83%  peak $252.22  dd 1.83%
+  MONTH     book guard $5.20 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ####......................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32%  $+2.22
+  FEES      no fills yet this run
+  MARKET    bias +0.00  breadth +0.00
+  ------------------------------------------------------------------------------------------------
+ 
+23:13:41 | 
+23:13:41 | ============================================================
+23:13:41 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+23:13:41 | 💰 Equity: $252.22 | Unrealized: $-4.61
+23:13:41 | 💵 Available: $233.88 | Locked: $18.34
+23:13:41 | 📈 Session: $-4.61 (-1.8%)
+23:13:41 | 🎯 Win Rate: Overall 32% | Session 0% | Open 0%
+23:13:41 | ============================================================
+23:13:41 | ============================================================
+23:13:41 | 🔻 Book guard: $5.20 of $37.92 used this month on marked equity (14%, from $252.81) · realised today -0.02% [C497]
+23:13:41 | ============================================================
+23:13:41 | 
