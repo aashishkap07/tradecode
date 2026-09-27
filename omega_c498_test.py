@@ -175,7 +175,7 @@ st_i = bot_i.portfolio.get_stats(bot_i.exchange)
 p_i, pct_i = om.TradingBot._c498_session_pnl(bot_i, st_i)
 ok("'Session:' is the old sum (intraday realised + open)",
    p_i == bot_i.portfolio.session_pnl + (st_i.get('unrealized') or 0), f"{p_i}")
-ok("version C498", om._OMEGA_VERSION == 'C498')
+ok("version C498 or later", int(om._OMEGA_VERSION[1:]) >= 498)
 
 print()
 print("=" * 66)

@@ -16,6 +16,10 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
+  - **C499 is pushed, not deployed.** It gives the book complete history
+    (funding depth, 80 candidates) and makes a failed fetch wait instead of
+    trade. It changes the book's size toward the research spec. Deploy
+    commands are in `reports/2026-09-27_c499_complete_history.md`.
   - **C498 from 26 Sep 23:48 IST, verified in the server log:**
     - SESSION reads $−0.02 / $−0.01 / $+0.07 in its first three blocks (it
       was "$−4.18 … peak $252.22 dd 1.66%" under C497);
@@ -48,8 +52,67 @@
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
 | 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
-| 13 | **C488 weekly-sleeve stability (why ETH was sold on 26 Sep)** | 27 Sep 00:07 UTC check-in (scheduled), then decide | The 26 Sep 00:05 UTC rebalance sold the 0.01 ETH. The same completed days, replayed on 26 Sep at 17:57 UTC with the bot's own code (`research/c498_plan_replay.py`), give ETH **+$17.42**, one step held. The server's "gross 0.40x of $250.72" is consistent only with ETH's target having been **under $6** that morning, i.e. **outside the carry-long fifth**. ETH's 7-day funding on Monday 21 Sep was 10.99bp against a cutoff of 11.42bp: **0.4bp inside**. **Ruled out:** a code change (C490's target code is identical), funding coverage (≥ 33 days on every coin), dial (log shows 20% vol), rounding (nearest-step since C488). **Suspect (not proven):** the weekly sleeves' Monday ranks are **re-derived every day inside that day's candidate list** (top 40 by live 24h volume). One extra low-funding coin in Monday's top 20 moves the cutoff. The research ranks Monday on the full universe once and holds it all week. **C498 logs the plan and the candidate list**, so the 27 Sep rebalance can be compared with a same-moment replay. If a candidate-list difference flips a C2/C3 rank, the fix is to freeze the Monday decisions for the week (research parity). Quantify it on research data first; the operator decides. Cost so far: one ETH round trip, about $0.03. |
+| 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-27 — C499: THE BOOK TRADES ON COMPLETE HISTORY, OR IT WAITS
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Why this version exists:** the 27 Sep check-in replayed the 00:05 UTC
+rebalance with the bot's own code (`research/c498_plan_replay.py`). Overnight,
+every position involving the **carry** sleeve roughly doubled (ETH +$17 →
++$31, SOL +$12 → +$21), while trend and momentum positions did not move. Two
+defects in `C488Engine._history` were found, proven on real Bitget data, and
+fixed.
+
+| # | defect (proven) | evidence | fix |
+|---|---|---|---|
+| 1 | **Funding stopped at 200 records.** That is 66 days on an 8-hour coin but **33 days on a 4-hour coin** (ENA, TAO, HYPE, PUMP, ONDO …). Before that, funding was **zero**, so carry ranks were built on nothing: all coins tied, or the 4-hour coins looked "cheapest". The carry sleeve's size comes from its last 60 days of P&L, and **26 of those 60 days** were built that way. | `research/c499_funding_depth.py`. Benchmark R = Bitget's 90 days + the Binance archive's older funding (the research source). **Bot as it was: $45 / $60 total distance from R** on the 26 / 27 Sep rebalances, sized +3% then **+43%**. All Bitget serves, zeros before: $38 / $36, about +26%. **All Bitget serves, unknown = NaN: $12 / $12, a stable −8%.** | Take **every page Bitget serves** (it keeps about 90 days: 3 pages for 8-hour coins, about 6 for 4-hour coins; `endTime`/`startTime` are ignored). Days before a coin's first record are **NaN**, so the coin sits out that day's carry ranking, as an unlisted coin would. |
+| 2 | **A failed request was read as "no more data".** `_get` returns None after its tries; `if not d: break` then left the coin's funding at zero, or dropped the coin (candles). | The 26 Sep ETH sale (pending #13): a silent ARB funding failure is the one single failure that reproduces the server's rebalance exactly. | A candles or funding page that did not load **raises**. The rebalance stops before any order, the tick logs "⚠️ C488 rebalance failed (… did not load) -- retrying in 10 min", and the book is untouched. An **empty** answer (a new coin) is not a failure. History requests get 5 tries. |
+| 3 | **The history held only TODAY's busiest 40 coins.** The book is today's top 20 by 30-day median volume, but its size comes from about 130 days of sleeve P&L. Fetching only today's top 40 rewrote that past with today's winners (survivorship). | `c499_funding_depth.py --live` on 27 Sep, same data, research-faithful book: **$169 gross from 40 candidates, $132 from 60, $134 from 80**. It converges from 60. | `candidates()` fetches **4× the book's width (80 at top 20)**: 672 requests in 43 s, 0 errors in 3 runs. The carry ledger keeps its own 2× (`mult=2`). |
+
+**What changes on the next rebalance after deploy:** the book moves to the
+research-faithful size. On 27 Sep's data, with 80 candidates, C499 gives
+**$124.60 gross at $250 (0.50x)** against the benchmark's $133.98 (−7%):
+ETH +$19.50, WLD −$14.27, SOL +$12.75, and so on. For comparison, **tonight's server rebalance (C498, 05:35 IST 27 Sep).** It matched the
+same-moment replay (`c498_plan_replay.py`, run at 00:08 UTC) **to the cent**:
+all 12 targets agree once scaled by equity ($248.86 / $247.60), and the
+40-coin candidate lists are identical. That validates the replay tool and
+rules out a candidate-list cause tonight. It **bought back the 0.01 ETH**
+(as predicted) and added SOL (0.1 → 0.2), ZEC (new long), TAO and ENA (new
+shorts) and more PUMP: 6 trades, $71.58, **gross 0.70x**. That 0.70x is
+defect 1 live: the carry scale doubled overnight on truncated funding. C499's
+research-faithful size is about 0.50x, so after deploy the next rebalance
+trims roughly a quarter to a third of the book (a few cents in fees).
+
+**The carry ledger (C490)** reads its history through the same `_history()`.
+It also gets complete funding pages, and a failed fetch now raises; its own
+handler already retries in 5 minutes. Its decisions use 3 days of funding and
+its width is pinned at 2×, so nothing else about it changes.
+
+**Rate limit, measured:** the history burst is now about 320 requests in about
+20 s. From the sandbox, 237 requests × 3 runs gave 0 errors. A 429 now costs
+a 10-minute retry, not a wrong book.
+
+> **→ Standing Rule 57: A FAILED FETCH MUST NEVER LOOK LIKE AN ANSWER, AND THE
+> HISTORY MUST BE THE RESEARCH'S HISTORY.** `if not d: break` made "the request
+> failed" read as "there is no more data", and the book traded on it. A
+> 200-record limit and a 40-coin prefilter each quietly gave the sizing
+> arithmetic a different past from the one the research measured. Before any
+> number that depends on history is trusted, check its depth, its universe and
+> what happens when a request fails, against a same-moment replay.
+
+**Tests:**
+- `omega_c499_test.py`: 19 checks. It covers the page depth, NaN before the
+  first record, the no-funding coin (C1/C2 only), a negative control (zeros
+  DID create carry positions from missing data), a failed page or candles
+  raising, the tick retrying with the book untouched, empty ≠ failure, and
+  identical targets when funding covers every day.
+- `omega_c498_test.py`: its pin is now ≥ 498.
+- Full battery: see the commit.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-26 — C498: C497 DEPLOYED; A SESSION IS MARKED TO MARKED; THE PLAN IS LOGGED

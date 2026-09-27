@@ -2196,7 +2196,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C498'
+_OMEGA_VERSION = 'C499'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2935,6 +2935,9 @@ class Config:
         self.C488_MIN_NOTIONAL = 6.0            # a position worth less than this is not held
         self.C488_EXCHANGE_MIN = 5.0            # Bitget's minimum order, USDT
         self.C488_TRADE_BAND = 0.30             # within 30% of its target a position is left alone
+        self.C488_CANDIDATE_MULT = 4            # C499: history for 4x the book's width (80 at top 20)
+        self.C488_FUND_PAGES = 40               # C499: every funding page Bitget serves (~90 days)
+        self.C488_HIST_TRIES = 5                # C499: a history request gets 5 tries, then the rebalance waits
         self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
         self.C488_LIVE_OK = False               # no real money until live fills and funding are reconciled
         # ═══ C492: WHAT LIVE MONEY NEEDS (pending task #2) ════════════════
@@ -18836,21 +18839,52 @@ class C488Engine:
         except Exception:
             return True
 
-    def candidates(self, topn):
+    def candidates(self, topn, mult=None):
+        """the coins whose history is fetched: today's busiest crypto perps.
+
+        C499: FOUR times the book's width (80 at top 20), not two. The book is
+        today's top N by 30-day median volume, but its SIZE comes from each
+        sleeve's P&L over the last ~130 days -- and that history must hold the
+        coins that were top N THEN, as the research's did. Fetching only
+        today's top 40 rewrote the past with today's winners: on 27 Sep the
+        research-faithful book was $169 gross from 40 candidates, $132 from 60
+        and $134 from 80 (research/c499_funding_depth.py --live). 60+ is
+        converged; 80 leaves room."""
         mk = getattr(self.bot.exchange, 'markets', {}) or {}
         rows = [(v.get('vol', 0.0), s) for s, v in self.marks.items()
                 if (not mk or s in mk) and self._is_crypto(s)]
         rows.sort(reverse=True)
-        return [s for _, s in rows[:2 * topn]]
+        m = int(mult if mult is not None else getattr(self.cfg, 'C488_CANDIDATE_MULT', 4))
+        return [s for _, s in rows[:m * topn]]
 
     def _history(self, sym, days=330):
-        """completed UTC days: {day_ms: (close, quote volume)} and funding {ms: rate}"""
+        """completed UTC days: {day_ms: (close, quote volume)} and funding {ms: rate}.
+
+        C499: COMPLETE, OR IT RAISES. Two measured defects lived here.
+        (1) Funding stopped at 2 pages (200 records): 66 days on an 8-hour coin
+        but 33 on a 4-hour one (ENA, TAO, HYPE, PUMP, ONDO ...). The carry
+        sleeve's size comes from its last 60 days of P&L, so on 27 Sep 26 of
+        those 60 days had carry ranks built on coins with NO funding data --
+        and the whole book came out 43%% larger than the research spec one day
+        and 3%% the day before. It now takes every page Bitget serves (about 90
+        days; the venue keeps no more), and matrices() marks the days before a
+        coin's first record as UNKNOWN rather than zero.
+        (2) A request that failed three times returned None, and `if not d:
+        break` read that as "no more data": the coin went in with its funding
+        silently zero (or, for candles, silently left out). One such failure
+        -- ARB's funding -- reproduces the 26 Sep rebalance exactly (8 targets,
+        ETH sold, gross 0.40x); nothing else tried does. A failure now raises,
+        so the rebalance retries in 10 minutes instead of trading on a partial
+        picture. An EMPTY answer (a new coin with no history) is not a failure."""
         raw = self._raw(sym)
+        tries = int(getattr(self.cfg, 'C488_HIST_TRIES', 5))
         out, end = {}, int(time.time() * 1000)
         start = end - days * _C488_DAY
         while end > start:
             d = self._get('history-candles', {'symbol': raw, 'productType': 'USDT-FUTURES',
-                                              'granularity': '1Dutc', 'endTime': end, 'limit': 200})
+                                              'granularity': '1Dutc', 'endTime': end, 'limit': 200}, tries=tries)
+            if d is None:
+                raise RuntimeError(f"{sym.split('/')[0]} daily candles did not load")
             if not d:
                 break
             for x in d:
@@ -18860,11 +18894,11 @@ class C488Engine:
                 break
             end = first - 1
         fund = {}
-        for pn in (1, 2):
+        for pn in range(1, int(getattr(self.cfg, 'C488_FUND_PAGES', 40)) + 1):
             d = self._get('history-fund-rate', {'symbol': raw, 'productType': 'USDT-FUTURES',
-                                                'pageSize': 100, 'pageNo': pn})
-            if not d:
-                break
+                                                'pageSize': 100, 'pageNo': pn}, tries=tries)
+            if d is None:
+                raise RuntimeError(f"{sym.split('/')[0]} funding page {pn} did not load")
             for x in d:
                 fund[int(x['fundingTime'])] = float(x['fundingRate'])
             if len(d) < 100:
@@ -18894,6 +18928,12 @@ class C488Engine:
                 i = idx.get(t // _C488_DAY * _C488_DAY)
                 if i is not None:
                     fund[i, j] += rate
+            # C499: before a coin's first funding record its funding is UNKNOWN,
+            # not zero. Zero made it the "cheapest" coin in the carry ranking (or
+            # tied every coin), a position the research never held; NaN keeps it
+            # out of that day's carry ranking, as a coin not yet listed would be.
+            ft = min(hist[s][1]) // _C488_DAY * _C488_DAY if hist[s][1] else None
+            fund[(T < ft) if ft is not None else np.ones(len(T), bool), j] = np.nan
         return T, keep, close, qv, fund
 
     # ── the book ──────────────────────────────────────────────────────────
@@ -20640,7 +20680,8 @@ class C490Carry:
         if not spot:
             raise RuntimeError('Bitget spot tickers unavailable')
         P = self.params()
-        syms = list(dict.fromkeys(e.candidates(P['topn']) + [C488Engine._ccxt(r) for r in self.pos]))
+        syms = list(dict.fromkeys(e.candidates(P['topn'], mult=2)        # C499: the ledger keeps its own width
+                                  + [C488Engine._ccxt(r) for r in self.pos]))
         h = self.history(syms)
         if h is None:
             raise RuntimeError('no daily history')
