@@ -16,10 +16,26 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C499 is pushed, not deployed.** It gives the book complete history
-    (funding depth, 80 candidates) and makes a failed fetch wait instead of
-    trade. It changes the book's size toward the research spec. Deploy
-    commands are in `reports/2026-09-27_c499_complete_history.md`.
+  - **C499 from 27 Sep 12:25 IST, checked in the server log:**
+    - no warnings;
+    - SESSION in cents, with a real marked peak ($249.49, dd 0.1%);
+    - the book guard adds up;
+    - the shadow scores 39 coins.
+    Its new history code first runs at the 28 Sep 05:35 IST rebalance, which
+    should trim the 0.68x book toward about 0.50x and log
+    `CANDIDATES (80 with history)`.
+  - **The shadow's +7.19% (27 Sep) is real, not a ledger bug.** Checked on
+    Bitget: two hourly jumps (+$12.4 at the 21:00 UTC tick, +$9.0 at 06:00)
+    came from **Q (QUSDT)**, +82% in the hour 20:00→21:00 UTC ($6.3M volume)
+    and +33% in 05:00→06:00 ($4.9M), and the price held afterwards. At about 6%
+    per coin a long Q explains both. The rest of the board's median move was
+    about 1.1%. One small coin's two pumps is luck, not evidence; the monthly
+    review (pending #4) judges it only after 120 days, on its t-statistic.
+    (My first check measured the hour after each tick and wrongly called the
+    jumps impossible; the booked hour is the one before.)
+  - The dashboard's "all-time +$2.18" is realised equity − $250. It now
+    includes the book's realised fees ($252.22 → $252.18 after the 27 Sep
+    rebalance), beside the intraday 44W/95L count.
   - **C498 from 26 Sep 23:48 IST, verified in the server log:**
     - SESSION reads $−0.02 / $−0.01 / $+0.07 in its first three blocks (it
       was "$−4.18 … peak $252.22 dd 1.66%" under C497);
