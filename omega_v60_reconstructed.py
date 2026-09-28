@@ -2212,7 +2212,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C501'
+_OMEGA_VERSION = 'C502'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2996,6 +2996,11 @@ class Config:
         self.C501_SPOT_VOL = 0.20               # its volatility set point; never above 100% invested
         self.C501_SPOT_FEE = 0.0008             # spot taker with the BGB discount (0.10% -> 0.08%)
         self.C501_SPOT_RUN_UTC = (0, 20)        # 00:20 UTC, after the book (00:05) and the carry ledger (00:10)
+        # C502: Bitget SPOT's minimum order is 1 USDT on every top-20 pair
+        # (/api/v2/spot/public/symbols minTradeUSDT); C501 carried over the
+        # futures $6 and so held 3 of 20 up-trending coins (10% vs the rule's 36%).
+        self.C502_SPOT_FLOOR = 2.0              # a position under $2 is not opened (2x the minimum: still sellable after a 50% fall)
+        self.C502_SPOT_MIN_ORDER = 1.0          # Bitget spot's minimum order; a smaller change is not traded
         self.C501_SAVINGS = True                # F2: what the account's idle cash would earn in Savings
         self.C501_SAVINGS_APR = 0.0763          # Bitget Simple Earn Flexible USDT, 28 Sep 2026 -- update when it moves
         self.C501_SAVINGS_BUFFER = 0.05         # reserve = margin + the dial's month budget + 5% of equity
@@ -21081,8 +21086,12 @@ class C501Spot(_C501Store):
     with a worst month of -5.8%.
 
     Paper: fills at Bitget's live spot bid/ask, fee 0.08%, trades only a change
-    of at least $6 and 30% of the target (the book's band). It never places an
-    order; a live spot path is pending (#15)."""
+    of at least $1 (Bitget spot's minimum) and 30% of the target (the book's
+    band); a position under $2 is not opened (C502: the $6 floor C501 carried
+    over from futures dropped 17 of 20 up-trending coins; with spot's real
+    minimum, 2020-26 is +2.59%/month, max DD 29%, and both pots +2.67%/month,
+    research/c502_results.txt). It never places an order; a live spot path is
+    pending (#15)."""
 
     STATE_FILE = 'c501_spot.json'
     SPOT_API = 'https://api.bitget.com/api/v2/spot/market/tickers'
@@ -21191,13 +21200,15 @@ class C501Spot(_C501Store):
         eq = self.equity()
         if self.eq_last > 0 and self.last_run:
             self.daily[day_ms] = eq / self.eq_last - 1.0
-        mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        # C502: spot's own minimums (research/c502_results.txt), not the futures $6
+        floor = float(getattr(self.cfg, 'C502_SPOT_FLOOR', 2.0))
+        mn = float(getattr(self.cfg, 'C502_SPOT_MIN_ORDER', 1.0))
         band = float(getattr(self.cfg, 'C488_TRADE_BAND', 0.30))
         spot_mid = {s: (b + a) / 2.0 for s, (b, a) in bk.items()}
         tgt, no_spot = {}, []
         for j, s in enumerate(keep):
             usd = float(np.nan_to_num(w[j])) * eq
-            if usd < mn:
+            if usd < floor:
                 continue
             sp = C490Carry.spot_of(C488Engine._raw(s), spot_mid)
             if sp:
@@ -21212,6 +21223,8 @@ class C501Spot(_C501Store):
             if bid <= 0:
                 continue
             cur, want = p['qty'] * bid, tgt.get(sp, 0.0)
+            if cur < mn:
+                continue                                  # C502: under the exchange minimum it cannot be sold (dust)
             if want == 0.0 or (cur - want >= mn and cur - want > band * want):
                 q = p['qty'] if want == 0.0 else (cur - want) / bid
                 val = q * bid

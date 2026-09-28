@@ -47,6 +47,10 @@ are much steadier than either alone. By year, the spot pot made +39, +77, −6,
 - **It is invested only about a quarter of the time on average.**
 - **Today (28 Sep) only BNB, BTC and ETH qualify**, so it would be 10%
   invested, with $224 earning Savings. That's normal in a choppy market.
+  **Correction (C502, same day):** this was wrong. All 20 coins were
+  trending up and the rule wanted 35.8%. The $6 minimum, copied from
+  futures, dropped 17 of them. Spot's minimum is $1; see
+  `reports/2026-09-28_c502_spot_minimum.md`.
 
 ## 2. Idle cash in Savings
 

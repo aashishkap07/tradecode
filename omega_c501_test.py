@@ -5,8 +5,8 @@ the allostatic shadow of the book (K4 / F1). None may touch the account.
 1. PARITY: _c501_s1_targets is the pre-registered S1 rule, built independently
    from the research library; _c488_combine_ewma is the research's own
    combine_ewma (extracted from research/omega_c500_research.py).
-2. THE SPOT POT: fills at the spot ask/bid with a 0.08% fee, only targets of
-   $6+, never above 100% invested, never a negative cash balance, sells before
+2. THE SPOT POT: fills at the spot ask/bid with a 0.08% fee, only targets at
+   or above the spot floor (C502: $2; C501 used the futures $6), never above 100% invested, never a negative cash balance, sells before
    buys, a coin with no spot pair is reported and skipped, a coin whose trend
    turns is sold, the cash earns Savings, it survives a restart.
 3. SAVINGS: reserve = margin + dial x equity + 5%; interest = idle x APR x
@@ -115,7 +115,8 @@ today = dt.datetime.utcnow().strftime('%Y-%m-%d')
 e._last_M = (today, 20, (T, keep, close, qv, fund))
 px = {k.replace('/USDT:USDT', 'USDT'): float(close[-1, j]) for j, k in enumerate(keep)}
 BK = {s: (p * 0.999, p * 1.001) for s, p in px.items()}
-nospot = next(k for j, k in enumerate(keep) if wlast[j] * 250 >= 6)          # one target coin with no spot pair
+F = float(cfg.C502_SPOT_FLOOR)                                          # C502: spot's floor, not the futures $6
+nospot = next(k for j, k in enumerate(keep) if wlast[j] * 250 >= F)          # one target coin with no spot pair
 del BK[nospot.replace('/USDT:USDT', 'USDT')]
 sp = om.C501Spot(bot)
 sp.book = lambda force=False: (setattr(sp, 'bk', BK) or BK)
@@ -123,9 +124,9 @@ sp.bk = BK
 n1 = sp.run()
 eq1 = sp.equity()
 want = {k.replace('/USDT:USDT', 'USDT'): wlast[j] * 250 for j, k in enumerate(keep)
-        if wlast[j] * 250 >= 6 and k != nospot}
+        if wlast[j] * 250 >= F and k != nospot}
 buys = sum(p['qty'] * p['avg'] for p in sp.pos.values())
-ok("the first run buys every $6+ target that has a spot pair, at the ask",
+ok(f"the first run buys every ${F:.0f}+ target that has a spot pair, at the ask",
    set(sp.pos) == set(want) and all(abs(p['avg'] - BK[s][1]) < 1e-12 for s, p in sp.pos.items()), f"{len(sp.pos)} held, {n1} trades")
 ok("  0.08% fees, the cash never negative, never above 100% invested",
    abs(sp.fees - 0.0008 * buys) < 1e-9 and sp.cash >= 0 and buys <= 250.0, f"fees ${sp.fees:.4f}, cash ${sp.cash:.2f}")
@@ -274,7 +275,7 @@ ok("isolation: no order, no margin move, no write to the account anywhere in C50
    and 'trade_to' not in c501_src and not re.search(r'portfolio\.\w+\s*[-+*/]?=(?!=)', c501_src)
    and [l.strip() for l in c501_src.splitlines() if 'portfolio' in l and not l.strip().startswith('#')]
        == ['eng, pf = self.bot.c488, self.bot.portfolio'])
-ok("version C501", om._OMEGA_VERSION == 'C501')
+ok("version C501 or later", int(om._OMEGA_VERSION[1:4]) >= 501)
 shutil.rmtree(BASE, ignore_errors=True)
 print("\n" + "=" * 66)
 print("ALL CHECKS PASSED" if not fails else f"{len(fails)} FAILURE(S): {fails}")
