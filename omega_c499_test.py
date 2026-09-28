@@ -181,7 +181,7 @@ ok("with funding covering every day nothing is unknown", not np.isnan(fund).any(
 w1 = om._c488_targets(T, close, qv, fund, 10, e.target_vol(), 3.0)[0]
 w0 = om._c488_targets(T, close, qv, np.nan_to_num(fund), 10, e.target_vol(), 3.0)[0]
 ok("  and the targets are exactly the old ones", np.allclose(w1, w0))
-ok("version C499", om._OMEGA_VERSION == 'C499')
+ok("version C499 or later", int(om._OMEGA_VERSION[1:]) >= 499)
 
 print()
 print("=" * 66)

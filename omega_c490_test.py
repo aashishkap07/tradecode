@@ -170,7 +170,9 @@ finally:
 ok("a perp with no spot market is never entered", all('NOSPOT' not in c['coin'] for c in cy.closed))
 
 print("\n4. ISOLATION")
-cls_src = src[src.index('class C490Carry:'):src.index('\nclass TradingBot:')]
+_s490 = src.index('class C490Carry:')                   # C501: the class ends at the next top-level statement
+_e490 = min(i for i in (src.find('\ndef ', _s490), src.find('\nclass ', _s490 + 1), src.find('\n# \u2550', _s490)) if i > 0)
+cls_src = src[_s490:_e490]
 pf_lines = [l.strip() for l in cls_src.splitlines() if 'portfolio' in l and not l.strip().startswith('#')]
 ok("no order and no Portfolio call anywhere in the ledger's code: one read of equity, to seed it",
    'place_order' not in cls_src and 'release_margin' not in cls_src and 'c488_lock' not in cls_src and 'create_order' not in cls_src

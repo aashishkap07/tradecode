@@ -16,6 +16,16 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
+  - **C501 is pushed, not deployed.** It adds three paper ledgers (the spot
+    pot, idle cash in Savings, the K4 shadow); nothing about the account's
+    money changes. Deploy commands are in
+    `reports/2026-09-28_c501_spot_pot_savings_k4.md`.
+  - **Reminders set (28 Sep):**
+    - 29 Sep 01:15 UTC: the paper check (#1), now including C501.
+    - The 1st of each month at 09:56 IST: the monthly review (#4, #6, #14–#17,
+      #3, #8).
+    - 2 Dec 04:00 UTC: the December research refresh (#5, #11, #12, S1
+      re-check).
   - **C499 from 27 Sep 12:25 IST, checked in the server log:**
     - no warnings;
     - SESSION in cents, with a real marked peak ($249.49, dd 0.1%);
@@ -57,20 +67,89 @@
 
 | # | task | when | notes |
 |---|---|---|---|
-| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. |
+| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. **From C501 also check the paper ledgers:** the spot pot ran daily at 05:50 IST (00:20 UTC) and filled at the spot bid/ask with a 0.08% fee; the Savings ledger's idle cash equals equity − (margin + dial × equity + 5%); the K4 shadow logged `C501 allostatic shadow` at each rebalance. |
 | 2 | ~~Live-mode build for C488~~ | **BUILT in C492 (26 Sep); still switched off** | (a)–(e) are all done and tested (see C492): funding from Bitget's bills, a sync every 60 s, one-way mode and cross margin at 5x per symbol, partial fills, and the live contract table. **`C488_LIVE_OK` stays False.** Going live takes two deliberate steps: a one-line commit setting it True (ask for it), and `OMEGA_MODE=live` in a unit override. The checklist is at the end of `reports/2026-09-26_live_mode.md`. Start at **dial 10% at $250**, not 5%: at 5% the average position is about $4.40, under Bitget's $5 minimum. Raise it towards 15% over weeks as live tracks paper. |
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
 | 5 | **Refresh the C488 research** | quarterly (next: early Dec 2026) | Use `research/c493_target_probability.py` (crypto only, the `TRADFI` exclusion built in; `omega_c488_research.py` stays as the historical record). **Corrected at C493:** the "decay" (Sharpe 0.87 over 24 months) came from 2026 stock/commodity perps in the research universe. Crypto only: Sharpe 1.42 over 2020–26, 1.17 over 24 months, 1.69 over 12. Watch these three numbers each quarter. |
-| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. |
+| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). |
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
-| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
+| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
 | 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
+| 15 | **The spot pot (S1): a second $250 in spot** | paper from C501; live only when the operator decides | Admitted in round 8 (`research/c501_results.txt`): long or flat trend on the top 20, 20% vol set point, never above 100% invested, cash in Savings, 0.08% BGB fee. 2020–26: +2.20%/month, max DD 27%, t 2.19, 4/4 quarters, 2025–26 +14%/yr excess. It runs in the bot as a **separate $250 paper pot** (`C501Spot`, daily 00:20 UTC, live spot bid/ask). **To go live it needs:** a spot order path with read-back (as C492 did for futures); the second $250 moved to the spot wallet; a small BGB balance with "pay fees in BGB" enabled; the tax check (#8). Its first real-data run (28 Sep) held BNB, BTC and ETH, 10% invested; the rest was cash. |
+| 16 | **The allostatic shadow (K4)** | running from C501; decided at the December refresh (#11) | `C501Allostatic` scores the running sizing and K4's (EWMA, 10-day half-life) identically at every rebalance, a paper A/B that never trades. Round 7: same return, worst month −9.7% vs −15.5%. It replaces the running sizing only if the December re-test on NEW data passes (Rule: pre-registered bars). On 28 Sep K4 wanted 0.66x vs the running 0.40x: it adjusts both ways. |
+| 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
+| 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-28 — C501: THE SPOT POT (ADMITTED), IDLE CASH IN SAVINGS, THE ALLOSTATIC SHADOW
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator asked** to remember every pending item (allostasis, idle cash in
+Savings, an additional 250 USDT in spot with BGB fees), and to integrate
+whatever is possible now so testing can begin, with self-adjusting relative
+logic.
+
+**Round 8** (`research/c501_preregistration.md`, commit 13a0875, pushed
+before any S1 data).
+- **S1 is ADMITTED** (commit 415e97a).
+- **S1's rule:** spot trend, long or flat; top 20 crypto; each coin in its
+  own vol units; the pot at a 20% vol set point, gross ≤ 1; cash at 5% (the
+  test's conservative rate); 0.10% per unit turnover.
+
+| | S1 | futures book (dial 15%) | both, $250 + $250 |
+|---|---|---|---|
+| per month (compounded) | +2.20% | +2.55% | **+2.47%** |
+| max DD | 27.0% | 31.4% | **19.3%** |
+| worst month | −10.2% | −15.5% | **−5.8%** |
+| Sharpe | 1.18 | 1.56 | **1.78** |
+
+- **Test:** S1's excess over cash is +24.2%/yr, NW t 2.19, 4/4 quarters,
+  holdout 2025–26 +14.1%/yr.
+- **Correlation with the book:** +0.14.
+- **Exposure:** 23% invested on average.
+- **By year:** 2020 +39, 2021 +77, 2022 −6, 2023 +46, 2024 +20, 2025 +7,
+  2026 +23 (to Aug).
+- **Why spot:** a perp long pays funding (about 10%/yr); spot doesn't, and
+  idle cash earns Savings.
+
+**C501 (the bot): three PAPER ledgers.** None places an order or changes the
+account's equity, sizing or guard.
+
+| component | what | when | first real-data run (28 Sep) |
+|---|---|---|---|
+| `C501Spot` (S1) | a separate $250 pot: `_c501_s1_targets`; live spot bid/ask; 0.08% fee; $6 minimum and 30% band; sells first; cash earns Savings; reports coins with no spot pair | daily 00:20 UTC (05:50 IST); reuses the book's matrices (`cached_matrices`) | 3 targets (BNB $9.36, BTC $8.72, ETH $7.69), 10% invested, $224 cash |
+| `C501Savings` (F2) | reserve = locked margin + dial × equity + 5%; idle = marked equity − reserve; interest at `C501_SAVINGS_APR` 7.63% | every minute | idle $170.67 of $243.95 (70%) → about $1.09/month (+0.45%) |
+| `C501Allostatic` (F1/K4) | the same matrices sized two ways (60-day window vs EWMA 10-day half-life), both scored as yesterday's weights × today's returns − funding − 0.08% turnover | at each rebalance | K4 gross 0.66x (11 positions) vs running 0.40x (9) |
+
+**Wiring:**
+- **Config:** `C501_*` (spot pot on, $250, top 20, vol 20%, fee 0.08%,
+  00:20 UTC; Savings APR 7.63%, buffer 5%; K4 half-life 10).
+- **Hooks:** the rebalance caches `_last_M` and hands its matrices to K4
+  (wrapped, so it can never stop a rebalance); the main loop ticks the pot and
+  Savings; a fresh start resets all three.
+- **Visible in:** status JSON `c501`; log block rows SPOT and SAVINGS;
+  dashboard panels "Spot pot (paper, second $250)" and "Idle cash → Savings
+  (paper)", plus a K4 line in the Portfolio book panel.
+
+**Tests:** `omega_c501_test.py`, all pass.
+- **Parity:** S1 weights row for row against the rule built from the research
+  library; `_c488_combine_ewma` against the research's own `combine_ewma`,
+  extracted by AST.
+- **The spot pot:** fills, fees, cash ≥ 0, ≤ 100% invested, no-spot
+  reporting, the sell on a trend turn, Savings interest, restart.
+- **Savings:** the reserve arithmetic, interest, dial self-adjustment, the
+  account untouched.
+- **K4:** scoring equal to the manual sum, NaN funding.
+- **The rebalance:** trades identical with and without C501.
+- **The page in Chromium:** the panels render, no JS errors.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-28 — C500: ROUND 7 (IDEAS FROM OTHER FIELDS) AND WHAT ELSE BITGET PAYS

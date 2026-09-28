@@ -1732,6 +1732,22 @@ class _C462Report:
                                          f"{len(_s490.pos)} held", 'paper only'])
             except Exception:
                 pass
+            # C501: the spot pot and idle cash in Savings, one line each
+            try:
+                _s501 = getattr(bot, 'c501s', None)
+                if _s501 is not None and _s501.active() and _s501.last_run:
+                    _t501 = _s501.status()
+                    self._pack('SPOT', [f"{_c462_money(_t501['usd'])} ({_t501['pct']:+.2f}%)",
+                                        f"{_t501['n']} held", f"{_t501['invested_pct']:.0f}% invested",
+                                        f"cash earns {100 * _t501['apr']:.2f}%", 'paper pot'])
+                _v501 = getattr(bot, 'c501v', None)
+                if _v501 is not None and _v501.active() and _v501.last_ts:
+                    _u501 = _v501.status()
+                    self._pack('SAVINGS', [f"idle {_c462_money(_u501['idle'])} ({_u501['idle_pct']:.0f}%)",
+                                           f"at {100 * _u501['apr']:.2f}% +{_c462_money(_u501['interest'])} so far",
+                                           f"~{_c462_money(_u501['month_est'])}/month", 'paper'])
+            except Exception:
+                pass
             # C488: the portfolio engine's book, one line
             try:
                 if _e488 is not None and _e488.active():
@@ -2196,7 +2212,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C499'
+_OMEGA_VERSION = 'C501'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -2972,6 +2988,19 @@ class Config:
         self.C490_CARRY_SIZE = 0.10             # 10% of the ledger per coin, each leg
         self.C490_CARRY_CAP = 8
         self.C490_CARRY_RUN_UTC = (0, 10)       # 00:10 UTC, after the C488 rebalance
+        # ═══ C501: THREE PAPER LEDGERS (research/c501_preregistration.md) ═══
+        # None places an order or moves a dollar of the account.
+        self.C501_SPOT = True                   # S1: the second $250, spot trend long or flat (admitted, round 8)
+        self.C501_SPOT_EQUITY = 250.0           # the pot's own paper capital, separate from the account
+        self.C501_SPOT_TOPN = 20
+        self.C501_SPOT_VOL = 0.20               # its volatility set point; never above 100% invested
+        self.C501_SPOT_FEE = 0.0008             # spot taker with the BGB discount (0.10% -> 0.08%)
+        self.C501_SPOT_RUN_UTC = (0, 20)        # 00:20 UTC, after the book (00:05) and the carry ledger (00:10)
+        self.C501_SAVINGS = True                # F2: what the account's idle cash would earn in Savings
+        self.C501_SAVINGS_APR = 0.0763          # Bitget Simple Earn Flexible USDT, 28 Sep 2026 -- update when it moves
+        self.C501_SAVINGS_BUFFER = 0.05         # reserve = margin + the dial's month budget + 5% of equity
+        self.C501_K4 = True                     # F1: the allostatic shadow of the book (never trades)
+        self.C501_K4_HL = 10.0                  # EWMA half-life, days
 
         # === Monitoring ===
         # ═══ C368: THE CONSISTENCY BUDGET ═══════════════════════════════
@@ -18839,6 +18868,13 @@ class C488Engine:
         except Exception:
             return True
 
+    def cached_matrices(self, topn):
+        """C501: today's rebalance matrices, if they were built for this width"""
+        c = getattr(self, '_last_M', None)
+        if c and c[0] == datetime.utcnow().strftime('%Y-%m-%d') and int(c[1]) == int(topn):
+            return c[2]
+        return None
+
     def candidates(self, topn, mult=None):
         """the coins whose history is fetched: today's busiest crypto perps.
 
@@ -19518,6 +19554,16 @@ class C488Engine:
         T, keep, close, qv, fund = M
         w, sleeves, elig = _c488_targets(T, close, qv, fund, n_top, self.target_vol(),
                                           float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)))
+        # C501: the same matrices serve the spot pot's run (00:20) and the
+        # allostatic shadow, so they are fetched once and scored on one picture
+        self._last_M = (datetime.utcnow().strftime('%Y-%m-%d'), n_top, M)
+        try:
+            _k501 = getattr(self.bot, 'c501k', None)
+            if _k501 is not None:
+                _k501.observe(T, keep, close, qv, fund, n_top, self.target_vol(),
+                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, w)
+        except Exception as _e501:
+            logger.warning(f"⚠️ C501 allostatic shadow skipped ({type(_e501).__name__}: {_e501})")
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
         band = float(getattr(self.cfg, 'C488_TRADE_BAND', 0.30))
         plan = {}
@@ -20736,6 +20782,535 @@ class C490Carry:
 
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# C501: A SECOND $250 IN SPOT, IDLE CASH IN SAVINGS, AND THE ALLOSTATIC SHADOW
+# ═══════════════════════════════════════════════════════════════════════════
+# research/c501_preregistration.md (round 8) and c500 (round 7). ALL THREE ARE
+# PAPER: none places an order, and none moves or re-sizes a dollar of the
+# account. Every size is in each coin's OWN volatility units and every set
+# point adjusts itself (the relative, self-adjusting logic the operator asked
+# for): S1 holds its book at a 20% volatility set point; the Savings reserve
+# follows the margin and the dial; K4 re-estimates risk with a 10-day memory.
+
+def _c501_s1_targets(T, close, qv, topn, target_vol=0.20, cost=0.0010, win=60, cap=1.0):
+    """S1 (research/omega_c501_research.py, admitted at 415e97a): long or flat.
+    Weight = max(trend, 0) x min(1, 2% / the coin's own daily sd) / N, banded
+    30%; the whole long book scaled to `target_vol` by the trailing `win`-day
+    vol of its own unit returns (past only); gross <= `cap` (spot has no
+    leverage). Returns (the last row, the full weight matrix)."""
+    r = _c488_returns(close)
+    sd = _c488_trailing_std(r, 30)
+    elig = _c488_universe(close, qv, topn)
+    sc = np.nan_to_num(_c488_vol_scale(sd))
+    s = sum(np.sign(np.nan_to_num(_c488_lagret(close, d))) for d in (7, 14, 28, 56)) / 4.0
+    W1 = _c488_banded(np.where(elig, np.maximum(s, 0.0) * sc / topn, 0.0))
+    u = _c488_pnl(W1, r, np.zeros_like(close), 1, cost=cost)[0]
+    n = len(T)
+    L = np.zeros(n)
+    for i in range(win, n):
+        v = u[i - win:i].std() * math.sqrt(365)
+        L[i] = target_vol / v if v > 0 else 0.0
+    W = W1 * L[:, None]
+    g = np.abs(W).sum(1)
+    W = W * np.where(g > cap, cap / np.maximum(g, 1e-12), 1.0)[:, None]
+    return W[-1], W
+
+
+def _c488_combine_ewma(parts, r, fund, lag, target_vol=0.20, lev_cap=3.0, win=60, periods=365, hl=10.0):
+    """K4 (research/omega_c500_research.py combine_ewma): _c488_combine with
+    both volatility estimates as a zero-mean EWMA (RiskMetrics), half-life `hl`
+    days, past only, the same warm-up. Allostasis: the set point moves before
+    the stress peaks instead of after a 60-day window notices it."""
+    a = 1.0 - 0.5 ** (1.0 / hl)
+    unit = {k: _c488_pnl(w, r, fund, lag)[0] for k, w in parts.items()}
+    n = len(r)
+
+    def ew_sd(u):
+        out = np.full(n, np.nan)
+        v, seen = 0.0, 0
+        for i in range(n):
+            if i >= win and seen >= win and v > 0:
+                out[i] = math.sqrt(v)
+            x = u[i]
+            if x != 0.0 or seen:
+                v = (1 - a) * v + a * x * x if seen else x * x
+                seen += 1
+        return out
+    with np.errstate(divide='ignore', invalid='ignore'):
+        sw = {k: np.nan_to_num(1.0 / ew_sd(u)) / len(unit) for k, u in unit.items()}
+        comb = sum(sw[k] * unit[k] for k in unit)
+        s = ew_sd(comb)
+        L = np.nan_to_num(np.where(np.arange(n) >= 2 * win, target_vol / (s * math.sqrt(periods)), 0.0))
+    W = sum((sw[k] * L)[:, None] * parts[k] for k in parts)
+    g = np.abs(W).sum(1)
+    return W * np.where(g > lev_cap, lev_cap / np.maximum(g, 1e-12), 1.0)[:, None]
+
+
+def _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0, hl=10.0):
+    r, W, elig = _c488_sleeves(T, close, qv, fund, topn)
+    parts = {k: W[k] for k in ('C1', 'C2', 'C3')}
+    return _c488_combine_ewma(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap, hl=hl)[-1]
+
+
+def _c501_stats(x):
+    """a daily-return record: days, total, annual vol, max drawdown, worst day"""
+    x = np.asarray(x, float)
+    if not len(x):
+        return dict(days=0, ret=0.0, vol=0.0, maxdd=0.0, worst=0.0)
+    e = np.cumprod(1 + x)
+    return dict(days=int(len(x)), ret=round(float(e[-1] - 1), 5),
+                vol=round(float(x.std() * math.sqrt(365)), 4) if len(x) > 1 else 0.0,
+                maxdd=round(float((1 - e / np.maximum.accumulate(e)).max()), 5), worst=round(float(x.min()), 5))
+
+
+class _C501Store:
+    """a small JSON state file, written atomically"""
+    STATE_FILE = ''
+
+    def _path(self):
+        return os.path.join(BASE_PATH, self.STATE_FILE)
+
+    def _read(self):
+        try:
+            if os.path.exists(self._path()):
+                return json.load(open(self._path()))
+        except Exception as e:
+            logger.warning(f"⚠️ {type(self).__name__} state not loaded ({type(e).__name__}) -- starting fresh")
+        return {}
+
+    def _write(self, d):
+        try:
+            tmp = self._path() + '.tmp'
+            json.dump(d, open(tmp, 'w'))
+            os.replace(tmp, self._path())
+        except Exception as e:
+            logger.warning(f"⚠️ {type(self).__name__} save failed: {type(e).__name__}: {e}")
+
+
+class C501Allostatic(_C501Store):
+    """F1: THE ALLOSTATIC SHADOW (K4), a paper A/B test that never trades.
+
+    At every C488 rebalance it is handed the SAME matrices the book used and
+    computes two books: the running sizing (60-day window) and K4's (EWMA,
+    10-day half-life). Both are scored identically from daily closes -- each
+    day's return is yesterday's weights times the day's close-to-close return,
+    less funding, less 0.08% per unit of turnover -- so the difference is the
+    sizing rule and nothing else. Round 7 found K4 had the same return and a
+    much smaller worst month (-9.7% vs -15.5%); it must pass the December
+    re-test on NEW data before it may size the real book (pending #11)."""
+
+    STATE_FILE = 'c501_allostatic.json'
+    COST = 0.0008
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.wb = {k: float(v) for k, v in (d.get('wb') or {}).items()}
+            self.wk = {k: float(v) for k, v in (d.get('wk') or {}).items()}
+            self.last_day = int(d.get('last_day') or 0)
+            self.daily = [list(x) for x in (d.get('daily') or [])]
+            self.pend = [float(v) for v in (d.get('pend') or [0.0, 0.0])]
+            self.last_obs = str(d.get('last_obs') or '')
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C501_K4', True))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.wb, self.wk, self.last_day, self.daily, self.pend, self.last_obs = {}, {}, 0, [], [0.0, 0.0], ''
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(wb=self.wb, wk=self.wk, last_day=self.last_day, daily=self.daily[-2000:],
+                     pend=self.pend, last_obs=self.last_obs)
+        self._write(d)
+
+    @staticmethod
+    def _day(w, pos, r_row, f_row):
+        g = f = 0.0
+        for s, x in w.items():
+            j = pos.get(s)
+            if j is None:
+                continue                        # left the candidate list: unknown today, counted as 0
+            g += x * float(np.nan_to_num(r_row[j]))
+            f += x * float(np.nan_to_num(f_row[j]))
+        return g - f
+
+    def observe(self, T, keep, close, qv, fund, topn, target_vol, lev_cap, eq, w_base):
+        """called by C488Engine.rebalance with its own matrices and targets"""
+        if not self.active() or eq <= 0:
+            return
+        hl = float(getattr(self.cfg, 'C501_K4_HL', 10.0))
+        wk_all = _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap, hl)
+        mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        nb = {s: float(x) for s, x in zip(keep, np.nan_to_num(w_base)) if abs(x) * eq >= mn}
+        nk = {s: float(x) for s, x in zip(keep, np.nan_to_num(wk_all)) if abs(x) * eq >= mn}
+        r = _c488_returns(close)
+        pos = {s: j for j, s in enumerate(keep)}
+        with self._lock:
+            if self.last_day:
+                for i in range(len(T)):
+                    t = int(T[i])
+                    if t <= self.last_day:
+                        continue
+                    rb = self._day(self.wb, pos, r[i], fund[i]) - self.pend[0]
+                    rk = self._day(self.wk, pos, r[i], fund[i]) - self.pend[1]
+                    self.pend = [0.0, 0.0]
+                    self.daily.append([t, round(rb, 7), round(rk, 7)])
+            turn = lambda a, b: sum(abs(a.get(s, 0.0) - b.get(s, 0.0)) for s in set(a) | set(b))
+            self.pend = [self.pend[0] + self.COST * turn(nb, self.wb), self.pend[1] + self.COST * turn(nk, self.wk)]
+            self.wb, self.wk, self.last_day = nb, nk, int(T[-1])
+            self.last_obs = datetime.utcnow().strftime('%Y-%m-%d')
+        self.save()
+        st = self.status()
+        logger.info(f"   \U0001f9ec C501 allostatic shadow (paper): K4 gross {st['k4']['gross']:.2f}x vs running "
+                    f"{st['base']['gross']:.2f}x | {st['days']} days scored: K4 {100 * st['k4']['ret']:+.2f}% "
+                    f"vs {100 * st['base']['ret']:+.2f}% (same rules, same data)")
+
+    def status(self):
+        with self._lock:
+            xb = [d[1] for d in self.daily]
+            xk = [d[2] for d in self.daily]
+            b, k = _c501_stats(xb), _c501_stats(xk)
+            b['gross'] = round(sum(abs(v) for v in self.wb.values()), 3)
+            k['gross'] = round(sum(abs(v) for v in self.wk.values()), 3)
+            b['n'], k['n'] = len(self.wb), len(self.wk)
+            return dict(mode='paper' if self.active() else 'off', days=len(self.daily), base=b, k4=k,
+                        diff=round(k['ret'] - b['ret'], 5), last_obs=self.last_obs,
+                        hl=float(getattr(self.cfg, 'C501_K4_HL', 10.0)))
+
+
+class C501Savings(_C501Store):
+    """F2: IDLE CASH IN SAVINGS, a paper ledger that never moves money.
+
+    The book locks only its margin; the rest of the futures wallet sits idle.
+    Every minute: reserve = locked margin + the dial's month budget (dial% of
+    marked equity) + a 5% buffer -- self-adjusting, so more margin or a higher
+    dial keeps more in futures -- and idle = marked equity - reserve. Idle
+    cash accrues the Flexible Savings APR (C501_SAVINGS_APR: 7.63% on 28 Sep
+    2026). The account's equity, sizing and guard are untouched: this is what
+    the live version (pending #14) would add."""
+
+    STATE_FILE = 'c501_savings.json'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = 0.0
+        self._saved_at = 0.0
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.interest = float(d.get('interest') or 0.0)
+            self.since = float(d.get('since') or 0.0)
+            self.last_ts = float(d.get('last_ts') or 0.0)
+            self.idle = float(d.get('idle') or 0.0)
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C501_SAVINGS', True))
+
+    def apr(self):
+        return float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.interest, self.since, self.last_ts, self.idle = 0.0, 0.0, 0.0, 0.0
+            self.reserve, self.eq, self.locked = 0.0, 0.0, 0.0
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(interest=self.interest, since=self.since, last_ts=self.last_ts, idle=self.idle)
+        self._write(d)
+
+    def measure(self):
+        """(marked equity, locked margin, reserve, idle) right now"""
+        eng, pf = self.bot.c488, self.bot.portfolio
+        eq = float(eng.live_equity())
+        locked = float(pf.get_locked_margin())
+        buf = float(getattr(self.cfg, 'C501_SAVINGS_BUFFER', 0.05))
+        reserve = locked + (eng.dial() / 100.0) * eq + buf * eq
+        return eq, locked, reserve, max(0.0, eq - reserve)
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 60:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        eq, locked, reserve, idle = self.measure()
+        if eq <= 0:
+            return
+        with self._lock:
+            if self.last_ts:
+                dt_ = max(0.0, min(now - self.last_ts, 86400.0))
+                self.interest += self.idle * self.apr() * dt_ / (365.0 * 86400.0)
+            else:
+                self.since = now
+            self.last_ts, self.idle, self.reserve, self.eq, self.locked = now, idle, reserve, eq, locked
+        if now - self._saved_at > 300:
+            self._saved_at = now
+            self.save()
+
+    def status(self):
+        with self._lock:
+            days = (time.time() - self.since) / 86400.0 if self.since else 0.0
+            return dict(mode='paper' if self.active() else 'off', apr=round(self.apr(), 4),
+                        eq=round(self.eq, 2), locked=round(self.locked, 2), reserve=round(self.reserve, 2),
+                        idle=round(self.idle, 2), idle_pct=round(100.0 * self.idle / self.eq, 1) if self.eq else 0.0,
+                        interest=round(self.interest, 4), days=round(days, 2),
+                        month_est=round(self.idle * self.apr() / 12.0, 2))
+
+
+class C501Spot(_C501Store):
+    """S1: THE SECOND $250, IN SPOT, as a paper pot of its own.
+
+    Admitted in round 8 (research/c501_results.txt): long or flat trend on the
+    top 20 crypto, each coin in its own volatility units, the whole pot held at
+    a 20% volatility set point and never above 100% invested; the cash earns
+    Flexible Savings. Spot pays no funding (a perp long paid ~10%/yr), fees are
+    0.08% with the BGB discount. 2020-26: +2.20%/month compounded, max DD 27%,
+    correlation with the futures book +0.14; the two pots together +2.47%/month
+    with a worst month of -5.8%.
+
+    Paper: fills at Bitget's live spot bid/ask, fee 0.08%, trades only a change
+    of at least $6 and 30% of the target (the book's band). It never places an
+    order; a live spot path is pending (#15)."""
+
+    STATE_FILE = 'c501_spot.json'
+    SPOT_API = 'https://api.bitget.com/api/v2/spot/market/tickers'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = self._fail_at = self._book_at = 0.0
+        self._last_ts = 0.0
+        self._saved_at = 0.0
+        self.bk = {}
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.cash = float(d.get('cash') or 0.0)
+            self.start_equity = float(d.get('start_equity') or 0.0)
+            self.pos = {k: dict(v) for k, v in (d.get('pos') or {}).items()}
+            self.daily = {int(a): float(b) for a, b in (d.get('daily') or {}).items()}
+            self.eq_last = float(d.get('eq_last') or 0.0)
+            self.last_run = str(d.get('last_run') or '')
+            self.fees = float(d.get('fees') or 0.0)
+            self.interest = float(d.get('interest') or 0.0)
+            self.trades = int(d.get('trades') or 0)
+            self.closed = list(d.get('closed') or [])[-50:]
+            self.info = d.get('info') or {}
+            self._last_ts = float(d.get('last_ts') or 0.0)
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C501_SPOT', True))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.cash, self.start_equity, self.pos, self.daily, self.eq_last = 0.0, 0.0, {}, {}, 0.0
+            self.last_run, self.fees, self.interest, self.trades, self.closed, self.info = '', 0.0, 0.0, 0, [], {}
+            self._last_ts = 0.0
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(cash=self.cash, start_equity=self.start_equity, pos=self.pos,
+                     daily={str(a): b for a, b in self.daily.items()}, eq_last=self.eq_last,
+                     last_run=self.last_run, fees=self.fees, interest=self.interest, trades=self.trades,
+                     closed=self.closed[-50:], info=self.info, last_ts=self._last_ts)
+        self._write(d)
+
+    # ── prices ───────────────────────────────────────────────────────────
+    def book(self, force=False):
+        """Bitget spot bid/ask for every pair, one call, at most once a minute"""
+        if not force and self.bk and time.time() - self._book_at < 60:
+            return self.bk
+        for k in range(3):
+            try:
+                d = requests.get(self.SPOT_API, timeout=12).json().get('data') or []
+                out = {}
+                for x in d:
+                    b, a = float(x.get('bidPr') or 0), float(x.get('askPr') or 0)
+                    if b > 0 and a > 0:
+                        out[str(x.get('symbol', ''))] = (b, a)
+                if out:
+                    self.bk, self._book_at = out, time.time()
+                    return out
+            except Exception:
+                pass
+            time.sleep(0.6 * (k + 1))
+        return self.bk
+
+    def mid(self, sp):
+        x = self.bk.get(sp)
+        if x:
+            return (x[0] + x[1]) / 2.0
+        p = self.pos.get(sp) or {}
+        return float(p.get('avg') or 0.0)
+
+    def equity(self):
+        return self.cash + sum(p['qty'] * self.mid(s) for s, p in self.pos.items())
+
+    # ── the daily run ────────────────────────────────────────────────────
+    def due(self, now=None):
+        now = now or datetime.utcnow()
+        h, m = getattr(self.cfg, 'C501_SPOT_RUN_UTC', (0, 20))
+        return (now.hour, now.minute) >= (h, m) and self.last_run != now.strftime('%Y-%m-%d')
+
+    def run(self):
+        e = self.bot.c488
+        if not self.start_equity:
+            self.start_equity = float(getattr(self.cfg, 'C501_SPOT_EQUITY', 250.0))
+            self.cash = self.start_equity
+            self.eq_last = self.start_equity
+        bk = self.book(force=True)
+        if not bk:
+            raise RuntimeError('Bitget spot tickers unavailable')
+        topn = int(getattr(self.cfg, 'C501_SPOT_TOPN', 20))
+        M = e.cached_matrices(topn)
+        if M is None:
+            e.refresh_marks(force=True)
+            M = e.matrices(e.candidates(topn))              # C499: complete, or it raises
+        if M is None:
+            raise RuntimeError('no daily history')
+        T, keep, close, qv, fund = M
+        fee = float(getattr(self.cfg, 'C501_SPOT_FEE', 0.0008))
+        w, _ = _c501_s1_targets(T, close, qv, topn, target_vol=float(getattr(self.cfg, 'C501_SPOT_VOL', 0.20)),
+                                cost=fee + 0.0002)
+        today = datetime.utcnow().strftime('%Y-%m-%d')
+        day_ms = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        eq = self.equity()
+        if self.eq_last > 0 and self.last_run:
+            self.daily[day_ms] = eq / self.eq_last - 1.0
+        mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        band = float(getattr(self.cfg, 'C488_TRADE_BAND', 0.30))
+        spot_mid = {s: (b + a) / 2.0 for s, (b, a) in bk.items()}
+        tgt, no_spot = {}, []
+        for j, s in enumerate(keep):
+            usd = float(np.nan_to_num(w[j])) * eq
+            if usd < mn:
+                continue
+            sp = C490Carry.spot_of(C488Engine._raw(s), spot_mid)
+            if sp:
+                tgt[sp] = usd
+            else:
+                no_spot.append(s.split('/')[0])
+        n_tr = 0
+        # sells first: they free the cash the buys need
+        for sp in sorted(self.pos):
+            p = self.pos[sp]
+            bid = (bk.get(sp) or (self.mid(sp), 0))[0]
+            if bid <= 0:
+                continue
+            cur, want = p['qty'] * bid, tgt.get(sp, 0.0)
+            if want == 0.0 or (cur - want >= mn and cur - want > band * want):
+                q = p['qty'] if want == 0.0 else (cur - want) / bid
+                val = q * bid
+                self.cash += val * (1 - fee)
+                self.fees += val * fee
+                pnl = q * (bid - p['avg']) - val * fee
+                p['qty'] -= q
+                n_tr += 1
+                self.trades += 1
+                if p['qty'] * bid < 1e-6 or want == 0.0:
+                    self.closed = (self.closed + [dict(coin=sp[:-4], pnl=round(pnl + p.get('realised', 0.0), 4),
+                                                       days=round((time.time() - p['opened']) / 86400, 1))])[-50:]
+                    del self.pos[sp]
+                else:
+                    p['realised'] = p.get('realised', 0.0) + pnl
+        for sp, want in sorted(tgt.items(), key=lambda kv: -kv[1]):
+            ask = (bk.get(sp) or (0, 0))[1]
+            if ask <= 0:
+                continue
+            p = self.pos.get(sp)
+            cur = p['qty'] * ask if p else 0.0
+            need = want - cur
+            if need < mn or (p and need <= band * want):
+                continue
+            spend = min(need, self.cash / (1 + fee))
+            if spend < mn:
+                continue
+            q = spend / ask
+            self.cash -= spend * (1 + fee)
+            self.fees += spend * fee
+            if p:
+                p['avg'] = (p['qty'] * p['avg'] + q * ask) / (p['qty'] + q)
+                p['qty'] += q
+            else:
+                self.pos[sp] = dict(qty=q, avg=ask, opened=time.time(), realised=0.0)
+            n_tr += 1
+            self.trades += 1
+        self.eq_last = self.equity()
+        self.last_run = today
+        self.info = dict(targets=len(tgt), gross_target=round(sum(tgt.values()) / eq, 3) if eq else 0.0,
+                         trades=n_tr, no_spot=no_spot[:10], universe=int(len(keep)))
+        return n_tr
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 30:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        with self._lock:                                  # the cash earns Savings, every tick
+            if self._last_ts and self.cash > 0:
+                dt_ = max(0.0, min(now - self._last_ts, 86400.0))
+                gain = self.cash * float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)) * dt_ / (365.0 * 86400.0)
+                self.cash += gain
+                self.interest += gain
+            self._last_ts = now
+        if self.pos:
+            self.book()
+        if self.due() and now - self._fail_at >= 300:
+            try:
+                t0 = time.time()
+                with self._lock:
+                    n = self.run()
+                self.save()
+                st = self.status()
+                logger.info(f"   \U0001fa99 C501 spot pot (paper) {self.last_run}: ${st['usd']:.2f} ({st['pct']:+.2f}%) | "
+                            f"{st['n']} held, {st['invested_pct']:.0f}% invested, cash ${st['cash']:.2f} earning "
+                            f"{100 * float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)):.2f}% | {n} trades today"
+                            f"{' | no spot pair: ' + ','.join(self.info['no_spot']) if self.info.get('no_spot') else ''}"
+                            f" [{time.time() - t0:.0f}s]")
+            except Exception as ex:
+                self._fail_at = now
+                logger.warning(f"⚠️ C501 spot pot run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+        if now - self._saved_at > 300:
+            self._saved_at = now
+            self.save()
+
+    def status(self):
+        with self._lock:
+            eq = self.equity() if self.start_equity else 0.0
+            base = float(self.start_equity or 0.0)
+            x = np.array([self.daily[d] for d in sorted(self.daily)])
+            h, m = getattr(self.cfg, 'C501_SPOT_RUN_UTC', (0, 20))
+            pos = []
+            for s, p in sorted(self.pos.items(), key=lambda kv: -kv[1]['qty'] * self.mid(kv[0])):
+                v = p['qty'] * self.mid(s)
+                pos.append(dict(coin=s[:-4], usd=round(v, 2), pnl=round(p['qty'] * (self.mid(s) - p['avg']), 2),
+                                days=round((time.time() - p['opened']) / 86400, 1)))
+            return dict(mode='paper' if self.active() else 'off', start_equity=round(base, 2), usd=round(eq, 2),
+                        pnl_usd=round(eq - base, 2) if base else 0.0,
+                        pct=round(100 * (eq / base - 1), 2) if base else 0.0,
+                        cash=round(self.cash, 2), invested_pct=round(100 * (1 - self.cash / eq), 1) if eq else 0.0,
+                        interest=round(self.interest, 4), fees=round(self.fees, 4), trades=self.trades,
+                        n=len(self.pos), positions=pos, last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}",
+                        info=self.info, record=_c490_record(x),
+                        apr=round(float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)), 4))
+
+
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
@@ -20745,6 +21320,9 @@ class TradingBot:
         self.portfolio._c488 = self.c488
         self.c489 = C489Shadow(self)            # C489: the intraday engine, shadow ledger only
         self.c490 = C490Carry(self)             # C490: spot-perp carry, its own paper ledger
+        self.c501s = C501Spot(self)             # C501: the second $250, spot trend (paper pot)
+        self.c501v = C501Savings(self)          # C501: idle cash in Savings (paper)
+        self.c501k = C501Allostatic(self)       # C501: the allostatic shadow of the book (paper)
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -21489,6 +22067,11 @@ class TradingBot:
                         self.c490.tick()
                     except Exception as _e490:
                         logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
+                    for _c501 in (self.c501s, self.c501v):  # C501: the spot pot (daily) and Savings (minutely)
+                        try:
+                            _c501.tick()
+                        except Exception as _e501:
+                            logger.warning(f"⚠️ {type(_c501).__name__} tick failed: {type(_e501).__name__}: {_e501}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -38901,6 +39484,7 @@ def startup():
         bot.c488.reset()                     # C488: a fresh account starts flat
         bot.c489.reset()                     # C489: and a fresh shadow record
         bot.c490.reset()                     # C490: and a fresh carry ledger
+        bot.c501s.reset(); bot.c501v.reset(); bot.c501k.reset()   # C501: and fresh paper ledgers
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -39593,6 +40177,12 @@ class RemoteControl:
                                                for k, v in _g482.items()}
                         except Exception:
                             pass
+                        try:      # C501: the spot pot, Savings and the allostatic shadow
+                            _out469['c501'] = {k: getattr(bot_ref, a).status() for k, a in
+                                               (('spot', 'c501s'), ('savings', 'c501v'), ('k4', 'c501k'))
+                                               if getattr(bot_ref, a, None) is not None}
+                        except Exception as _x501:
+                            _out469['c501'] = {'error': f"{type(_x501).__name__}: {_x501}"}
                         try:      # C490: the carry ledger
                             _e490 = getattr(bot_ref, 'c490', None)
                             if _e490 is not None:
@@ -39814,6 +40404,9 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <section><h2>Intraday engine <span class="muted">(shadow)</span></h2><div id="shadow" class="muted">&mdash;</div></section>
 <!-- C490: spot-perp cash-and-carry, a paper ledger of its own -->
 <section><h2>Cash-and-carry <span class="muted">(paper ledger)</span></h2><div id="carry" class="muted">&mdash;</div></section>
+<!-- C501: the second $250 in spot, and what the idle cash would earn -- paper ledgers -->
+<section><h2>Spot pot <span class="muted">(paper, second $250)</span></h2><div id="spotpot" class="muted">&mdash;</div></section>
+<section><h2>Idle cash &rarr; Savings <span class="muted">(paper)</span></h2><div id="savings" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -40058,6 +40651,35 @@ async function pull(){
         q('carry').innerHTML=ch;
       }
     }
+    /* C501: the spot pot and idle cash in Savings -- paper ledgers, never the account */
+    var c5=d.c501;
+    if(c5){
+      if(c5.error){q('spotpot').innerHTML='<span class="'+cls(-1)+'">unavailable: '+c5.error+'</span>'}
+      else{
+        var sp=c5.spot;
+        if(sp){
+          if(sp.mode!=='paper'){q('spotpot').innerHTML='<span class="muted">off</span>'}
+          else{
+            var rs=sp.record||{},hs='<div class="s muted">trend long or flat on the top 20, each coin in its own volatility units, the pot held at a 20% volatility set point \u00b7 cash earns Savings '+
+              (100*sp.apr).toFixed(2)+'% \u00b7 fees 0.08% (BGB) \u00b7 paper pot of '+money(sp.start_equity||250)+' \u2014 separate from the account \u00b7 runs daily '+
+              sp.next_run_utc+' UTC'+(sp.last_run?' \u00b7 last '+sp.last_run:' \u00b7 first run pending')+'</div>';
+            if(sp.start_equity){hs+='<div style="margin:4px 0"><b>'+money(sp.usd)+'</b> <span class="'+cls(sp.pnl_usd)+'">'+sgn(sp.pnl_usd)+' ('+(sp.pct>=0?'+':'')+
+              Number(sp.pct).toFixed(2)+'%)</span> <span class="muted">'+sp.n+' held \u00b7 '+sp.invested_pct+'% invested \u00b7 cash '+money(sp.cash)+
+              ' (interest +'+money(sp.interest)+') \u00b7 fees '+money(sp.fees)+' \u00b7 '+(rs.days||0)+'d</span></div>'}
+            (sp.positions||[]).forEach(function(p){hs+='<div class="s">'+p.coin+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">'+p.days+'d</span></div>'});
+            q('spotpot').innerHTML=hs;
+          }
+        }
+        var sv=c5.savings;
+        if(sv){
+          q('savings').innerHTML=sv.mode!=='paper'?'<span class="muted">off</span>':
+            '<div class="s muted">what the account\u2019s idle cash would earn in Simple Earn Flexible at '+(100*sv.apr).toFixed(2)+
+            '% \u2014 reserve = margin + the dial\u2019s month budget + 5%, recomputed every minute \u00b7 paper: nothing is moved</div>'+
+            '<div style="margin:4px 0">idle <b>'+money(sv.idle)+'</b> ('+sv.idle_pct+'% of '+money(sv.eq)+') \u00b7 reserve '+money(sv.reserve)+
+            ' \u00b7 earned <span class="good">+'+money(sv.interest)+'</span> in '+sv.days+'d \u00b7 about '+money(sv.month_est)+'/month</div>';
+        }
+      }
+    }
     /* C488: the portfolio engine. An error is SHOWN, never rendered as flat. */
     var b=d.c488;
     if(b){
@@ -40074,6 +40696,13 @@ async function pull(){
              ' <span class="'+cls(x.upnl)+'">'+sgn(x.upnl)+'</span> <span class="muted">'+x.sleeve+' \u00b7 '+x.days+'d</span></div>'});
         if((b.positions||[]).length>12)h+='<div class="s muted">+ '+(b.positions.length-12)+' more</div>';
         if(!b.n)h+='<div class="s muted">flat \u2014 '+(b.last_rebal?'nothing to hold today':'first rebalance pending')+'</div>';
+        /* C501: the allostatic shadow -- the same book sized with a 10-day volatility memory, paper only */
+        var k4=(d.c501||{}).k4;
+        if(k4&&k4.mode==='paper'){
+          h+='<div class="s muted">allostatic shadow (K4, paper): '+(k4.last_obs?('gross '+k4.k4.gross+'x vs running '+k4.base.gross+'x \u00b7 '+
+            k4.days+' days scored: K4 '+(100*k4.k4.ret).toFixed(2)+'% vs '+(100*k4.base.ret).toFixed(2)+'% (same rules, same data)'):
+            'starts at the next rebalance')+'</div>';
+        }
         /* C492: live -- whether Bitget and the book agree. A failure is SHOWN. */
         var L=b.live||{};
         if(L.on){
