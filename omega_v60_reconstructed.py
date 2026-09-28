@@ -276,6 +276,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C489',                     # the intraday shadow's hourly record
         'C490',                     # the carry ledger's daily run
         'C501',                     # C503: the spot pot's run and the K4 shadow reached only the detail log
+        'C504',                     # C504: the data watchdog (its warnings pass on level; the all-clear by name)
         'C503 WHAT IS RUNNING',     # C503: the boot summary of what actually trades,
         'BOOK   trend (C1)',        #   its lines one by one (they carry no C-number of
         'rebalanced daily 00:05',   #   their own, and the operator reads the session log)
@@ -1793,6 +1794,14 @@ class _C462Report:
                                    + ([f"SYNC FAILING {_l492['sync_error'][:40]}"] if _l492.get('sync_error') else []))
             except Exception:
                 pass
+            # C504: every feed against its own schedule
+            try:
+                if hasattr(bot, '_c504_data_health'):
+                    _h504 = bot._c504_data_health()
+                    self._pack('DATA', (["on time"] + _h504['bits']) if _h504['ok']
+                               else (["LATE"] + _h504['late'] + _h504['bits']))
+            except Exception:
+                pass
             # --- open-position table, one row each ---
             if open_pos:
                 self._rule(mid=True)
@@ -2243,7 +2252,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C503'
+_OMEGA_VERSION = 'C504'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -20183,6 +20192,10 @@ class C489Shadow:
                 self.syms = list(d.get('syms') or [])
                 self.start_equity = float(d.get('start_equity') or 0.0)
                 self.model_used = str(d.get('model_used') or '')         # C495: survives a restart
+                # C504: so does the last hour's gate. It was never saved, so a
+                # restart painted "gate shut" over an hour logged "gate OPEN"
+                # (28 Sep: 09:00 UTC opened at 14:32 IST; C503 restarted 14:46).
+                self.gate_last = bool(d.get('gate_last', False))
         except Exception as e:
             logger.warning(f"⚠️ C489 shadow state not loaded ({type(e).__name__}) -- starting fresh")
 
@@ -20191,7 +20204,7 @@ class C489Shadow:
             with self._lock:
                 cut = (int(time.time()) // 3600 - self.CACHE_H) * 3600000
                 d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms, start_equity=self.start_equity,
-                         model_used=self.model_used,
+                         model_used=self.model_used, gate_last=self.gate_last,
                          flow={s: {str(t): v for t, v in f.items() if t >= cut} for s, f in self.flow.items()})
             tmp = self.path + '.tmp'
             json.dump(d, open(tmp, 'w'))
@@ -21840,6 +21853,107 @@ class TradingBot:
                        key=lambda v: int(''.join(ch for ch in v[1:4] if ch.isdigit()) or 0))
         except Exception:
             return None
+
+    def _c504_data_health(self, now=None):
+        """C504: EVERY FEED'S AGE AGAINST ITS OWN SCHEDULE, CHECKED ON EVERY BLOCK.
+
+        The operator asked that every engine fetch its own data at the right
+        interval. On 28 Sep that was verified BY HAND from the logs (the shadow
+        scored all 40 hours since C495, funding was booked at every 4h and 8h
+        settlement to the cent, the three daily runs were on time, no failed
+        fetch). This makes the bot check it itself and SAY when a feed is late,
+        instead of an old price or a skipped run passing unnoticed:
+          book prices   refreshed every 30 s        late after 3 min
+          funding       booked at each settlement    late 10 min after one
+          rebalance     00:05 UTC daily              late after 01:05
+          K4 shadow     at each rebalance            late if the book ran and it did not
+          shadow hour   :02 each hour                late 90 min after the last hour
+          carry         00:10 UTC daily              late after 01:10
+          spot pot      00:20 UTC daily              late after 01:20
+          spot prices   every 60 s while it holds    late after 5 min
+          Savings       every 60 s                   late after 5 min
+        Returns {'ok', 'bits' (what is on time), 'late' (what is not, in words),
+        'keys' (which feeds are late: stable names, for the warning's dedupe)}."""
+        now = time.time() if now is None else float(now)
+        ut = datetime.utcfromtimestamp(now)
+        today, mins = ut.strftime('%Y-%m-%d'), ut.hour * 60 + ut.minute
+        bits, late, keys = [], [], []
+
+        def bad(key, text):
+            keys.append(key)
+            late.append(text)
+
+        def _due(hm, what, done):
+            h, m = hm
+            if done:
+                return True
+            if mins >= int(h) * 60 + int(m) + 60:
+                bad(what, f"{what} not run today (due {int(h):02d}:{int(m):02d} UTC)")
+            return False
+        try:
+            e = getattr(self, 'c488', None)
+            if e is not None and e.active():
+                age = now - float(getattr(e, '_marks_at', 0.0) or 0.0)
+                bits.append(f"prices {age:.0f}s" if age < 3600 else "prices none")
+                if age > 180:
+                    bad('book prices', f"book prices {age / 60:.0f} min old (every 30 s expected)")
+                if self.cfg.PAPER_MODE and e.book:
+                    od = [x.split('/')[0] for x in e.book
+                          if (e.fund_next.get(x) or now * 1000 + 1) < now * 1000 - 600000]
+                    if od:
+                        bad('funding', f"funding not booked for {','.join(od[:4])}")
+                    else:
+                        bits.append("funding booked")
+                ran = _due(getattr(self.cfg, 'C488_REBAL_UTC', (0, 5)), 'book rebalance', e.last_rebal == today)
+                k4 = getattr(self, 'c501k', None)
+                if ran and k4 is not None and k4.active() and k4.last_obs != today:
+                    bad('K4', "K4 shadow missed today's rebalance")
+                if ran:
+                    bits.append("book today")
+            s9 = getattr(self, 'c489', None)
+            if s9 is not None and s9.active():
+                lh = int(getattr(s9, 'last_hour', 0) or 0)
+                if lh:
+                    bits.append(f"shadow {datetime.utcfromtimestamp(lh / 1000):%H:%M}")
+                if not lh or now * 1000 - lh > 90 * 60 * 1000:
+                    bad('shadow', "intraday shadow: no hour scored in 90 min")
+            c9 = getattr(self, 'c490', None)
+            if c9 is not None and c9.active():
+                if _due(getattr(self.cfg, 'C490_CARRY_RUN_UTC', (0, 10)), 'carry ledger', c9.last_run == today):
+                    bits.append("carry today")
+            sp = getattr(self, 'c501s', None)
+            if sp is not None and sp.active():
+                if _due(getattr(self.cfg, 'C501_SPOT_RUN_UTC', (0, 20)), 'spot pot', sp.last_run == today):
+                    bits.append("spot pot today")
+                if sp.pos and now - float(getattr(sp, '_book_at', 0.0) or 0.0) > 300:
+                    bad('spot prices', f"spot prices {(now - float(sp._book_at or 0.0)) / 60:.0f} min old")
+            sv = getattr(self, 'c501v', None)
+            if sv is not None and sv.active() and float(getattr(sv, '_tick_at', 0.0) or 0.0) > 0 \
+                    and now - float(sv._tick_at) > 300:
+                bad('Savings', f"Savings ledger {(now - float(sv._tick_at)) / 60:.0f} min without a tick")
+        except Exception as _e504:
+            bad('check', f"data check failed ({type(_e504).__name__})")
+        return {'ok': not late, 'bits': bits, 'late': late, 'keys': keys}
+
+    def _c504_warn(self, now=None):
+        """C504: a late feed is a WARNING (so it reaches the session log and the
+        screen), said when the set of late feeds changes and repeated hourly
+        while it lasts; its recovery is said once."""
+        try:
+            now = time.time() if now is None else float(now)
+            h = self._c504_data_health(now)
+            # the set of late FEEDS, not the wording: "7 min old" -> "15 min old"
+            # is the same problem, and must not repeat the warning every block
+            k = ','.join(h.get('keys') or h['late'])
+            if h['late'] and (k != getattr(self, '_c504_said', '')
+                              or now - getattr(self, '_c504_said_at', 0.0) > 3600):
+                self._c504_said, self._c504_said_at = k, now
+                logger.warning(f"⚠️ C504 DATA LATE: {'; '.join(h['late'])}")
+            elif not h['late'] and getattr(self, '_c504_said', ''):
+                self._c504_said = ''
+                logger.info("✅ C504 data: every feed back on time")
+        except Exception:
+            pass
 
     def _c503_running(self):
         """C503: THE BOOT LOG SAYS WHAT ACTUALLY TRADES, IN NUMBERS READ FROM THE
@@ -38467,6 +38581,8 @@ class TradingBot:
         logger.info(f"💵 Available: ${_free503:.2f}{_note503} | "
                     f"Locked: ${stats['locked']:.2f}")
 
+        self._c504_warn()                          # C504: a late feed is a warning
+
         # Session PnL
         session_pnl, session_pct = self._c498_session_pnl(stats)
         logger.info(f"📈 Session: ${session_pnl:+.2f} ({session_pct:+.1f}%)")
@@ -40347,6 +40463,10 @@ class RemoteControl:
                                                for k, v in _g482.items()}
                         except Exception:
                             pass
+                        try:      # C504: every feed against its own schedule
+                            _out469['data'] = bot_ref._c504_data_health()
+                        except Exception:
+                            pass
                         try:      # C501: the spot pot, Savings and the allostatic shadow
                             _out469['c501'] = {k: getattr(bot_ref, a).status() for k, a in
                                                (('spot', 'c501s'), ('savings', 'c501v'), ('k4', 'c501k'))
@@ -40789,7 +40909,9 @@ async function pull(){
     /* C488: with the portfolio engine on, the scanner is idle -- say what runs instead */
     if(d.c488&&d.c488.mode==='portfolio'&&!d.c488.error){
       q('scan').textContent='daily book';
-      q('scans').textContent='next rebalance '+String(d.c488.next_rebal_utc||'').slice(11)+' UTC';
+      q('scans').textContent='next rebalance '+String(d.c488.next_rebal_utc||'').slice(11)+' UTC'+
+        /* C504: every feed against its own schedule */
+        (d.data?(d.data.ok?' \u00b7 data on time':' \u00b7 DATA LATE: '+(d.data.late||[]).join('; ')):'');
     }
     drawCurve(d.curve);
     /* C489: the intraday shadow -- a record, not money */

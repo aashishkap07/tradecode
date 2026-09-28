@@ -16,8 +16,13 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C503 is pushed, not deployed** (every log line true on its own). Deploy
-    commands are in `reports/2026-09-28_c503_every_line_true.md`.
+  - **C504 is pushed, not deployed** (the data watchdog; the shadow's gate
+    saved). Deploy commands are in
+    `reports/2026-09-28_c504_completeness_audit.md`.
+  - **C503 from 28 Sep 14:46 IST, verified** (screenshots 14:59, logs 15:17):
+    every C503 line reads as intended and still reconciles.
+    - Found: the shadow's first "gate OPEN" (09:00 UTC, logged 14:32) showed
+      "gate shut" after the restart; fixed in C504.
   - **C502 from 28 Sep 13:36 IST, checked line by line** (logs 14:17 push,
     screenshots 13:40):
     - 0 warnings;
@@ -103,8 +108,8 @@
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
 | 5 | **Refresh the C488 research** | quarterly (next: early Dec 2026) | Use `research/c493_target_probability.py` (crypto only, the `TRADFI` exclusion built in; `omega_c488_research.py` stays as the historical record). **Corrected at C493:** the "decay" (Sharpe 0.87 over 24 months) came from 2026 stock/commodity perps in the research universe. Crypto only: Sharpe 1.42 over 2020–26, 1.17 over 24 months, 1.69 over 12. Watch these three numbers each quarter. |
-| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). **At C502 (spot's real $1 minimum):** both pots +2.67%/month, max DD 22%, worst month −5.7%. |
-| 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. |
+| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). **At C502 (spot's real $1 minimum):** both pots +2.67%/month, max DD 22%, worst month −5.7%. **Measured at C504** (`research/c504_results.txt`, the chance that a year averages ≥ +2%/month, bootstrap / haircut): book 15% + Savings 67% / 45%; book 20% + Savings 78% / 58%; **both pots at dial 20% 74% / 50% with a worst month of −6.7%** (vs −14.6% for the book alone). Beyond dial 20% the chance barely rises (25%: 80%, 30%: 81%) while the drawdown grows 41% → 57%: 20% is the knee. "70–90% of months ≥ +2%" needs a Sharpe of 3–8, which is not available. |
+| 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. **pyflakes (C504) found 12 undefined names, all in this scanner** (`full_analysis`: pair_info, analysis; `_open_position`: candidate; the DRI calculate: result; `_display_summary`'s guarded ones). None is in the book, the ledgers or K4. Fix or delete them with the scanner. |
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
@@ -117,6 +122,103 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-28 — C504: THE COMPLETENESS AUDIT, THE DATA WATCHDOG, ROUND 9
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator asked** (after the C503 deploy) for every dimension to be
+checked:
+- error-free code and logs;
+- correct data at the correct frequency for each trade type;
+- a 70–90% probability of 2–4%/month;
+- the engines combined well, self-adjusting and relative;
+- every Bitget avenue;
+- paper close to live;
+- ideas from other fields.
+
+The full write-up is in `reports/2026-09-28_c504_completeness_audit.md`.
+
+**Verified on real data:**
+- **Logs since 25 Sep 17:46:** 0 errors, 0 failed fetches, 0 unfilled or
+  partial orders.
+- **The shadow:** scored every hour from 26 Sep 17:00 to 28 Sep 09:00 UTC
+  (36–39 coins).
+- **Funding:** booked at every settlement for 2 days, from the state file's
+  hourly history (00/08/16 UTC, plus 04/12/20 for PUMP's 4h interval), and
+  exact against Bitget twice: 04:00 +$0.00059 and 08:00 −$0.00414.
+- **The daily runs:** on time every day.
+- **Static scan (pyflakes):** 12 undefined names, all in the idle scanner
+  (pending #7).
+
+**C504 (the bot):**
+- `TradingBot._c504_data_health(now)`: each feed's age against its own
+  schedule, returning {ok, bits, late, keys}.
+
+  | feed | late after |
+  |---|---|
+  | prices | 3 min |
+  | funding | 10 min past a settlement (paper only) |
+  | rebalance | 01:05 UTC |
+  | K4 | the book ran and K4 did not |
+  | shadow | 90 min |
+  | carry | 01:10 UTC |
+  | spot pot | 01:20 UTC |
+  | spot prices | 5 min, while it holds |
+  | Savings | 5 min |
+
+- **Where it shows:**
+  - a DATA row in the status block;
+  - `_c504_warn`, a WARNING when the set of late feeds changes (dedupe on
+    feed names, not on the wording), repeated hourly, with the recovery said
+    once;
+  - status JSON `data`;
+  - the scanning tile: "data on time" / "DATA LATE: …".
+- **The shadow's `gate_last` is saved and restored.** 28 Sep: 09:00 UTC
+  logged "gate OPEN", then "gate shut" after the 14:46 restart.
+- **Tests:** `omega_c504_test.py`, 25 checks, including Chromium.
+
+**Probability** (`research/c504_target_probability.py` and
+`c504_results.txt`; descriptive, nothing admitted): see the pending #6 row.
+
+| set-up | months ≥ +2% | year averaging ≥ +2%/month (bootstrap / haircut) | worst month | worst DD |
+|---|---|---|---|---|
+| book 15% + Savings | 50% | 67% / 45% | −14.5% | 30% |
+| book 20% + Savings | 53% | 78% / 58% | −18.5% | 41% |
+| both pots, 20% | 54% | 74% / 50% | −6.7% | 27% |
+
+- **The arithmetic:** 70% of months ≥ +2% needs a Sharpe of 3–3.5; 90%
+  needs 5.6–7.9.
+- **The dial curve:** 45% / 67% / 78% / 80% / 81% at dials 10/15/20/25/30,
+  with worst DD 19/30/41/50/57%. The knee is at 20%.
+
+**Round 9** (`research/c505_preregistration.md`, commit 50e7875, pushed
+before any data; `c505_results.txt`). Base +32.6%/yr, Sharpe 1.56,
+reproduced.
+
+| test | vs base | t | verdict |
+|---|---|---|---|
+| L1 chaos: variance-ratio trend gate | −0.74%/yr | −0.63 | not admitted |
+| L2 information: dispersion-scaled momentum | −0.27%/yr | −0.14 | not admitted |
+| L3 control: drawdown feedback | −8.05%/yr | −2.68 | not admitted; worst month −5.9%, DD 19.7%, but Sharpe 1.51: a lower dial in disguise |
+
+**Paper vs live:** the full table is in the report. Remaining gaps:
+- Savings accrues from the first minute; Bitget starts at the next hour or
+  day (a few cents);
+- the spot pot's quantities are not rounded to each pair's step (cents);
+- the BGB balance, for the 0.08% fee;
+- India's 1% TDS on spot sales (#8).
+
+**Engine map:**
+- the futures wallet holds the book (about $24 of margin), and about 70% of
+  it is idle cash that could sit in Savings (#14);
+- the spot wallet holds the spot pot's $250 (#15);
+- the carry ledger and K4 are paper.
+
+They don't share money. The only overlap is an ETH long in both; the two
+pots' daily returns correlate +0.14.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-28 — C503: EVERY LOG LINE TRUE ON ITS OWN
