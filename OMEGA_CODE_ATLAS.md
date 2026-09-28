@@ -16,8 +16,21 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C502 is pushed, not deployed** (the spot pot at Bitget spot's $1
-    minimum). Deploy commands are in `reports/2026-09-28_c502_spot_minimum.md`.
+  - **C503 is pushed, not deployed** (every log line true on its own). Deploy
+    commands are in `reports/2026-09-28_c503_every_line_true.md`.
+  - **C502 from 28 Sep 13:36 IST, checked line by line** (logs 14:17 push,
+    screenshots 13:40):
+    - 0 warnings;
+    - every status block reconciles: session baseline $244.58, peak $244.70,
+      dd 0.04%; the guard's used = $252.81 − marked;
+    - **the 13:30 IST funding settlement:** realised $250.39200 →
+      $250.38786, **−$0.00414**, exactly Bitget's 08:00 UTC rates on the 9
+      positions (PUMP on its 4-hour schedule);
+    - the spot pot's marks follow Bitget spot's 07:39 → 08:10 UTC moves to
+      the cent;
+    - Savings: 0.02 days carried across the restart.
+    - **The untrue or misleading lines found are fixed in C503** (section
+      below).
   - **C501 from 28 Sep 13:09 IST, checked in the server log and screenshots:**
     - `OMEGA C501`, **0 warnings, 0 tracebacks**.
     - The spot pot's first run at 13:09:45 (39 s: it fetched 80 coins of
@@ -103,10 +116,67 @@
 | 16 | **The allostatic shadow (K4)** | running from C501; decided at the December refresh (#11) | `C501Allostatic` scores the running sizing and K4's (EWMA, 10-day half-life) identically at every rebalance, a paper A/B that never trades. Round 7: same return, worst month −9.7% vs −15.5%. It replaces the running sizing only if the December re-test on NEW data passes (Rule: pre-registered bars). On 28 Sep K4 wanted 0.66x vs the running 0.40x: it adjusts both ways. |
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
-| 19 | **Paper "free" balance ignores open P&L** | optional, cosmetic | `Portfolio.available_balance` in paper is realised equity − margin ($226.45 on 28 Sep), while Bitget's cross-margin available nets the open loss (about $220.66). The book sizes on marked equity and the Savings ledger on marked equity − reserve, so no decision uses it. Live mode reads Bitget's own figure (C492). Fix only if the display confuses. |
+| 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 🔎 2026-09-28 — C502: THE SPOT POT AT BITGET SPOT'S REAL MINIMUM
+# 🔎 2026-09-28 — C503: EVERY LOG LINE TRUE ON ITS OWN
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator asked** (after the C502 deploy) that every line of the
+detail, session and other logs be true. **Each line was checked** against:
+- the code that prints it;
+- Bitget (804 active USDT perps; maker 0.02% / taker 0.06% on all 804; 340
+  non-crypto by the bot's own classifier; the funding rates and intervals;
+  spot 1-minute candles);
+- the arithmetic.
+
+**Verified true** (kept):
+- the market count and fees;
+- the IST session windows (EDT until 1 Nov; KRX 05:30–12:00; HKEX
+  07:00–13:30 with lunch 09:30–10:30), with HK correctly shut at 13:36;
+- the DRI weights (sum 1.02, DSI 0.59);
+- every status-block figure;
+- the funding, to the tenth of a cent.
+
+**Untrue or misleading, fixed in C503:**
+
+| line | what was wrong | now |
+|---|---|---|
+| "ARCHITECTURE — what is actually running:" | headed the idle scanner | "INTRADAY SCANNER — IDLE while the book trades…", preceded by a new **"C503 WHAT IS RUNNING"** summary read from the settings (book: C1+C2+C3, vol 20% from the 15% dial, gross ≤ 3×, top 20, $6, 30% band, 00:05 UTC market orders at the ask/bid, 5x cross, funding per coin's interval, the month guard; paper: C489 hourly, C490 00:10, spot pot 00:20 with the $1 minimum, Savings 7.63%, K4) |
+| "756 markets", "294 RWA perps" | literals | counted at boot (804; 464 crypto + 340) |
+| "Version history: see CHANGELOG.md (auto-updated each revision)" | the table stops at C466 | "OMEGA_CODE_ATLAS.md in the repo; CHANGELOG.md here records up to C466" (read from the table) |
+| "RISK @ $250.39: monthly dial 15% = $37.92" | $37.92 is 15% of the anchor $252.81 | "(15% of this month's anchor $252.81)" |
+| "Loaded state: $250.39 \| 0 positions \| available $226.45" | beside $23.94 of the book's margin | "$250.39 realised \| 0 intraday positions \| available … before open P&L" |
+| OPEN "free $226.45", Available $226.45 | Bitget nets the open P&L | marked − margin "after open P&L" (e.g. $220.66) |
+| "Limit Orders: ENABLED", sizing, leverage, the edge state, the DRI block, shared learning, "Normal start" | the idle scanner's, unlabelled | labelled "(idle scanner)" / "the idle scanner's"; "Normal start" not printed while the book trades |
+| RISK FRAME EQUITY, header "start" | realised, unlabelled | "realised" |
+| "4 EXIT … HARD STOP · THESIS DEAD" | "HARD STOP" is an alert word: copied into the session log as if a stop fired | lower case; a real C377 stop still alerts |
+| spot pot run, K4 shadow | never reached the session log | 'C501' on the session list |
+| "Same WiFi: http://10.0.0.160…" | a server has no WiFi | "Local network: … (this machine's own address)" |
+| "Press Ctrl+C to stop safely" | under systemd | "Stop safely: sudo systemctl stop omega" when systemd started it |
+| "Monitoring thread … hard stop, trailing floor…" | reads as guarding the book | "it watches INTRADAY positions; the book has no stops, its one limit is the month guard" |
+| "C488: portfolio engine ON" | — | adds "the book holds N positions" |
+| MARKET "bias +0.00 breadth +0.00" every 8 min | never measured while the scanner is idle | row not printed while the book trades |
+| LIFETIME "139tr 44W 95L 32% $+0.39", page "all-time 44W 95L · +$0.39" | intraday trades beside the account's dollars (the trades made about +$2.63, the book −$2.24) | "…32% intraday · account $+0.39 realised"; page "…L intraday · account +$0.39" |
+| "Win Rate: Session 0% \| Open 0%" | no trades, no intraday positions | "no trades yet", "none open", "(intraday trades)" |
+| shutdown "P&L +$0.08 … $244.60 > $244.68" | the last SESSION row said +$0.11 (from $244.57) | the curve starts at the book's first full mark, the SESSION row's baseline |
+| "📝 Log saved" twice per stop | SIGTERM flush + atexit flush | written once |
+
+**Kept as they are, and why:**
+- "C364 PAPER=LIVE PARITY … funding: charged per 8h" is the idle scanner's
+  model; it is now labelled as such. The book's funding follows each coin's
+  interval (checked: PUMP 4h).
+- "WHY: crypto alive 39.3% …" is now marked as measured at C409.
+- The carry ledger's funding changes once a day at 00:10 UTC, by design.
+
+**Tests:**
+- `omega_c503_test.py`, 28 checks, including negative controls (the old
+  capitals did pass the alert filter; a real C377 stop still does).
+- c479b/c486/c497 are unchanged and pass.
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 
 ## ⏩ RESUME STATE

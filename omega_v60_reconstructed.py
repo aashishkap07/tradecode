@@ -275,8 +275,15 @@ class _C460ConsoleFilter(logging.Filter):
         'C488',                     # the portfolio engine: rebalances, guard, fills
         'C489',                     # the intraday shadow's hourly record
         'C490',                     # the carry ledger's daily run
+        'C501',                     # C503: the spot pot's run and the K4 shadow reached only the detail log
+        'C503 WHAT IS RUNNING',     # C503: the boot summary of what actually trades,
+        'BOOK   trend (C1)',        #   its lines one by one (they carry no C-number of
+        'rebalanced daily 00:05',   #   their own, and the operator reads the session log)
+        'PAPER  never touches',
+        'IDLE   the intraday scanner',
         'Paper Mode', 'LIVE Mode', 'Connected |',
         'Press Ctrl+C',
+        'Stop safely',              # C503: under systemd the stop is systemctl, not Ctrl+C
         'NEWS',                     # C463-3 news panel
         # C479-C: HOW TO REACH THE BOT IS A DECISION, NOT WORKING.
         # These lines carry the dashboard's address and whether it is up. They
@@ -288,7 +295,8 @@ class _C460ConsoleFilter(logging.Filter):
         # learns to ignore alarms (Rule 23).
         'Remote control on',        # the panel's address, at boot
         'CONTROL PANEL',            # ...did not open / ...is back
-        'Same WiFi',                # the LAN URL
+        'Same WiFi',                # the LAN URL (before C503)
+        'Local network',            # C503: the same URL; on a server it is not a WiFi
         'Cloudflare Tunnel in front',
         'See deploy/DEPLOY.md',
         'OMEGA_CTRL_TOKEN',         # why it is localhost-only, and how to change it
@@ -656,6 +664,9 @@ def _c52_setup_logging():
     except Exception as e:
         print(f"Log setup warning: {e}")
 
+_c52_sealed = [False]
+
+
 def _c52_flush():
     try:
         if _c52_file_handler:
@@ -663,8 +674,12 @@ def _c52_flush():
         for h in logger.logger.handlers:
             try: h.flush()
             except: pass
-        with open(_C52_LOG_PATH, 'a') as f:
-            f.write(f"\n{'='*60}\n📝 Log saved: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{'='*60}\n")
+        # C503: a stop runs this twice (the SIGTERM handler, then atexit), and
+        # the session log carried "Log saved" twice; the seal is written once.
+        if not _c52_sealed[0]:
+            _c52_sealed[0] = True
+            with open(_C52_LOG_PATH, 'a') as f:
+                f.write(f"\n{'='*60}\n📝 Log saved: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{'='*60}\n")
     except: pass
 
 def _c52_signal(signum, frame):
@@ -1282,7 +1297,9 @@ class _C462Report:
             # would have been silently deleted from the readable log. Inside
             # the box it carries the "│" the filter always passes, and it
             # reads better as well.
-            parts = [f"start {_c462_money(equity)}"]
+            parts = [f"start {_c462_money(equity)}"
+                     + (" realised" if str(getattr(_c467_cfg_ref[0], 'C488_ENGINE', '') or '').lower() == 'portfolio'
+                        else "")]
             if day_barrier:
                 # C483: day_barrier is now the MONTHLY RISK DIAL (C482). The old
                 # "day -0.68% loss" described a limit C482 retired.
@@ -1418,7 +1435,10 @@ class _C462Report:
         try:
             self._rule('RISK FRAME')
             eq = float((plan or {}).get('equity', 0.0) or 0.0)
-            self._pack('EQUITY', [_c462_money(eq)]
+            # C503: at boot the book is not yet priced, so this is REALISED
+            # equity; the MONTH row beside it already said so, this row did not.
+            _book503 = str(getattr(_c467_cfg_ref[0], 'C488_ENGINE', '') or '').lower() == 'portfolio'
+            self._pack('EQUITY', [_c462_money(eq) + (" realised" if _book503 else "")]
                        + ([f"{markets} markets"] if markets else []))
             cap = float((plan or {}).get('cap_pct', 0.0) or 0.0)
             dd = float((plan or {}).get('dd_pct', 0.0) or 0.0)
@@ -1708,9 +1728,11 @@ class _C462Report:
             elif _n488 and _e488 is not None and _e488.active():
                 # C497: "flat" sat above a BOOK row holding 8 positions -- the
                 # same contradiction C495 removed from the web page.
+                # C503: "free $226.45" was realised equity - margin; Bitget's
+                # cross-margin figure nets the open P&L ($220.66 on 28 Sep).
                 self._pack('OPEN', ["no intraday positions",
                                     f"book holds {_n488} (BOOK row)",
-                                    f"free {_c462_money(st.get('available', 0))}"])
+                                    f"free {_c462_money(live - locked)} after open P&L"])
             else:
                 self._pack('OPEN', ['flat',
                                     f"free {_c462_money(st.get('available', 0))}"])
@@ -1949,11 +1971,16 @@ class _C462Report:
             if lt > 0 and lt == s['n'] and s['n'] > 0:
                 lt = 0
             if lt > 0:
+                # C503: "139tr 44W 95L $+0.39" read as what those trades made;
+                # they made about +$2.63 and the book -$2.24 since. The count is
+                # the intraday scanner's, the dollars the whole account's.
+                _bk503 = getattr(bot, 'c488', None) is not None and bot.c488.active()
                 self._pack('LIFETIME', [
                     f"{lt}tr {int(getattr(pf, 'lifetime_wins', 0))}W "
                     f"{int(getattr(pf, 'lifetime_losses', 0))}L "
-                    f"{float(st.get('win_rate', 0)):.0f}%",
-                    _c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)])
+                    f"{float(st.get('win_rate', 0)):.0f}%" + (" intraday" if _bk503 else ""),
+                    ("account " if _bk503 else "") + _c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)
+                    + (" realised" if _bk503 else "")])
 
             # --- cost, which C461 made the headline number of this project ---
             tot_fee = self.fees_maker + self.fees_taker
@@ -2005,7 +2032,11 @@ class _C462Report:
                     bits.append(f"breadth {float(br):+.2f}")
                 if tk is not None:
                     bits.append(f"taker flow {float(tk):+.2f}")
-                if bits:
+                # C503: while the book trades the scanner reads no market, and
+                # the row printed "bias +0.00 breadth +0.00" every 8 minutes as
+                # if measured. Not read is not zero.
+                _e503 = getattr(bot, 'c488', None)
+                if bits and not (_e503 is not None and _e503.active()):
                     self._pack('MARKET', bits)
             except Exception:
                 pass
@@ -2212,7 +2243,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C502'
+_OMEGA_VERSION = 'C503'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -8137,9 +8168,12 @@ class Portfolio:
 
             self.positions.load_state(self.cfg.POSITIONS_FILE)
             self._c427_reconcile('load_state')   # C427: positions are known now
-            logger.info(f"📂 Loaded state: ${self.equity:.2f} | "
-                        f"{self.positions.count()} positions | "
-                        f"available ${self.available_balance:.2f} "
+            # C503: "0 positions" beside $23.94 of locked margin read as a
+            # contradiction -- this store holds INTRADAY positions; the book's
+            # load with the C488 engine. And available here is before open P&L.
+            logger.info(f"📂 Loaded state: ${self.equity:.2f} realised | "
+                        f"{self.positions.count()} intraday positions | "
+                        f"available ${self.available_balance:.2f} before open P&L "
                         f"(locked ${self.get_locked_margin():.2f})")
             return True
         except Exception as e:
@@ -8369,7 +8403,10 @@ class ExchangeManager:
             logger.info(f"📊 Bitget Fees: Maker {self.cfg.MAKER_FEE_PCT}% | Taker {self.cfg.TAKER_FEE_PCT}%")
             logger.info(f"📊 Market type: PERPETUAL FUTURES (swap) — verified")
             if self.cfg.USE_LIMIT_ORDERS:
-                logger.info(f"📋 Limit Orders: ENABLED (offset {self.cfg.LIMIT_ORDER_OFFSET_PCT}%)")
+                # C503: the book trades with market orders; this is the scanner's setting
+                _b503 = str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio'
+                logger.info(f"📋 Limit Orders: ENABLED (offset {self.cfg.LIMIT_ORDER_OFFSET_PCT}%)"
+                            + (" -- the idle intraday scanner's; the book trades with market orders" if _b503 else ""))
             return True
         except Exception as e:
             logger.error(f"Exchange connect error: {e}")
@@ -19756,6 +19793,14 @@ class C488Engine:
         # C498: the session's marked baseline -- fixed once, at the first full mark
         if self.open0 is None and self.marked_ok():
             self.open0 = round(self.unrealized(), 4)
+            # C503: the SESSION row measures from here; the shutdown summary
+            # measured from the first 8-min block instead (28 Sep: "+$0.08 from
+            # $244.60" beside a last SESSION row of +$0.11 from $244.57). One
+            # baseline: the curve starts at the first full mark too.
+            try:
+                _c462_report.note_equity(self.live_equity())
+            except Exception:
+                pass
         # the month guard: the operator's dial, on LIVE equity
         g = self.guard()
         if g and g != self.halt:
@@ -21789,6 +21834,60 @@ class TradingBot:
             with open(path, 'a') as f:
                 for v, s in new_entries:
                     f.write(f"### {v}\n{s}\n\n")
+        # C503: the boot line names the newest version this table holds
+        try:
+            return max((str(t[0]) for t in _CHANGELOG),
+                       key=lambda v: int(''.join(ch for ch in v[1:4] if ch.isdigit()) or 0))
+        except Exception:
+            return None
+
+    def _c503_running(self):
+        """C503: THE BOOT LOG SAYS WHAT ACTUALLY TRADES, IN NUMBERS READ FROM THE
+        SETTINGS. Every block after this one describes the idle intraday
+        scanner (C497 said so once); the operator asked that every line be
+        true on its own, so the book and the paper ledgers are stated here."""
+        try:
+            c = self.cfg
+            e = getattr(self, 'c488', None)
+            if e is None or not e.active():
+                return
+            eq = float(self.portfolio.equity)
+            _v = getattr(c, 'C488_TOPN', 'auto')
+            tn = int(getattr(e, '_topn', 0) or 0) or (
+                int(_v) if str(_v).lower() != 'auto'
+                else (40 if eq >= float(getattr(c, 'C488_TOPN_40_FROM', 1000.0)) else 20))
+            logger.info("📊 C503 WHAT IS RUNNING -- the portfolio book trades:")
+            logger.info(f"   BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target "
+                        f"{100 * e.target_vol():.0f}% from the {e.dial():.0f}% dial; gross <= "
+                        f"{float(getattr(c, 'C488_LEV_CAP', 3.0)):.0f}x equity; top {tn} crypto; "
+                        f"${float(getattr(c, 'C488_MIN_NOTIONAL', 6.0)):.0f} minimum; "
+                        f"{100 * float(getattr(c, 'C488_TRADE_BAND', 0.30)):.0f}% band")
+            logger.info(f"          rebalanced daily 00:05 UTC with market orders "
+                        f"({'paper fills at the ask/bid' if c.PAPER_MODE else 'live, read back from Bitget'}, "
+                        f"taker {c.TAKER_FEE_PCT}%); {e.lev()}x cross margin; funding at each coin's own "
+                        f"interval; its one limit is the month guard on MARKED equity")
+            led = []
+            if getattr(self, 'c489', None) is not None and self.c489.active():
+                led.append("intraday shadow (C489) hourly")
+            if getattr(self, 'c490', None) is not None and self.c490.active():
+                h, m = getattr(c, 'C490_CARRY_RUN_UTC', (0, 10))
+                led.append(f"carry (C490) {h:02d}:{m:02d} UTC")
+            if getattr(self, 'c501s', None) is not None and self.c501s.active():
+                h, m = getattr(c, 'C501_SPOT_RUN_UTC', (0, 20))
+                led.append(f"spot pot (C501/C502) ${float(getattr(c, 'C501_SPOT_EQUITY', 250.0)):.0f}, "
+                           f"spot minimum ${float(getattr(c, 'C502_SPOT_MIN_ORDER', 1.0)):.0f}, "
+                           f"{h:02d}:{m:02d} UTC")
+            if bool(getattr(c, 'C501_SAVINGS', True)):
+                led.append(f"idle cash -> Savings at {100 * float(getattr(c, 'C501_SAVINGS_APR', 0.0763)):.2f}% "
+                           f"every minute")
+            if bool(getattr(c, 'C501_K4', True)):
+                led.append("allostatic shadow (K4) at each rebalance")
+            if led:
+                logger.info("   PAPER  never touches the account: " + " · ".join(led))
+            logger.info("   IDLE   the intraday scanner (OMEGA_ENGINE=intraday restores it): every block "
+                        "below, to the 'stop safely' line, describes it")
+        except Exception as _e503:
+            logger.info(f"   C503 WHAT IS RUNNING: summary unavailable ({type(_e503).__name__})")
 
     def run(self):
         # PHASE4: Document7-style rich startup display
@@ -21802,7 +21901,10 @@ class TradingBot:
             logger.info("   \u2139\ufe0f C497: the portfolio book trades. The blocks below describe the "
                         "INTRADAY SCANNER, which is idle (OMEGA_ENGINE=intraday restores it); "
                         "the book is summarised in the RISK FRAME above and the BOOK row every 8 min")
-        logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper:")
+            self._c503_running()
+        _b503 = str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio'
+        logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper"
+                    + (" (the idle scanner's; the book's are in the summary above):" if _b503 else ":"))
         logger.info("      • entries: post-only, REJECTED if the limit would cross (mirrors C363 live)")
         logger.info("      • market fills: lift the ASK / hit the BID — never the last price")
         logger.info("      • exit fee: taker on current notional")
@@ -21827,7 +21929,7 @@ class TradingBot:
         # surviving hp_mode parameters read it as a default -- but it is no
         # longer reported as though it governs anything.
         logger.info(f"🔒 Score floor reset: {self.cfg.MIN_SCORE_NORMAL:.2f} "
-                    f"(single mode — HP retired at C403-3)")
+                    f"(single mode — HP retired at C403-3)" + (" -- the idle scanner's" if _b503 else ""))
         # ═══ C458-22: SAY WHAT THE LEDGER PERMITS, AT BOOT, IN NUMBERS ══════
         # C458-3 stopped the edge growing with an unreached target, and the
         # consequence is uncomfortable and must not be discovered from a quiet
@@ -21846,7 +21948,8 @@ class TradingBot:
             # that no longer aims there. A number that describes a setting must
             # READ the setting.
             _fair458b = 1.0 / (1.0 + float(getattr(self.cfg, 'C416_HARD_FLOOR_R', 2.00)))
-            logger.info("🧮 C458 EDGE STATE — what the ledger permits today:")
+            logger.info("🧮 C458 EDGE STATE — what the ledger permits today:" if not _b503 else
+                        "🧮 C458 EDGE STATE (the idle scanner's own trade record) — what it would permit today:")
             logger.info(f"   realised {int(_w458b)}W/{int(_l458b)}L → shrunk base rate "
                         f"{_base458b:.3f}; fair odds for a "
                         f"{float(getattr(self.cfg,'C416_HARD_FLOOR_R',2.00)):.2f}R target are "
@@ -21882,8 +21985,11 @@ class TradingBot:
         # CHANGELOG.md (user request — the 500-line banner was stale noise burying real
         # startup info). _write_changelog() appends only versions not already recorded.
         try:
-            self._write_changelog()
-            logger.info("📋 Version history: see CHANGELOG.md (auto-updated each revision)")
+            # C503: the table stopped at C466, so "auto-updated each revision"
+            # had been false for 36 versions. Say where the history is.
+            _last503 = self._write_changelog()
+            logger.info(f"📋 Version history: OMEGA_CODE_ATLAS.md in the repo; CHANGELOG.md here "
+                        f"records up to {_last503 or 'C466'}")
         except Exception as _e:
             logger.debug(f"changelog write skipped: {_e}")
         # C69: Score persistence cache — tracks prev scan scores for stability check
@@ -21930,8 +22036,17 @@ class TradingBot:
         # log unauditable. Rewritten to state what runs, what was retired and
         # why, and nothing else.
         _fee405 = float(getattr(self.cfg, 'C403_TARGET_TRADES_DAY', 6.0))
-        logger.info("📊 ARCHITECTURE — what is actually running:")
-        logger.info("  1 SCANNER    756 markets → volume floor → top 30 by liveliness")
+        # C503: "what is actually running" headed a scanner that runs nothing
+        # while the book trades, and two of its counts were literals (756
+        # markets, 294 RWA perps) against 804 and 340 on 28 Sep.
+        logger.info("📊 ARCHITECTURE — what is actually running:" if not _b503 else
+                    "📊 INTRADAY SCANNER — IDLE while the book trades; what OMEGA_ENGINE=intraday would run:")
+        try:
+            _nm503 = len(getattr(self.exchange, 'markets', None) or {})
+        except Exception:
+            _nm503 = 0
+        logger.info(f"  1 SCANNER    {str(_nm503) + ' markets' if _nm503 else 'every market'} → volume floor → "
+                    f"top 30 by liveliness")
         logger.info("  2 ENTRY      11 signal components → one score; only 3 hard vetoes")
         logger.info("               (can't pay fees / no room to stop / not tradeable).")
         logger.info("               Everything else is a weighted penalty [C403-5].")
@@ -21958,8 +22073,10 @@ class TradingBot:
         logger.info("  3 MONITOR    SPLIT LOOP [C397]: prices every 0.8s (stop, floors);")
         logger.info(f"               OHLCV/DRI every {float(getattr(self.cfg,'C397_DRI_REFRESH_SEC',20)):.0f}s; "
                     f"regime every {float(getattr(self.cfg,'C397_REGIME_REFRESH_SEC',90)):.0f}s, AFTER positions.")
-        logger.info("  4 EXIT       4 questions: HARD STOP · THESIS DEAD (C399 retention)")
-        logger.info("               · PROFIT FLOOR (C397 runner floor binds) · TIME.")
+        # C503: in capitals, "HARD STOP" is an alert word (_ALERT), so this
+        # description was copied into the session log as if a stop had fired.
+        logger.info("  4 EXIT       4 questions: hard stop · thesis dead (C399 retention)")
+        logger.info("               · profit floor (C397 runner floor binds) · time.")
         logger.info("               Loss patience is BOUNDED at "
                     f"{float(getattr(self.cfg,'C404_DD_HARD_MULT',1.35)):.2f}× the soft limit [C404-2].")
         if bool(getattr(self.cfg, 'C408_MULTI_ASSET', False)):
@@ -21984,10 +22101,16 @@ class TradingBot:
                     logger.info(f"               {'● OPEN ' if _ob else '○ shut '} {_cb:<14}{_lb}")
             except Exception:
                 pass
-            logger.info("  UNIVERSE     crypto + 294 RWA perps (stocks/metals/energy/ETFs),")
+            try:
+                _mk503 = getattr(self.exchange, 'markets', None) or {}
+                _nx503 = sum(1 for _s503 in _mk503 if self._c408_asset_class(_s503) != 'crypto')
+                logger.info(f"  UNIVERSE     {len(_mk503) - _nx503} crypto + {_nx503} RWA perps "
+                            f"(stocks/metals/energy/ETFs) today,")
+            except Exception:
+                logger.info("  UNIVERSE     crypto + RWA perps (stocks/metals/energy/ETFs),")
             logger.info("               session-gated; leverage scaled to each instrument's own ATR;")
             logger.info("               fee burden inside E. ONE POOL, no per-class quota [C409].")
-            logger.info("               WHY: crypto alive 39.3% of bars, ANY asset alive 59.8%")
+            logger.info("               WHY (measured at C409): crypto alive 39.3% of bars, ANY asset alive 59.8%")
             logger.info("               (+20.5pp). Cross-class aliveness corr +0.04/+0.14 vs")
             logger.info("               crypto's OWN internal factor corr +0.925 — real diversification.")
         logger.info("  EDGES        C398 capitulation tilt (down-side only, +4.67pp measured)")
@@ -22005,7 +22128,8 @@ class TradingBot:
                    + self.cfg.DRI_WEIGHT_WAVE + self.cfg.DRI_WEIGHT_OFI
                    + self.cfg.DRI_WEIGHT_FUNDING + self.cfg.DRI_WEIGHT_MULTITF
                    + self.cfg.DRI_WEIGHT_RVS + 0.15 + 0.10)
-        logger.info(f"✅ DRI SYSTEM ({_n400} components, renormalised to exactly 1.0 [C400]):")
+        logger.info(f"✅ DRI SYSTEM ({_n400} components, renormalised to exactly 1.0 [C400])"
+                    + (" -- the idle scanner's exit model:" if _b503 else ":"))
         logger.info(f"   Threshold: {self.cfg.DRI_REVERSAL_THRESHOLD} | "
                     f"Hard: {self.cfg.DRI_HARD_THRESHOLD}")
         logger.info(f"   Weights: Mom={self.cfg.DRI_WEIGHT_MOMENTUM} "
@@ -22030,10 +22154,14 @@ class TradingBot:
         p = self.cfg
         eq = self.portfolio.equity
         logger.info(f"📋 CONFIGURATION:")
-        logger.info(f"   💰 Equity: ${eq:.2f} | Available: ${self.portfolio.available_balance:.2f}")
-        logger.info(f"   📊 Position Sizing: Dynamic allocation, min ${p.MIN_MARGIN_PER_TRADE} | {p.MIN_POSITIONS}-{p.MAX_POSITIONS} positions")
-        logger.info(f"   🎲 Leverage: {p.MIN_LEVERAGE}x-{p.MAX_LEVERAGE_NORMAL}x  (single mode — HP retired, C403-3)")
-        logger.info(f"   📋 Limit Orders: {'ON' if p.USE_LIMIT_ORDERS else 'OFF'} | Maker {p.MAKER_FEE_PCT}% Taker {p.TAKER_FEE_PCT}%")
+        # C503: sizing, leverage and limit orders below are the idle scanner's;
+        # the book's own are in the C503 summary at the top of this block.
+        _sc503 = " (idle scanner)" if _b503 else ""
+        logger.info(f"   💰 Equity: ${eq:.2f}{' realised' if _b503 else ''} | "
+                    f"Available: ${self.portfolio.available_balance:.2f}{' before open P&L' if _b503 else ''}")
+        logger.info(f"   📊 Position Sizing{_sc503}: Dynamic allocation, min ${p.MIN_MARGIN_PER_TRADE} | {p.MIN_POSITIONS}-{p.MAX_POSITIONS} positions")
+        logger.info(f"   🎲 Leverage{_sc503}: {p.MIN_LEVERAGE}x-{p.MAX_LEVERAGE_NORMAL}x  (single mode — HP retired, C403-3)")
+        logger.info(f"   📋 Limit Orders{_sc503}: {'ON' if p.USE_LIMIT_ORDERS else 'OFF'} | Maker {p.MAKER_FEE_PCT}% Taker {p.TAKER_FEE_PCT}%")
         logger.info(f"   🎚️ Loss control: monthly risk dial {float(getattr(p, 'C380_MAX_MONTHLY_DD_PCT', 0) or 0):.0f}% "
                     + ("— the book's month guard on marked equity; no day limit applies to the book (C497)"
                        if str(getattr(p, 'C488_ENGINE', '') or '').lower() == 'portfolio' else
@@ -22042,18 +22170,26 @@ class TradingBot:
                     f"{'ON' if bool(getattr(p, 'C482_SESSION_BREAKER', False)) else 'off'} | Guardian: "
                     f"{'acts' if bool(getattr(p, 'C482_GUARDIAN_ACT', False)) else 'report only'} (C482)")
         logger.info(f"   ⏱️ Prices {p.POSITION_CHECK_INTERVAL}s | DRI {float(getattr(p,'C397_DRI_REFRESH_SEC',20)):.0f}s "
-                    f"| Summary {p.SUMMARY_INTERVAL}s | Min age {p.MIN_POSITION_AGE//60}min")
+                    f"| Summary {p.SUMMARY_INTERVAL}s | Min age {p.MIN_POSITION_AGE//60}min"
+                    + (" (the summary is the 8-min block; the rest are the scanner's)" if _b503 else ""))
         logger.info(f"   🧠 Shared learning ON (Markov chains, calibration). "
-                    f"Per-symbol memory OFF [C403-2].")
+                    f"Per-symbol memory OFF [C403-2]." + (" -- the idle scanner's" if _b503 else ""))
 
         logger.info("=" * 60)
         logger.info(f"📊 MODE: {'NORMAL' if self.mode_mgr.mode == TradingMode.NORMAL else self.mode_mgr.mode.value.upper()}")
-        if self.mode_mgr.normal_start_equity:
+        # C503: the mode manager is the intraday scanner's; with the book on,
+        # "Normal start: $250.00" beside $250.39 only raised a question.
+        if self.mode_mgr.normal_start_equity and not _b503:
             logger.info(f"   Normal start: ${self.mode_mgr.normal_start_equity:.2f}")
-        if self.mode_mgr.hp_start_equity:
+        if self.mode_mgr.hp_start_equity and not _b503:
             logger.info(f"   HP start: ${self.mode_mgr.hp_start_equity:.2f}")
         logger.info("=" * 60)
-        logger.info("💡 Press Ctrl+C to stop safely")
+        # C503: under systemd there is no keyboard; the stop is systemctl
+        # (INVOCATION_ID is set by systemd for every unit it starts).
+        if os.environ.get('INVOCATION_ID'):
+            logger.info("💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)")
+        else:
+            logger.info("💡 Press Ctrl+C to stop safely")
         logger.info("=" * 60)
 
         # C37: Start parallel monitoring thread
@@ -23713,7 +23849,9 @@ class TradingBot:
             f"trailing floor, peak floor, capture floor); SLOW leg every "
             f"{float(getattr(self.cfg, 'C397_DRI_REFRESH_SEC', 20.0)):.0f}s "
             f"(OHLCV/DRI) and {float(getattr(self.cfg, 'C397_REGIME_REFRESH_SEC', 90.0)):.0f}s "
-            f"(BTC/ETH regime, AFTER positions are checked, never before)")
+            f"(BTC/ETH regime, AFTER positions are checked, never before)"
+            + (" -- it watches INTRADAY positions; the book has no stops, its one limit is the month guard"
+               if getattr(self, 'c488', None) is not None and self.c488.active() else ""))
         self._last_regime_refresh = 0
         self._monitor_triggered_close = False  # C98: signals scan to halt
         while self._monitor_running:
@@ -27697,8 +27835,10 @@ class TradingBot:
             # is what the guard enforces). This line recomputed dial x TODAY's
             # equity, so on 24 Sep it printed $38.41/month beside a tile and a
             # guard both at $37.92 -- two numbers for one limit.
+            _g503 = {}
             try:
-                _mb486 = float(self._c482_risk_guard().get('month_budget', 0.0) or 0.0)
+                _g503 = self._c482_risk_guard() or {}
+                _mb486 = float(_g503.get('month_budget', 0.0) or 0.0)
             except Exception:
                 _mb486 = 0.0
             if _mb486 <= 0:
@@ -27707,8 +27847,13 @@ class TradingBot:
                 # C497: per-trade risk, break-even win rate and a day limit are
                 # the idle scanner's figures (C495 took them off the RISK FRAME
                 # for the same reason). The book has one limit: the month guard.
+                # C503: "$37.92" is 15% of the month's ANCHOR ($252.81), not of
+                # the $250.39 printed beside it (that would be $37.56).
+                _a503 = float(_g503.get('month_eq0', 0.0) or 0.0)
                 logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
-                            f"${_mb486:.2f}/month  |  the portfolio book trades: its month guard closes "
+                            f"${_mb486:.2f}/month"
+                            + (f" ({_dd483:.0f}% of this month's anchor ${_a503:.2f})" if _a503 > 0 else "")
+                            + "  |  the portfolio book trades: its month guard closes "
                             f"the book if MARKED equity falls that far below the month's anchor [C497]")
             else:
                 logger.info(f"\U0001f4d0 RISK @ ${_eq483:.2f}: monthly dial {_dd483:.0f}% = "
@@ -29159,7 +29304,8 @@ class TradingBot:
             if not getattr(self, '_c488_scan_said', False):
                 self._c488_scan_said = True
                 logger.info("💼 C488: portfolio engine ON -- the intraday scanner "
-                            "opens no new positions (OMEGA_ENGINE=intraday restores it)")
+                            "opens no new positions (OMEGA_ENGINE=intraday restores it); "
+                            f"the book holds {len(self.c488.book)} positions")
             return
         # C98: Reset monitor-triggered-close flag at scan start
         self._monitor_triggered_close = False
@@ -38311,7 +38457,14 @@ class TradingBot:
         logger.info(f"💰 Equity: ${stats['equity']:.2f} | "
                     f"Unrealized: ${stats['unrealized']:+.2f}")
         self.portfolio._c427_reconcile('position_summary')
-        logger.info(f"💵 Available: ${self.portfolio.available_balance:.2f} | "
+        # C503: with the book open, Bitget's available nets its open P&L;
+        # the paper ledger's available_balance is realised - margin.
+        _free503, _note503 = self.portfolio.available_balance, ""
+        if (getattr(self, 'c488', None) is not None and self.c488.active()
+                and abs(float(stats.get('unrealized', 0.0) or 0.0)) >= 0.005):
+            _free503 = float(stats['equity']) + float(stats['unrealized']) - float(stats['locked'])
+            _note503 = " after open P&L"
+        logger.info(f"💵 Available: ${_free503:.2f}{_note503} | "
                     f"Locked: ${stats['locked']:.2f}")
 
         # Session PnL
@@ -38334,8 +38487,12 @@ class TradingBot:
             except:
                 pass
         open_wr = (open_winning / len(open_pos) * 100) if open_pos else 0
-        logger.info(f"🎯 Win Rate: Overall {overall_wr:.0f}% | "
-                    f"Session {session_wr:.0f}% | Open {open_wr:.0f}%")
+        # C503: "Session 0% | Open 0%" read as losing when there were no trades
+        # and no intraday positions; and every figure here is the scanner's.
+        _bk503 = getattr(self, 'c488', None) is not None and self.c488.active()
+        logger.info(f"🎯 Win Rate{' (intraday trades)' if _bk503 else ''}: Overall {overall_wr:.0f}% | "
+                    f"Session {f'{session_wr:.0f}%' if self.portfolio.session_trades > 0 else 'no trades yet'} | "
+                    f"Open {f'{open_wr:.0f}%' if open_pos else 'none open'}")
         logger.info("=" * 60)
 
         # R4: Pre-cache ALL prices in one batch (prevents 40s serial API blockage)
@@ -40620,7 +40777,8 @@ async function pull(){
         ' \u00b7 payoff '+(d.payoff===null||d.payoff===undefined?'n/a':d.payoff)+
         ' \u00b7 mk'+d.maker+'/tk'+d.taker+
         /* C486: the all-time record, which no restart touches */
-        (d.life&&d.life.n?'<br>all-time '+d.life.w+'W '+d.life.l+'L \u00b7 <span class="'+
+        /* C503: the W/L are the intraday scanner's trades; the $ is the whole account's */
+        (d.life&&d.life.n?'<br>all-time '+d.life.w+'W '+d.life.l+'L intraday \u00b7 account <span class="'+
           cls(d.life.pnl)+'">'+sgn(d.life.pnl)+'</span>':'');
     }
     q('scan').textContent=(age<90?age+'s':(age/60).toFixed(0)+'m')+' ago';
@@ -40857,7 +41015,8 @@ setInterval(pull,5000);setInterval(pullLog,8000);
             def _announce479():
                 if _tok_ref[0]:
                     logger.info(f"🌐 Remote control on http://{_bind467}:{self.port} — TOKEN REQUIRED")
-                    logger.info(f"   📱 Same WiFi: http://{_local_ip}:{self.port}/?t=<your token>")
+                    logger.info(f"   📱 Local network: http://{_local_ip}:{self.port}/?t=<your token> "
+                                f"(this machine's own address)")
                     logger.info(f"   🌍 Internet: put a Cloudflare Tunnel in front of this port.")
                     logger.info(f"       See deploy/DEPLOY.md — one command, no open ports, free.")
                 else:
