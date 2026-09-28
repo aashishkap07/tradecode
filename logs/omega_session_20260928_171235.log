@@ -1,0 +1,33 @@
+17:12:35 | 📊 Paper Mode
+17:12:37 | ✅ Connected | 804 futures markets
+ 
+  ================================================================================================
+  OMEGA C504  PAPER  Bitget perps
+  28 Sep 2026   17:12
+  start $250.39 realised  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $250.39 realised  804 markets
+  MONTH     dial 15% = $37.92 this month  used $2.42 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+17:12:37 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+17:12:37 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+17:12:37 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+17:12:37 |        See deploy/DEPLOY.md — one command, no open ports, free.
+17:12:37 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+17:12:37 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 20% from the
+    15% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+17:12:37 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid,
+    taker 0.06%); 5x cross margin; funding at each coin's own interval; its one limit is the month
+    guard on MARKED equity
+17:12:37 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10
+    UTC · spot pot (C501/C502) $250, spot minimum $1, 00:20 UTC · idle cash -> Savings at 7.63%
+    every minute · allostatic shadow (K4) at each rebalance
+17:12:37 |    IDLE   the intraday scanner (OMEGA_ENGINE=intraday restores it): every block below, to
+    the 'stop safely' line, describes it
+17:12:37 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+17:12:37 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
