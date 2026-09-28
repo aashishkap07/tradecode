@@ -112,3 +112,265 @@
 17:12:37 | ============================================================
 17:12:37 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before) -- it watches INTRADAY positions; the book has no stops, its one limit is the month guard
 17:12:40 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it); the book holds 9 positions
+ 
+  17:20  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.23  unreal $-6.16
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.29 after open P&L
+  SHADOW    intraday M1 $259.24 (+2.77%)  M1g $253.94 (+0.67%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.07 (+0.03%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.44 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $121.57 (0.50x)  open $-6.16  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 31s  funding booked  book today
+            shadow 11:00  carry today  spot pot today
+  SESSION   $+0.01 +0.00%
+  MONTH     book guard $8.58 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+17:20:36 | 
+17:20:36 | ============================================================
+17:20:36 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:20:36 | 💰 Equity: $250.39 | Unrealized: $-6.16
+17:20:36 | 💵 Available: $220.29 after open P&L | Locked: $23.94
+17:20:36 | ⚠️ C504 DATA LATE: K4 shadow missed today's rebalance
+17:20:36 | 📈 Session: $+0.01 (+0.0%)
+17:20:36 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+17:20:36 | ============================================================
+17:20:36 | ============================================================
+17:20:36 | 🔻 Book guard: $8.58 of $37.92 used this month on marked equity (23%, from $252.81) · realised today -0.71% [C497]
+17:20:36 | ============================================================
+17:20:36 | 
+ 
+  17:28  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.32  unreal $-6.07
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.38 after open P&L
+  SHADOW    intraday M1 $259.24 (+2.77%)  M1g $253.94 (+0.67%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.10 (+0.04%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.51 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $121.92 (0.50x)  open $-6.07  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 26s  funding booked  book today
+            shadow 11:00  carry today  spot pot today
+  SESSION   $+0.10 +0.04%
+  MONTH     book guard $8.49 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+17:28:36 | 
+17:28:36 | ============================================================
+17:28:36 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:28:36 | 💰 Equity: $250.39 | Unrealized: $-6.07
+17:28:36 | 💵 Available: $220.38 after open P&L | Locked: $23.94
+17:28:36 | 📈 Session: $+0.10 (+0.0%)
+17:28:36 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+17:28:36 | ============================================================
+17:28:36 | ============================================================
+17:28:36 | 🔻 Book guard: $8.49 of $37.92 used this month on marked equity (22%, from $252.81) · realised today -0.71% [C497]
+17:28:36 | ============================================================
+17:28:36 | 
+17:32:57 |    👻 C489 shadow hour 12:00 UTC: 36 coins scored (warm-up (14, no flow)), gate shut | M1 $260.15 (+3.13%) M1g $254.08 (+0.72%) over 4d [28s]
+ 
+  17:36  up 0h24m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.63  unreal $-5.76
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.69 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.20 (+0.08%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.70 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $122.72 (0.50x)  open $-5.76  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 16s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $+0.41 +0.17%
+  MONTH     book guard $8.18 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+17:36:37 | 
+17:36:37 | ============================================================
+17:36:37 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:36:37 | 💰 Equity: $250.39 | Unrealized: $-5.76
+17:36:37 | 💵 Available: $220.69 after open P&L | Locked: $23.94
+17:36:37 | 📈 Session: $+0.41 (+0.2%)
+17:36:37 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+17:36:37 | ============================================================
+17:36:37 | ============================================================
+17:36:37 | 🔻 Book guard: $8.18 of $37.92 used this month on marked equity (22%, from $252.81) · realised today -0.71% [C497]
+17:36:37 | ============================================================
+17:36:37 | 
+ 
+  17:44  up 0h32m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.28  unreal $-6.11
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.34 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.20 (+0.08%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.54 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $123.05 (0.50x)  open $-6.11  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 10s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $+0.06 +0.03%  peak $244.63  dd 0.14%
+  MONTH     book guard $8.53 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+17:44:37 | 
+17:44:37 | ============================================================
+17:44:37 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:44:37 | 💰 Equity: $250.39 | Unrealized: $-6.11
+17:44:37 | 💵 Available: $220.34 after open P&L | Locked: $23.94
+17:44:37 | 📈 Session: $+0.06 (+0.0%)
+17:44:37 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+17:44:37 | ============================================================
+17:44:37 | ============================================================
+17:44:37 | 🔻 Book guard: $8.53 of $37.92 used this month on marked equity (22%, from $252.81) · realised today -0.71% [C497]
+17:44:37 | ============================================================
+17:44:37 | 
+ 
+  17:52  up 0h40m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $243.73  unreal $-6.66
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $219.79 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.24 (+0.10%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.03 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $123.69 (0.51x)  open $-6.66  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 5s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $-0.49 -0.20%  peak $244.63  dd 0.37%
+  CURVE     +++++=
+  MONTH     book guard $9.08 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+17:52:38 | 
+17:52:38 | ============================================================
+17:52:38 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+17:52:38 | 💰 Equity: $250.39 | Unrealized: $-6.66
+17:52:38 | 💵 Available: $219.79 after open P&L | Locked: $23.94
+17:52:38 | 📈 Session: $-0.49 (-0.2%)
+17:52:38 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+17:52:38 | ============================================================
+17:52:38 | ============================================================
+17:52:38 | 🔻 Book guard: $9.08 of $37.92 used this month on marked equity (24%, from $252.81) · realised today -0.71% [C497]
+17:52:38 | ============================================================
+17:52:38 | 
+ 
+  18:00  up 0h48m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $243.79  unreal $-6.60
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $219.85 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.22 (+0.09%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.09 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $123.62 (0.51x)  open $-6.60  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 39s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $-0.43 -0.18%  peak $244.63  dd 0.34%
+  CURVE     +++++==
+  MONTH     book guard $9.02 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+18:00:38 | 
+18:00:38 | ============================================================
+18:00:38 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+18:00:38 | 💰 Equity: $250.39 | Unrealized: $-6.60
+18:00:38 | 💵 Available: $219.85 after open P&L | Locked: $23.94
+18:00:38 | 📈 Session: $-0.43 (-0.2%)
+18:00:38 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+18:00:38 | ============================================================
+18:00:38 | ============================================================
+18:00:38 | 🔻 Book guard: $9.02 of $37.92 used this month on marked equity (24%, from $252.81) · realised today -0.71% [C497]
+18:00:38 | ============================================================
+18:00:38 | 
+ 
+  18:08  up 0h56m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $243.91  unreal $-6.48
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $219.97 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.22 (+0.09%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.19 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $123.63 (0.51x)  open $-6.48  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 34s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $-0.31 -0.13%  peak $244.63  dd 0.29%
+  CURVE     +++++===
+  MONTH     book guard $8.90 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+18:08:38 | 
+18:08:38 | ============================================================
+18:08:38 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+18:08:38 | 💰 Equity: $250.39 | Unrealized: $-6.48
+18:08:38 | 💵 Available: $219.97 after open P&L | Locked: $23.94
+18:08:38 | 📈 Session: $-0.31 (-0.1%)
+18:08:38 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+18:08:38 | ============================================================
+18:08:38 | ============================================================
+18:08:38 | 🔻 Book guard: $8.90 of $37.92 used this month on marked equity (23%, from $252.81) · realised today -0.71% [C497]
+18:08:38 | ============================================================
+18:08:38 | 
+ 
+  18:16  up 1h04m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $243.67  unreal $-6.72
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $219.73 after open P&L
+  SHADOW    intraday M1 $260.15 (+3.13%)  M1g $254.08 (+0.72%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.24 (+0.10%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.00 (70%)  at 7.63% +$0.01 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $124.22 (0.51x)  open $-6.72  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  DATA      LATE  K4 shadow missed today's rebalance  prices 28s  funding booked  book today
+            shadow 12:00  carry today  spot pot today
+  SESSION   $-0.55 -0.22%  peak $244.63  dd 0.39%
+  CURVE     +++++====
+  MONTH     book guard $9.14 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+18:16:39 | 
+18:16:39 | ============================================================
+18:16:39 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+18:16:39 | 💰 Equity: $250.39 | Unrealized: $-6.72
+18:16:39 | 💵 Available: $219.73 after open P&L | Locked: $23.94
+18:16:39 | 📈 Session: $-0.55 (-0.2%)
+18:16:39 | 🎯 Win Rate (intraday trades): Overall 32% | Session no trades yet | Open none open
+18:16:39 | ============================================================
+18:16:39 | ============================================================
+18:16:39 | 🔻 Book guard: $9.14 of $37.92 used this month on marked equity (24%, from $252.81) · realised today -0.71% [C497]
+18:16:39 | ============================================================
+18:16:39 | 
