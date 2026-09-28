@@ -67,9 +67,70 @@
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
-| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
+| 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-28 — C500: ROUND 7 (IDEAS FROM OTHER FIELDS) AND WHAT ELSE BITGET PAYS
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Server: C499 since 27 Sep 12:25 IST; its first rebalance (28 Sep 05:35
+IST) was correct.**
+- **Plan:** `CANDIDATES (80 with history)`, 9 targets at 0.40×.
+- **Trades:** closed ARB (+$0.12), ENA (−$0.06), TAO (+$0.04); trimmed SOL
+  (+$0.18) and PUMP (−$2.05). About $1.1 of the PUMP loss is the 27 Sep
+  oversizing that C499 fixed.
+- **Health:** 0 warnings in 5,283 log lines; the shadow scored 37–39 coins
+  in 23/23 hours.
+
+**The book since 25 Sep: −3.4% marked** ($252.63 → $243.95).
+- **Cause:** a momentum reversal. The WLD (+15.7%) and PUMP (+24.9%) shorts
+  were squeezed while the PEPE (−6.7%) and UNI (−5.1%) longs fell, and BTC was
+  −1.1%. WLD and PUMP cost about $6.7.
+- **M1 (research):** a 3-day loss of ≥ 3.4% happens about 4.4 times a year.
+  Over the next 30 days the median was +1.2%, and 59% were positive. Ordinary.
+
+**Round 7** (`research/c500_preregistration.md`, commit 6c62a13, pushed
+before any data). Base recomputed: +32.6%/yr, Sharpe 1.56, max DD 31.4%,
+worst month −15.5%.
+
+| test | vs base | verdict |
+|---|---|---|
+| K1 momentum-crash guard (Markov regime: C2 ×0.5 when a falling market rebounds, 25% of days) | −1.70%/yr, t −1.05, 1/4 quarters, holdout −6.2%/yr | fails |
+| K2 horizon ensemble (C2 7/14/28, C3 3/7/14) | +4.64%/yr, t 1.26, 2/4, holdout −1.65%/yr | fails (forward re-test, #11) |
+| K3 Ichimoku cloud as C1 (69% sign agreement with the base trend) | −2.24%/yr, worst month −20.2% | fails |
+| K4 allostatic vol (EWMA, 10-day half-life) | +0.31%/yr, t 0.08; **worst month −9.7% vs −15.5%, max DD 29.3% vs 31.4%** | fails on return; **the tail result goes to the December forward re-test (#11)** |
+
+**M2, the option-selling premium behind dual investment:** Deribit BTC DVOL
+50% vs realised 44% (Dec 2023 – Aug 2026), a mean premium of +6.1 vol points,
+median +9.5. Realised was above implied on 27% of days; the worst was −44
+points. That is roughly 0.5–1% of notional a month before Bitget's cut, and
+short volatility, like the grid bot.
+
+**Other Bitget products** (`reports/2026-09-28_round7_and_bitget_yield.md`):
+- **Nothing pays 27–60%/yr without book-sized risk.**
+- **Simple Earn Flexible USDT:** 7.63% APR; promos briefly 11.5–25% on small
+  amounts.
+- **Launchpool:** 0 pools on 28 Sep.
+- **The BGB fee discount:** spot only, not futures.
+
+**The one new, low-risk lever is idle cash in Savings (pending #14):** about
++0.4%/month, live only.
+
+**The intraday bot:** 5–9× fee/edge gap. 2%/month would need a 0.13–0.22%
+gross edge per trade, 8–13× the best measured. Stays off; the shadow keeps
+measuring. The shadow's +4.4% in 4 days is mostly Q's two pumps.
+
+**The path to 2–4%/month is the operator's choice:**
+
+| setup | expected |
+|---|---|
+| dial 15% + idle cash in Savings | about 2.1%/month |
+| dial 20% + idle cash in Savings | about 2.8%/month, worst months near −19% |
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-27 — C499: THE BOOK TRADES ON COMPLETE HISTORY, OR IT WAITS
