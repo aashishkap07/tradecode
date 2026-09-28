@@ -1,0 +1,87 @@
+14:46:36 | 📊 Paper Mode
+14:46:39 | ✅ Connected | 804 futures markets
+ 
+  ================================================================================================
+  OMEGA C503  PAPER  Bitget perps
+  28 Sep 2026   14:46
+  start $250.39 realised  risk dial 15%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $250.39 realised  804 markets
+  MONTH     dial 15% = $37.92 this month  used $2.42 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+14:46:39 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+14:46:39 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+14:46:39 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+14:46:39 |        See deploy/DEPLOY.md — one command, no open ports, free.
+14:46:39 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+14:46:39 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 20% from the
+    15% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+14:46:39 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid,
+    taker 0.06%); 5x cross margin; funding at each coin's own interval; its one limit is the month
+    guard on MARKED equity
+14:46:39 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10
+    UTC · spot pot (C501/C502) $250, spot minimum $1, 00:20 UTC · idle cash -> Savings at 7.63%
+    every minute · allostatic shadow (K4) at each rebalance
+14:46:39 |    IDLE   the intraday scanner (OMEGA_ENGINE=intraday restores it): every block below, to
+    the 'stop safely' line, describes it
+14:46:39 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+14:46:39 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+ 
+  14:54  up 0h08m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.86  unreal $-5.53
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.92 after open P&L
+  SHADOW    intraday M1 $259.43 (+2.84%)  M1g $253.93 (+0.66%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $250.00 (+0.00%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.94 (70%)  at 7.63% +$0.00 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $120.55 (0.49x)  open $-5.53  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  SESSION   $+0.16 +0.07%
+  MONTH     book guard $7.95 of $37.92 used  on marked equity  from $252.81  dial 15%
+            #####.....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  15:02  up 0h16m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.81  unreal $-5.58
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.87 after open P&L
+  SHADOW    intraday M1 $259.43 (+2.84%)  M1g $253.93 (+0.66%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $249.97 (-0.01%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.88 (70%)  at 7.63% +$0.00 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $120.21 (0.49x)  open $-5.58  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  SESSION   $+0.11 +0.04%  peak $244.86  dd 0.02%
+  MONTH     book guard $8.00 of $37.92 used  on marked equity  from $252.81  dial 15%
+            #####.....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
+ 
+  15:10  up 0h24m  scan 0 ------------------------------------------------------------------------
+  EQUITY    $244.64  unreal $-5.75
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $220.70 after open P&L
+  SHADOW    intraday M1 $259.43 (+2.84%)  M1g $253.93 (+0.66%)  4d paper only
+  CARRY     $252.12 (-0.06%)  8 held  paper only
+  SPOT      $249.91 (-0.04%)  3 held  10% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $171.76 (70%)  at 7.63% +$0.00 so far  ~$1.09/month  paper
+  BOOK      9 pos gross $119.72 (0.49x)  open $-5.75  funding $+0.02  vol 20% top 20
+            rebal 2026-09-28
+  SESSION   $-0.06 -0.02%  peak $244.86  dd 0.09%
+  MONTH     book guard $8.17 of $37.92 used  on marked equity  from $252.81  dial 15%
+            ######....................
+  RECORD    no closed trades yet this run
+  LIFETIME  139tr 44W 95L 32% intraday  account $+0.39 realised
+  FEES      no fills yet this run
+  ------------------------------------------------------------------------------------------------
+ 
