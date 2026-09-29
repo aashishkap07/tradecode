@@ -964,3 +964,205 @@
  
 01:10:01 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.45 | rule C2 N2+N3 |
     closed 0: 0W/0L $+0.00
+ 
+  01:18  up 5h04m  daily book --------------------------------------------------------------------
+  EQUITY    $250.24  unreal $+0.31
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.61 after open P&L
+  SHADOW    intraday M1 $251.28 (+0.54%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.17 (+0.07%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $166.05 (66%)  at 7.63% +$0.02 so far  ~$1.06/month  paper
+  BOOK      11 pos gross $108.37 (0.43x)  open $+0.31  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep +0.10%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 33s  funding booked  book today  shadow 19:00  carry today
+            spot pot today
+  SESSION   $-0.27 -0.11%  peak $250.68  dd 0.18%
+  CURVE     +++++===========++==========+=+++++++++
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:18:02 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.31 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  01:26  up 5h12m  daily book --------------------------------------------------------------------
+  EQUITY    $249.97  unreal $+0.04
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.34 after open P&L
+  SHADOW    intraday M1 $251.28 (+0.54%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.07 (+0.03%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.89 (66%)  at 7.63% +$0.02 so far  ~$1.05/month  paper
+  BOOK      11 pos gross $107.82 (0.43x)  open $+0.04  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep -0.01%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 27s  funding booked  book today  shadow 19:00  carry today
+            spot pot today
+  SESSION   $-0.54 -0.21%  peak $250.68  dd 0.28%
+  CURVE     +++++===========++==========+=+++++++++=
+  MONTH     book guard $0.03 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:26:02 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.04 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+01:32:25 |    👻 C489 shadow hour 20:00 UTC: 38 coins scored (warm-up (14, no flow)), gate shut | M1
+    $251.17 (+0.49%) M1g $250.79 (+0.34%) over 1d [19s]
+ 
+  01:34  up 5h20m  daily book --------------------------------------------------------------------
+  EQUITY    $249.85  unreal $-0.08
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.22 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $249.95 (-0.02%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.75 (66%)  at 7.63% +$0.02 so far  ~$1.05/month  paper
+  BOOK      11 pos gross $107.64 (0.43x)  open $-0.08  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep -0.06%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 16s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.66 -0.26%  peak $250.68  dd 0.33%
+  CURVE     +++++===========++==========+=+++++++++==
+  MONTH     book guard $0.15 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:34:02 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $-0.08 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  01:42  up 5h28m  daily book --------------------------------------------------------------------
+  EQUITY    $249.72  unreal $-0.21
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.09 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $249.94 (-0.03%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.70 (66%)  at 7.63% +$0.02 so far  ~$1.05/month  paper
+  BOOK      11 pos gross $107.52 (0.43x)  open $-0.21  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep -0.11%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 10s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.79 -0.31%  peak $250.68  dd 0.38%
+  CURVE     +++++===========++==========+=+++++++++===
+  MONTH     book guard $0.28 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:42:03 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $-0.21 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  01:50  up 5h36m  daily book --------------------------------------------------------------------
+  EQUITY    $249.88  unreal $-0.05
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.25 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.20 (+0.08%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.80 (66%)  at 7.63% +$0.02 so far  ~$1.05/month  paper
+  BOOK      11 pos gross $108.24 (0.43x)  open $-0.05  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep -0.05%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 5s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.63 -0.25%  peak $250.68  dd 0.32%
+  CURVE     +++++===========++==========+=+++++++++====
+  MONTH     book guard $0.12 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:50:03 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $-0.05 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  01:58  up 5h44m  daily book --------------------------------------------------------------------
+  EQUITY    $250.11  unreal $+0.18
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.48 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.38 (+0.15%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.95 (66%)  at 7.63% +$0.02 so far  ~$1.06/month  paper
+  BOOK      11 pos gross $108.63 (0.43x)  open $+0.18  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep +0.04%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 0s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.40 -0.16%  peak $250.68  dd 0.23%
+  CURVE     +++++===========++==========+=+++++++++=====
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:58:04 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.18 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  02:06  up 5h52m  daily book --------------------------------------------------------------------
+  EQUITY    $250.09  unreal $+0.16
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.46 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.21 (+0.08%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.94 (66%)  at 7.63% +$0.02 so far  ~$1.06/month  paper
+  BOOK      11 pos gross $108.40 (0.43x)  open $+0.16  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep +0.04%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 34s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.42 -0.17%  peak $250.68  dd 0.24%
+  CURVE     +++++===========++==========+=+++++++++======
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+02:06:05 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.16 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
+ 
+  02:14  up 6h00m  daily book --------------------------------------------------------------------
+  EQUITY    $250.10  unreal $+0.17
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $228.47 after open P&L
+  SHADOW    intraday M1 $251.17 (+0.49%)  M1g $250.79 (+0.34%)  1d paper only
+  CARRY     $249.54 (-0.16%)  8 held  paper only
+  SPOT      $250.28 (+0.11%)  15 held  22% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $165.94 (66%)  at 7.63% +$0.02 so far  ~$1.06/month  paper
+  BOOK      11 pos gross $108.49 (0.43x)  open $+0.17  funding $-0.00  vol 27% top 20
+            rebal 2026-09-29
+  CONTEXT   since 29 Sep +0.04%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held since 2026-09-29  first scores at the next rebalance
+  DATA      on time  prices 28s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $-0.41 -0.16%  peak $250.68  dd 0.23%
+  CURVE     +++++===========++==========+=+++++++++=======
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+02:14:05 | 🎯 C510 Book (what trades): 11 positions, gross 0.43x, open $+0.17 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00
