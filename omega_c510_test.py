@@ -211,6 +211,12 @@ ok("C488_C2_RULE='base' trades the admitted book, unchanged",
    {s_: v['w'] for s_, v in e0.plan.items()} == {s_: round(float(x), 6) for s_, x in zip(keep2, np.nan_to_num(w_b))
                                                   if abs(x) * 250.0 >= 6.0} and e0.admitted() and not e1.admitted())
 
+b90 = types.SimpleNamespace(cfg=b1.cfg, c488=e1)
+h90 = om.C490Carry(b90).history(keep[:6], days=120)
+ok("the carry ledger reads the same (now five-value) daily history: closes and volumes unchanged",
+   h90 is not None and np.allclose(h90[2][-1], close[n - 2][:6], equal_nan=True)
+   and np.allclose(h90[3][-1], qv[n - 2][:6], equal_nan=True))
+
 print("\n3. THE TOURNAMENT")
 t1 = b1.c510t.status()
 ok("seven rules held after the first rebalance, the traded one marked, none skipped (OHLC present)",

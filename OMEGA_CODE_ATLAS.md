@@ -263,6 +263,42 @@ Savings, a year averaging ≥ 2%/month (bootstrap / haircut), worst month, DD:
   SUI +6.94 at $241.33, 0.21× gross (base 0.28×).
 - The tournament takes 0.9 s at 330 days × 80 coins.
 
+**Found by a full dry run, fixed before deploy (29 Sep, second push):**
+- The bot was run end to end in the sandbox: fresh flag, `OMEGA_MAX_DD=20`,
+  live Bitget data through the proxy (`run_proxied.py` sets ccxt's
+  `trust_env`; the server needs none of this).
+- **The carry ledger (C490) crashed:** `ValueError: too many values to
+  unpack`. It reads `C488Engine._history`, which C510 widened to (close, qv,
+  open, high, low). `C490Carry.history` now takes `x[0], x[1]`.
+- A regression check in `omega_c510_test.py` fails without the fix.
+  `omega_c490_test.py` mocks that path, which is why it missed this.
+- **After the fix the dry run is clean:**
+  - `C482 month anchor 2026-09: $250.00 (budget 20% = $50.00)`;
+  - `RULE   C2 N2+N3 ... FORWARD TEST`;
+  - `C488 REBALANCE (first): 11 positions, gross 0.42x of $250.00, 11 trades
+    $108.10, vol target 26.7%, rule C2 N2+N3`;
+  - the tournament holds 7 rules;
+  - `📏 C509 ... too early`;
+  - carry: 8 held;
+  - the spot pot: 15 held, 22% invested, with its holdings line.
+- **The fresh book at dial 20%:** HYPE +15.05, ENA +14.48, XRP −10.69,
+  TRUMP +9.95, DOGE −9.71, SUI +9.58, NEAR +7.60, ZEC +7.55, PEPE −7.05,
+  UNI −6.59, FIL −6.33.
+
+**The operator's decision (29 Sep):** dial 20% and a FRESH START with C510.
+- **How it's done:** a systemd drop-in `c510-dial.conf` with
+  `Environment=OMEGA_MAX_DD=20`, so the fresh start seeds 20. The unit's
+  `OMEGA_MAX_DD` seeds a fresh start only; afterwards the saved dial wins.
+  Then `touch data/FRESH_START` and one restart.
+- **Why not the dashboard dial:** set before the fresh start, it would be
+  re-seeded from the unit's 15; set after, the first build (within a minute
+  of start) would be at 15.
+- **What the fresh start wipes:** the account ($250), the book (the born
+  record and the tally start again), and the carry, spot pot, Savings, K4,
+  intraday shadow and tournament ledgers.
+- **What stays:** all history on the logs branch.
+- Commands: the report's "Fresh start at dial 20%" section.
+
 **Open:**
 - **The first N2+N3 rebalance is 30 Sep 00:05 UTC.** Paper check #2
   (01:15 UTC) should confirm:

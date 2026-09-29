@@ -340,6 +340,70 @@ sudo systemctl restart omega
 
 ---
 
+## Fresh start at dial 20% (the operator's choice, 29 Sep)
+
+**Is it OK?** Yes. It's paper money, and a fresh start is the cleanest way to
+measure the new rule at the new dial: every figure on the screens will
+describe exactly what is running.
+
+**Three things to know:**
+1. **The screens start again at $250.** That includes the book's record, the
+   paper ledgers (spot pot, carry, Savings, K4, intraday shadow, tournament)
+   and the old scanner's 139 trades. Nothing is lost: every log and state
+   file is on the logs branch, and the Atlas has the numbers.
+2. **Dial 20% means bigger swings.**
+   - The month's loss budget is $50.
+   - The volatility target is 26.7% (it was 20%).
+   - History had worst months near −18% and drawdowns up to about 37%.
+   - Judge it over months, not days.
+3. **The order matters.**
+   - The fresh start takes its dial from the service setting `OMEGA_MAX_DD`,
+     which your unit sets to 15. A dial chosen on the dashboard *before* the
+     fresh start would be overwritten.
+   - Choosing it *after* the fresh start comes too late: the book builds
+     within a minute of starting.
+   - So the commands below set 20 in a small override file first. That
+     setting only matters at fresh starts; afterwards the saved dial wins as
+     usual.
+
+**Tested before sending.** I ran this exact sequence in the sandbox on live
+Bitget data.
+- **A bug was found and fixed:** C510 had broken the carry ledger (it crashed
+  reading the wider price history). The regression test is in
+  `omega_c510_test.py`.
+- **After the fix:** fresh $250, dial 20%, month budget $50, rule N2+N3, and
+  11 positions built in a minute (0.42× gross): HYPE, ENA, TRUMP, SUI, NEAR
+  and ZEC long; XRP, DOGE, PEPE, UNI and FIL short. Carry, spot pot and
+  Savings all ran.
+
+```bash
+sudo -u omega git -C /home/omega/omega pull
+sudo cp /home/omega/omega/deploy/omega-logpush.sh /usr/local/bin/omega-logpush.sh
+sudo chmod +x /usr/local/bin/omega-logpush.sh
+sudo mkdir -p /etc/systemd/system/omega.service.d
+printf '[Service]\nEnvironment=OMEGA_MAX_DD=20\n' | sudo tee /etc/systemd/system/omega.service.d/c510-dial.conf
+sudo systemctl daemon-reload
+sudo -u omega touch /home/omega/omega/data/FRESH_START
+sudo systemctl restart omega
+sleep 120
+systemctl status omega --no-pager | head -5
+sudo journalctl -u omega -n 300 --no-pager | grep -E "FRESH|OMEGA C5|RULE|month anchor|REBALANCE|C510|Traceback"
+sudo -u omega /usr/local/bin/omega-logpush.sh --check
+```
+
+**What you should see:**
+- `FRESH START requested ... flag consumed`;
+- `OMEGA C510 ... risk dial 20%/month`;
+- `RULE   C2 N2+N3`;
+- `C488 month anchor 2026-09: $250.00 (marked; budget 20% = $50.00)`;
+- `C488 REBALANCE (first): ... vol target 26.7%, rule C2 N2+N3`;
+- `C510 tournament`;
+- no Traceback.
+
+The dashboard's Controls should show the dial at 20.
+
+---
+
 ## Files
 
 **Bot:** `omega_v60_reconstructed.py` (C510).

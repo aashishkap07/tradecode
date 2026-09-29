@@ -21151,8 +21151,8 @@ class C490Carry:
         qv = np.full_like(close, np.nan)
         fund = np.zeros_like(close)
         for j, s in enumerate(keep):
-            for t, (c, v) in hist[s][0].items():
-                close[idx[int(t)], j], qv[idx[int(t)], j] = c, v
+            for t, x in hist[s][0].items():          # C510: (close, qv, open, high, low); the first two here
+                close[idx[int(t)], j], qv[idx[int(t)], j] = x[0], x[1]
             for t, rate in hist[s][1].items():
                 i = idx.get(int(t) // _C488_DAY * _C488_DAY)
                 if i is not None:
