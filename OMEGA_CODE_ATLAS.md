@@ -16,13 +16,20 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C506 is pushed, not deployed:**
-    - the K4 false alarm fixed;
-    - the spot pot logs its holdings;
-    - the log push carries the ledgers' state files. **The operator must
-      re-copy the push script**; see
-      `reports/2026-09-29_paper_check_1.md`.
-    (C505 is the round-9 research tag, so the bot skips that number.)
+  - **C509 is pushed, not deployed:** the "is this normal?" context line
+    (book since it began, and the month once the book is older than it,
+    against the 2020–26 test's percentiles). Deploy = pull + restart; the push
+    script is unchanged since C506. (C507 and C508 are research tags.)
+  - **C506 from 29 Sep 10:02 IST, verified from the operator's screenshots:**
+    - pull 318f3fb..4869a5e, `OMEGA C506`;
+    - `omega-logpush.sh --check` all OK;
+    - DATA "on time", with no K4 false alarm;
+    - the dashboard reconciles: marked $241.33 = realised $243.80 − open
+      $2.47; month used $11.48; Savings $172.24 = $241.29 − $69.05; spot pot
+      16 held, 23.9% invested; K4 0.608× vs running 0.336×;
+    - the logs branch now carries `c488_book.json` and the ledgers' files
+      (05:47 UTC push).
+    (C505 is the round-9 research tag, so the bot skipped that number.)
   - **C504 from 28 Sep 17:12 IST, checked in the 29 Sep paper check:**
     - it resumed with 9 positions and marked equity continuous to the cent
       ($244.23);
@@ -72,9 +79,10 @@
   - **Reminders set (28 Sep):**
     - 29 Sep 01:15 UTC: the paper check (#1), now including C501. **Done**
       (`reports/2026-09-29_paper_check_1.md`).
-    - 30 Sep 01:15 UTC: paper check #2 (trig_01BB9dHUf8nD99dV1ePy65aT). If
-      C506 is deployed: the plan to the cent from `c488_inputs.npz`, and the
-      spot pot's 16-vs-15 settled.
+    - 30 Sep 01:15 UTC: paper check #2 (trig_01BB9dHUf8nD99dV1ePy65aT).
+      C506 is deployed, so: the plan to the cent from `c488_inputs.npz`, the
+      spot pot's 16-vs-15 and SOL/UNI sizes settled against fresh Bitget
+      closes, and (if C509 is deployed) the first `📏 C509` line checked.
     - The 1st of each month at 09:56 IST: the monthly review (#4, #6, #14–#17,
       #3, #8).
     - 2 Dec 04:00 UTC: the December research refresh (#5, #11, #12, S1
@@ -129,8 +137,8 @@
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. **pyflakes (C504) found 12 undefined names, all in this scanner** (`full_analysis`: pair_info, analysis; `_open_position`: candidate; the DRI calculate: result; `_display_summary`'s guarded ones). None is in the book, the ledgers or K4. Fix or delete them with the scanner. |
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
-| 10 | **C490 carry → the account?** | after #1 and a CA's view | It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
-| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+| 10 | **C490 carry → the account?** | after #1 and a CA's view | **Correction (29 Sep A–Z review):** Bitget's DEFAULT funding is 0.01%/8h = 10.95%/yr, and 14 of the top 40 sit exactly there, so "24 of 37 above 10%/yr" is mostly coins at the default, not a crowd getting more leveraged (my paper-check #1 reading was wrong). The ledger's 10%/yr entry sits just under the default; review that threshold at the December refresh. It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
+| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). **Added at C507 (round 10):** N2 no C2 short where 7-day funding < 0 (+2.82%/yr, t 1.02, 4/4 quarters, holdout +2.62%/yr, DD 29.8%) and N3 residual momentum (+2.14%/yr, t 0.82, 3/4, holdout +3.36%/yr, **DD 25.3% vs 31.4%**). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
@@ -138,7 +146,124 @@
 | 16 | **The allostatic shadow (K4)** | running from C501; decided at the December refresh (#11) | `C501Allostatic` scores the running sizing and K4's (EWMA, 10-day half-life) identically at every rebalance, a paper A/B that never trades. Round 7: same return, worst month −9.7% vs −15.5%. It replaces the running sizing only if the December re-test on NEW data passes (Rule: pre-registered bars). On 28 Sep K4 wanted 0.66x vs the running 0.40x: it adjusts both ways. |
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
+| 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧭 2026-09-29 — THE A–Z REVIEW: WHY THE FIRST DAYS LOST, ROUND 10, INDIA, C509
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**What the operator asked** (after the C506 screenshots):
+- re-analyse the philosophy, principles and methods from A to Z;
+- improvements and novel ideas;
+- "only losses since the switch";
+- does it trade metals, Korean or US stocks;
+- could India (Groww) run in the same code with its own 100 USDT.
+
+Full write-up: `reports/2026-09-29_a_to_z_review.md`.
+
+**The losses, measured:**
+- **Timeline:** the book began 25 Sep 12:16:57 UTC at $252.63. By 29 Sep
+  11:11 IST it was $241.33 marked: **−$11.30, −4.47% in 3.7 days**.
+- **The same rule on Bitget's data** (`research/c507_sim_recent.py`):
+  Jul +0.71%, Aug +9.63%, 1–24 Sep +3.71%, **25–28 Sep −2.92%**. The
+  strategy itself had the bad days.
+- **Live was about 1% worse**, all explained:
+  - the 26–27 Sep oversizing (fixed in C499);
+  - ETH's 0.01 minimum (#18);
+  - costs of about 0.07%.
+- **Closed positions** (from `logs/c488_book.json`) −$8.47. **PUMP −$3.72,
+  LINK −$1.59, WLD −$1.49 = −$6.80, about 60% of the loss**; all three were C2
+  shorts squeezed.
+- **Found while reconciling the ledger:** realised $243.80 − (closed −$8.47 +
+  open fees/funding −$0.06) implies a start of $252.33, not $252.63. The
+  $0.30 is not yet traced (possibly the scanner closing a position after the
+  first build). Not material; noted here.
+- **In context** (`research/c507_start_context.txt`, `c509_normal_range.txt`):
+  - −4.47% in 3.7 days is about the **2nd percentile**;
+  - a 4-day loss ≥ 3.9% came about 8.4 times a year, and 90 days later the
+    book was up 80% of the time (median +10.9%);
+  - only 8% of days are new highs;
+  - underwater stretches: median 4 days, 95th percentile 71 days, longest
+    638 days.
+
+**Round 10 (C507)** (`research/c507_preregistration.md`, commit f7fc72f;
+`c507_results.txt`). Base +32.6%/yr, Sharpe 1.56, DD 31.4%.
+
+**The C2 legs alone:**
+
+| leg | per year | t | 2022 |
+|---|---|---|---|
+| long | +15.5% | 2.52 | −29% |
+| short | +0.3% | 0.05 | +29% |
+
+The short leg is the crash hedge.
+
+**The tests:**
+
+| test | vs base | t | quarters | holdout | DD | verdict |
+|---|---|---|---|---|---|---|
+| N1 long-only C2 | +0.79%/yr | 0.13 | 2/4 | −2.40% | 38.6% | fails (worse DD) |
+| N2 no crowded shorts (7d funding < 0; removes 27% of shorts) | +2.82%/yr | 1.02 | 4/4 | +2.62% | 29.8% | not admitted → forward test (#11) |
+| N3 residual momentum (β 60d, median 0.96) | +2.14%/yr | 0.82 | 3/4 | +3.36% | 25.3% | not admitted → forward test (#11) |
+
+**India (C508)** (`research/c508_preregistration.md`, commit e95b74d;
+`c508_results.txt`, `c508_sizes.txt`):
+- **I1 fails:** +6.8%/yr, t 0.32, costs 5.3%/yr at ₹8,800.
+- **Recommendation:** a by-hand 50/50 Nifty BeES + Gold BeES hold
+  (+15.5%/yr historically). No bot. Pending #20.
+- `omega_c508_research.py` gained a descriptive `--eq RUPEES` option; the
+  default run is unchanged.
+
+**Markets:**
+- **Bitget lists 804 USDT perps:** 464 crypto; 315 US stocks/ETFs; 8 metals
+  (PAXG, XAUT, XAU, XAG, XPT, XPD, COPPER, PL); 8 Hong Kong; 3 Korean;
+  3 indices; 3 energy.
+- **The book trades crypto only** (`isRwa`, Rule 54). All 80 of today's
+  candidates are crypto.
+- **Unchanged:** no history to test the others (90 days of funding),
+  survivorship in the list, round 6's W1 flipped out of sample, and removing
+  them improved the research.
+
+**Correction:** "24 of 37 carry coins above 10%/yr = the crowd more
+leveraged-long" was wrong. The default funding is 10.95%/yr (pending #10).
+
+**C509 (the bot):**
+- **The table.** `_C509_RANGES` holds the p1–p99 of k-day book returns
+  (research/c509_normal_range.json, 16 spans). `_c509_row` interpolates
+  between spans and scales by dial/15; `_c509_rank` and `_c509_context` rate
+  the result as normal / uncommon / rare / beyond the tested range.
+- **The start record.**
+  - `C488Engine.born` = {ts, eq, approx}, saved in `c488_book.json`.
+  - `_c509_backfill` gives an old file its start: exactly the first build
+    (25 Sep 12:16:57 UTC, $252.63) when the earliest open position matches
+    within 5 minutes; otherwise the month anchor, marked approximate.
+  - A fresh book's first rebalance records its own start; `reset()` clears
+    it.
+- **`context(now)`:** since the book began, plus the month once the book is
+  older than the month.
+- **Where it is shown:**
+  - the status JSON `c488.context`;
+  - the dashboard book-panel line;
+  - a CONTEXT row in the 8-minute block;
+  - the `📏 C509 …` log line after each rebalance ('C509' is on the console
+    whitelist).
+- `_OMEGA_VERSION = 'C509'`.
+- **Tests:** `omega_c509_test.py`, 30 checks (Chromium included). Battery
+  35/36; `omega_exit_test.py` needs `corpusL/`, as before. pyflakes: no new
+  findings.
+
+**Open / next:**
+- **Paper check #2 at 30 Sep 01:15 UTC:**
+  - the plan to the cent from `c488_inputs.npz`;
+  - the spot pot's 16 vs 15 and the SOL/UNI sizes, settled by comparing the
+    npz closes with fresh Bitget closes;
+  - the "holds:" line;
+  - K4's first scored day.
+- **The operator's calls:** the dial (#6: dial 20% + both pots is the best
+  risk-for-return on the table) and live (#2, #3, #8, #14, #15).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-29 — PAPER CHECK #1 AND C506

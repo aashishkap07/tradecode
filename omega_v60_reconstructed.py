@@ -277,6 +277,7 @@ class _C460ConsoleFilter(logging.Filter):
         'C490',                     # the carry ledger's daily run
         'C501',                     # C503: the spot pot's run and the K4 shadow reached only the detail log
         'C504',                     # C504: the data watchdog (its warnings pass on level; the all-clear by name)
+        'C509',                     # C509: after each rebalance, whether the result so far is normal
         'C503 WHAT IS RUNNING',     # C503: the boot summary of what actually trades,
         'BOOK   trend (C1)',        #   its lines one by one (they carry no C-number of
         'rebalanced daily 00:05',   #   their own, and the operator reads the session log)
@@ -1792,6 +1793,23 @@ class _C462Report:
                                              (f"sync {_l492['synced_s']}s ago" if _l492.get('synced_s') is not None
                                               else 'sync pending')])
                                    + ([f"SYNC FAILING {_l492['sync_error'][:40]}"] if _l492.get('sync_error') else []))
+                    # C509: is this normal? The result so far against the rule's own test
+                    for _k509, _t509 in (('start', 'since'), ('month', 'month')):
+                        _c509 = (_b488.get('context') or {}).get(_k509)
+                        if not _c509:
+                            continue
+                        if 'pct' not in _c509:
+                            self._pack('CONTEXT', [f"{_t509} {_c509['since']} {100 * _c509['ret']:+.2f}%",
+                                                   'under a day: too early to judge'])
+                            continue
+                        _r509 = ('worse than 99% of spans' if _c509['pct'] < 1 else 'better than 99% of spans'
+                                 if _c509['pct'] > 99 else f"bottom {_c509['pct']:.0f}%" if _c509['pct'] < 50
+                                 else f"top {100 - _c509['pct']:.0f}%")
+                        self._pack('CONTEXT', [f"{_t509} {_c509['since']} {_c462_money(_c509['pnl'], sign=True)} "
+                                               f"({100 * _c509['ret']:+.2f}%) in {_c509['days']:.1f}d",
+                                               f"normal {100 * _c509['p10']:+.1f}% to {100 * _c509['p90']:+.1f}%",
+                                               f"{_r509}: {_c509['word']}"]
+                                   + (['start approx'] if _c509.get('approx') else []))
             except Exception:
                 pass
             # C504: every feed against its own schedule
@@ -2252,7 +2270,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C506'
+_OMEGA_VERSION = 'C509'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -18697,6 +18715,103 @@ def _c488_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0):
     return Wc[-1], {k: parts[k][-1] for k in parts}, elig[-1]
 
 
+# ════════════════════════════════════════════════════════════════════════════
+#  C509: IS THIS NORMAL? THE BOOK'S RESULT AGAINST ITS OWN TESTED RANGE
+# ════════════════════════════════════════════════════════════════════════════
+# Four days after the book began (25 Sep 2026) it was 4.5% down, and the only
+# way to judge that was to ask. The rule's own 2020-26 test answers it: the
+# percentiles of its k-day returns (research/c509_normal_range.py, crypto top
+# 20, dial 15%, costs and funding charged, $6 floor at $250). Each row is
+# p1, p5, p10, p25, p50, p75, p90, p95, p99 as fractions. Returns scale with
+# the dial (the vol target is dial x 4/3), so another dial scales the row.
+_C509_P = (1, 5, 10, 25, 50, 75, 90, 95, 99)
+_C509_RANGES = {
+    1: (-0.03041, -0.01412, -0.0099, -0.00364, 0.00022, 0.0049, 0.01229, 0.0182, 0.03476),
+    2: (-0.03871, -0.01934, -0.01352, -0.0053, 0.00063, 0.00747, 0.01735, 0.0276, 0.05242),
+    3: (-0.04594, -0.02277, -0.01591, -0.00613, 0.00099, 0.00972, 0.02307, 0.03433, 0.06672),
+    4: (-0.05208, -0.02771, -0.01842, -0.00718, 0.00133, 0.01192, 0.02874, 0.04467, 0.07632),
+    5: (-0.05506, -0.03146, -0.01992, -0.00775, 0.00166, 0.01426, 0.03253, 0.05197, 0.08184),
+    7: (-0.06413, -0.03627, -0.02497, -0.00944, 0.00259, 0.01824, 0.04572, 0.06367, 0.0977),
+    10: (-0.07375, -0.04128, -0.02899, -0.01064, 0.00436, 0.0251, 0.05531, 0.07625, 0.12267),
+    14: (-0.09294, -0.04534, -0.03059, -0.01141, 0.00681, 0.03375, 0.06561, 0.09032, 0.14525),
+    21: (-0.11866, -0.05479, -0.03464, -0.01223, 0.01249, 0.04445, 0.08833, 0.1176, 0.17713),
+    30: (-0.13507, -0.06377, -0.04446, -0.01309, 0.0197, 0.06363, 0.11308, 0.15244, 0.19682),
+    45: (-0.17167, -0.0801, -0.05275, -0.01033, 0.03272, 0.0908, 0.15667, 0.18321, 0.22122),
+    60: (-0.17725, -0.09029, -0.06174, -0.00467, 0.05218, 0.11823, 0.18368, 0.2057, 0.23458),
+    90: (-0.202, -0.11657, -0.06719, 0.00519, 0.09425, 0.15993, 0.22641, 0.25485, 0.3173),
+    120: (-0.24467, -0.10295, -0.05843, 0.0255, 0.12057, 0.19733, 0.26877, 0.31705, 0.40204),
+    182: (-0.25647, -0.11224, -0.06165, 0.05191, 0.19456, 0.29065, 0.36537, 0.40103, 0.50508),
+    365: (-0.18844, -0.14268, -0.11791, 0.16004, 0.39592, 0.55797, 0.6766, 0.7527, 0.9767),
+}
+# The first build on the server (log: "17:46:57 | C488 REBALANCE (first): ...
+# gross 0.41x of $252.63"). The book file had no start record before C509, so
+# a book whose first position opened within 5 minutes of that build is given
+# exactly that start; any other upgraded book is marked "approximate".
+_C509_FIRST_BUILD = (1790338617.0, 252.63)
+
+
+def _c509_row(days, dial=15.0):
+    """the tested percentiles for a span of `days`, interpolated between the
+    table's spans and scaled to the dial. None under one day."""
+    if days < 1.0:
+        return None
+    ks = sorted(_C509_RANGES)
+    days = min(float(days), float(ks[-1]))
+    lo = max(k for k in ks if k <= days)
+    hi = min(k for k in ks if k >= days)
+    f = 0.0 if hi == lo else (days - lo) / (hi - lo)
+    s = max(0.0, float(dial)) / 15.0
+    return [s * ((1 - f) * a + f * b) for a, b in zip(_C509_RANGES[lo], _C509_RANGES[hi])]
+
+
+def _c509_rank(ret, row):
+    """where a return sits in the tested range: its percentile (0-100),
+    linear between the table's points; outside p1-p99 it is 0.5 or 99.5."""
+    if ret <= row[0]:
+        return 0.5
+    if ret >= row[-1]:
+        return 99.5
+    for j in range(len(row) - 1):
+        if row[j] <= ret <= row[j + 1]:
+            g = 0.0 if row[j + 1] == row[j] else (ret - row[j]) / (row[j + 1] - row[j])
+            return _C509_P[j] + g * (_C509_P[j + 1] - _C509_P[j])
+    return 50.0
+
+
+def _c509_context(t0, eq0, eq, now, dial=15.0):
+    """one span of the book's life against the test: None if too short to judge"""
+    if not t0 or not eq0 or eq0 <= 0 or eq is None:
+        return None
+    days = (now - t0) / 86400.0
+    row = _c509_row(days, dial)
+    if row is None:
+        return dict(days=round(days, 2), ret=round(eq / eq0 - 1, 5), pnl=round(eq - eq0, 2), row=None)
+    ret = eq / eq0 - 1
+    pct = _c509_rank(ret, row)
+    word = ('beyond the tested range' if pct < 1 or pct > 99 else
+            'rare' if pct < 5 or pct > 95 else
+            'uncommon' if pct < 10 or pct > 90 else 'normal')
+    return dict(days=round(days, 2), ret=round(ret, 5), pnl=round(eq - eq0, 2), pct=round(pct, 1),
+                word=word, p10=round(row[2], 5), p50=round(row[4], 5), p90=round(row[6], 5),
+                p1=round(row[0], 5), p99=round(row[-1], 5))
+
+
+def _c509_text(c, label):
+    """the context in words, for the log and the 8-minute block"""
+    if not c:
+        return ''
+    if 'pct' not in c:
+        return f"{label}: {100 * c['ret']:+.2f}% in {c['days']:.1f} days (under a day: too early to judge)"
+    rk = (f"bottom {c['pct']:.0f}%" if c['pct'] < 50 else f"top {100 - c['pct']:.0f}%")
+    if c['pct'] < 1:
+        rk = 'worse than 99% of spans'
+    elif c['pct'] > 99:
+        rk = 'better than 99% of spans'
+    return (f"{label}: {'+' if c['pnl'] >= 0 else '-'}${abs(c['pnl']):.2f} ({100 * c['ret']:+.2f}%) in "
+            f"{c['days']:.1f} days | normal for that long {100 * c['p10']:+.1f}% to {100 * c['p90']:+.1f}% "
+            f"(10th-90th pct, 2020-26 test) | {rk}: {c['word']}")
+
+
 class C488Engine:
     """C488: holds the pre-registered portfolio in the bot's own account.
 
@@ -18747,6 +18862,7 @@ class C488Engine:
         self.live = self._live_blank()
         self.month = {}           # C495: the book's own month anchor, on MARKED equity
         self.open0 = None         # C498: the book's open P&L when THIS run first marked it
+        self.born = {}            # C509: when the book began and its equity then (ts, eq, approx)
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
 
@@ -18814,6 +18930,7 @@ class C488Engine:
                 self._topn = int(d.get('topn') or 0)
                 self.bill_since = int(d.get('bill_since') or 0)          # C492
                 self.month = dict(d.get('month') or {})                  # C495
+                self.born = dict(d.get('born') or {}) or self._c509_backfill(d)   # C509
                 self.bill_seen = [str(x) for x in (d.get('bill_seen') or [])][-2000:]
                 for k in ('drift_total', 'funding_live', 'funding_other'):
                     self.live[k] = float((d.get('live') or {}).get(k) or 0.0)
@@ -18830,7 +18947,7 @@ class C488Engine:
                          fund_next=self.fund_next, plan=self.plan, info=self.info,
                          closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
                          bill_since=int(self.bill_since or 0), bill_seen=self.bill_seen[-2000:],
-                         month=self.month,
+                         month=self.month, born=self.born,
                          live={k: self.live.get(k) for k in ('drift_total', 'funding_live', 'funding_other',
                                                              'drift_loud', 'corrections', 'bills')},
                          saved=time.time())
@@ -18840,6 +18957,51 @@ class C488Engine:
             self._saved_at = time.time()
         except Exception as e:
             logger.warning(f"⚠️ C488 book save failed: {type(e).__name__}: {e}")
+
+    @staticmethod
+    def _c509_backfill(d):
+        """C509: a book file written before C509 has no start record. The first
+        position's opening time is the start; the equity then is the known first
+        build when it matches, otherwise the month anchor, marked approximate."""
+        book = d.get('book') or {}
+        opened = [float(v['opened']) for v in book.values() if v.get('opened')]
+        gone = [float(c['t']) - 86400.0 * float(c.get('days') or 0.0) for c in (d.get('closed') or []) if c.get('t')]
+        ts = min(opened) if opened else 0.0
+        # a closed position's age is rounded to 0.1 day: it counts only if clearly earlier
+        if gone and (not ts or min(gone) < ts - 0.25 * 86400):
+            ts = min(gone)
+        if not ts:
+            return {}
+        if abs(ts - _C509_FIRST_BUILD[0]) < 300:
+            return dict(ts=_C509_FIRST_BUILD[0], eq=_C509_FIRST_BUILD[1], approx=False)
+        eq0 = float((d.get('month') or {}).get('eq0') or 0.0)
+        return dict(ts=round(ts, 1), eq=eq0, approx=True) if eq0 > 0 else {}
+
+    def context(self, now=None):
+        """C509: is this normal? The book since it began -- and, once it is older
+        than the month, the month so far -- each against the percentiles of the
+        rule's own 2020-26 test for a span that long."""
+        if self.dial() <= 0:
+            return {}
+        now, eq, out = (time.time() if now is None else float(now)), self.live_equity(), {}
+        b = self.born or {}
+        c = _c509_context(float(b.get('ts') or 0.0), float(b.get('eq') or 0.0), eq, now, self.dial())
+        if c:
+            c['since'] = datetime.fromtimestamp(float(b['ts'])).strftime('%d %b')
+            c['approx'] = bool(b.get('approx'))
+            out['start'] = c
+        m = self.month or {}
+        if m.get('key') and b.get('ts'):
+            try:
+                m0 = datetime.strptime(str(m['key']) + '-01', '%Y-%m-%d').timestamp()   # the guard's local calendar
+            except ValueError:
+                m0 = 0.0
+            if m0 and float(b['ts']) < m0 - 86400:
+                cm = _c509_context(m0, float(m.get('eq0') or 0.0), eq, now, self.dial())
+                if cm:
+                    cm['since'] = datetime.fromtimestamp(m0).strftime('%d %b')
+                    out['month'] = cm
+        return out
 
     # ── market data ───────────────────────────────────────────────────────
     def _get(self, path, params, tries=3):
@@ -19661,6 +19823,8 @@ class C488Engine:
             held = abs(float((self.book.get(s) or {}).get('qty', 0.0))) * (self.mark(s) or 0.0)
             return 0 if abs(plan.get(s, {}).get('w', 0.0)) * eq < held else 1
         order = sorted(set(plan) | set(self.book), key=lambda s: (_shrinks(s), s))
+        if not self.born:                               # C509: the book begins here (approximate if it already held some)
+            self.born = dict(ts=round(time.time(), 1), eq=round(float(eq), 4), approx=bool(self.book))
         traded, n = 0.0, 0
         for s in order:
             px = self.mark(s)
@@ -19689,6 +19853,14 @@ class C488Engine:
         logger.info(f"\U0001f4bc C488 REBALANCE ({why}): {len(plan)} positions targeted, gross "
                     f"{gross_t:.2f}x of ${eq:.2f}, {n} trades ${traded:.2f}, top {n_top}, "
                     f"vol target {100 * self.target_vol():.1f}% [{time.time() - t0:.0f}s]")
+        try:                                            # C509: and whether the result so far is normal
+            _c = self.context()
+            for _k, _lab in (('start', 'since the book began'), ('month', 'this month')):
+                if _c.get(_k):
+                    logger.info(f"   \U0001f4cf C509 {_c509_text(_c[_k], _lab + ' ' + _c[_k]['since'])}"
+                                + (' (start equity approximate)' if _c[_k].get('approx') else ''))
+        except Exception as _e509:
+            logger.warning(f"⚠️ C509 context failed: {type(_e509).__name__}: {_e509}")
 
     # ── funding (paper) ───────────────────────────────────────────────────
     def accrue_funding(self):
@@ -19773,6 +19945,7 @@ class C488Engine:
             self.bill_since, self.bill_seen, self.live, self.prepared = 0, [], self._live_blank(), set()   # C492
             self.month = {}                                                # C495
             self.open0 = None                                              # C498
+            self.born = {}                                                 # C509
         self.save()
 
     def tick(self, can_trade=True):
@@ -19870,7 +20043,13 @@ class C488Engine:
                     closed=self.closed[-10:],
                     funding=round(sum(p['funding'] for p in self.book.values()), 3),
                     marked=round(eq, 2), guard=dict(getattr(self, '_guard_view', {}) or {}),
-                    live=self._live_status())
+                    live=self._live_status(), context=self._c509_safe())
+
+    def _c509_safe(self):
+        try:
+            return self.context()
+        except Exception as e:
+            return dict(error=f"{type(e).__name__}: {e}")
 
     def _live_status(self):
         """C492: what the dashboard and the report say about live mode"""
@@ -41011,6 +41190,16 @@ async function pull(){
              ' <span class="'+cls(x.upnl)+'">'+sgn(x.upnl)+'</span> <span class="muted">'+x.sleeve+' \u00b7 '+x.days+'d</span></div>'});
         if((b.positions||[]).length>12)h+='<div class="s muted">+ '+(b.positions.length-12)+' more</div>';
         if(!b.n)h+='<div class="s muted">flat \u2014 '+(b.last_rebal?'nothing to hold today':'first rebalance pending')+'</div>';
+        /* C509: is this normal? The result so far against the rule's own 2020-26 test, for a span that long */
+        var cx=b.context||{},pc=function(x){return (x>=0?'+':'')+(100*x).toFixed(1)+'%'};
+        [['start','since the book began'],['month','this month']].forEach(function(kv){
+          var c=cx[kv[0]];if(!c)return;
+          if(c.pct===undefined){h+='<div class="s muted">'+kv[1]+' ('+c.since+'): '+(100*c.ret).toFixed(2)+'% \u00b7 under a day: too early to judge</div>';return}
+          var rk=c.pct<1?'worse than 99% of spans':c.pct>99?'better than 99% of spans':c.pct<50?('bottom '+c.pct.toFixed(0)+'%'):('top '+(100-c.pct).toFixed(0)+'%');
+          h+='<div class="s">'+kv[1]+' ('+c.since+', '+c.days.toFixed(1)+' days): <span class="'+cls(c.pnl)+'">'+sgn(c.pnl)+' ('+
+            (c.ret>=0?'+':'')+(100*c.ret).toFixed(2)+'%)</span> <span class="muted">\u00b7 normal for that long: '+pc(c.p10)+' to '+
+            pc(c.p90)+' (10th\u201390th percentile of the 2020\u201326 test) \u00b7 '+rk+': </span><b'+
+            (c.pct<10?' class="bad"':'')+'>'+c.word+'</b>'+(c.approx?' <span class="muted">(start equity approximate)</span>':'')+'</div>'});
         /* C501: the allostatic shadow -- the same book sized with a 10-day volatility memory, paper only */
         var k4=(d.c501||{}).k4;
         if(k4&&k4.mode==='paper'){
