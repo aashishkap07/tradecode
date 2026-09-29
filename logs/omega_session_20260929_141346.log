@@ -1,0 +1,79 @@
+14:13:46 | 📊 Paper Mode
+14:13:48 | ✅ Connected | 804 futures markets
+14:13:48 |    📅 C482 month anchor 2026-09: $250.00 (budget 20% = $50.00)
+ 
+  ================================================================================================
+  OMEGA C510  PAPER  Bitget perps
+  29 Sep 2026   14:13
+  start $250.00 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $250.00 realised  804 markets
+  MONTH     dial 20% = $50.00 this month  used $0.00 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+14:13:48 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+14:13:48 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+14:13:48 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+14:13:48 |        See deploy/DEPLOY.md — one command, no open ports, free.
+14:13:48 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+14:13:48 |    RULE   C2 N2+N3: C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST
+    in paper (C510); the admitted rule is scored beside it in the rule tournament
+14:13:48 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the
+    20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+14:13:48 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid,
+    taker 0.06%); 5x cross margin; funding at each coin's own interval; its one limit is the month
+    guard on MARKED equity
+14:13:48 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10
+    UTC · spot pot (C501/C502) $250, spot minimum $1, 00:20 UTC · idle cash -> Savings at 7.63%
+    every minute · allostatic shadow (K4) at each rebalance · rule tournament (C510, 7 rules on the
+    same prices) at each rebalance
+14:13:48 |    IDLE   the intraday scanner, the OLD strategy (0 trades, 0W/0L, lost after fees;
+    OMEGA_ENGINE=intraday restores it): every block below, to the 'stop safely' line, describes it
+14:13:48 |    (the idle scanner's own bookkeeping, not a measured edge: the C487 audit found it lost
+    after fees -- 0 trades, 0W/0L; it opens nothing while the book trades)
+14:13:49 |    🛡️ Session drawdown breaker: off | Guardian: report only (C482)
+14:13:49 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+14:13:49 |    📅 C488 month anchor 2026-09: $250.00 (marked; budget 20% = $50.00)
+14:14:24 |    🧬 C501 allostatic shadow (paper): K4 gross 0.70x vs running 0.42x | 0 days scored: K4
+    +0.00% vs +0.00% (same rules, same data)
+14:14:24 |    📋 C488 PLAN 2026-09-29: 80 candidates, 20 eligible, eq $250.00 | HYPE +15.05 C1/C3,
+    ENA +14.48 C1/C2/C3, XRP -10.69 C1/C2, TRUMP +9.95 C3, DOGE -9.71 C1/C2, SUI +9.58 C1/C2, NEAR
+    +7.60 C1/C2, ZEC +7.55 C1/C3, PEPE -7.05 C1/C2, UNI -6.59 C1/C3, FIL -6.33 C1/C3 | under $6: 9
+    (PUMP -5.97, LINK +2.64, BTC +2.23, ETH +2.10, ADA +2.06, SOL +1.43, TAO +0.81, ONDO +0.80)
+14:14:24 |    📋 C488 CANDIDATES (80 with history): 0G 1000BONK AAVE ADA AERO AKE ALGO APT ARB ARX
+    ASTER AVAX BCH BGB BNB BTC BTW CRV DASH DOGE DOT ENA ETC ETH ETHFI FARTCOIN FET FIL GRAM GRASS
+    GRT HBAR HYPE ICP INJ IOTA JASMY JUP LINK LSK LTC MARSCOIN MON MUBARAK NEAR NIL NMR ONDO ONE OP
+    PENGU PEPE PHA PI PONS PUMP Q QNT RAY RENDER SEI SHIB SOL SOON SUI TAO TIA TRUMP UNI US USELESS
+    VIRTUAL WLD XLM XPL XRP ZEC ZRO 牛来 龙虾
+14:14:24 |    💼 C488 first: SELL DOGE 102 @ $0.094810 ($9.67; fee $0.006) -> holding -102
+14:14:24 |    💼 C488 first: BUY ENA 58 @ $0.251040 ($14.56; fee $0.009) -> holding +58
+14:14:24 |    💼 C488 first: SELL FIL 6 @ $1.0606 ($6.36; fee $0.004) -> holding -6
+14:14:24 |    💼 C488 first: BUY HYPE 0.17 @ $88.1770 ($14.99; fee $0.009) -> holding +0.17
+14:14:24 |    💼 C488 first: BUY NEAR 2 @ $4.7466 ($9.49; fee $0.006) -> holding +2
+14:14:25 |    💼 C488 first: SELL PEPE 1.655e+06 @ $0.0000042586 ($7.05; fee $0.004) -> holding
+    -1.655e+06
+14:14:25 |    💼 C488 first: BUY SUI 8.4 @ $1.1437 ($9.61; fee $0.006) -> holding +8.4
+14:14:25 |    💼 C488 first: BUY TRUMP 4.9 @ $2.0140 ($9.87; fee $0.006) -> holding +4.9
+14:14:25 |    💼 C488 first: SELL UNI 1 @ $9.0040 ($9.00; fee $0.005) -> holding -1
+14:14:25 |    💼 C488 first: SELL XRP 7 @ $1.5001 ($10.50; fee $0.006) -> holding -7
+14:14:25 |    💼 C488 first: BUY ZEC 0.005 @ $1410.45 ($7.05; fee $0.004) -> holding +0.005
+14:14:25 | 💼 C488 REBALANCE (first): 11 positions targeted, gross 0.42x of $250.00, 11 trades
+    $108.16, top 20, vol target 26.7%, rule C2 N2+N3 [37s]
+14:14:26 |    🏁 C510 tournament (paper, same prices, 0 days scored since 2026-09-29): admitted C488
+    rule +0.00% | N2 no crowded shorts +0.00% | N3 residual momentum +0.00% | N2+N3 (traded) +0.00%
+    | N2+N3, K4 sizing +0.00% | N2+N3, range vol +0.00% | N2+N3, K4, range vol +0.00% [1s]
+14:14:26 |    📏 C509 since the book began 29 Sep: -0.05% in 0.0 days (under a day: too early to
+    judge)
+14:14:55 |    👻 C489 shadow hour 08:00 UTC: 38 coins scored (warm-up (14, no flow)), gate shut | M1
+    $249.89 (-0.02%) M1g $249.94 (+0.00%) over 1d [28s]
+14:15:20 |    💱 C490 carry (paper ledger) 2026-09-29: day -0.40 -> $249.54 (-0.16%) | 8 held, 24 of
+    37 eligible above 10%/yr | in FET,TRUMP,PUMP,FARTCOIN,APT,XLM,WLD,UNI [25s]
+14:15:20 |    🪙 C501 spot pot (paper) 2026-09-29: $249.95 (-0.02%) | 15 held, 22% invested, cash
+    $195.76 earning 7.63% | 15 trades today [0s]
+14:15:20 |    🪙 C501 spot pot holds: LINK $5.85, BTC $4.95, ETH $4.64, ADA $4.56, SUI $4.45, ONDO
+    $3.49, FIL $3.30, SOL $3.16, NEAR $3.08, PUMP $3.04, HYPE $2.96, XRP $2.82, ZEC $2.74, ENA
+    $2.58, DOGE $2.56
