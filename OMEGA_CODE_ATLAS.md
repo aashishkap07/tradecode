@@ -70,7 +70,11 @@
     - **Found:** the pot held 3 of 20 up-trending coins because C501's $6 floor
       came from futures; spot's minimum is $1. Fixed in C502.
   - **Reminders set (28 Sep):**
-    - 29 Sep 01:15 UTC: the paper check (#1), now including C501.
+    - 29 Sep 01:15 UTC: the paper check (#1), now including C501. **Done**
+      (`reports/2026-09-29_paper_check_1.md`).
+    - 30 Sep 01:15 UTC: paper check #2 (trig_01BB9dHUf8nD99dV1ePy65aT). If
+      C506 is deployed: the plan to the cent from `c488_inputs.npz`, and the
+      spot pot's 16-vs-15 settled.
     - The 1st of each month at 09:56 IST: the monthly review (#4, #6, #14–#17,
       #3, #8).
     - 2 Dec 04:00 UTC: the December research refresh (#5, #11, #12, S1
