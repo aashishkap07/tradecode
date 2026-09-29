@@ -16,7 +16,17 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C510 is pushed, not deployed (it includes C509):**
+  - **C511 is pushed, not deployed:** fixes from the fresh-start screenshots
+    and a full read of C510 (`reports/2026-09-29_c511_audit.md`). A normal
+    pull + restart. **Do NOT start fresh again.**
+  - **C510 from 29 Sep 14:13 IST, deployed with a FRESH START at dial 20%**
+    (verified from 8 screenshots and the 08:47 UTC logs push):
+    - $250, month budget $50, rule N2+N3, 11 positions, 0.433× gross;
+    - the plan recomputed from `c488_inputs.npz` to the cent;
+    - all 11 fills inside Bitget's 08:44 UTC 1-minute candles;
+    - fees 0.060%;
+    - the tournament's N2+N3 row = the plan.
+  - **C510 as pushed (it includes C509):**
     - **the PAPER book trades C2 = N2+N3** (`C488_C2_RULE='n2n3'`, or
       `OMEGA_C2_RULE` via a systemd override);
     - the rule tournament scores 7 rules on the same prices;
@@ -156,6 +166,73 @@
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧹 2026-09-29 — C511: THE FRESH-START SCREENS AND A FULL READ OF C510
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator deployed C510 with a fresh start at dial 20%** (14:13 IST,
+29 Sep) and sent 8 screenshots, asking for a full audit of the screens and
+the code. Write-up: `reports/2026-09-29_c511_audit.md`.
+
+**Verified on real data:**
+- The plan was replayed from the server's `c488_inputs.npz` (rule n2n3,
+  OHLC saved) with `--dial 20`: all 11 targets and the under-$6 list match
+  to the cent.
+- All 11 fills are inside Bitget's 08:44 UTC 1-minute candles, at the
+  0.060% taker fee.
+- Savings reserve $84.11 = margin $21.63 + 20% + 5% of $249.90.
+- `c510_tournament.json`: the n2n3 row = the plan.
+- The GK row is applied and differs coin by coin; its equal gross (0.418×)
+  comes from the combiner's volatility re-scaling.
+
+**C511 fixes:**
+1. **The old scanner's record after a fresh start.** "0 trades, 0W/0L, lost
+   after fees" becomes `_C511_OLD_SCANNER` (139 trades, 44W/95L before the
+   29 Sep 2026 fresh start) until the account has its own. It is also in
+   the status JSON (`scanner_hist`) and the dashboard's OFF line.
+2. **The idle scanner's ~80-line boot description** (architecture, the
+   "464 crypto + 340 RWA perps … session-gated" universe, the DRI model,
+   CONFIGURATION, EDGE STATE, MODE) is held back while the book trades:
+   `TradingBot._c511_scanner_quiet` puts `_C511Mute` on the `logging.Logger`
+   inside the CustomLogger. It applies to this thread and to INFO only.
+3. **`TradingModeManager.reset`:** the C309 day cap and the mode lines are
+   labelled as the idle scanner's while the book trades.
+4. **Headers:** the 8-minute block and the dashboard say "daily book" (not
+   "scan 0" or "0 scans · 0 pair looks").
+5. **The shutdown summary:** RAN and COST describe the book. `_c462_report._bot`
+   is set in `run()` and in `status()`, because atexit passes no bot.
+6. **`C501Allostatic.active()`** is False while `C510Tournament` is active.
+   The tournament's n2n3_k4 row is the same A/B. The boot PAPER list and the
+   watchdog follow it.
+7. **`_c511_q`:** fill quantities read 1,654,000, not 1.655e+06.
+
+**Caught by sandbox dry runs** (the full boot on live Bitget data through
+`run_proxied.py`) before shipping:
+- C510's carry crash (fixed in d591b51);
+- C511's first boot crash: `logger.addFilter` on the CustomLogger wrapper.
+
+The full boot is now part of every release check. C511 ran clean for 9
+minutes end to end.
+
+**Design points (not bugs, in the report):**
+- the quantity-step oversizing (NEAR $9.54 vs $7.60, UNI $8.96 vs $6.59, #18);
+- the tournament's first day is scored close to close while the book began
+  at 08:44 UTC;
+- the book is long TRUMP (weekly C3) while the carry ledger shorts TRUMP's
+  perp (daily funding, now positive);
+- carry entries at the 10.95%/yr default funding (#10);
+- carry and the shadow started at $249.94 (the account after the book's
+  first fees).
+
+**Tests:**
+- `omega_c511_test.py`: 26 checks, Chromium included;
+- `omega_c497_test.py` accepts the held-back banner;
+- **battery:** 36 of 38 in parallel. The exit test needs `corpusL/`; the
+  c467 remote 1-second check passes alone.
+- pyflakes: no new findings.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🏁 2026-09-29 — C510: THE INTEGRATED BOT (N2+N3 IN PAPER, THE RULE TOURNAMENT, ROUND 11)

@@ -1626,6 +1626,7 @@ class _C462Report:
         figure is unavailable the row says so rather than printing a zero --
         a zero that means 'unknown' is the defect C460-3 was written to remove.
         """
+        self._bot = bot                       # C511: the shutdown summary (atexit) has no other route to it
         try:
             pf = bot.portfolio
             cfg = bot.cfg
@@ -1703,9 +1704,14 @@ class _C462Report:
             # screen ever saw one. Now they are a contract call, so the next
             # reader can find every separator in the file by one name.
             self._blank(2)
+            _bk511 = False
+            try:
+                _bk511 = getattr(bot, 'c488', None) is not None and bot.c488.active()
+            except Exception:
+                _bk511 = False
             self._rule(f"{datetime.now().strftime('%H:%M')}"
                        f"{self.g['sep']}up {self._uptime()}"
-                       f"{self.g['sep']}scan {self.n_scans}")
+                       f"{self.g['sep']}" + ("daily book" if _bk511 else f"scan {self.n_scans}"))
 
             # --- money ---
             # C465-3: the unrealised line is only news when there IS an open
@@ -2204,11 +2210,27 @@ class _C462Report:
         self._summary_done = True
         try:
             s = self.stats()
+            # C511: the exit path (atexit) passes no bot; the 8-minute block leaves one
+            bot = bot if bot is not None else getattr(self, '_bot', None)
+            _e511 = getattr(bot, 'c488', None) if bot is not None else None
+            _bk511 = False
+            try:
+                _bk511 = _e511 is not None and _e511.active()
+            except Exception:
+                _bk511 = False
             self._emit('')
             self._rule('SESSION SUMMARY')
-            self._pack('RAN', [self._uptime(), f"{self.n_scans} scans",
-                               f"{self.n_analyses} pair-analyses",
-                               f"{s['n']} closed trades"])
+            if _bk511:
+                # C511: "0 scans 0 pair-analyses 0 closed trades" and "fees $0.00"
+                # were the idle scanner's, beside a book that had paid $0.06 on 11 fills
+                _t511 = dict(getattr(_e511, 'tally', {}) or {})
+                self._pack('RAN', [self._uptime(), "daily book",
+                                   f"{int(getattr(_e511, 'fills_run', [0])[0])} book fills this run",
+                                   f"book closed {int(_t511.get('n', 0))} in all"])
+            else:
+                self._pack('RAN', [self._uptime(), f"{self.n_scans} scans",
+                                   f"{self.n_analyses} pair-analyses",
+                                   f"{s['n']} closed trades"])
             if self.equity_curve:
                 first, last = self.equity_curve[0], self.equity_curve[-1]
                 pct = (last - first) / first * 100.0 if first > 0 else 0.0
@@ -2248,6 +2270,11 @@ class _C462Report:
             gross = sum(t['net'] for t in self.trades) + tot_fee
             _cost = [f"fees {_c462_money(tot_fee)}",
                      f"maker {self.n_maker} / taker {self.n_taker} fills"]
+            _fr511 = list(getattr(_e511, 'fills_run', [0, 0.0, 0.0])) if _bk511 else [0, 0.0, 0.0]
+            if _bk511 and _fr511[0] > 0 and (self.n_maker + self.n_taker) == 0:
+                _cost = [f"book fees {_c462_money(_fr511[1])}", f"{int(_fr511[0])} taker fills",
+                         f"{100.0 * _fr511[1] / _fr511[2] if _fr511[2] > 0 else 0:.3f}% of "
+                         f"{_c462_money(_fr511[2])} traded"]
             if abs(gross) > 1e-9:
                 _cost.append(f"{100.0 * tot_fee / abs(gross):.0f}% of gross")
             if (self.n_maker + self.n_taker) > 0:
@@ -2314,7 +2341,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C510'
+_OMEGA_VERSION = 'C511'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -16519,12 +16546,20 @@ class TradingModeManager:
                                "the day begins at Normal-1")
                     self._pending_hp = False
             _dc309 = float(getattr(self.cfg, 'DAY_RISK_CAP_PCT', 0.040))
-            logger.info(f"📊 Day start equity set: ${equity:.2f} | Day cap: {_dc309*100:.2f}% = ${equity * _dc309:.2f} [C309]")
+            _bk511 = str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio'
+            if _bk511:
+                # C511: "Day cap: 0.91% = $2.27" beside "no day limit applies to the book"
+                logger.info(f"📊 Day start equity set: ${equity:.2f} [C309] -- the idle scanner's day cap does "
+                            f"not apply to the book (its one limit is the month guard)")
+            else:
+                logger.info(f"📊 Day start equity set: ${equity:.2f} | Day cap: {_dc309*100:.2f}% = ${equity * _dc309:.2f} [C309]")
         self._save()
-        logger.info("🔄 Trading mode reset")
+        _sc511 = (" -- the idle scanner's" if str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio'
+                  else "")
+        logger.info("🔄 Trading mode reset" + _sc511)
         _cycle = getattr(self, "_session_cycles", 0) + 1
         _cycle_label = f" (Cycle {_cycle})" if _cycle > 1 else ""
-        logger.info(f"💼 Normal mode{_cycle_label} start equity: ${equity:.2f}")
+        logger.info(f"💼 Normal mode{_cycle_label} start equity: ${equity:.2f}" + _sc511)
 
     def can_trade(self) -> bool:
         """Returns False if paused (prevents ALL scanning)."""
@@ -18738,6 +18773,30 @@ def _c488_pnl(w, r, fund, lag=1, cost=0.0008):
 # of 30 days of closes -- the idle scanner's intraday information, used as a
 # risk sensor. GK +4.26%/yr t 1.87 against a bar of 1.96: not admitted, scored
 # forward in the tournament (C488_VOL_EST stays 'close').
+# C511: the old intraday scanner's record in the account it traded, as audited
+# (C486/C487): a fresh start zeroes the account's counters, and "0 trades, 0W/0L,
+# lost after fees" was then printed about it -- a sentence that contradicts itself.
+_C511_OLD_SCANNER = dict(n=139, w=44, l=95, until='the 29 Sep 2026 fresh start')
+
+
+def _c511_q(x):
+    """a quantity for the log: 1,655,000 not 1.655e+06"""
+    return f"{x:+,.0f}" if abs(x) >= 1e5 else f"{x:+.6g}"
+
+
+class _C511Mute(logging.Filter):
+    """C511: while the book trades, the idle scanner's ~80-line boot description
+    (architecture, exit model, sizing, edge bookkeeping) is not written. Only
+    this thread's INFO lines are held back; a warning still passes."""
+
+    def __init__(self):
+        super().__init__()
+        self.tid = threading.get_ident()
+
+    def filter(self, record):
+        return record.levelno >= logging.WARNING or record.thread != self.tid
+
+
 _C510_RULES = ('base', 'n2', 'n3', 'n2n3')
 _C510_VOLEST = ('close', 'park', 'gk')
 _C510_SIZING = ('running', 'k4')
@@ -19489,9 +19548,9 @@ class C488Engine:
                 self.fund_next.pop(sym, None)
             else:
                 self.book[sym] = p
-        logger.info(f"   \U0001f4bc C488 {why}: {side.upper()} {sym.split('/')[0]} {qty:.6g} @ ${_fmt_px(px)} "
+        logger.info(f"   \U0001f4bc C488 {why}: {side.upper()} {sym.split('/')[0]} {_c511_q(qty)[1:]} @ ${_fmt_px(px)} "
                     f"(${qty * px:.2f}; fee ${fee:.3f}"
-                    f"{'; realised $%+.3f' % realized if realized else ''}) -> holding {nq:+.6g}")
+                    f"{'; realised $%+.3f' % realized if realized else ''}) -> holding {_c511_q(nq)}")
 
     def _step(self, sym):
         """the contract's quantity step and minimum, from the exchange's own
@@ -21435,7 +21494,15 @@ class C501Allostatic(_C501Store):
             self.last_obs = str(d.get('last_obs') or '')
 
     def active(self):
-        return bool(getattr(self.cfg, 'C501_K4', True))
+        # C511: with the rule tournament on, its "N2+N3, K4 sizing" row is this
+        # same A/B on the same prices (29 Sep: K4 0.70x here, 0.697x there), and
+        # it keeps comparing like with like if the book's rule or vol estimate
+        # changes -- this one would compare K4 on close vol against a book on
+        # range vol. One ledger per question.
+        if not bool(getattr(self.cfg, 'C501_K4', True)):
+            return False
+        t = getattr(self.bot, 'c510t', None)
+        return not (t is not None and t.active())
 
     def reset(self, save=True):
         with getattr(self, '_lock', threading.RLock()):
@@ -22629,31 +22696,58 @@ class TradingBot:
             if bool(getattr(c, 'C501_SAVINGS', True)):
                 led.append(f"idle cash -> Savings at {100 * float(getattr(c, 'C501_SAVINGS_APR', 0.0763)):.2f}% "
                            f"every minute")
-            if bool(getattr(c, 'C501_K4', True)):
+            _k4511 = getattr(self, 'c501k', None)       # C511: off when the tournament's K4 row covers it
+            if (_k4511.active() if _k4511 is not None else
+                    (bool(getattr(c, 'C501_K4', True)) and getattr(self, 'c510t', None) is None)):
                 led.append("allostatic shadow (K4) at each rebalance")
             if getattr(self, 'c510t', None) is not None and self.c510t.active():
                 led.append(f"rule tournament (C510, {len(_C510_VARIANTS)} rules on the same prices) at each rebalance")
             if led:
                 logger.info("   PAPER  never touches the account: " + " · ".join(led))
-            logger.info(f"   IDLE   the intraday scanner, the OLD strategy ({int(self.portfolio.lifetime_trades)} trades, "
-                        f"{int(self.portfolio.lifetime_wins)}W/{int(self.portfolio.lifetime_losses)}L, lost after fees; "
-                        "OMEGA_ENGINE=intraday restores it): every block below, to the 'stop safely' line, describes it")
+            _lt511 = int(self.portfolio.lifetime_trades or 0)
+            _rec511 = (f"{_lt511} trades, {int(self.portfolio.lifetime_wins)}W/{int(self.portfolio.lifetime_losses)}L"
+                       if _lt511 else f"{_C511_OLD_SCANNER['n']} trades, {_C511_OLD_SCANNER['w']}W/"
+                       f"{_C511_OLD_SCANNER['l']}L before {_C511_OLD_SCANNER['until']}")
+            logger.info(f"   IDLE   the intraday scanner, the OLD strategy ({_rec511}; it lost after fees): it opens "
+                        "nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)")
         except Exception as _e503:
             logger.info(f"   C503 WHAT IS RUNNING: summary unavailable ({type(_e503).__name__})")
 
+    @staticmethod
+    def _c511_scanner_quiet(on, flt=None):
+        """C511: hold back (on=True, returns the filter) or release (on=False, the
+        filter) this thread's INFO lines. `logger` is the CustomLogger wrapper;
+        the filter goes on the logging.Logger inside it (the wrapper has none --
+        the first C511 boot died on exactly that, AttributeError, in the dry run)."""
+        lg = getattr(logger, 'logger', logger)
+        try:
+            if on:
+                flt = _C511Mute()
+                lg.addFilter(flt)
+                return flt
+            if flt is not None:
+                lg.removeFilter(flt)
+        except Exception:
+            return None
+        return None
+
     def run(self):
         # PHASE4: Document7-style rich startup display
+        _c462_report._bot = self                # C511: the shutdown summary describes what traded, even before the first 8-min block
         logger.info("=" * 60)
         logger.info("🤖 OMEGA V60 — INFORMATION ENGINE (C466)")
         # C497: the blocks from here to "Press Ctrl+C" describe the INTRADAY
         # SCANNER -- its paper-parity costs, edge state, architecture, sizing
         # and leverage. While the portfolio book trades the scanner opens
         # nothing, so the operator is told once, here, which engine they read.
+        _m511 = None
         if str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio':
-            logger.info("   \u2139\ufe0f C497: the portfolio book trades. The blocks below describe the "
-                        "INTRADAY SCANNER, which is idle (OMEGA_ENGINE=intraday restores it); "
-                        "the book is summarised in the RISK FRAME above and the BOOK row every 8 min")
             self._c503_running()
+            # C511: the scanner's architecture, exit model, sizing and "edge"
+            # bookkeeping (~80 lines, down to MODE) described a strategy that
+            # opens nothing -- including "464 crypto + 340 RWA perps ...
+            # session-gated", which reads as if the bot traded stocks and metals.
+            _m511 = self._c511_scanner_quiet(True)
         _b503 = str(getattr(self.cfg, 'C488_ENGINE', '') or '').lower() == 'portfolio'
         logger.info("   \U0001f9ea C364 PAPER=LIVE PARITY — costs modelled in paper"
                     + (" (the idle scanner's; the book's are in the summary above):" if _b503 else ":"))
@@ -22944,6 +23038,8 @@ class TradingBot:
         if self.mode_mgr.hp_start_equity and not _b503:
             logger.info(f"   HP start: ${self.mode_mgr.hp_start_equity:.2f}")
         logger.info("=" * 60)
+        if _m511 is not None:
+            self._c511_scanner_quiet(False, _m511)
         # C503: under systemd there is no keyboard; the stop is systemctl
         # (INVOCATION_ID is set by systemd for every unit it starts).
         if os.environ.get('INVOCATION_ID'):
@@ -41147,6 +41243,7 @@ class RemoteControl:
                                                if getattr(bot_ref, a, None) is not None}
                         except Exception as _x501:
                             _out469['c501'] = {'error': f"{type(_x501).__name__}: {_x501}"}
+                        _out469['scanner_hist'] = dict(_C511_OLD_SCANNER)   # C511
                         try:      # C510: the rule tournament
                             _t510 = getattr(bot_ref, 'c510t', None)
                             if _t510 is not None:
@@ -41528,8 +41625,10 @@ async function pull(){
     }
     var age=Number(d.scan_age_s)||0;
     q('dot').className='dot'+(age>1800?' dead':(age>900?' stale':''));
+    /* C511: the scan counts are the idle scanner's; while the book trades, say what runs */
     q('sub').textContent=d.mode+' · up '+d.uptime_min+' min · '+
-      (d.scans||0)+' scans · '+(d.analyses||0)+' pair looks';
+      ((d.c488&&d.c488.mode==='portfolio'&&!d.c488.error)?('daily book, next rebalance '+
+        String(d.c488.next_rebal_utc||'').slice(11)+' UTC'):((d.scans||0)+' scans · '+(d.analyses||0)+' pair looks'));
 
     q('eq').innerHTML=money(d.equity);
     /* C486: "this run" resets on every restart (the server's nightly updates
@@ -41685,8 +41784,10 @@ async function pull(){
       if(c5.k4&&c5.k4.mode==='paper')pp.push('K4 sizing shadow');
       if(d.c489&&d.c489.mode==='shadow')pp.push('intraday shadow (C489)');
       if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
+      var sh5=d.scanner_hist||{};
       if(bk.mode==='portfolio')rn.push('<div style="margin:4px 0"><b>OFF</b> the old intraday scanner'+
-        (d.life&&d.life.n?' ('+d.life.n+' trades, '+d.life.w+'W '+d.life.l+'L, lost after fees)':'')+'</div>');
+        (d.life&&d.life.n?' ('+d.life.n+' trades, '+d.life.w+'W '+d.life.l+'L, lost after fees)':
+         (sh5.n?' ('+sh5.n+' trades, '+sh5.w+'W '+sh5.l+'L before '+sh5.until+'; lost after fees)':''))+'</div>');
       rn.push('<div class="s muted">not traded: metals, stocks, indices, energy (crypto only, by evidence) \u00b7 '+
         (d.paper?'live trading is locked':'LIVE')+'</div>');
       q('running').innerHTML=rn.join('');
