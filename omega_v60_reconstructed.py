@@ -2252,7 +2252,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C504'
+_OMEGA_VERSION = 'C506'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -19608,6 +19608,16 @@ class C488Engine:
         # C501: the same matrices serve the spot pot's run (00:20) and the
         # allostatic shadow, so they are fetched once and scored on one picture
         self._last_M = (datetime.utcnow().strftime('%Y-%m-%d'), n_top, M)
+        # C506: the day's inputs, exactly as fetched, so a check can recompute
+        # the plan to the cent. On 29 Sep a replay 78 minutes later differed by
+        # 1-5%: SOL's 7-day return was -0.01%, so one tick in any close flips
+        # its trend, and a later fetch cannot prove what the bot saw.
+        try:
+            np.savez_compressed(os.path.join(BASE_PATH, 'c488_inputs.npz'), T=T, keep=np.array(keep, dtype=str),
+                                close=close, qv=qv, fund=fund, eq=np.array([eq]), n_top=np.array([n_top]),
+                                at=np.array([time.time()]))
+        except Exception as _e506:
+            logger.warning(f"⚠️ C506 plan inputs not saved ({type(_e506).__name__}: {_e506})")
         try:
             _k501 = getattr(self.bot, 'c501k', None)
             if _k501 is not None:
@@ -21354,6 +21364,11 @@ class C501Spot(_C501Store):
                             f"{100 * float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)):.2f}% | {n} trades today"
                             f"{' | no spot pair: ' + ','.join(self.info['no_spot']) if self.info.get('no_spot') else ''}"
                             f" [{time.time() - t0:.0f}s]")
+                # C506: what it holds, coin by coin. On 29 Sep the log said "16
+                # held" while an independent rebuild gave 15, and nothing in the
+                # log could say which coin differed.
+                logger.info("   \U0001fa99 C501 spot pot holds: " + (", ".join(
+                    f"{p['coin']} ${p['usd']:.2f}" for p in st.get('positions', [])) or 'nothing'))
             except Exception as ex:
                 self._fail_at = now
                 logger.warning(f"⚠️ C501 spot pot run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
@@ -21906,7 +21921,14 @@ class TradingBot:
                         bits.append("funding booked")
                 ran = _due(getattr(self.cfg, 'C488_REBAL_UTC', (0, 5)), 'book rebalance', e.last_rebal == today)
                 k4 = getattr(self, 'c501k', None)
-                if ran and k4 is not None and k4.active() and k4.last_obs != today:
+                # C506: judged only on a rebalance THIS process ran (_last_M is set
+                # there, beside the hand-off). C504 also judged the rebalance a
+                # previous process ran before K4 existed: 28 Sep, C501 arrived at
+                # 13:09 after the 05:35 rebalance, and "K4 shadow missed today's
+                # rebalance" was repeated hourly until 29 Sep 05:37 -- a false alarm.
+                lm = getattr(e, '_last_M', None)
+                if (ran and lm and lm[0] == today and k4 is not None and k4.active()
+                        and k4.last_obs != today):
                     bad('K4', "K4 shadow missed today's rebalance")
                 if ran:
                     bits.append("book today")

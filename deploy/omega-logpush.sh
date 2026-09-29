@@ -313,7 +313,17 @@ for f in "$REPO"/omega_*.log.1 "$REPO"/omega_*.log.*.gz; do
     esac
     copied=$((copied+1))
 done
-for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json; do
+# C506: the book's and the paper ledgers' own state too (positions, cash,
+# daily returns; no keys). The 29 Sep paper check could not say which coin the
+# spot pot held beyond an independent rebuild, because only the account file
+# reached the archive. The C489 shadow's file is left out: it carries a large
+# hourly flow cache and its record is already in every log line.
+# c488_inputs.npz is the rebalance's exact input data (about 0.5 MB, rewritten
+# once a day), so `c498_plan_replay.py --inputs` recomputes the plan to the cent.
+for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json \
+         "$REPO"/data/c488_book.json "$REPO"/data/c490_carry.json \
+         "$REPO"/data/c501_spot.json "$REPO"/data/c501_savings.json "$REPO"/data/c501_allostatic.json \
+         "$REPO"/data/c488_inputs.npz; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done
 [ "$copied" -gt 0 ] || exit 0

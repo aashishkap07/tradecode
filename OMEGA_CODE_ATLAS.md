@@ -16,9 +16,22 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C504 is pushed, not deployed** (the data watchdog; the shadow's gate
-    saved). Deploy commands are in
-    `reports/2026-09-28_c504_completeness_audit.md`.
+  - **C506 is pushed, not deployed:**
+    - the K4 false alarm fixed;
+    - the spot pot logs its holdings;
+    - the log push carries the ledgers' state files. **The operator must
+      re-copy the push script**; see
+      `reports/2026-09-29_paper_check_1.md`.
+    (C505 is the round-9 research tag, so the bot skips that number.)
+  - **C504 from 28 Sep 17:12 IST, checked in the 29 Sep paper check:**
+    - it resumed with 9 positions and marked equity continuous to the cent
+      ($244.23);
+    - C503's shutdown summary matched the last SESSION row (−$0.47), and "Log
+      saved" was written once;
+    - the DATA row read "on time" from 05:37 IST;
+    - **one false alarm:** "K4 shadow missed today's rebalance", hourly from
+      17:20 to 05:37. K4 was judged on a rebalance run by a process without
+      K4. Fixed in C506.
   - **C503 from 28 Sep 14:46 IST, verified** (screenshots 14:59, logs 15:17):
     every C503 line reads as intended and still reconciles.
     - Found: the shadow's first "gate OPEN" (09:00 UTC, logged 14:32) showed
@@ -103,7 +116,7 @@
 
 | # | task | when | notes |
 |---|---|---|---|
-| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. **From C501 also check the paper ledgers:** the spot pot ran daily at 05:50 IST (00:20 UTC) and filled at the spot bid/ask with a 0.08% fee; the Savings ledger's idle cash equals equity − (margin + dial × equity + 5%); the K4 shadow logged `C501 allostatic shadow` at each rebalance. |
+| 1 | **C488 paper implementation check** | after 3–5 daily rebalances (from about 29 Sep) | From the logs branch. The checks are yes/no: (a) a rebalance every day at 05:35 IST; (b) the held book matches the day's targets to within one quantity step or the $6 minimum; (c) cost of each rebalance ≈ 0.08% of turnover; (d) funding booked at every settlement and the equity invariant holds; (e) it survives restarts and the dashboard matches the report. These are implementation checks, not a test of edge: 5 days carry t ≈ 0.14, and the edge rests on 6½ years at t = 3.19. **Also check the C490 carry ledger:** it ran once a day at 05:40 IST; entries were above 10%/yr and exits below 5%/yr; costs were 0.20% of notional each way; funding was collected at settlements. **From C501 also check the paper ledgers:** the spot pot ran daily at 05:50 IST (00:20 UTC) and filled at the spot bid/ask with a 0.08% fee; the Savings ledger's idle cash equals equity − (margin + dial × equity + 5%); the K4 shadow logged `C501 allostatic shadow` at each rebalance. **RUN 29 Sep 2026 (`reports/2026-09-29_paper_check_1.md`): (a) ✅ rebalances 26/27/28/29 Sep at 05:35 IST; (b) ✅ held within one step or the $6 minimum (ETH 1 step $26.90 vs $13.94 target, #18; NEAR/ZEC trims under the $6 order minimum), held 0.42x vs plan 0.34x; a 01:23 UTC replay differs 1–5% on most coins with identical memberships (LINK/ADA exact) -- probed for candle finality; (c) ✅ fees $0.111 on $187.11 = 0.059%, fills 0.01–3 bp from mid; (d) ✅ funding at 12/16/20/00 UTC = +0.00059/−0.00410/+0.00060/−0.0093 (ZEC 0.067%), the rebalance + funding −6.583 vs the state file −6.584; (e) ✅ the 17:12 restart continuous to the cent. Ledgers: carry ✅ 05:40 (24 of 37 above 10%/yr); K4 ✅ first observation 0.61x vs 0.34x; Savings ✅; shadow ✅ every hour; spot pot 16 held / 24% vs an independent rebuild's 15 / 24.1% -- one coin unexplained, C506 logs holdings. Follow-up check 30 Sep 01:15 UTC.** |
 | 2 | ~~Live-mode build for C488~~ | **BUILT in C492 (26 Sep); still switched off** | (a)–(e) are all done and tested (see C492): funding from Bitget's bills, a sync every 60 s, one-way mode and cross margin at 5x per symbol, partial fills, and the live contract table. **`C488_LIVE_OK` stays False.** Going live takes two deliberate steps: a one-line commit setting it True (ask for it), and `OMEGA_MODE=live` in a unit override. The checklist is at the end of `reports/2026-09-26_live_mode.md`. Start at **dial 10% at $250**, not 5%: at 5% the average position is about $4.40, under Bitget's $5 minimum. Raise it towards 15% over weeks as live tracks paper. |
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
@@ -122,6 +135,53 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-09-29 — PAPER CHECK #1 AND C506
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Pending #1 ran** on the reminder at 01:15 UTC. Full write-up:
+`reports/2026-09-29_paper_check_1.md`.
+
+**(a)–(e) pass.** The results are in the #1 row of the pending table.
+
+**The book flipped on Monday's weekly refresh:**
+- **Now:** short BTC, ETH and XRP (14-day laggards in C2); long HYPE, ENA and
+  SUI; still holding NEAR and ZEC.
+- **Where it stands:** marked $242.24; 28% of September's loss budget used.
+- **The rebalance realised −$6.46**, but those losses were already in marked
+  equity.
+
+**Found, and fixed in C506:**
+1. **The C504 watchdog's K4 false alarm.** It is now judged only on a
+   rebalance this process ran: `_last_M[0] == today`.
+2. **The spot pot's holdings were not logged.** A second line now follows
+   each run: `🪙 C501 spot pot holds: …`.
+3. **The log push sent only `state_v60.json`.** It now adds `c488_book.json`,
+   `c490_carry.json`, `c501_spot.json`, `c501_savings.json`,
+   `c501_allostatic.json` and `c488_inputs.npz`. **The operator must re-copy
+   `deploy/omega-logpush.sh` to `/usr/local/bin`.**
+4. **The replay could not reproduce the plan after the fact.** SOL's 7-day
+   return was −0.008%, so a one-tick close difference flips its trend, and a
+   01:23 UTC replay on the bot's own candidate list differed 1–5% (LINK and ADA
+   exact, the same memberships). A probe at 02:00 UTC showed Bitget's
+   just-closed candles are final at +15 s, so it is not stale data. Each
+   rebalance now saves `c488_inputs.npz` (T, keep, close, qv, fund, eq,
+   n_top, at). `research/c498_plan_replay.py --inputs FILE` recomputes the
+   plan exactly.
+
+**Tests:** `omega_c506_test.py`, 12 checks. `omega_c504_test.py` sets
+`_last_M` in its on-time state.
+
+**Open:**
+- **The spot pot's 16 coins against an independent 15** (the same 24%
+  invested). SOL is the only coin on a knife-edge, and a flip only resizes
+  SOL. To be settled at the 30 Sep 01:15 UTC check from the holdings line or
+  `c501_spot.json`, if C506 is deployed.
+- **The version number:** C505 is the round-9 research tag, so the bot went
+  from C504 to C506.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-09-28 — C504: THE COMPLETENESS AUDIT, THE DATA WATCHDOG, ROUND 9

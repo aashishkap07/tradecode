@@ -65,6 +65,7 @@ def on_time():
     e._marks_at = NOW - 12
     e.fund_next = {'ETH/USDT:USDT': int((NOW // 28800 + 1) * 28800 * 1000)}      # the next 8h settlement
     e.last_rebal = TODAY
+    e._last_M = (TODAY, 20, None)                                                # C506: this process ran it
     bot.c501k.last_obs = TODAY
     bot.c489.last_hour = int(NOW // 3600 * 3600 * 1000)                          # 09:00 scored
     bot.c490.last_run = TODAY

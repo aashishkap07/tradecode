@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """C498: what the C488 rule targets RIGHT NOW, computed by the bot's own code.
 
-    python3 research/c498_plan_replay.py [EQUITY] [--dial 15] [--out FILE.json]
+    python3 research/c498_plan_replay.py [EQUITY] [--dial 15] [--out FILE.json] [--inputs c488_inputs.npz]
 
 Runs the live bot's own C488Engine functions (candidates -> matrices ->
 _c488_targets, the real asset classifier on Bitget's own market table) against
@@ -46,8 +46,20 @@ bot._c408_asset_class = lambda s: om.TradingBot._c408_asset_class(bot, s)
 e = om.C488Engine(bot)
 assert e.refresh_marks(force=True), 'no tickers'
 now = dt.datetime.utcnow()
-n_top = e.topn(eq); syms = e.candidates(n_top)
-T, keep, close, qv, fund = e.matrices(syms)
+n_top = e.topn(eq)
+if '--inputs' in sys.argv:
+    # C506: the server's own inputs (data/c488_inputs.npz, on the logs branch) -- the exact data the
+    # rebalance used, so the plan can be recomputed to the cent at any later time
+    z = np.load(sys.argv[sys.argv.index('--inputs') + 1])
+    T, keep, close, qv, fund = z['T'], [str(k) for k in z['keep']], z['close'], z['qv'], z['fund']
+    if len(sys.argv) < 2 or sys.argv[1].startswith('--'):
+        eq = float(z['eq'][0])
+    n_top = int(z['n_top'][0])
+    print(f"inputs: {sys.argv[sys.argv.index('--inputs') + 1]} fetched "
+          f"{dt.datetime.utcfromtimestamp(float(z['at'][0])):%Y-%m-%d %H:%M:%S} UTC")
+else:
+    syms = e.candidates(n_top)
+    T, keep, close, qv, fund = e.matrices(syms)
 w, sl, el_now = om._c488_targets(T, close, qv, fund, n_top, e.target_vol(), float(getattr(cfg, 'C488_LEV_CAP', 3.0)))
 mn = float(getattr(cfg, 'C488_MIN_NOTIONAL', 6.0))
 elig = om._c488_universe(close, qv, n_top)
