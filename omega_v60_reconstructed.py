@@ -278,6 +278,8 @@ class _C460ConsoleFilter(logging.Filter):
         'C501',                     # C503: the spot pot's run and the K4 shadow reached only the detail log
         'C504',                     # C504: the data watchdog (its warnings pass on level; the all-clear by name)
         'C509',                     # C509: after each rebalance, whether the result so far is normal
+        'C510',                     # C510: the rule tournament, the book's summary line
+        'RULE   ',                  # C510: the boot summary's rule line
         'C503 WHAT IS RUNNING',     # C503: the boot summary of what actually trades,
         'BOOK   trend (C1)',        #   its lines one by one (they carry no C-number of
         'rebalanced daily 00:05',   #   their own, and the operator reads the session log)
@@ -1810,6 +1812,23 @@ class _C462Report:
                                                f"normal {100 * _c509['p10']:+.1f}% to {100 * _c509['p90']:+.1f}%",
                                                f"{_r509}: {_c509['word']}"]
                                    + (['start approx'] if _c509.get('approx') else []))
+                    # C510: the rule the book trades, and every candidate on the same prices
+                    _r510 = _b488.get('rule') or {}
+                    if _r510:
+                        self._pack('RULE', [str(_r510.get('label', '')),
+                                            'admitted' if _r510.get('admitted') else 'forward test (paper)'])
+                    _tt510 = getattr(bot, 'c510t', None)
+                    if _tt510 is not None and _tt510.active():
+                        _ts510 = _tt510.status()
+                        _sh510 = {'base': 'base', 'n2': 'N2', 'n3': 'N3', 'n2n3': 'N2+N3', 'n2n3_k4': '+K4',
+                                  'n2n3_gk': '+GK', 'n2n3_k4_gk': '+K4+GK'}
+                        if _ts510['days'] > 0:
+                            self._pack('TOURNEY', [f"{_ts510['days']}d since {_ts510['since']}"]
+                                       + [f"{_sh510.get(v['name'], v['name'])}{'*' if v['traded'] else ''} "
+                                          f"{100 * v['ret']:+.2f}%" for v in _ts510['rows'] if v['on']])
+                        elif _ts510.get('last_obs'):
+                            self._pack('TOURNEY', [f"{sum(1 for v in _ts510['rows'] if v['on'])} rules held since "
+                                                   f"{_ts510['since']}", 'first scores at the next rebalance'])
             except Exception:
                 pass
             # C504: every feed against its own schedule
@@ -1989,7 +2008,20 @@ class _C462Report:
                     _rp.append(f"break-even {be}")
                 self._pack('RECORD', _rp)
             else:
-                self._row('RECORD', 'no closed trades yet this run')
+                # C510: while the book trades, its record is the one that means anything
+                _t510 = None
+                try:
+                    if getattr(bot, 'c488', None) is not None and bot.c488.active():
+                        _t510 = dict(bot.c488.tally or {})
+                except Exception:
+                    _t510 = None
+                if _t510 is not None:
+                    self._pack('RECORD', [f"book closed {int(_t510.get('n', 0))}",
+                                          f"{int(_t510.get('w', 0))}W {int(_t510.get('l', 0))}L",
+                                          f"net {_c462_money(float(_t510.get('pnl', 0.0)), sign=True)}",
+                                          "fees and funding in"])
+                else:
+                    self._row('RECORD', 'no closed trades yet this run')
 
             lt = int(getattr(pf, 'lifetime_trades', 0) or 0)
             # C465-3: when the lifetime record IS this run's record -- a fresh
@@ -2002,19 +2034,31 @@ class _C462Report:
                 # they made about +$2.63 and the book -$2.24 since. The count is
                 # the intraday scanner's, the dollars the whole account's.
                 _bk503 = getattr(bot, 'c488', None) is not None and bot.c488.active()
+                # C510: those counts are the OLD strategy's (the scanner, off since the book began)
                 self._pack('LIFETIME', [
-                    f"{lt}tr {int(getattr(pf, 'lifetime_wins', 0))}W "
-                    f"{int(getattr(pf, 'lifetime_losses', 0))}L "
-                    f"{float(st.get('win_rate', 0)):.0f}%" + (" intraday" if _bk503 else ""),
+                    f"{lt}tr {int(getattr(pf, 'lifetime_wins', 0))}W {int(getattr(pf, 'lifetime_losses', 0))}L "
+                    + ("old scanner" if _bk503 else f"{float(st.get('win_rate', 0)):.0f}%"),
                     ("account " if _bk503 else "") + _c462_money(getattr(pf, 'lifetime_pnl', 0), sign=True)
                     + (" realised" if _bk503 else "")])
 
             # --- cost, which C461 made the headline number of this project ---
             tot_fee = self.fees_maker + self.fees_taker
-            if (self.n_maker + self.n_taker) > 0:
+            _f510 = None
+            try:                                   # C510: the book's fills (it trades at 00:05 UTC)
+                if getattr(bot, 'c488', None) is not None and bot.c488.active():
+                    _f510 = list(bot.c488.fills_run)
+            except Exception:
+                _f510 = None
+            if _f510 is not None and _f510[0] > 0:
+                self._pack('FEES', [f"book {_c462_money(_f510[1])}", f"{int(_f510[0])} taker fills this run",
+                                    f"{100.0 * _f510[1] / _f510[2] if _f510[2] > 0 else 0:.3f}% of "
+                                    f"{_c462_money(_f510[2])} traded"])
+            elif (self.n_maker + self.n_taker) > 0:
                 self._pack('FEES', [_c462_money(tot_fee),
                                     f"mk{self.n_maker}/tk{self.n_taker}",
                                     f"{100.0 * tot_fee / live if live > 0 else 0:.3f}% of eq"])
+            elif _f510 is not None:
+                self._row('FEES', 'no fills yet this run (the book trades at 00:05 UTC)')
             else:
                 self._row('FEES', 'no fills yet this run')
 
@@ -2270,7 +2314,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C509'
+_OMEGA_VERSION = 'C510'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3014,6 +3058,16 @@ class Config:
         self.C488_HIST_TRIES = 5                # C499: a history request gets 5 tries, then the rebalance waits
         self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
         self.C488_LIVE_OK = False               # no real money until live fills and funding are reconciled
+        # ═══ C510: WHAT THE BOOK TRADES, AND THE FORWARD TEST ══════════════
+        # The operator asked (29 Sep) for round 10's refinements to run now rather
+        # than wait for the December re-test. The PAPER book trades them; the
+        # admitted rule and every other candidate are scored beside it on the same
+        # prices by the rule tournament (C510Tournament). Live money on anything
+        # but 'base' / 'close' / 'running' is warned about loudly (C510).
+        self.C488_C2_RULE = 'n2n3'              # 'base' (admitted) | 'n2' | 'n3' | 'n2n3'
+        self.C488_VOL_EST = 'close'             # 'close' (admitted) | 'park' | 'gk' (round 11, not admitted)
+        self.C488_SIZING = 'running'            # 'running' (admitted) | 'k4' (round 7, not admitted)
+        self.C510_TOURNAMENT = True             # score every candidate rule at each rebalance (paper)
         # ═══ C492: WHAT LIVE MONEY NEEDS (pending task #2) ════════════════
         # The plumbing is built and tested; C488_LIVE_OK above stays False until
         # the paper check (pending #1) and the key security (pending #3) pass.
@@ -18664,20 +18718,119 @@ def _c488_pnl(w, r, fund, lag=1, cost=0.0008):
     return g + f - c, dict(gross=g, funding=f, cost=c, gross_exp=np.abs(wl).sum(1), turnover=dw.sum(1))
 
 
-def _c488_sleeves(T, close, qv, fund, topn):
-    r = _c488_returns(close)
-    sd = _c488_trailing_std(r, 30)
-    elig = _c488_universe(close, qv, topn)
-    sc = np.nan_to_num(_c488_vol_scale(sd))
-    N = topn
-    trend = sum(np.sign(np.nan_to_num(_c488_lagret(close, d))) for d in (7, 14, 28, 56)) / 4.0
-    W = {}
-    W['C1'] = _c488_banded(np.where(elig, trend * sc / N, 0.0))
-    W['C2'] = _c488_weekly(_c488_xs_rank(_c488_lagret(close, 14), elig) * sc / (2 * N * 0.2), T)
+# ════════════════════════════════════════════════════════════════════════════
+#  C510: THE MOMENTUM SLEEVE'S VARIANTS, AND THE SCANNER'S INFORMATION AS A SENSOR
+# ════════════════════════════════════════════════════════════════════════════
+# Round 10 (research/omega_c507_research.py) tested two changes to C2 after its
+# shorts were squeezed on 25-28 Sep 2026 (PUMP, WLD, LINK):
+#   n2   no C2 short where the coin's 7-day funding is negative -- shorts are
+#        already paying longs, the crowd is short, which is when squeezes come;
+#   n3   residual momentum: rank the 14-day return minus beta x the market's
+#        (beta = 60-day slope on the equal-weight mean of eligible coins), so a
+#        low-beta coin is not shorted merely for lagging a rally;
+#   n2n3 both. Round 10: n2 +2.82%/yr t 1.02, n3 +2.14%/yr t 0.82, neither past
+#        the pre-registered bar; together (descriptive, research/c510_results)
+#        max drawdown 22.6% vs 29.5%. The operator asked for them to run now,
+#        so the paper book trades n2n3 (C488_C2_RULE) as a forward test while
+#        C510Tournament scores the admitted rule and every variant beside it.
+# Round 11 (research/omega_c510_research.py): the per-coin volatility from the
+# day's HIGH and LOW (Parkinson / Garman-Klass, EWMA 10-day half-life) instead
+# of 30 days of closes -- the idle scanner's intraday information, used as a
+# risk sensor. GK +4.26%/yr t 1.87 against a bar of 1.96: not admitted, scored
+# forward in the tournament (C488_VOL_EST stays 'close').
+_C510_RULES = ('base', 'n2', 'n3', 'n2n3')
+_C510_VOLEST = ('close', 'park', 'gk')
+_C510_SIZING = ('running', 'k4')
+_C510_RULE_WORDS = {'base': 'raw 14-day momentum (admitted C488)',
+                    'n2': 'no crowded shorts (N2)',
+                    'n3': 'residual momentum (N3)',
+                    'n2n3': 'residual momentum, no crowded shorts (N2+N3)'}
+
+
+def _c510_f7(fund, close):
     f7 = np.full_like(fund, np.nan)
     for i in range(7, len(fund)):
         f7[i] = fund[i - 6:i + 1].sum(axis=0)
     f7[np.isnan(close)] = np.nan
+    return f7
+
+
+def _c510_c2_rank(close, r, elig, f7, rule='base'):
+    """C2's +1/-1 ranking under each rule, exactly as research/omega_c507_research.py
+    (base, N2, N3) and research/omega_c510_research.py (N2+N3) compute it"""
+    if rule in ('base', 'n2'):
+        s = _c488_xs_rank(_c488_lagret(close, 14), elig)
+    else:
+        n = len(close)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            mkt = np.nan_to_num(np.nanmean(np.where(elig, r, np.nan), axis=1))
+            beta = np.ones_like(close)
+            for i in range(60, n):
+                m = mkt[i - 59:i + 1]
+                vm = m.var()
+                if vm <= 0:
+                    continue
+                ri = r[i - 59:i + 1]
+                ok = ~np.isnan(ri)
+                cov = np.nanmean((ri - np.nanmean(ri, axis=0)) * (m - m.mean())[:, None], axis=0)
+                b = cov / vm
+                b[ok.sum(0) < 40] = np.nan
+                beta[i] = np.where(np.isnan(b), 1.0, b)
+        m14 = np.full(n, np.nan)
+        for i in range(14, n):
+            m14[i] = np.prod(1 + mkt[i - 13:i + 1]) - 1
+        s = _c488_xs_rank(_c488_lagret(close, 14) - beta * m14[:, None], elig)
+    if rule in ('n2', 'n2n3'):
+        s = np.where((s < 0) & (np.nan_to_num(f7, nan=0.0) < 0), 0.0, s)
+    return s
+
+
+def _c510_range_sd(op, hi, lo, close, kind='gk', hl=10.0, min_obs=20):
+    """per-coin daily volatility from each day's range, EWMA, past and today only
+    (research/omega_c510_research.py ewma_sd): 'park' (ln H/L)^2 / (4 ln 2);
+    'gk' 0.5 (ln H/L)^2 - (2 ln 2 - 1)(ln C/O)^2, floored at 0. NaN until a coin
+    has min_obs ranges, where the caller keeps the 30-day close-to-close sd."""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        lhl = np.log(hi / lo)
+        lco = np.log(close / op)
+        bad = ~(np.isfinite(lhl) & (lhl >= 0))
+        lhl[bad] = np.nan
+        lco[bad] = np.nan
+        if kind == 'park':
+            x = lhl ** 2 / (4 * math.log(2))
+        else:
+            x = np.maximum(0.5 * lhl ** 2 - (2 * math.log(2) - 1) * lco ** 2, 0.0)
+            x[np.isnan(lhl)] = np.nan
+    a = 1.0 - 0.5 ** (1.0 / hl)
+    out = np.full_like(x, np.nan)
+    v = np.zeros(x.shape[1])
+    seen = np.zeros(x.shape[1], int)
+    for i in range(len(x)):
+        ok = ~np.isnan(x[i])
+        v = np.where(ok, np.where(seen > 0, (1 - a) * v + a * np.nan_to_num(x[i]), np.nan_to_num(x[i])), v)
+        seen = seen + ok
+        out[i] = np.where((seen >= min_obs) & ~np.isnan(close[i]), np.sqrt(np.maximum(v, 0.0)), np.nan)
+    return out
+
+
+def _c488_sleeves(T, close, qv, fund, topn, rule='base', ohlc=None, volest='close'):
+    """the three sleeves. C510: `rule` picks C2's ranking; `volest` the per-coin
+    volatility ('close' = 30-day close-to-close, as admitted; 'park'/'gk' need
+    ohlc = (open, high, low) aligned with close)"""
+    r = _c488_returns(close)
+    sd = _c488_trailing_std(r, 30)
+    if volest in ('park', 'gk') and ohlc is not None:
+        sdr = _c510_range_sd(ohlc[0], ohlc[1], ohlc[2], close, kind=volest)
+        sd = np.where(np.isnan(sdr), sd, sdr)
+    elig = _c488_universe(close, qv, topn)
+    sc = np.nan_to_num(_c488_vol_scale(sd))
+    N = topn
+    trend = sum(np.sign(np.nan_to_num(_c488_lagret(close, d))) for d in (7, 14, 28, 56)) / 4.0
+    f7 = _c510_f7(fund, close)
+    W = {}
+    W['C1'] = _c488_banded(np.where(elig, trend * sc / N, 0.0))
+    W['C2'] = _c488_weekly(_c510_c2_rank(close, r, elig, f7, rule) * sc / (2 * N * 0.2), T)
     W['C3'] = _c488_weekly(-_c488_xs_rank(f7, elig) * sc / (2 * N * 0.2), T)
     return r, W, elig
 
@@ -18705,13 +18858,19 @@ def _c488_combine(parts, r, fund, lag, target_vol=0.20, lev_cap=3.0, win=60, per
     return W
 
 
-def _c488_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0):
+def _c488_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0, rule='base', ohlc=None,
+                  volest='close', sizing='running'):
     """today's book: the LAST row of the combined weights, plus each sleeve's
     share of it for the dashboard. The rows are indexed by the day whose CLOSE
-    they were decided at, exactly as in the research (lag 1)."""
-    r, W, elig = _c488_sleeves(T, close, qv, fund, topn)
+    they were decided at, exactly as in the research (lag 1). C510: the rule,
+    volatility estimate and sizing are the operator's (C488_C2_RULE,
+    C488_VOL_EST, C488_SIZING); the defaults reproduce C488 exactly."""
+    r, W, elig = _c488_sleeves(T, close, qv, fund, topn, rule=rule, ohlc=ohlc, volest=volest)
     parts = {k: W[k] for k in ('C1', 'C2', 'C3')}
-    Wc = _c488_combine(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+    if sizing == 'k4':
+        Wc = _c488_combine_ewma(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+    else:
+        Wc = _c488_combine(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
     return Wc[-1], {k: parts[k][-1] for k in parts}, elig[-1]
 
 
@@ -18743,6 +18902,27 @@ _C509_RANGES = {
     182: (-0.25647, -0.11224, -0.06165, 0.05191, 0.19456, 0.29065, 0.36537, 0.40103, 0.50508),
     365: (-0.18844, -0.14268, -0.11791, 0.16004, 0.39592, 0.55797, 0.6766, 0.7527, 0.9767),
 }
+# C510: the same table for the N2+N3 rule the paper book trades from C510
+# (research/c510_normal_range.py). N2 or N3 alone use the admitted rule's table.
+_C510_RANGES_N2N3 = {
+    1: (-0.02888, -0.01372, -0.0095, -0.00373, 0.0002, 0.00511, 0.013, 0.01842, 0.0335),
+    2: (-0.03354, -0.01867, -0.01281, -0.00559, 0.00064, 0.00775, 0.0184, 0.02789, 0.04876),
+    3: (-0.04325, -0.02215, -0.01527, -0.00644, 0.00094, 0.01048, 0.02371, 0.03516, 0.06572),
+    4: (-0.04649, -0.02433, -0.0174, -0.00749, 0.00114, 0.01296, 0.02941, 0.04402, 0.07338),
+    5: (-0.0508, -0.02847, -0.01933, -0.00813, 0.00151, 0.01531, 0.03448, 0.05298, 0.08393),
+    7: (-0.06322, -0.03204, -0.02161, -0.00909, 0.00227, 0.01878, 0.04641, 0.0653, 0.09704),
+    10: (-0.06957, -0.03577, -0.02384, -0.01014, 0.00395, 0.02625, 0.05645, 0.07651, 0.11414),
+    14: (-0.07755, -0.04, -0.02766, -0.01056, 0.00731, 0.03504, 0.06845, 0.09237, 0.1373),
+    21: (-0.09454, -0.04704, -0.03095, -0.01122, 0.01299, 0.04655, 0.0892, 0.12008, 0.17535),
+    30: (-0.11201, -0.05661, -0.03645, -0.00959, 0.02121, 0.06471, 0.11688, 0.15176, 0.19419),
+    45: (-0.1398, -0.06761, -0.04515, -0.0038, 0.03749, 0.09338, 0.15868, 0.18384, 0.21305),
+    60: (-0.15094, -0.06869, -0.04763, 0.00409, 0.05655, 0.12579, 0.17872, 0.20078, 0.22909),
+    90: (-0.16284, -0.0762, -0.0454, 0.02596, 0.10107, 0.16941, 0.21523, 0.24018, 0.30223),
+    120: (-0.19009, -0.0676, -0.02633, 0.04659, 0.13521, 0.19544, 0.26679, 0.30656, 0.39184),
+    182: (-0.19244, -0.05993, -0.01538, 0.09884, 0.21015, 0.29442, 0.37435, 0.4226, 0.52835),
+    365: (-0.1063, -0.06687, -0.03073, 0.20631, 0.47295, 0.58005, 0.70266, 0.81186, 0.91846),
+}
+_C509_RANGES_BY_RULE = {'base': _C509_RANGES, 'n2n3': _C510_RANGES_N2N3}
 # The first build on the server (log: "17:46:57 | C488 REBALANCE (first): ...
 # gross 0.41x of $252.63"). The book file had no start record before C509, so
 # a book whose first position opened within 5 minutes of that build is given
@@ -18750,18 +18930,19 @@ _C509_RANGES = {
 _C509_FIRST_BUILD = (1790338617.0, 252.63)
 
 
-def _c509_row(days, dial=15.0):
+def _c509_row(days, dial=15.0, rule='base'):
     """the tested percentiles for a span of `days`, interpolated between the
     table's spans and scaled to the dial. None under one day."""
     if days < 1.0:
         return None
-    ks = sorted(_C509_RANGES)
+    tab = _C509_RANGES_BY_RULE.get(rule, _C509_RANGES)
+    ks = sorted(tab)
     days = min(float(days), float(ks[-1]))
     lo = max(k for k in ks if k <= days)
     hi = min(k for k in ks if k >= days)
     f = 0.0 if hi == lo else (days - lo) / (hi - lo)
     s = max(0.0, float(dial)) / 15.0
-    return [s * ((1 - f) * a + f * b) for a, b in zip(_C509_RANGES[lo], _C509_RANGES[hi])]
+    return [s * ((1 - f) * a + f * b) for a, b in zip(tab[lo], tab[hi])]
 
 
 def _c509_rank(ret, row):
@@ -18778,12 +18959,12 @@ def _c509_rank(ret, row):
     return 50.0
 
 
-def _c509_context(t0, eq0, eq, now, dial=15.0):
+def _c509_context(t0, eq0, eq, now, dial=15.0, rule='base'):
     """one span of the book's life against the test: None if too short to judge"""
     if not t0 or not eq0 or eq0 <= 0 or eq is None:
         return None
     days = (now - t0) / 86400.0
-    row = _c509_row(days, dial)
+    row = _c509_row(days, dial, rule)
     if row is None:
         return dict(days=round(days, 2), ret=round(eq / eq0 - 1, 5), pnl=round(eq - eq0, 2), row=None)
     ret = eq / eq0 - 1
@@ -18863,6 +19044,8 @@ class C488Engine:
         self.month = {}           # C495: the book's own month anchor, on MARKED equity
         self.open0 = None         # C498: the book's open P&L when THIS run first marked it
         self.born = {}            # C509: when the book began and its equity then (ts, eq, approx)
+        self.tally = {}           # C510: every position the book has closed: n, wins, losses, net $
+        self.fills_run = [0, 0.0, 0.0]   # C510: this process's fills: count, fees $, notional $
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
 
@@ -18885,6 +19068,32 @@ class C488Engine:
 
     def dial(self):
         return max(0.0, min(20.0, float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 15.0) or 0.0)))
+
+    # C510: what the book trades -- each an operator setting, each scored beside
+    # the others by C510Tournament whichever is chosen
+    def c2_rule(self):
+        v = str(getattr(self.cfg, 'C488_C2_RULE', 'n2n3') or 'n2n3').lower()
+        return v if v in _C510_RULES else 'base'
+
+    def volest(self):
+        v = str(getattr(self.cfg, 'C488_VOL_EST', 'close') or 'close').lower()
+        return v if v in _C510_VOLEST else 'close'
+
+    def sizing(self):
+        v = str(getattr(self.cfg, 'C488_SIZING', 'running') or 'running').lower()
+        return v if v in _C510_SIZING else 'running'
+
+    def admitted(self):
+        """True when the book trades only what passed its pre-registered test"""
+        return (self.c2_rule(), self.volest(), self.sizing()) == ('base', 'close', 'running')
+
+    def rule_label(self):
+        bits = [{'base': 'C2 raw', 'n2': 'C2 N2', 'n3': 'C2 N3', 'n2n3': 'C2 N2+N3'}[self.c2_rule()]]
+        if self.volest() != 'close':
+            bits.append({'park': 'Parkinson vol', 'gk': 'range vol (GK)'}[self.volest()])
+        if self.sizing() != 'running':
+            bits.append('K4 sizing')
+        return ' + '.join(bits)
 
     def target_vol(self):
         """the operator's dial sets the risk: 15%% a month of drawdown room ->
@@ -18931,6 +19140,7 @@ class C488Engine:
                 self.bill_since = int(d.get('bill_since') or 0)          # C492
                 self.month = dict(d.get('month') or {})                  # C495
                 self.born = dict(d.get('born') or {}) or self._c509_backfill(d)   # C509
+                self.tally = dict(d.get('tally') or {}) or self._c510_tally(self.closed)   # C510
                 self.bill_seen = [str(x) for x in (d.get('bill_seen') or [])][-2000:]
                 for k in ('drift_total', 'funding_live', 'funding_other'):
                     self.live[k] = float((d.get('live') or {}).get(k) or 0.0)
@@ -18947,7 +19157,7 @@ class C488Engine:
                          fund_next=self.fund_next, plan=self.plan, info=self.info,
                          closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
                          bill_since=int(self.bill_since or 0), bill_seen=self.bill_seen[-2000:],
-                         month=self.month, born=self.born,
+                         month=self.month, born=self.born, tally=self.tally,
                          live={k: self.live.get(k) for k in ('drift_total', 'funding_live', 'funding_other',
                                                              'drift_loud', 'corrections', 'bills')},
                          saved=time.time())
@@ -18957,6 +19167,21 @@ class C488Engine:
             self._saved_at = time.time()
         except Exception as e:
             logger.warning(f"⚠️ C488 book save failed: {type(e).__name__}: {e}")
+
+    @staticmethod
+    def _c510_tally(closed):
+        """C510: the book's record from its closed list (a file written before C510
+        keeps the last 50, all of them on the server so far)"""
+        t = dict(n=0, w=0, l=0, pnl=0.0)
+        for c in closed or []:
+            C488Engine._c510_count(t, float(c.get('pnl') or 0.0))
+        return t
+
+    @staticmethod
+    def _c510_count(t, pnl):
+        t['n'] = int(t.get('n', 0)) + 1
+        t['w' if pnl > 0 else 'l'] = int(t.get('w' if pnl > 0 else 'l', 0)) + 1
+        t['pnl'] = round(float(t.get('pnl', 0.0)) + pnl, 4)
 
     @staticmethod
     def _c509_backfill(d):
@@ -18985,7 +19210,8 @@ class C488Engine:
             return {}
         now, eq, out = (time.time() if now is None else float(now)), self.live_equity(), {}
         b = self.born or {}
-        c = _c509_context(float(b.get('ts') or 0.0), float(b.get('eq') or 0.0), eq, now, self.dial())
+        rule = self.c2_rule() if self.c2_rule() in _C509_RANGES_BY_RULE else 'base'
+        c = _c509_context(float(b.get('ts') or 0.0), float(b.get('eq') or 0.0), eq, now, self.dial(), rule)
         if c:
             c['since'] = datetime.fromtimestamp(float(b['ts'])).strftime('%d %b')
             c['approx'] = bool(b.get('approx'))
@@ -18997,7 +19223,7 @@ class C488Engine:
             except ValueError:
                 m0 = 0.0
             if m0 and float(b['ts']) < m0 - 86400:
-                cm = _c509_context(m0, float(m.get('eq0') or 0.0), eq, now, self.dial())
+                cm = _c509_context(m0, float(m.get('eq0') or 0.0), eq, now, self.dial(), rule)
                 if cm:
                     cm['since'] = datetime.fromtimestamp(m0).strftime('%d %b')
                     out['month'] = cm
@@ -19137,7 +19363,8 @@ class C488Engine:
             if not d:
                 break
             for x in d:
-                out[int(x[0])] = (float(x[4]), float(x[6]))
+                # C510: the day's open, high and low too (the range-volatility sensor)
+                out[int(x[0])] = (float(x[4]), float(x[6]), float(x[1]), float(x[2]), float(x[3]))
             first = min(int(x[0]) for x in d)
             if first >= end or len(d) < 2:
                 break
@@ -19170,9 +19397,12 @@ class C488Engine:
         close = np.full((len(T), len(keep)), np.nan)
         qv = np.full_like(close, np.nan)
         fund = np.zeros_like(close)
+        op, hi, lo = np.full_like(close, np.nan), np.full_like(close, np.nan), np.full_like(close, np.nan)
         for j, s in enumerate(keep):
-            for t, (c, v) in hist[s][0].items():
-                close[idx[t], j], qv[idx[t], j] = c, v
+            for t, x in hist[s][0].items():
+                close[idx[t], j], qv[idx[t], j] = x[0], x[1]
+                if len(x) >= 5:
+                    op[idx[t], j], hi[idx[t], j], lo[idx[t], j] = x[2], x[3], x[4]
             for t, rate in hist[s][1].items():
                 i = idx.get(t // _C488_DAY * _C488_DAY)
                 if i is not None:
@@ -19183,7 +19413,18 @@ class C488Engine:
             # out of that day's carry ranking, as a coin not yet listed would be.
             ft = min(hist[s][1]) // _C488_DAY * _C488_DAY if hist[s][1] else None
             fund[(T < ft) if ft is not None else np.ones(len(T), bool), j] = np.nan
+        # C510: the day's open/high/low beside the five matrices every consumer
+        # unpacks (the book, the spot pot, K4, the tournament, the saved inputs)
+        self._ohlc = (T, list(keep), op, hi, lo)
         return T, keep, close, qv, fund
+
+    def ohlc_for(self, T, keep):
+        """(open, high, low) aligned with these matrices, or None if they are not the
+        ones matrices() last built (a test or a caller that built its own)"""
+        o = getattr(self, '_ohlc', None)
+        if o is None or len(o[0]) != len(T) or list(o[1]) != list(keep) or not np.array_equal(o[0], T):
+            return None
+        return o[2], o[3], o[4]
 
     # ── the book ──────────────────────────────────────────────────────────
     def unrealized(self):
@@ -19215,6 +19456,7 @@ class C488Engine:
         dq = qty if side == 'buy' else -qty
         fee = qty * px * float(self.cfg.TAKER_FEE_PCT) / 100.0 if fee is None else abs(float(fee))
         with self._lock:
+            self.fills_run = [self.fills_run[0] + 1, self.fills_run[1] + fee, self.fills_run[2] + qty * px]
             p = self.book.get(sym) or dict(qty=0.0, avg=0.0, fees=0.0, funding=0.0, realized=0.0,
                                           opened=time.time())
             q0, avg = float(p['qty']), float(p['avg'])
@@ -19241,6 +19483,7 @@ class C488Engine:
                 self.closed.append(dict(sym=sym, pnl=round(whole, 4), fees=round(p['fees'], 4),
                                         funding=round(p['funding'], 4), days=round((time.time() - p['opened']) / 86400, 1),
                                         t=time.time()))
+                self._c510_count(self.tally, round(whole, 4))
                 self.closed = self.closed[-50:]
                 self.book.pop(sym, None)
                 self.fund_next.pop(sym, None)
@@ -19698,6 +19941,7 @@ class C488Engine:
                                             fees=round(p['fees'], 4), funding=round(p['funding'], 4),
                                             days=round((time.time() - p['opened']) / 86400, 1),
                                             t=time.time(), why='gone at Bitget'))
+                    self._c510_count(self.tally, round(p['realized'] + p['funding'] - p['fees'], 4))
                     self.closed = self.closed[-50:]
                 self.book.pop(s, None)
                 self.fund_next.pop(s, None)
@@ -19765,8 +20009,11 @@ class C488Engine:
         if M is None:
             raise RuntimeError('no history')
         T, keep, close, qv, fund = M
+        _ohlc510 = self.ohlc_for(T, keep)
+        _vol510 = self.volest() if _ohlc510 is not None else 'close'
         w, sleeves, elig = _c488_targets(T, close, qv, fund, n_top, self.target_vol(),
-                                          float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)))
+                                          float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)),
+                                          rule=self.c2_rule(), ohlc=_ohlc510, volest=_vol510, sizing=self.sizing())
         # C501: the same matrices serve the spot pot's run (00:20) and the
         # allostatic shadow, so they are fetched once and scored on one picture
         self._last_M = (datetime.utcnow().strftime('%Y-%m-%d'), n_top, M)
@@ -19775,16 +20022,18 @@ class C488Engine:
         # 1-5%: SOL's 7-day return was -0.01%, so one tick in any close flips
         # its trend, and a later fetch cannot prove what the bot saw.
         try:
+            _o = _ohlc510 if _ohlc510 is not None else (np.full_like(close, np.nan),) * 3
             np.savez_compressed(os.path.join(BASE_PATH, 'c488_inputs.npz'), T=T, keep=np.array(keep, dtype=str),
                                 close=close, qv=qv, fund=fund, eq=np.array([eq]), n_top=np.array([n_top]),
-                                at=np.array([time.time()]))
+                                at=np.array([time.time()]), op=_o[0], hi=_o[1], lo=_o[2],
+                                rule=np.array([self.c2_rule(), _vol510, self.sizing()], dtype=str))
         except Exception as _e506:
             logger.warning(f"⚠️ C506 plan inputs not saved ({type(_e506).__name__}: {_e506})")
         try:
             _k501 = getattr(self.bot, 'c501k', None)
             if _k501 is not None:
                 _k501.observe(T, keep, close, qv, fund, n_top, self.target_vol(),
-                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, w)
+                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, w, rule=self.c2_rule())
         except Exception as _e501:
             logger.warning(f"⚠️ C501 allostatic shadow skipped ({type(_e501).__name__}: {_e501})")
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
@@ -19852,7 +20101,14 @@ class C488Engine:
             self.live_sync(force=True)                  # C492: a fill that could not be read back is caught here
         logger.info(f"\U0001f4bc C488 REBALANCE ({why}): {len(plan)} positions targeted, gross "
                     f"{gross_t:.2f}x of ${eq:.2f}, {n} trades ${traded:.2f}, top {n_top}, "
-                    f"vol target {100 * self.target_vol():.1f}% [{time.time() - t0:.0f}s]")
+                    f"vol target {100 * self.target_vol():.1f}%, rule {self.rule_label()} [{time.time() - t0:.0f}s]")
+        try:                                            # C510: every candidate on the same prices, after the trades
+            _t510 = getattr(self.bot, 'c510t', None)
+            if _t510 is not None:
+                _t510.observe(T, keep, close, qv, fund, _ohlc510, n_top, self.target_vol(),
+                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq)
+        except Exception as _e510:
+            logger.warning(f"⚠️ C510 tournament skipped ({type(_e510).__name__}: {_e510})")
         try:                                            # C509: and whether the result so far is normal
             _c = self.context()
             for _k, _lab in (('start', 'since the book began'), ('month', 'this month')):
@@ -19946,6 +20202,7 @@ class C488Engine:
             self.month = {}                                                # C495
             self.open0 = None                                              # C498
             self.born = {}                                                 # C509
+            self.tally = {}                                                # C510
         self.save()
 
     def tick(self, can_trade=True):
@@ -19965,6 +20222,13 @@ class C488Engine:
             self._say('live', "\U0001f6d1 C488 engine will NOT trade live money until C488_LIVE_OK = True "
                               "(its funding and fills are reconciled against paper only)", 'warning')
             return
+        if not self.cfg.PAPER_MODE and not self.admitted():
+            # C510: live money on a rule that has not passed its test is the operator's
+            # explicit choice, said once, loudly -- never a silent default
+            self._say('live510', f"⚠️ C510 LIVE on a rule that has NOT passed its pre-registered test: "
+                                 f"{self.rule_label()} (C488_C2_RULE / C488_VOL_EST / C488_SIZING). The admitted "
+                                 f"rule is C488_C2_RULE='base', C488_VOL_EST='close', C488_SIZING='running'.",
+                      'warning')
         if not bool(getattr(self.bot, '_c462_state_settled', False)):
             return
         self.refresh_marks()
@@ -20043,7 +20307,10 @@ class C488Engine:
                     closed=self.closed[-10:],
                     funding=round(sum(p['funding'] for p in self.book.values()), 3),
                     marked=round(eq, 2), guard=dict(getattr(self, '_guard_view', {}) or {}),
-                    live=self._live_status(), context=self._c509_safe())
+                    live=self._live_status(), context=self._c509_safe(),
+                    rule=dict(c2=self.c2_rule(), vol=self.volest(), sizing=self.sizing(), label=self.rule_label(),
+                              words=_C510_RULE_WORDS.get(self.c2_rule(), ''), admitted=self.admitted()),
+                    tally=dict(self.tally or {}))
 
     def _c509_safe(self):
         try:
@@ -21098,8 +21365,8 @@ def _c488_combine_ewma(parts, r, fund, lag, target_vol=0.20, lev_cap=3.0, win=60
     return W * np.where(g > lev_cap, lev_cap / np.maximum(g, 1e-12), 1.0)[:, None]
 
 
-def _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0, hl=10.0):
-    r, W, elig = _c488_sleeves(T, close, qv, fund, topn)
+def _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap=3.0, hl=10.0, rule='base'):
+    r, W, elig = _c488_sleeves(T, close, qv, fund, topn, rule=rule)
     parts = {k: W[k] for k in ('C1', 'C2', 'C3')}
     return _c488_combine_ewma(parts, r, fund, 1, target_vol=target_vol, lev_cap=lev_cap, hl=hl)[-1]
 
@@ -21193,12 +21460,13 @@ class C501Allostatic(_C501Store):
             f += x * float(np.nan_to_num(f_row[j]))
         return g - f
 
-    def observe(self, T, keep, close, qv, fund, topn, target_vol, lev_cap, eq, w_base):
-        """called by C488Engine.rebalance with its own matrices and targets"""
+    def observe(self, T, keep, close, qv, fund, topn, target_vol, lev_cap, eq, w_base, rule='base'):
+        """called by C488Engine.rebalance with its own matrices and targets. C510:
+        K4 sizes the same C2 rule the book trades, so the A/B stays sizing only."""
         if not self.active() or eq <= 0:
             return
         hl = float(getattr(self.cfg, 'C501_K4_HL', 10.0))
-        wk_all = _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap, hl)
+        wk_all = _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap, hl, rule=rule)
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
         nb = {s: float(x) for s, x in zip(keep, np.nan_to_num(w_base)) if abs(x) * eq >= mn}
         nk = {s: float(x) for s, x in zip(keep, np.nan_to_num(wk_all)) if abs(x) * eq >= mn}
@@ -21235,6 +21503,164 @@ class C501Allostatic(_C501Store):
             return dict(mode='paper' if self.active() else 'off', days=len(self.daily), base=b, k4=k,
                         diff=round(k['ret'] - b['ret'], 5), last_obs=self.last_obs,
                         hl=float(getattr(self.cfg, 'C501_K4_HL', 10.0)))
+
+
+# C510: every rule the book could trade, scored on the same prices each day.
+# (name, C2 rule, volatility estimate, sizing, words, what the research found)
+_C510_VARIANTS = (
+    ('base', 'base', 'close', 'running', 'admitted C488 rule',
+     'admitted: +32.6%/yr, Sharpe 1.56, max DD 31.4% (2020-26)'),
+    ('n2', 'n2', 'close', 'running', 'N2 no crowded shorts',
+     'round 10: +2.8%/yr vs base, t 1.02 (bar 2.13), 4/4 quarters'),
+    ('n3', 'n3', 'close', 'running', 'N3 residual momentum',
+     'round 10: +2.1%/yr vs base, t 0.82, max DD 25.3%'),
+    ('n2n3', 'n2n3', 'close', 'running', 'N2+N3',
+     'descriptive: max DD 22.6% vs 29.5%, 2022 -8% vs -12%'),
+    ('n2n3_k4', 'n2n3', 'close', 'k4', 'N2+N3, K4 sizing',
+     'K4 round 7: worst month -9.7% vs -15.5%'),
+    ('n2n3_gk', 'n2n3', 'gk', 'running', 'N2+N3, range vol',
+     'round 11: range vol +4.3%/yr, t 1.87 (bar 1.96)'),
+    ('n2n3_k4_gk', 'n2n3', 'gk', 'k4', 'N2+N3, K4, range vol', 'descriptive only'),
+)
+
+
+class C510Tournament(_C501Store):
+    """C510: THE RULE TOURNAMENT -- a forward test of every candidate, paper only.
+
+    At each C488 rebalance it is handed the SAME matrices the book used and
+    builds the book every variant in _C510_VARIANTS would hold today (the
+    admitted rule, N2, N3, N2+N3, and N2+N3 with K4 sizing and/or range
+    volatility), at the book's own dial, gross cap and $6 floor. Each is then
+    scored identically from daily closes, exactly as the K4 shadow is: a day's
+    return is yesterday's weights times the day's close-to-close return, less
+    funding, less 0.08% per unit of turnover. Nothing here trades.
+
+    The row matching what the book trades doubles as a check on the book
+    itself: the paper book differs from its own row only by execution (the $6
+    order minimum, the 30% band, quantity steps, fills at the bid/ask).
+
+    It decides nothing. Round 10 and 11's variants are 2-4%/yr better than the
+    base with t 0.8-1.9: at that size, forward data alone needs years to prove
+    anything (pending #11). What it gives from today is the live record, the
+    same for all of them, that a quarterly decision is made from."""
+
+    STATE_FILE = 'c510_tournament.json'
+    COST = 0.0008
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.w = {k: {s: float(x) for s, x in (v or {}).items()} for k, v in (d.get('w') or {}).items()}
+            self.pend = {k: float(v) for k, v in (d.get('pend') or {}).items()}
+            self.last_day = int(d.get('last_day') or 0)
+            self.daily = [[int(x[0]), {k: float(v) for k, v in (x[1] or {}).items()}] for x in (d.get('daily') or [])]
+            self.last_obs = str(d.get('last_obs') or '')
+            self.eq0 = float(d.get('eq0') or 0.0)
+            self.since = str(d.get('since') or '')
+            self.skipped = dict(d.get('skipped') or {})
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C510_TOURNAMENT', True))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.w, self.pend, self.last_day, self.daily, self.last_obs = {}, {}, 0, [], ''
+            self.eq0, self.since, self.skipped = 0.0, '', {}
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(w=self.w, pend=self.pend, last_day=self.last_day, daily=self.daily[-2000:],
+                     last_obs=self.last_obs, eq0=self.eq0, since=self.since, skipped=self.skipped)
+        self._write(d)
+
+    def observe(self, T, keep, close, qv, fund, ohlc, topn, target_vol, lev_cap, eq):
+        """called by C488Engine.rebalance, after its trades, with its own matrices"""
+        if not self.active() or eq <= 0:
+            return
+        t0 = time.time()
+        mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        new, sl, skipped = {}, {}, {}
+        for name, rule, vol, sizing, _w, _e in _C510_VARIANTS:
+            if vol != 'close' and ohlc is None:
+                skipped[name] = 'no high/low in these matrices'
+                continue
+            key = (rule, vol)
+            if key not in sl:
+                sl[key] = _c488_sleeves(T, close, qv, fund, topn, rule=rule, ohlc=ohlc, volest=vol)
+            r_, W_, _el = sl[key]
+            parts = {k: W_[k] for k in ('C1', 'C2', 'C3')}
+            if sizing == 'k4':
+                Wc = _c488_combine_ewma(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+            else:
+                Wc = _c488_combine(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+            new[name] = {s: float(x) for s, x in zip(keep, np.nan_to_num(Wc[-1])) if abs(x) * eq >= mn}
+        r = _c488_returns(close)
+        pos = {s: j for j, s in enumerate(keep)}
+        turn = lambda a, b: sum(abs(a.get(s, 0.0) - b.get(s, 0.0)) for s in set(a) | set(b))
+        with self._lock:
+            if self.last_day:
+                for i in range(len(T)):
+                    t = int(T[i])
+                    if t <= self.last_day:
+                        continue
+                    row = {}
+                    for name in self.w:
+                        row[name] = round(C501Allostatic._day(self.w[name], pos, r[i], fund[i])
+                                          - self.pend.get(name, 0.0), 7)
+                        self.pend[name] = 0.0
+                    self.daily.append([t, row])
+            for name, nw in new.items():
+                self.pend[name] = self.pend.get(name, 0.0) + self.COST * turn(nw, self.w.get(name, {}))
+            self.w.update(new)
+            for name in skipped:                # not held today: never scored on yesterday's stale book
+                self.w.pop(name, None)
+                self.pend.pop(name, None)
+            self.last_day = int(T[-1])
+            self.last_obs = datetime.utcnow().strftime('%Y-%m-%d')
+            self.skipped = skipped
+            if not self.eq0:
+                self.eq0, self.since = round(float(eq), 2), self.last_obs
+        self.save()
+        st = self.status()
+        logger.info(f"   \U0001f3c1 C510 tournament (paper, same prices, {st['days']} days scored since {st['since']}): "
+                    + ' | '.join(f"{v['label']}{' (traded)' if v['traded'] else ''} {100 * v['ret']:+.2f}%"
+                                 for v in st['rows'] if v['on'])
+                    + f" [{time.time() - t0:.0f}s]")
+
+    def traded_name(self):
+        e = getattr(self.bot, 'c488', None)
+        if e is None:
+            return ''
+        for name, rule, vol, sizing, _w, _e in _C510_VARIANTS:
+            if (rule, vol, sizing) == (e.c2_rule(), e.volest(), e.sizing()):
+                return name
+        return ''
+
+    def status(self):
+        with self._lock:
+            tn = self.traded_name()
+            rows = []
+            base_ret = None
+            for name, rule, vol, sizing, words, ev in _C510_VARIANTS:
+                x = [d[1][name] for d in self.daily if name in d[1]]
+                st = _c501_stats(x)
+                w = self.w.get(name, {})
+                row = dict(name=name, label=words, evidence=ev, traded=name == tn, on=name in self.w,
+                           days=st['days'], ret=st['ret'], maxdd=st['maxdd'], worst=st['worst'],
+                           usd=round(st['ret'] * self.eq0, 2), gross=round(sum(abs(v) for v in w.values()), 3),
+                           n=len(w), skipped=self.skipped.get(name, ''))
+                if name == 'base':
+                    base_ret = st['ret']
+                rows.append(row)
+            for row in rows:
+                row['vs_base'] = round(row['ret'] - base_ret, 5) if base_ret is not None else 0.0
+            return dict(mode='paper' if self.active() else 'off', days=len(self.daily), since=self.since,
+                        eq0=self.eq0, last_obs=self.last_obs, traded=tn, rows=rows)
 
 
 class C501Savings(_C501Store):
@@ -21588,6 +22014,7 @@ class TradingBot:
         self.c501s = C501Spot(self)             # C501: the second $250, spot trend (paper pot)
         self.c501v = C501Savings(self)          # C501: idle cash in Savings (paper)
         self.c501k = C501Allostatic(self)       # C501: the allostatic shadow of the book (paper)
+        self.c510t = C510Tournament(self)       # C510: every candidate rule, scored on the same prices (paper)
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -22109,6 +22536,10 @@ class TradingBot:
                 if (ran and lm and lm[0] == today and k4 is not None and k4.active()
                         and k4.last_obs != today):
                     bad('K4', "K4 shadow missed today's rebalance")
+                t510 = getattr(self, 'c510t', None)       # C510: the same rule for the tournament
+                if (ran and lm and lm[0] == today and t510 is not None and t510.active()
+                        and t510.last_obs != today):
+                    bad('tournament', "rule tournament missed today's rebalance")
                 if ran:
                     bits.append("book today")
             s9 = getattr(self, 'c489', None)
@@ -22172,6 +22603,9 @@ class TradingBot:
                 int(_v) if str(_v).lower() != 'auto'
                 else (40 if eq >= float(getattr(c, 'C488_TOPN_40_FROM', 1000.0)) else 20))
             logger.info("📊 C503 WHAT IS RUNNING -- the portfolio book trades:")
+            logger.info(f"   RULE   {e.rule_label()}: C2 = {_C510_RULE_WORDS.get(e.c2_rule(), '')}"
+                        + ("" if e.admitted() else " -- a FORWARD TEST in paper (C510); the admitted rule is scored "
+                                                   "beside it in the rule tournament"))
             logger.info(f"   BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target "
                         f"{100 * e.target_vol():.0f}% from the {e.dial():.0f}% dial; gross <= "
                         f"{float(getattr(c, 'C488_LEV_CAP', 3.0)):.0f}x equity; top {tn} crypto; "
@@ -22197,10 +22631,13 @@ class TradingBot:
                            f"every minute")
             if bool(getattr(c, 'C501_K4', True)):
                 led.append("allostatic shadow (K4) at each rebalance")
+            if getattr(self, 'c510t', None) is not None and self.c510t.active():
+                led.append(f"rule tournament (C510, {len(_C510_VARIANTS)} rules on the same prices) at each rebalance")
             if led:
                 logger.info("   PAPER  never touches the account: " + " · ".join(led))
-            logger.info("   IDLE   the intraday scanner (OMEGA_ENGINE=intraday restores it): every block "
-                        "below, to the 'stop safely' line, describes it")
+            logger.info(f"   IDLE   the intraday scanner, the OLD strategy ({int(self.portfolio.lifetime_trades)} trades, "
+                        f"{int(self.portfolio.lifetime_wins)}W/{int(self.portfolio.lifetime_losses)}L, lost after fees; "
+                        "OMEGA_ENGINE=intraday restores it): every block below, to the 'stop safely' line, describes it")
         except Exception as _e503:
             logger.info(f"   C503 WHAT IS RUNNING: summary unavailable ({type(_e503).__name__})")
 
@@ -22270,7 +22707,15 @@ class TradingBot:
                         f"{float(getattr(self.cfg,'C416_HARD_FLOOR_R',2.00)):.2f}R target are "
                         f"{_fair458b:.3f}")
             logger.info(f"   blended edge {_e458b:+.4f}  ({_n458b})")
-            if _e458b <= 0:
+            if _b503:
+                # C510: "✅ edge is positive -- the gate is open on merit" was printed
+                # at every boot for a scanner whose record lost after fees. This is
+                # its own R-bookkeeping on 20 trades, not a measured edge.
+                logger.info(f"   (the idle scanner's own bookkeeping, not a measured edge: the C487 audit "
+                            f"found it lost after fees -- {int(self.portfolio.lifetime_trades)} trades, "
+                            f"{int(self.portfolio.lifetime_wins)}W/{int(self.portfolio.lifetime_losses)}L; "
+                            f"it opens nothing while the book trades)")
+            elif _e458b <= 0:
                 logger.info(f"   ⚠️ THE EDGE IS NOT POSITIVE, so the E≥0 floor admits nothing "
                             f"and the gate is CORRECTLY shut. This is not a fault and it is "
                             f"not a quiet tape.")
@@ -38807,9 +39252,28 @@ class TradingBot:
         # C503: "Session 0% | Open 0%" read as losing when there were no trades
         # and no intraday positions; and every figure here is the scanner's.
         _bk503 = getattr(self, 'c488', None) is not None and self.c488.active()
-        logger.info(f"🎯 Win Rate{' (intraday trades)' if _bk503 else ''}: Overall {overall_wr:.0f}% | "
-                    f"Session {f'{session_wr:.0f}%' if self.portfolio.session_trades > 0 else 'no trades yet'} | "
-                    f"Open {f'{open_wr:.0f}%' if open_pos else 'none open'}")
+        _said510 = False
+        if _bk503:
+            # C510: while the book trades, the summary leads with the book. It led
+            # with "Win Rate (intraday trades): Overall 32%" -- the idle scanner's
+            # old record -- every 8 minutes.
+            try:
+                _b510 = self.c488.status()
+                _t510 = _b510.get('tally') or {}
+                _cx510 = (_b510.get('context') or {}).get('start') or {}
+                logger.info(f"🎯 C510 Book (what trades): {_b510['n']} positions, gross {_b510['gross_x']:.2f}x, "
+                            f"open ${_b510['unrealized']:+.2f} | rule {_b510['rule']['label']} | closed "
+                            f"{int(_t510.get('n', 0))}: {int(_t510.get('w', 0))}W/{int(_t510.get('l', 0))}L "
+                            f"${float(_t510.get('pnl', 0.0)):+.2f}"
+                            + (f" | since {_cx510['since']} {100 * _cx510['ret']:+.2f}% ({_cx510['word']})"
+                               if _cx510.get('pct') is not None else ''))
+                _said510 = True
+            except Exception:
+                _said510 = False
+        if not _said510:
+            logger.info(f"🎯 Win Rate{' (intraday trades)' if _bk503 else ''}: Overall {overall_wr:.0f}% | "
+                        f"Session {f'{session_wr:.0f}%' if self.portfolio.session_trades > 0 else 'no trades yet'} | "
+                        f"Open {f'{open_wr:.0f}%' if open_pos else 'none open'}")
         logger.info("=" * 60)
 
         # R4: Pre-cache ALL prices in one batch (prevents 40s serial API blockage)
@@ -39964,6 +40428,14 @@ def startup():
         cfg.C488_ENGINE = _eng488
     print(f"  💼 engine: {cfg.C488_ENGINE.upper()}"
           f"{' (daily trend + momentum + carry book, C488)' if cfg.C488_ENGINE == 'portfolio' else ' (C487 intraday scanner)'}")
+    # C510: the book's rule from the environment (a systemd override), so it is
+    # switched without editing this file on the server
+    for _k510, _v510, _ok510 in (('OMEGA_C2_RULE', 'C488_C2_RULE', _C510_RULES),
+                                 ('OMEGA_VOL_EST', 'C488_VOL_EST', _C510_VOLEST),
+                                 ('OMEGA_SIZING', 'C488_SIZING', _C510_SIZING)):
+        _x510 = os.environ.get(_k510, '').strip().lower()
+        if _x510 in _ok510:
+            setattr(cfg, _v510, _x510)
 
     # Initialize bot
     bot = TradingBot(cfg)
@@ -39972,6 +40444,7 @@ def startup():
         bot.c489.reset()                     # C489: and a fresh shadow record
         bot.c490.reset()                     # C490: and a fresh carry ledger
         bot.c501s.reset(); bot.c501v.reset(); bot.c501k.reset()   # C501: and fresh paper ledgers
+        bot.c510t.reset()                    # C510: and a fresh tournament
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -40674,6 +41147,12 @@ class RemoteControl:
                                                if getattr(bot_ref, a, None) is not None}
                         except Exception as _x501:
                             _out469['c501'] = {'error': f"{type(_x501).__name__}: {_x501}"}
+                        try:      # C510: the rule tournament
+                            _t510 = getattr(bot_ref, 'c510t', None)
+                            if _t510 is not None:
+                                _out469['c510'] = _t510.status()
+                        except Exception as _x510:
+                            _out469['c510'] = {'error': f"{type(_x510).__name__}: {_x510}"}
                         try:      # C490: the carry ledger
                             _e490 = getattr(bot_ref, 'c490', None)
                             if _e490 is not None:
@@ -40887,10 +41366,14 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <!-- C480: what the bot is HOLDING RIGHT NOW goes above the equity chart.
      The operator asked for this: the chart is history, the book is the thing
      you might have to act on, and it was below the fold on a phone. -->
+<!-- C510: one place that says what trades, what is only paper, and what is off -->
+<section><h2>What is running</h2><div id="running" class="muted">&mdash;</div></section>
 <section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
 <!-- C488: the portfolio engine's book -- the daily trend + momentum + carry
      positions it holds for days to weeks, separate from any intraday position. -->
 <section><h2>Portfolio book <span class="muted" id="bookmode"></span></h2><div id="book" class="muted">&mdash;</div></section>
+<!-- C510: every candidate rule scored on the same prices, paper only -->
+<section><h2>Rule tournament <span class="muted">(paper, same prices)</span></h2><div id="tourney" class="muted">&mdash;</div></section>
 <!-- C489: the intraday engine runs in SHADOW: its own paper ledger, never the account -->
 <section><h2>Intraday engine <span class="muted">(shadow)</span></h2><div id="shadow" class="muted">&mdash;</div></section>
 <!-- C490: spot-perp cash-and-carry, a paper ledger of its own -->
@@ -41102,6 +41585,16 @@ async function pull(){
         (d.life&&d.life.n?'<br>all-time '+d.life.w+'W '+d.life.l+'L intraday \u00b7 account <span class="'+
           cls(d.life.pnl)+'">'+sgn(d.life.pnl)+'</span>':'');
     }
+    /* C510: while the book trades, the Record tile is the book's record; the
+       W/L above were the idle scanner's (its old 44W/95L) */
+    if(d.c488&&d.c488.mode==='portfolio'&&!d.c488.error&&d.c488.tally){
+      var tl=d.c488.tally,cx0=(d.c488.context||{}).start;
+      q('rec').textContent=(tl.w||0)+'W '+(tl.l||0)+'L';
+      q('recs').innerHTML='book: '+(tl.n||0)+' closed, net <span class="'+cls(tl.pnl)+'">'+sgn(tl.pnl)+'</span>'+
+        (cx0&&cx0.pct!==undefined?'<br>since '+cx0.since+': <span class="'+cls(cx0.pnl)+'">'+(cx0.ret>=0?'+':'')+
+          (100*cx0.ret).toFixed(2)+'%</span> ('+cx0.word+')':'')+
+        (d.life&&d.life.n?'<br><span class="muted">old scanner (off): '+d.life.w+'W '+d.life.l+'L</span>':'');
+    }
     q('scan').textContent=(age<90?age+'s':(age/60).toFixed(0)+'m')+' ago';
     var ls=d.last_scan||{};
     q('scans').textContent=(ls.analyzed!=null)
@@ -41174,6 +41667,50 @@ async function pull(){
         }
       }
     }
+    /* C510: what is running -- one line each: what trades, what is paper, what is off */
+    (function(){
+      var bk=d.c488||{},c5=d.c501||{},rn=[],acct=d.paper?'the paper account':'<b class="bad">LIVE money</b>';
+      if(bk.mode==='portfolio'&&!bk.error){
+        var ru=bk.rule||{};
+        rn.push('<div style="margin:4px 0"><b>TRADES</b> '+acct+': the book \u2014 trend + momentum + carry, top 20 crypto, '+
+          (100*bk.target_vol).toFixed(0)+'% vol, rule <b>'+(ru.label||'?')+'</b>'+(ru.admitted?'':' <span class="warn">(forward test)</span>')+'</div>');
+      }else if(bk.mode){
+        rn.push('<div style="margin:4px 0"><b>TRADES</b> '+acct+': the intraday scanner (the book is off)</div>');
+      }
+      var pp=[];
+      if(d.c510&&d.c510.mode==='paper')pp.push('rule tournament ('+((d.c510.rows||[]).length)+' rules)');
+      if(c5.spot&&c5.spot.mode!=='off')pp.push('spot pot $'+Math.round(c5.spot.start_equity||250));
+      if(c5.savings)pp.push('Savings on idle cash');
+      if(d.c490&&!d.c490.error&&d.c490.mode!=='off')pp.push('cash-and-carry');
+      if(c5.k4&&c5.k4.mode==='paper')pp.push('K4 sizing shadow');
+      if(d.c489&&d.c489.mode==='shadow')pp.push('intraday shadow (C489)');
+      if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
+      if(bk.mode==='portfolio')rn.push('<div style="margin:4px 0"><b>OFF</b> the old intraday scanner'+
+        (d.life&&d.life.n?' ('+d.life.n+' trades, '+d.life.w+'W '+d.life.l+'L, lost after fees)':'')+'</div>');
+      rn.push('<div class="s muted">not traded: metals, stocks, indices, energy (crypto only, by evidence) \u00b7 '+
+        (d.paper?'live trading is locked':'LIVE')+'</div>');
+      q('running').innerHTML=rn.join('');
+    })();
+    /* C510: the rule tournament -- every candidate on the same prices */
+    var tt=d.c510;
+    if(tt){
+      if(tt.error){q('tourney').innerHTML='<span class="'+cls(-1)+'">tournament unavailable: '+tt.error+'</span>'}
+      else if(tt.mode!=='paper'){q('tourney').innerHTML='<span class="muted">off</span>'}
+      else if(!tt.last_obs){q('tourney').innerHTML='<span class="muted">starts at the next rebalance (00:05 UTC)</span>'}
+      else{
+        var th='<div class="s muted">'+(tt.days?tt.days+' days scored':'first scores at the next rebalance')+' since '+tt.since+
+          ' \u00b7 each on the same $'+Number(tt.eq0||0).toFixed(2)+' \u00b7 nothing here trades</div>';
+        (tt.rows||[]).forEach(function(v){
+          if(!v.on&&!v.skipped)return;
+          th+='<div style="margin:6px 0"><b>'+v.label+'</b>'+(v.traded?' <span class="good">(traded)</span>':'')+' '+
+            (v.days?'<span class="'+cls(v.ret)+'">'+(v.ret>=0?'+':'')+(100*v.ret).toFixed(2)+'%</span> <span class="muted">\u00b7 vs base '+
+              (v.vs_base>=0?'+':'')+(100*v.vs_base).toFixed(2)+'% \u00b7 max DD '+(100*v.maxdd).toFixed(1)+'%</span>'
+              :'<span class="muted">holds '+v.n+' coins, '+v.gross+'x</span>')+
+            (v.skipped?' <span class="bad">'+v.skipped+'</span>':'')+
+            '<div class="s muted">'+v.evidence+'</div></div>'});
+        q('tourney').innerHTML=th;
+      }
+    }
     /* C488: the portfolio engine. An error is SHOWN, never rendered as flat. */
     var b=d.c488;
     if(b){
@@ -41185,6 +41722,10 @@ async function pull(){
           cls(b.unrealized)+'">'+sgn(b.unrealized)+'</span> \u00b7 funding <span class="'+cls(b.funding)+'">'+sgn(b.funding)+'</span></div>'+
           '<div class="s muted">vol target '+(100*b.target_vol).toFixed(0)+'% \u00b7 top '+(inf.topn||'?')+' coins \u00b7 last rebalance '+
           (b.last_rebal||'not yet')+' \u00b7 next '+b.next_rebal_utc+' UTC'+(b.halt?' \u00b7 <b class="bad">HALTED '+b.halt+'</b>':'')+'</div>';
+        /* C510: which rule the book trades, and whether it is the admitted one */
+        var ru=b.rule||{};
+        if(ru.label)h+='<div class="s">rule: <b>'+ru.label+'</b> <span class="muted">\u00b7 C2 = '+(ru.words||'')+
+          (ru.admitted?' \u00b7 admitted':' \u00b7 a forward test in paper; the admitted rule is scored beside it below')+'</span></div>';
         (b.positions||[]).slice(0,12).forEach(function(x){
           h+='<div style="margin:5px 0"><b>'+x.symbol+'</b> '+x.side.toUpperCase()+' '+money(x.notional)+
              ' <span class="'+cls(x.upnl)+'">'+sgn(x.upnl)+'</span> <span class="muted">'+x.sleeve+' \u00b7 '+x.days+'d</span></div>'});
@@ -41202,7 +41743,8 @@ async function pull(){
             (c.pct<10?' class="bad"':'')+'>'+c.word+'</b>'+(c.approx?' <span class="muted">(start equity approximate)</span>':'')+'</div>'});
         /* C501: the allostatic shadow -- the same book sized with a 10-day volatility memory, paper only */
         var k4=(d.c501||{}).k4;
-        if(k4&&k4.mode==='paper'){
+        /* C510: the tournament's "N2+N3, K4 sizing" row replaces this line when it runs */
+        if(k4&&k4.mode==='paper'&&!(d.c510&&d.c510.mode==='paper')){
           h+='<div class="s muted">allostatic shadow (K4, paper): '+(k4.last_obs?('gross '+k4.k4.gross+'x vs running '+k4.base.gross+'x \u00b7 '+
             k4.days+' days scored: K4 '+(100*k4.k4.ret).toFixed(2)+'% vs '+(100*k4.base.ret).toFixed(2)+'% (same rules, same data)'):
             'starts at the next rebalance')+'</div>';

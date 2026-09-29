@@ -320,10 +320,11 @@ done
 # hourly flow cache and its record is already in every log line.
 # c488_inputs.npz is the rebalance's exact input data (about 0.5 MB, rewritten
 # once a day), so `c498_plan_replay.py --inputs` recomputes the plan to the cent.
+# C510: c510_tournament.json, every candidate rule's forward record.
 for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json \
          "$REPO"/data/c488_book.json "$REPO"/data/c490_carry.json \
          "$REPO"/data/c501_spot.json "$REPO"/data/c501_savings.json "$REPO"/data/c501_allostatic.json \
-         "$REPO"/data/c488_inputs.npz; do
+         "$REPO"/data/c510_tournament.json "$REPO"/data/c488_inputs.npz; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done
 [ "$copied" -gt 0 ] || exit 0

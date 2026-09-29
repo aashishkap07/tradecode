@@ -74,6 +74,7 @@ ok("any other old book: its earliest position (here a closed one, clearly earlie
 ok("  an empty book has no start", om.C488Engine._c509_backfill({'book': {}, 'closed': []}) == {})
 
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.C380_MAX_MONTHLY_DD_PCT = 15.0; cfg.C488_ENGINE = 'portfolio'
+cfg.C488_C2_RULE = 'base'          # C510: these figures are the admitted rule's table (N2+N3's: omega_c510_test.py)
 om._c467_cfg_ref[0] = cfg
 pf = om.Portfolio(cfg); pf.equity = 243.80; pf.available_balance = 223.0; pf.session_start_equity = 243.80
 pf.get_live_equity = lambda *a: 241.33
@@ -163,7 +164,7 @@ class FakeEx:
         return {'id': 'p', 'status': 'closed', 'price': m['ask'] if side == 'buy' else m['bid'], 'filled': qty}
     def c487_settle(s, sym, o, side, price, size, wait): return float(o['filled']), float(o['price']), 'filled'
     def get_current_price(s, sym): return None
-c2 = om.Config(); c2.PAPER_MODE = True; c2.C380_MAX_MONTHLY_DD_PCT = 15.0
+c2 = om.Config(); c2.PAPER_MODE = True; c2.C380_MAX_MONTHLY_DD_PCT = 15.0; c2.C488_C2_RULE = 'base'
 p2 = om.Portfolio(c2); p2.equity = p2.available_balance = 250.0
 ref = [None]
 b2 = types.SimpleNamespace(cfg=c2, portfolio=p2, exchange=FakeEx(ref), _c462_state_settled=True,

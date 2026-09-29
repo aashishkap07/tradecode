@@ -16,10 +16,16 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C509 is pushed, not deployed:** the "is this normal?" context line
-    (book since it began, and the month once the book is older than it,
-    against the 2020–26 test's percentiles). Deploy = pull + restart; the push
-    script is unchanged since C506. (C507 and C508 are research tags.)
+  - **C510 is pushed, not deployed (it includes C509):**
+    - **the PAPER book trades C2 = N2+N3** (`C488_C2_RULE='n2n3'`, or
+      `OMEGA_C2_RULE` via a systemd override);
+    - the rule tournament scores 7 rules on the same prices;
+    - the log and the dashboard say what trades (TRADES / PAPER / OFF);
+    - the log push adds `c510_tournament.json`, so **the operator must
+      re-copy the push script.**
+    - Commands: `reports/2026-09-29_c510_integrated_bot.md`.
+  - **C509 (pushed, superseded by C510):** the "is this normal?" context
+    line. (C507 and C508 are research tags.)
   - **C506 from 29 Sep 10:02 IST, verified from the operator's screenshots:**
     - pull 318f3fb..4869a5e, `OMEGA C506`;
     - `omega-logpush.sh --check` all OK;
@@ -82,7 +88,9 @@
     - 30 Sep 01:15 UTC: paper check #2 (trig_01BB9dHUf8nD99dV1ePy65aT).
       C506 is deployed, so: the plan to the cent from `c488_inputs.npz`, the
       spot pot's 16-vs-15 and SOL/UNI sizes settled against fresh Bitget
-      closes, and (if C509 is deployed) the first `📏 C509` line checked.
+      closes, and (if C509/C510 is deployed) the first `📏 C509` line checked;
+      with C510: the first N2+N3 plan (replay `--inputs`) and the
+      tournament's first observation.
     - The 1st of each month at 09:56 IST: the monthly review (#4, #6, #14–#17,
       #3, #8).
     - 2 Dec 04:00 UTC: the December research refresh (#5, #11, #12, S1
@@ -133,12 +141,12 @@
 | 3 | **Security before any live key** | before #2 goes live | Rotate the exposed control token (`/etc/omega.token` and the unit file, chmod 600). The Bitget API key: trade-only, withdrawals disabled, IP allow-listed to the VPS, **classic account (not UTA), single-asset mode**. It goes in `data/api_keys.json` with chmod 600; the bot now warns at start-up if that file is readable by others. Never put keys in the Python file. **Found at C492:** `NEWS_API_KEY = "pub_94c8…"` (NewsData.io) is hard-coded in the .py and is in the git history. Rotate it at NewsData and move it to `data/`; the operator decides, because removing it switches the news panel off. `omega_c492_test.py` fails on any new credential literal. Never open port 8138. Do not copy `deploy/omega.service` over the installed unit. |
 | 4 | **C489 shadow review** | monthly; ELIGIBLE needs ≥ 120 days | It is expected to confirm the research (it loses after costs). An ELIGIBLE flag means a review, not automatic money. Since C490 it scores from the first hour (no-flow model) and shows dollars. |
 | 5 | **Refresh the C488 research** | quarterly (next: early Dec 2026) | Use `research/c493_target_probability.py` (crypto only, the `TRADFI` exclusion built in; `omega_c488_research.py` stays as the historical record). **Corrected at C493:** the "decay" (Sharpe 0.87 over 24 months) came from 2026 stock/commodity perps in the research universe. Crypto only: Sharpe 1.42 over 2020–26, 1.17 over 24 months, 1.69 over 12. Watch these three numbers each quarter. |
-| 6 | **Risk dial choice** | operator | **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). **At C502 (spot's real $1 minimum):** both pots +2.67%/month, max DD 22%, worst month −5.7%. **Measured at C504** (`research/c504_results.txt`, the chance that a year averages ≥ +2%/month, bootstrap / haircut): book 15% + Savings 67% / 45%; book 20% + Savings 78% / 58%; **both pots at dial 20% 74% / 50% with a worst month of −6.7%** (vs −14.6% for the book alone). Beyond dial 20% the chance barely rises (25%: 80%, 30%: 81%) while the drawdown grows 41% → 57%: 20% is the knee. "70–90% of months ≥ +2%" needs a Sharpe of 3–8, which is not available. |
-| 7 | **Dormant C487 intraday scanner** | optional cleanup | Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. **pyflakes (C504) found 12 undefined names, all in this scanner** (`full_analysis`: pair_info, analysis; `_open_position`: candidate; the DRI calculate: result; `_display_summary`'s guarded ones). None is in the book, the ledgers or K4. Fix or delete them with the scanner. |
+| 6 | **Risk dial choice** | operator | **C510 (29 Sep, descriptive):** N2+N3 at dial 20% + Savings, a year averaging ≥ 2%/month: 81% (haircut 60%), worst month −17.7%, max DD 36.6%, 2022 −21%. At dial 15%: 75% / 50%, worst month −13.6%, DD 22.6%, 2022 −8%. Advice given: stay at 15% until the paper book has run N2+N3 for a month and matched its tournament row. **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). **At C502 (spot's real $1 minimum):** both pots +2.67%/month, max DD 22%, worst month −5.7%. **Measured at C504** (`research/c504_results.txt`, the chance that a year averages ≥ +2%/month, bootstrap / haircut): book 15% + Savings 67% / 45%; book 20% + Savings 78% / 58%; **both pots at dial 20% 74% / 50% with a worst month of −6.7%** (vs −14.6% for the book alone). Beyond dial 20% the chance barely rises (25%: 80%, 30%: 81%) while the drawdown grows 41% → 57%: 20% is the knee. "70–90% of months ≥ +2%" needs a Sharpe of 3–8, which is not available. |
+| 7 | **Dormant C487 intraday scanner** | optional cleanup | **C510 answer to "can it be integrated?":** not as a trader (fees 5–9× its edge; tuning changes which trades, not their cost). Its information, the intraday range, was tested as a risk sensor in round 11 (Parkinson/GK EWMA per-coin vol): Sharpe 1.56 → 1.81/1.84, worst month −14.6% → −12.8/−12.2%, t 1.79/1.87 against 1.96, not admitted, scored forward in the tournament. Its boot lines no longer claim "edge is positive" while the book trades. Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. **pyflakes (C504) found 12 undefined names, all in this scanner** (`full_analysis`: pair_info, analysis; `_open_position`: candidate; the DRI calculate: result; `_display_summary`'s guarded ones). None is in the book, the ledgers or K4. Fix or delete them with the scanner. |
 | 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | **Correction (29 Sep A–Z review):** Bitget's DEFAULT funding is 0.01%/8h = 10.95%/yr, and 14 of the top 40 sit exactly there, so "24 of 37 above 10%/yr" is mostly coins at the default, not a crowd getting more leveraged (my paper-check #1 reading was wrong). The ledger's 10%/yr entry sits just under the default; review that threshold at the December refresh. It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
-| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). **Added at C507 (round 10):** N2 no C2 short where 7-day funding < 0 (+2.82%/yr, t 1.02, 4/4 quarters, holdout +2.62%/yr, DD 29.8%) and N3 residual momentum (+2.14%/yr, t 0.82, 3/4, holdout +3.36%/yr, **DD 25.3% vs 31.4%**). Pool quarters until 12 months exist; admit only on the C493/C494 bars. |
+| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). **Added at C507 (round 10):** N2 no C2 short where 7-day funding < 0 (+2.82%/yr, t 1.02, 4/4 quarters, holdout +2.62%/yr, DD 29.8%) and N3 residual momentum (+2.14%/yr, t 0.82, 3/4, holdout +3.36%/yr, **DD 25.3% vs 31.4%**). Pool quarters until 12 months exist; admit only on the C493/C494 bars. **C510 (29 Sep): the forward test now runs INSIDE the bot from the 30 Sep rebalance** (`C510Tournament`, `c510_tournament.json` on the logs branch): base, N2, N3, N2+N3, N2+N3·K4, N2+N3·GK range vol (round 11: t 1.87, bar 1.96), N2+N3·K4·GK, each scored daily on the book's own inputs. **Forward-only time to t ≈ 2 at research size: GK ~7 years, N2 ~28 years.** So the live rule is a judgement (prior + consistent history + no drawdown harm + paper tracking its tournament row), not a proof. The paper book trades N2+N3 at the operator's request. |
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
@@ -148,6 +156,121 @@
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🏁 2026-09-29 — C510: THE INTEGRATED BOT (N2+N3 IN PAPER, THE RULE TOURNAMENT, ROUND 11)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**What the operator asked** (after the A–Z review):
+- run N2/N3 now, not in December;
+- make the log and dashboard reflect what trades;
+- integrate the disabled bot somehow;
+- cross-talk, self-adjusting design;
+- 2–4%/month at ≥ 80%, a "fully functional bot by the end of this month".
+
+Write-up: `reports/2026-09-29_c510_integrated_bot.md`.
+
+**Round 11** (`research/c510_preregistration.md`, commit f42a18c, pushed
+before any data; `omega_c510_research.py`, `c510_results.txt/.json`). The
+idle scanner's information as a sensor: per-coin vol from the day's high and
+low, EWMA 10-day half-life, replacing the 30-day close-to-close sd in `sc`.
+The base reproduced: +32.6%/yr, Sharpe 1.56, DD 31.4%.
+
+| test | vs base | t | bar | quarters | holdout | DD | worst month | verdict |
+|---|---|---|---|---|---|---|---|---|
+| V1 Parkinson | +3.62%/yr | 1.79 | 1.96 | 3/4 | +0.87% | 29.5% | −12.8% | not admitted |
+| V2 Garman–Klass | +4.26%/yr | 1.87 | 1.96 | 3/4 | +1.53% | 30.1% | −12.2% | not admitted → tournament |
+
+**Descriptive** (same file, chosen after round 10, not admissible). Book +
+Savings, a year averaging ≥ 2%/month (bootstrap / haircut), worst month, DD:
+
+| set-up | dial 15% | dial 20% |
+|---|---|---|
+| base | 67% / 46%, −14.5%, 29.5% | 77% / 58%, −18.5%, 40.6% |
+| N2+N3 | 75% / 50%, −13.6%, **22.6%** | **81% / 60%**, −17.7%, 36.6% |
+| N2+N3 + K4 | 71% / 46%, −9.7%, 21.5% | 79% / 58%, −12.5%, 33.9% |
+| base + K4 | 68% / 47%, −9.3%, 28.1% | 80% / 59%, −11.9%, 37.2% |
+
+- **By year (dial 15%):** base 2022 −12%, N2+N3 −8%. Every other year is
+  positive for all variants.
+- **N2+N3's normal range** (for C509) is `research/c510_normal_range.*`.
+
+**C510 (the bot):**
+- **`_c510_c2_rank(close, r, elig, f7, rule)`** covers base, n2, n3 and
+  n2n3, and `_c510_range_sd(op, hi, lo, close, kind)` covers park and gk.
+  Both are research-verbatim.
+- **`_c488_sleeves` and `_c488_targets`** gained `rule`, `ohlc`, `volest`
+  and `sizing` (the defaults reproduce C488 exactly).
+- **Config:**
+  - `C488_C2_RULE='n2n3'` (**the paper book trades N2+N3**);
+  - `C488_VOL_EST='close'`;
+  - `C488_SIZING='running'`;
+  - `C510_TOURNAMENT=True`;
+  - environment overrides `OMEGA_C2_RULE`, `OMEGA_VOL_EST`, `OMEGA_SIZING`.
+- **`C488Engine`:**
+  - `_history` keeps the open/high/low, and `matrices()` sets `_ohlc`
+    (`ohlc_for(T, keep)`);
+  - `c2_rule()`, `volest()`, `sizing()`, `admitted()`, `rule_label()`;
+  - `tally` (n, w, l, pnl; backfilled from `closed`) and `fills_run`;
+  - the rule on the REBALANCE line;
+  - `c488_inputs.npz` also carries op/hi/lo and the rule;
+  - live on an unadmitted rule gets one loud warning.
+- **`C510Tournament`** (`c510_tournament.json`):
+  - 7 variants (`_C510_VARIANTS`) built after the trades from the same
+    matrices;
+  - scored like K4 (yesterday's weights × today's return − funding −
+    0.08% × turnover);
+  - range-vol rows are skipped (and dropped, never scored stale) when the
+    matrices have no OHLC.
+- **K4** sizes the traded rule (`observe(..., rule=)`).
+- **The watchdog:** "rule tournament missed today's rebalance".
+- **The log:**
+  - the boot `RULE` line;
+  - PAPER lists the tournament;
+  - IDLE gives the scanner's record;
+  - the EDGE STATE no longer prints "✅ edge is positive" while the book
+    trades;
+  - the 8-minute summary leads with `🎯 C510 Book (what trades)`;
+  - the block rows: RECORD = the book's closed tally, FEES = the book's
+    fills, LIFETIME = "old scanner", plus RULE and TOURNEY;
+  - `'C510'` and `'RULE   '` are on the console whitelist.
+- **The dashboard:**
+  - a "What is running" panel (TRADES / PAPER / OFF / not traded);
+  - the rule line on the book;
+  - a "Rule tournament" panel (which replaces the separate K4 line);
+  - the Record tile = the book.
+- **C509** uses N2+N3's range when the book trades N2+N3.
+- **`research/c498_plan_replay.py`** replays with the saved rule and OHLC
+  (live: `--rule`).
+- **`deploy/omega-logpush.sh`** adds `c510_tournament.json`.
+- **Tests:**
+  - `omega_c510_test.py`: 45 checks, Chromium included;
+  - `omega_c488_test.py`'s fake target accepts the new keywords;
+  - `omega_c509_test.py` pins `C488_C2_RULE='base'` for its figures;
+  - `omega_c503_test.py` accepts the "old scanner" label.
+- **Battery:** 35 of 37 pass in parallel. `omega_exit_test.py` needs
+  `corpusL/`. `omega_c467_remote_test.py` is a 1-second age check that
+  failed under parallel load and passes alone. pyflakes: no new findings.
+
+**Checked on real Bitget data** (28 Sep close, live candles):
+- The base plan matches the 29 Sep PLAN line to within cents.
+- **N2+N3 would drop the BTC and ETH shorts** (low-beta laggards) and short
+  DOGE and PEPE. TRUMP's momentum short is removed by N2 (7-day funding
+  −0.005%), leaving its carry long.
+- The book: HYPE +10.90, ENA +10.48, XRP −7.74, TRUMP +7.20, DOGE −7.03,
+  SUI +6.94 at $241.33, 0.21× gross (base 0.28×).
+- The tournament takes 0.9 s at 330 days × 80 coins.
+
+**Open:**
+- **The first N2+N3 rebalance is 30 Sep 00:05 UTC.** Paper check #2
+  (01:15 UTC) should confirm:
+  - the plan is N2+N3's (replay `--inputs` uses the saved rule);
+  - the tournament's first observation;
+  - the new rows.
+- **The operator's calls:** the dial (#6), and whether live would use N2+N3
+  (a judgement; see #11).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧭 2026-09-29 — THE A–Z REVIEW: WHY THE FIRST DAYS LOST, ROUND 10, INDIA, C509

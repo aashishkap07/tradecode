@@ -227,7 +227,7 @@ held = sorted(e.book)
 fake = {s: dict(w=(0.0 if i % 2 else 1.6 * e.book[s]['qty'] * e.mark(s) / eq), c1=0, c2=0, c3=0) for i, s in enumerate(held)}
 e.matrices = lambda s: (T, syms, close, qv, fund)
 orig = om._c488_targets
-def fake_targets(T_, close_, qv_, fund_, topn, tv, cap=3.0):
+def fake_targets(T_, close_, qv_, fund_, topn, tv, cap=3.0, **_c510):   # C510: rule, ohlc, volest, sizing
     w = np.array([fake.get(s, {}).get('w', 0.0) for s in syms])
     z = np.zeros(len(syms)); return w, {'C1': z, 'C2': z, 'C3': z}, np.ones(len(syms), bool)
 om._c488_targets = fake_targets

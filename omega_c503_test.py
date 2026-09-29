@@ -175,7 +175,8 @@ bot.portfolio.lifetime_pnl = 0.39
 rows3 = []; rep2._emit = lambda line: rows3.append(str(line)); rep2.status(bot)
 lf = ' '.join(r for r in rows3 if r.strip().startswith('LIFETIME'))
 ok("LIFETIME: the trades are the intraday scanner's, the dollars the account's",
-   '139tr 44W 95L' in lf and 'intraday' in lf and 'account $+0.39 realised' in lf, lf)
+   '139tr 44W 95L' in lf and ('intraday' in lf or 'old scanner' in lf)          # C510: "old scanner"
+   and 'account $+0.39 realised' in lf, lf)
 
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n4b. THE SESSION SUMMARY STARTS WHERE THE SESSION ROW STARTS")

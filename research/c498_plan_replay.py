@@ -2,6 +2,7 @@
 """C498: what the C488 rule targets RIGHT NOW, computed by the bot's own code.
 
     python3 research/c498_plan_replay.py [EQUITY] [--dial 15] [--out FILE.json] [--inputs c488_inputs.npz]
+                                         [--rule base|n2|n3|n2n3]   (live data only; --inputs uses the saved rule)
 
 Runs the live bot's own C488Engine functions (candidates -> matrices ->
 _c488_targets, the real asset classifier on Bitget's own market table) against
@@ -55,12 +56,21 @@ if '--inputs' in sys.argv:
     if len(sys.argv) < 2 or sys.argv[1].startswith('--'):
         eq = float(z['eq'][0])
     n_top = int(z['n_top'][0])
+    # C510: the rule the bot traded that day, and the day's open/high/low (files before C510: the admitted rule)
+    rule, volest, sizing = [str(x) for x in z['rule']] if 'rule' in z.files else ['base', 'close', 'running']
+    ohlc = (z['op'], z['hi'], z['lo']) if 'hi' in z.files else None
     print(f"inputs: {sys.argv[sys.argv.index('--inputs') + 1]} fetched "
-          f"{dt.datetime.utcfromtimestamp(float(z['at'][0])):%Y-%m-%d %H:%M:%S} UTC")
+          f"{dt.datetime.utcfromtimestamp(float(z['at'][0])):%Y-%m-%d %H:%M:%S} UTC, rule {rule}/{volest}/{sizing}")
 else:
     syms = e.candidates(n_top)
     T, keep, close, qv, fund = e.matrices(syms)
-w, sl, el_now = om._c488_targets(T, close, qv, fund, n_top, e.target_vol(), float(getattr(cfg, 'C488_LEV_CAP', 3.0)))
+    rule, volest, sizing = e.c2_rule(), e.volest(), e.sizing()
+    if '--rule' in sys.argv:
+        rule = sys.argv[sys.argv.index('--rule') + 1]
+    ohlc = e.ohlc_for(T, keep)
+    print(f"live Bitget data, rule {rule}/{volest}/{sizing}")
+w, sl, el_now = om._c488_targets(T, close, qv, fund, n_top, e.target_vol(), float(getattr(cfg, 'C488_LEV_CAP', 3.0)),
+                                 rule=rule, ohlc=ohlc, volest=volest if ohlc is not None else 'close', sizing=sizing)
 mn = float(getattr(cfg, 'C488_MIN_NOTIONAL', 6.0))
 elig = om._c488_universe(close, qv, n_top)
 mi = max(i for i in range(len(T)) if dt.datetime.utcfromtimestamp(T[i] / 1000).weekday() == 0)
