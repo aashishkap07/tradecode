@@ -58,3 +58,40 @@
  
 01:12:19 | 🎯 C510 Book (what trades): 12 positions, gross 0.46x, open $+2.98 | rule C2 N2+N3 |
     closed 0: 0W/0L $+0.00 | since 29 Sep +1.16% (normal)
+ 
+  01:20  up 0h16m  daily book --------------------------------------------------------------------
+  EQUITY    $252.77  unreal $+2.84
+  OPEN      no intraday positions  book holds 12 (BOOK row)  free $229.91 after open P&L
+  SHADOW    intraday M1 $254.48 (+1.82%)  M1g $252.87 (+1.18%)  2d paper only
+  CARRY     $249.61 (-0.13%)  8 held  paper only
+  SPOT      $250.65 (+0.26%)  14 held  20% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $166.81 (66%)  at 7.63% +$0.05 so far  ~$1.06/month  paper
+  BOOK      12 pos gross $116.21 (0.46x)  open $+2.84  funding $-0.00  vol 27% top 20
+            rebal 2026-09-30
+  CONTEXT   since 29 Sep $+2.77 (+1.11%) in 1.5d  normal -1.5% to +2.1%  top 22%: normal
+  CONTEXT   month 01 Oct -0.05%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held  first score at the next rebalance, for 2026-09-30
+  DATA      on time  prices 27s  funding booked  book today  shadow 19:00  carry today
+            spot pot today
+  SESSION   $-0.13 -0.05%  peak $252.91  dd 0.06%
+  MONTH     book guard $0.12 of $50.58 used  on marked equity  from $252.89  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:20:20 | 🎯 C510 Book (what trades): 12 positions, gross 0.46x, open $+2.84 | rule C2 N2+N3 |
+    closed 0: 0W/0L $+0.00 | since 29 Sep +1.11% (normal)
+
+============================================================
+📝 Log saved: 2026-10-01 01:22:36
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       0h18m  daily book  0 book fills this run  book closed 0 in all
+  P&L       $-0.13 (-0.05%)  $252.90 > $252.77  maxDD 0.06%
+  CURVE     @@.
+  COST      fees $0.00  maker 0 / taker 0 fills
+  ------------------------------------------------------------------------------------------------
+ 
