@@ -61,7 +61,7 @@ Binance's futures API refuses my sandbox (HTTP 451), so:
   - Binance's archive confirmed the candle columns the code reads (quote
     volume and taker-buy volume) and the day-close = 23:59-minute rule;
   - Binance's live spot data (1,374 pairs) runs through the spot pot's code.
-- **A simulated Binance** in Binance's documented reply formats: 58 checks
+- **A simulated Binance** in Binance's documented reply formats: the checks
   in `omega_c516_test.py`, including a paper rebalance, funding, the venue
   guard, ccxt's Binance market table, the shadow, the carry ledger, the TDS
   and the page in Chromium.
@@ -180,7 +180,7 @@ decaying.
   transfer that India taxes at source, so USDT it is.
 
 **The tests:**
-- `omega_c516_test.py`: 62 checks. The simulated Binance's five busiest
+- `omega_c516_test.py`: 57 checks in all (counted). The simulated Binance's five busiest
   contracts are now non-crypto (SOXL, CL, SKHYNIX, a TradFi-tagged listing,
   and a non-`PERPETUAL` type); none reaches the candidates, the plan or the
   book.

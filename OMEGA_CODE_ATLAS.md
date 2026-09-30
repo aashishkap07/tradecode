@@ -270,7 +270,7 @@
 - **Version C516.**
 
 **Verification:**
-- **Tests:** `omega_c516_test.py`, 58 checks (a simulated Binance in the
+- **Tests:** `omega_c516_test.py` (57 checks after C517, counted) (a simulated Binance in the
   documented formats; real archive columns and the close = 23:59 rule on
   BTC/1000PEPE/ZEC; real spot data; ccxt binanceusdm parsing; Chromium).
   The battery: 40 of 41 (exit: `corpusL/`).
@@ -309,7 +309,7 @@ LTC, BCH, ETC $20; 80 coins × 330 days in 12 s; funding on 200 days; spot
   - `C501_SAVINGS_APR` is 0.068 on Binance (the operator's app: USDT
     Flexible 6.8%, USDC 7.8%; USDT because the cash is USDT and a swap is a
     TDS-able transfer).
-- **Tests:** `omega_c516_test.py` 62 checks. The battery: 40/41. Both boots
+- **Tests:** `omega_c516_test.py` 57 checks (counted). The battery: 40/41. Both boots
   are clean.
 
 **Open:**
