@@ -234,8 +234,9 @@ day, at 00:05 UTC, as a snapshot from its FIRST MINUTES.**
 **Open:**
 - Tomorrow's 00:05 UTC is the first live test of the fix. Either the live
   bar is final at 00:05 and it trades, or "not final … retrying in 10 min"
-  and it trades a few minutes later. Paper check #3 (1 Oct 01:15 UTC)
-  confirms which, and the tournament's first real day.
+  and it trades a few minutes later. Paper check #3 (1 Oct 01:15 UTC,
+  trig_01HVGLAPPnPAkcdtjMiULK4r) confirms which, and the tournament's first
+  real day.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧹 2026-09-29 — C511: THE FRESH-START SCREENS AND A FULL READ OF C510
