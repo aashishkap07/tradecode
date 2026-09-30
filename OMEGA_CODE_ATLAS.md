@@ -195,7 +195,61 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
+| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $100 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.6%/month on the tested book; at about $1,000 it is ahead. Needs: the VPS reaching `fapi.binance.com` (200, not 451), USDⓈ-M enabled on the operator's account, then the two-phase port (`reports/2026-09-30_binance_vs_bitget.md`). |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🌏 2026-09-30 — BINANCE OR BITGET FROM INDIA (C515, descriptive; nothing built)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The question:** the operator is in India. Bitget links don't open there,
+and they have a Binance account. Move the bot? Full write-up:
+`reports/2026-09-30_binance_vs_bitget.md`.
+
+**Legal:**
+- **Binance** is FIU-IND registered (2024, ₹18.82 cr penalty) and legal. It
+  deducts 1% TDS on spot for Indian users; futures generally carry no TDS.
+- **Bitget** is not registered, and stopped onboarding Indian users on
+  6 Feb 2026 (existing accounts can still trade).
+- So Binance is the better home for LIVE money. The spot pot should stay
+  paper on any Indian-compliant venue (1% TDS on each sale).
+
+**Costs (Binance FAQ 360033544231):**
+- USDⓈ-M VIP0 fees: maker 0.02%, taker 0.05% (0.045% with BNB), against
+  Bitget's 0.06% taker.
+- **Minimum orders** (Binance, 2023-11-02 and 2023-11-22): BTC $100; ETH,
+  LINK, LTC, BCH, ETC $20; others $5.
+- Sub-accounts: any verified user with 2FA, up to 5 at VIP0.
+
+**`research/c515_venue_cost.py`** (the N2+N3 book, dial 20%, the Binance
+2020–26 archive):
+
+| equity | Bitget (0.08%, $6 floor) | Binance (0.07%, real minimums) | Binance + BNB (0.065%) | note |
+|---|---|---|---|---|
+| **$250** | +4.01%/mo | +3.44%/mo | +3.47%/mo | BTC out on 98% of its days |
+| $500 | +3.96 | +3.75 | +3.78 | |
+| $1,000 | +3.95 | +4.07 | +4.10 | |
+
+**Not verified here:** Binance's trading API answers **451** (region) to
+this sandbox; only data.binance.vision works. The operator runs two checks
+on the VPS (the curl commands in the report: `/fapi/v1/time` and the
+exchangeInfo minimums) and checks in the app that USDⓈ-M futures are enabled.
+
+**The port, if chosen:**
+- **Phase 1, paper on Binance:**
+  - the book's klines, funding, tickers and exchangeInfo rules;
+  - C512's finality check, Binance version;
+  - `1000PEPE`-style symbols;
+  - carry and spot-pot spot prices;
+  - the Savings APR;
+  - the shadow's taker flow, from kline taker-buy volume (every coin).
+- **Phase 2, live:** the C492 equivalent on `/fapi` (one-way mode, cross
+  margin, leverage, positionRisk, balance, income FUNDING_FEE).
+  `C488_LIVE_OK` stays False.
+- **Paper can stay on Bitget meanwhile:** its public API still reaches the
+  VPS.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ✂️ 2026-09-30 — ROUND 12 (C514): NO "70% CHANCE OF LOSS" POINT; EARLY EXITS FAIL; LIVE NEEDS A SUB-ACCOUNT
