@@ -200,10 +200,10 @@
 | 5 | **Refresh the C488 research** | quarterly (next: early Dec 2026) | Use `research/c493_target_probability.py` (crypto only, the `TRADFI` exclusion built in; `omega_c488_research.py` stays as the historical record). **Corrected at C493:** the "decay" (Sharpe 0.87 over 24 months) came from 2026 stock/commodity perps in the research universe. Crypto only: Sharpe 1.42 over 2020–26, 1.17 over 24 months, 1.69 over 12. Watch these three numbers each quarter. |
 | 6 | **Risk dial choice** | operator | **C510 (29 Sep, descriptive):** N2+N3 at dial 20% + Savings, a year averaging ≥ 2%/month: 81% (haircut 60%), worst month −17.7%, max DD 36.6%, 2022 −21%. At dial 15%: 75% / 50%, worst month −13.6%, DD 22.6%, 2022 −8%. Advice given: stay at 15% until the paper book has run N2+N3 for a month and matched its tournament row. **Corrected at C493** (crypto only, $250, top 20, compounded, 2020–26). **Dial 15%:** +2.57%/month; 64% of 12-month windows made ≥ 2%/month; 16% of 12-month windows lost money; worst 12 months −23%; worst month −14.6%. **Dial 20%:** +3.66%/month; 76% of windows ≥ 2%/month; worst 12 months −33%; worst month −18.6%. Realistic forward: about a third lower, the usual out-of-sample haircut, so about 1.5–3%/month at dial 20%. 4%/month needs a dial of about 25% (drawdown about 48%), outside the 0–20% dial. **Updated at C500/C501:** dial 15% + idle cash in Savings ≈ 2.1%/month; dial 20% + Savings ≈ 2.8%/month (worst months near −19%). **Adding the spot pot (S1, a second $250)** gives both pots together, historically, +2.47%/month, max DD 19%, worst month −5.8% (correlation +0.14). **At C502 (spot's real $1 minimum):** both pots +2.67%/month, max DD 22%, worst month −5.7%. **Measured at C504** (`research/c504_results.txt`, the chance that a year averages ≥ +2%/month, bootstrap / haircut): book 15% + Savings 67% / 45%; book 20% + Savings 78% / 58%; **both pots at dial 20% 74% / 50% with a worst month of −6.7%** (vs −14.6% for the book alone). Beyond dial 20% the chance barely rises (25%: 80%, 30%: 81%) while the drawdown grows 41% → 57%: 20% is the knee. "70–90% of months ≥ +2%" needs a Sharpe of 3–8, which is not available. |
 | 7 | **Dormant C487 intraday scanner** | optional cleanup | **C510 answer to "can it be integrated?":** not as a trader (fees 5–9× its edge; tuning changes which trades, not their cost). Its information, the intraday range, was tested as a risk sensor in round 11 (Parkinson/GK EWMA per-coin vol): Sharpe 1.56 → 1.81/1.84, worst month −14.6% → −12.8/−12.2%, t 1.79/1.87 against 1.96, not admitted, scored forward in the tournament. Its boot lines no longer claim "edge is positive" while the book trades. Reachable only with `OMEGA_ENGINE=intraday`. It could be removed once C488 has a live record. **pyflakes (C504) found 12 undefined names, all in this scanner** (`full_analysis`: pair_info, analysis; `_open_position`: candidate; the DRI calculate: result; `_display_summary`'s guarded ones). None is in the book, the ledgers or K4. Fix or delete them with the scanner. |
-| 8 | **Indian tax note for the operator** | ongoing | s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
+| 8 | **Indian tax note for the operator** | **before any live money (C518: decisive)** | **C518 measured it on the book's 3,150 positions:** net-profit tax (A) leaves +43%/yr; strict s.115BBH (each gain taxed, losses ignored; B) leaves **+0.5%/yr** (2022 −87%). The CA's written answers to the 4 questions in `reports/2026-10-01_every_way_to_the_target.md` pick the live venue (Binance, or Delta Exchange India, INR-settled). s.115BBH (conservative reading): 30% flat, no loss offset. The treatment of futures is unsettled, so consult a CA. Bitget has paused new Indian sign-ups; existing accounts are unaffected. **The carry trade has a second tax hazard** (see #10). **The spot pot (#15) adds a spot-trading question:** India's 1% TDS on transfers of crypto (s.194S) and how it applies on an offshore exchange. At a daily-rebalanced pot, 1% withheld on each sale would be a large cash-flow drag. Ask the CA before the pot goes live. |
 | 9 | ~~C491: the limit-order (LP) test on 1-minute prices~~ | **DONE: FAIL** | On 1-minute paths: −209%/yr, t −5.30, 0/4, identical under both orderings. Nothing ships (see C491). |
 | 10 | **C490 carry → the account?** | after #1 and a CA's view | **Correction (29 Sep A–Z review):** Bitget's DEFAULT funding is 0.01%/8h = 10.95%/yr, and 14 of the top 40 sit exactly there, so "24 of 37 above 10%/yr" is mostly coins at the default, not a crowd getting more leveraged (my paper-check #1 reading was wrong). The ledger's 10%/yr entry sits just under the default; review that threshold at the December refresh. It passed (t 2.78) but lost money in 2025 (−4.6%) and 2026 (−2.0%) as the trade got crowded. To put it in the account needs: (a) a spot order path (Bitget spot API, with transfers between the spot and futures accounts, or the unified account); (b) one capital cap shared with C488's margin (carry needs about 1.2× its notional); (c) **a CA's view.** Under s.115BBH each leg may be taxed on its own gain with no loss offset, so a hedged trade can owe 30% on the winning leg while the losing leg's loss is wasted. That alone can turn it negative. Until then it stays a paper ledger. |
-| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). **Added at C507 (round 10):** N2 no C2 short where 7-day funding < 0 (+2.82%/yr, t 1.02, 4/4 quarters, holdout +2.62%/yr, DD 29.8%) and N3 residual momentum (+2.14%/yr, t 0.82, 3/4, holdout +3.36%/yr, **DD 25.3% vs 31.4%**). Pool quarters until 12 months exist; admit only on the C493/C494 bars. **Added at C514 (round 12):** S1, a per-trade stop at z < −2 (open loss beyond 2 own-vol units × √days): Δ +0.6 pts/yr, t 0.23, worst month −17.8% → −14.8% and DD 38.3% → 36.2% at dial 20%, but DD worse at dial 15%. Descriptive only; re-check forward. (Take-profit exits failed clearly: X1 −17.7 pts/yr, t −2.48.) **C510 (29 Sep): the forward test now runs INSIDE the bot from the 30 Sep rebalance** (`C510Tournament`, `c510_tournament.json` on the logs branch): base, N2, N3, N2+N3, N2+N3·K4, N2+N3·GK range vol (round 11: t 1.87, bar 1.96), N2+N3·K4·GK, each scored daily on the book's own inputs. **Forward-only time to t ≈ 2 at research size: GK ~7 years, N2 ~28 years.** So the live rule is a judgement (prior + consistent history + no drawdown harm + paper tracking its tournament row), not a proof. The paper book trades N2+N3 at the operator's request. |
+| 11 | **Forward re-test of the round-5 near-misses** | Q4 refresh (Dec 2026), then quarterly | Re-run **only on data after 2026-08** (a true forward test, with no code in the bot): N2 low volatility (t 2.23), N4a crowd contrarian (t 1.52), and the C494 maker-first rebalance (saving 0.018% vs the 0.020% bar, t 2.65). **Added at C500:** K4 allostatic vol (EWMA, 10-day half-life): same return, but **worst month −9.7% vs −15.5%** and max DD 29% vs 31%. If it holds forward, a higher dial could carry the same tail. Also K2, the horizon ensemble (+4.6%/yr, t 1.26, 2025–26 negative). **Added at C507 (round 10):** N2 no C2 short where 7-day funding < 0 (+2.82%/yr, t 1.02, 4/4 quarters, holdout +2.62%/yr, DD 29.8%) and N3 residual momentum (+2.14%/yr, t 0.82, 3/4, holdout +3.36%/yr, **DD 25.3% vs 31.4%**). Pool quarters until 12 months exist; admit only on the C493/C494 bars. **Added at C514 (round 12):** S1, a per-trade stop at z < −2 (open loss beyond 2 own-vol units × √days): Δ +0.6 pts/yr, t 0.23, worst month −17.8% → −14.8% and DD 38.3% → 36.2% at dial 20%, but DD worse at dial 15%. Descriptive only; re-check forward. (Take-profit exits failed clearly: X1 −17.7 pts/yr, t −2.48.) **C518 round 13:** selling 30-day volatility (a DVOL variance-swap ladder) failed for BTC, ETH and both (BTC holdout 2025–26 −3.9%/yr; the blend does not raise P). Not a candidate. **C510 (29 Sep): the forward test now runs INSIDE the bot from the 30 Sep rebalance** (`C510Tournament`, `c510_tournament.json` on the logs branch): base, N2, N3, N2+N3, N2+N3·K4, N2+N3·GK range vol (round 11: t 1.87, bar 1.96), N2+N3·K4·GK, each scored daily on the book's own inputs. **Forward-only time to t ≈ 2 at research size: GK ~7 years, N2 ~28 years.** So the live rule is a judgement (prior + consistent history + no drawdown harm + paper tracking its tournament row), not a proof. The paper book trades N2+N3 at the operator's request. |
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
@@ -212,8 +212,80 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
-| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) |
+| 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧭 2026-10-01 — C518: EVERY WAY TO THE TARGET; ROUND 13 (SELLING VOLATILITY) FAILS; INDIA'S TAX DECIDES THE VENUE
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Report:** `reports/2026-10-01_every_way_to_the_target.md`.
+
+**The C517 check (operator, 01:24 IST) passed ALL OK:**
+- the $500 plan is crypto only: BTC, BNB, 1000PEPE, XRP, SUI, DOGE, NEAR,
+  TAO, ARB, SOL, HYPE (0.65×);
+- exchangeInfo: PERPETUAL TRADING 527, **TRADIFI_PERPETUAL 212** (all
+  excluded now), SETTLING 130, PENDING 1;
+- Binance's labels: research-list names in the table read `COIN /
+  RWA,Crypto`; ALL, BTCDOM and DEFI are caught by the INDEX tag.
+
+**The target math (`research/c518_target_math.txt`):**
+- a year averaging ≥ 2%/mo at 80% needs a Sharpe of about 2.0 at 25% vol
+  or 1.8 at 35%;
+- 80% of single months ≥ 2% is unreachable (≤ 75% even at a Sharpe of 3).
+- **The book on Binance ($500, dial 20, idle 6.8%): Sharpe 1.87 at 29% vol,
+  +4.24%/mo.**
+  - P(avg ≥ 2%/mo) over 1/2/3 years: backtest 81/89/93%; haircut
+    60/64/67%;
+  - after tax A (31.2% of net profit): 72/79/83%; A + haircut 48/47/46%.
+
+**The tax finding (`research/c518_tax_india.py/.txt`):** the book's 3,150
+positions 2020–26, 1,363 winners; gains = 4.0× the net profit.
+
+| tax reading | average year | notes |
+|---|---|---|
+| none | +58%/yr | |
+| **A: net profit** | **+43%/yr** | 6/7 years ≥ 2%/mo |
+| **B: s.115BBH strict** (gains taxed, losses ignored) | **+0.5%/yr** | 2022 −87%; 0/7 years ≥ 2%/mo |
+
+**B is the conservative reading for USDT-settled futures.** Four questions go
+to the CA (in the report, section 4); the answer picks the live venue:
+- Binance (answer A);
+- Delta Exchange India, INR-settled (B for Binance but A for INR);
+- no live book (both B).
+
+**Round 13 (`research/c518_preregistration.md` pushed first, 6add459;
+`research/omega_c518_research.py`, `c518_results.txt`):** a short 30-day
+variance-swap ladder, strike DVOL − 3 pts, 20% vol, against the book
+2021-06 → 2026-08 (the book there +3.58%/mo, P haircut 54%). **All three
+fail:**
+
+| stream | %/mo | Sharpe | t | holdout 2025–26 | blend P |
+|---|---|---|---|---|---|
+| BTC | +0.82 | 1.09 | 2.01 | **−3.9%/yr** | 53% |
+| ETH | −0.26 | −0.17 | | −25%/yr | |
+| BTC+ETH | +0.24 | 0.25 | 0.48 | | 40% |
+
+The cost sensitivity: +1.14%/mo at 1.5 pts, −0.94%/mo at 5 pts. Options
+writing on Binance is VIP 1 / $100k anyway.
+
+**Other facts gathered:**
+- **BFUSD:** base APY 7.66%, boosted 9.51% (Sep 2026; 29–47% at launch),
+  earned on the whole futures wallet, as margin. About +0.3–0.4%/mo over
+  USDT Savings. **Adopt when live on Binance** (CA on its tax).
+- **BNB HODLer/Launchpool/Megadrop:** +19.7% extra over 15 months
+  (2024–Q1 2025). A hedged version is a manual experiment only; no per-event
+  data.
+- **Delta Exchange India:** public API `api.india.delta.exchange`, **221 live
+  perps**, INR banking, taker 0.05% / maker 0.02% (+18% GST). Contracts:
+  BTC $84, ETH $27, SOL $117, BNB $77, ZEC $142, AAVE $158. Needs ≥ $1,000.
+  Stock tokens (AAPLX ...) are listed too.
+- **Pi42:** INR-margined perps, TDS-exempt.
+- **SEBI:** 93% of individual F&O traders lost FY22–24.
+- **RBI/FEMA:** offshore forex is illegal for residents.
+- **Nifty200 Momentum 30:** 16.3%/yr, vol 20%, DD 68%.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔀 2026-09-30 — C516: PHASE 1 OF THE MOVE TO BINANCE (PAPER, BEHIND OMEGA_VENUE)
