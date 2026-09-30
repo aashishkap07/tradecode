@@ -61,7 +61,7 @@ Binance's futures API refuses my sandbox (HTTP 451), so:
   - Binance's archive confirmed the candle columns the code reads (quote
     volume and taker-buy volume) and the day-close = 23:59-minute rule;
   - Binance's live spot data (1,374 pairs) runs through the spot pot's code.
-- **A simulated Binance** in Binance's documented reply formats: 57 checks
+- **A simulated Binance** in Binance's documented reply formats: 58 checks
   in `omega_c516_test.py`, including a paper rebalance, funding, the venue
   guard, ccxt's Binance market table, the shadow, the carry ledger, the TDS
   and the page in Chromium.
