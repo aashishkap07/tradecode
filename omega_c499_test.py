@@ -85,6 +85,13 @@ class Venue:
                     rows.append([str(t), '0', '0', '0', f"{px[k]:.6f}", '0', f"{1e7 * (1 + k % 7):.2f}"])
             rows = rows[-200:]
             return rows[::-1]
+        if path == 'candles':          # C512: the live endpoint -- the same final bars, and the day's last minute
+            rng = np.random.default_rng(abs(hash(sym)) % 2 ** 32)
+            px = 100.0 * np.exp(np.cumsum(rng.normal(0, 0.03, s.days)))
+            if params.get('granularity') == '1m':
+                return [[str(TODAY - 60000), '0', '0', '0', f"{px[-1]:.6f}", '0', '0']]
+            return [[str(TODAY - (s.days - k) * DAY), '0', '0', '0', f"{px[k]:.6f}", '0', f"{1e7 * (1 + k % 7):.2f}"]
+                    for k in range(s.days - 5, s.days)][::-1]
         if path == 'history-fund-rate':
             if sym in s.empty:
                 return []

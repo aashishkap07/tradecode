@@ -16,9 +16,15 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C511 is pushed, not deployed:** fixes from the fresh-start screenshots
-    and a full read of C510 (`reports/2026-09-29_c511_audit.md`). A normal
-    pull + restart. **Do NOT start fresh again.**
+  - **C512 is pushed, not deployed:** the just-finished day comes from Bitget's
+    LIVE candles and is checked against its 23:59 UTC minute before the book
+    trades (`reports/2026-09-30_paper_check_2.md`). A normal pull + restart.
+  - **C511 from 29 Sep 20:13 IST, verified in paper check #2:**
+    - the boot is clean (IDLE record line, no scanner description, "daily
+      book" headers, no separate K4);
+    - the 30 Sep rebalance replays to the cent;
+    - funding matches Bitget at every settlement;
+    - 0 warnings in 10 h.
   - **C510 from 29 Sep 14:13 IST, deployed with a FRESH START at dial 20%**
     (verified from 8 screenshots and the 08:47 UTC logs push):
     - $250, month budget $50, rule N2+N3, 11 positions, 0.433× gross;
@@ -166,6 +172,70 @@
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🕰️ 2026-09-30 — PAPER CHECK #2 AND C512: THE BOOK WAS DECIDING ON A DAY-OLD CLOSE
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Paper check #2 ran** on the reminder at 01:16 UTC. Full write-up:
+`reports/2026-09-30_paper_check_2.md`.
+
+**The checks all passed:**
+- the 30 Sep plan replays to the cent from `c488_inputs.npz` (`--dial 20`);
+- one trade (PUMP −$6.16), inside Bitget's minute candles;
+- funding at every settlement equals Bitget's rates (8h coins, and 4h for
+  ENA, HYPE and TRUMP);
+- carry, spot pot, Savings and the hourly shadow all ran;
+- DATA on time, 0 warnings;
+- C509 +0.07% in 0.64 d;
+- C511's boot is as designed.
+- **The book at 06:14 IST:** $250.57 marked (+0.23%), 12 positions, 0.46×.
+
+**Found (the headline): Bitget's `history-candles` served the just-finished
+day, at 00:05 UTC, as a snapshot from its FIRST MINUTES.**
+- **29 Sep:** 0 of 80 closes final; median 3.3% off (ZEC 1479.38 vs the
+  final 1417.41, which equals the 23:59 minute; US +79%); quote volume about
+  99% short. 28 Sep: 80 of 80 correct. By 01:20 UTC the history endpoint
+  was final.
+- **So since 25 Sep every rebalance read the previous day's close** for the
+  trend signs, the 14-day ranks and `sc`. Funding was current.
+- **Cost** (`research/c512_lag_cost.py`, the exact defect, 2020–26):
+  - admitted rule: −3.7 pts/yr at dial 15%, −8.9 at dial 20%;
+  - N2+N3 at dial 20%: −4.6 pts/yr, and the **worst DD 38% → 48%**.
+  - (A full one-day lag of every sleeve would cost 8–18 pts; that is an
+    upper bound.)
+- **Today's plan on final data is identical** (weekly sleeves, and no trend
+  flip). It matters on edge days, above all the Monday-close C2 ranking.
+- **This also explains paper check #1's 1–5% replay gap:** the daily candle,
+  not the hourly one.
+
+**C512:**
+- **`C488Engine._c512_last_days(sym, raw, out, tries)`**, called from
+  `_history`:
+  - overwrite the last 5 days from `candles` (1Dutc, the live endpoint);
+  - then compare yesterday's close with the 23:59 UTC `candles` 1m close;
+  - a mismatch > 1e-9, or either request failing, **raises**, so the
+    rebalance retries in 10 minutes (C499).
+  - Coins with no 23:59 minute are accepted on the live bar.
+  - The carry ledger (C490 `history`) and the spot pot get the same bars.
+- **`C510Tournament`:** a pre-C512 state file (no `c512` key) drops its
+  scored days once, with a log line. The held books and pending costs are
+  kept. 29 Sep (−0.17 to −0.32% across the 7 rules) was scored on the stale
+  candle.
+- **The FEES row** shows a sub-cent book fee with 3 decimals.
+- **Tests:**
+  - `omega_c512_test.py`: 21 checks, including 3 coins live on Bitget;
+  - `omega_c499_test.py`'s Venue serves `candles`.
+- **The live load** of all 80 candidates through the check: no false alarm.
+  The battery: 38 of 39 (the exit test needs `corpusL/`).
+
+**Open:**
+- Tomorrow's 00:05 UTC is the first live test of the fix. Either the live
+  bar is final at 00:05 and it trades, or "not final … retrying in 10 min"
+  and it trades a few minutes later. Paper check #3 (1 Oct 01:15 UTC)
+  confirms which, and the tournament's first real day.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧹 2026-09-29 — C511: THE FRESH-START SCREENS AND A FULL READ OF C510

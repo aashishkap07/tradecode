@@ -2056,7 +2056,8 @@ class _C462Report:
             except Exception:
                 _f510 = None
             if _f510 is not None and _f510[0] > 0:
-                self._pack('FEES', [f"book {_c462_money(_f510[1])}", f"{int(_f510[0])} taker fills this run",
+                self._pack('FEES', [f"book ${_f510[1]:.3f}" if _f510[1] < 0.01 else f"book {_c462_money(_f510[1])}",
+                                    f"{int(_f510[0])} taker fills this run",
                                     f"{100.0 * _f510[1] / _f510[2] if _f510[2] > 0 else 0:.3f}% of "
                                     f"{_c462_money(_f510[2])} traded"])
             elif (self.n_maker + self.n_taker) > 0:
@@ -2341,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C511'
+_OMEGA_VERSION = 'C512'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -19428,6 +19429,7 @@ class C488Engine:
             if first >= end or len(d) < 2:
                 break
             end = first - 1
+        self._c512_last_days(sym, raw, out, tries)
         fund = {}
         for pn in range(1, int(getattr(self.cfg, 'C488_FUND_PAGES', 40)) + 1):
             d = self._get('history-fund-rate', {'symbol': raw, 'productType': 'USDT-FUTURES',
@@ -19440,6 +19442,44 @@ class C488Engine:
                 break
         today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
         return {t: v for t, v in out.items() if t < today}, fund
+
+    def _c512_last_days(self, sym, raw, out, tries):
+        """C512: THE DAY THAT JUST ENDED, FROM THE LIVE CANDLES, CHECKED BEFORE USE.
+
+        Measured 30 Sep 2026 (paper check #2): at the 00:05 UTC rebalance
+        Bitget's history-candles endpoint served the just-finished 29 Sep daily
+        candle as a snapshot from the first minutes of that day -- 0 of 80
+        closes final, median 3.3% off (ZEC 1479.38 vs the final 1417.41, US
+        +79%), quote volume 99% short -- while every earlier day matched. By
+        01:20 UTC it was final. So every rebalance since the book began decided
+        on, in effect, the day-before's close: the research's lag 1 became lag
+        2 for the price inputs, which on 2020-26 costs 3.5-9 points a year and
+        adds ~10 points to the worst drawdown (research/c512_lag_cost.txt).
+        The live `candles` endpoint had the final bar, and a day's close must
+        equal its last minute's close. So the last few days are taken from
+        `candles`, and the just-finished day is compared with the close of its
+        23:59 UTC minute: if they differ the rebalance does not trade on it
+        (it raises; the engine retries in 10 minutes, as C499 does)."""
+        d = self._get('candles', {'symbol': raw, 'productType': 'USDT-FUTURES', 'granularity': '1Dutc',
+                                  'limit': 5}, tries=tries)
+        if d is None:
+            raise RuntimeError(f"{sym.split('/')[0]} recent daily candles did not load")
+        for x in d:
+            out[int(x[0])] = (float(x[4]), float(x[6]), float(x[1]), float(x[2]), float(x[3]))
+        today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        yday = today - _C488_DAY
+        if yday not in out:
+            return                                  # no bar for yesterday (a new or halted coin): nothing to check
+        m = self._get('candles', {'symbol': raw, 'productType': 'USDT-FUTURES', 'granularity': '1m',
+                                  'endTime': today, 'limit': 3}, tries=tries)
+        if m is None:
+            raise RuntimeError(f"{sym.split('/')[0]} last-minute candle did not load")
+        last = [x for x in m if int(x[0]) == today - 60000]
+        if last:
+            c_day, c_min = out[yday][0], float(last[0][4])
+            if c_min > 0 and abs(c_day / c_min - 1) > 1e-9:
+                raise RuntimeError(f"{sym.split('/')[0]} daily close not final: {c_day:g} vs its last minute "
+                                   f"{c_min:g} (C512)")
 
     def matrices(self, syms):
         hist = {}
@@ -21628,6 +21668,19 @@ class C510Tournament(_C501Store):
             self.eq0 = float(d.get('eq0') or 0.0)
             self.since = str(d.get('since') or '')
             self.skipped = dict(d.get('skipped') or {})
+            self.c512 = bool(d.get('c512'))
+            if not self.c512:
+                # C512: every day scored before C512 used Bitget's unfinished daily
+                # candle for its return (a few minutes of the day, not the day), for
+                # all seven rules alike. Dropped once; the record restarts with the
+                # first day scored on final closes. The held books and their pending
+                # costs are kept -- they are what the rules really held.
+                if self.daily:
+                    logger.info(f"   \U0001f3c1 C512: the rule tournament's {len(self.daily)} scored day(s) used "
+                                f"Bitget's unfinished daily candle and are dropped; its record restarts with "
+                                f"the next day scored on final closes")
+                self.daily, self.c512 = [], True
+                self.save()
 
     def active(self):
         return bool(getattr(self.cfg, 'C510_TOURNAMENT', True))
@@ -21635,14 +21688,15 @@ class C510Tournament(_C501Store):
     def reset(self, save=True):
         with getattr(self, '_lock', threading.RLock()):
             self.w, self.pend, self.last_day, self.daily, self.last_obs = {}, {}, 0, [], ''
-            self.eq0, self.since, self.skipped = 0.0, '', {}
+            self.eq0, self.since, self.skipped, self.c512 = 0.0, '', {}, True
         if save:
             self.save()
 
     def save(self):
         with self._lock:
             d = dict(w=self.w, pend=self.pend, last_day=self.last_day, daily=self.daily[-2000:],
-                     last_obs=self.last_obs, eq0=self.eq0, since=self.since, skipped=self.skipped)
+                     last_obs=self.last_obs, eq0=self.eq0, since=self.since, skipped=self.skipped,
+                     c512=bool(getattr(self, 'c512', True)))
         self._write(d)
 
     def observe(self, T, keep, close, qv, fund, ohlc, topn, target_vol, lev_cap, eq):
