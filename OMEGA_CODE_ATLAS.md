@@ -195,7 +195,7 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
-| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $100 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.6%/month on the tested book; at about $1,000 it is ahead. Needs: the VPS reaching `fapi.binance.com` (200, not 451), USDⓈ-M enabled on the operator's account, then the two-phase port (`reports/2026-09-30_binance_vs_bitget.md`). |
+| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). Still needs: USDⓈ-M enabled on the operator's account, then the two-phase port (`reports/2026-09-30_binance_vs_bitget.md`). |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -228,9 +228,14 @@ and they have a Binance account. Move the bot? Full write-up:
 
 | equity | Bitget (0.08%, $6 floor) | Binance (0.07%, real minimums) | Binance + BNB (0.065%) | note |
 |---|---|---|---|---|
-| **$250** | +4.01%/mo | +3.44%/mo | +3.47%/mo | BTC out on 98% of its days |
-| $500 | +3.96 | +3.75 | +3.78 | |
-| $1,000 | +3.95 | +4.07 | +4.10 | |
+| **$250** | +4.01%/mo | +3.63%/mo | +3.66%/mo | BTC out on 89% of its days |
+| $500 | +3.96 | +3.90 | +3.94 | about equal |
+| $1,000 | +3.95 | +4.02 | +4.06 | |
+
+**Corrected the same day** with the minimums read live on the VPS (12:58 IST):
+BTC **$50** (not the 2023 announcement's $100), ETH $20, LINK $20, SOL $5,
+1000PEPE $5. LTC, BCH and ETC stay at $20 from 2023 until re-read. **The VPS
+reaches `fapi.binance.com` (200)**, so check 1 has passed.
 
 **Not verified here:** Binance's trading API answers **451** (region) to
 this sandbox; only data.binance.vision works. The operator runs two checks

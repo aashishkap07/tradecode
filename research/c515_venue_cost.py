@@ -7,9 +7,13 @@ Binance USD-M futures.
   0.02% half-spread), a $6 floor on every coin.
 - Binance: 0.07% (0.05% taker, Binance FAQ 360033544231, + 0.02% half-spread)
   and 0.065% (paying fees in BNB, 10% off the taker fee); per-coin order
-  minimums from Binance's announcements (2023-11-02, 2023-11-22): BTC $100;
-  ETH, LINK, LTC, BCH, ETC $20; every other coin $5 (with the bot's own $6
-  floor on top). A target below its coin's minimum is not held.
+  minimums READ LIVE from fapi.binance.com/fapi/v1/exchangeInfo on the
+  operator's server (30 Sep 2026 12:58 IST): BTC $50, ETH $20, LINK $20, SOL
+  $5, 1000PEPE $5. LTC, BCH and ETC at $20 are from Binance's 2023-11-22
+  announcement (not yet re-read). Every other coin $5, with the bot's own $6
+  floor on top. A target below its coin's minimum is not held.
+  (The first run of this script used BTC $100, from the 2023-11-02
+  announcement; Binance has since lowered it.)
 
     python3 research/c515_venue_cost.py BNC_DIR
 """
@@ -50,7 +54,7 @@ parts = {'C1': R.banded(np.where(elig, tr * sc / N, 0.0)),
          'C2': R.weekly(s23 * sc / (2 * N * 0.2), T),
          'C3': R.weekly(-R.xs_rank(f7, elig) * sc / (2 * N * 0.2), T)}
 W0 = R.combine(parts, r, fund, 1, target_vol=20 * 4 / 3 / 100)
-BIG = {'BTCUSDT': 100.0, 'ETHUSDT': 20.0, 'LINKUSDT': 20.0, 'LTCUSDT': 20.0, 'BCHUSDT': 20.0, 'ETCUSDT': 20.0}
+BIG = {'BTCUSDT': 50.0, 'ETHUSDT': 20.0, 'LINKUSDT': 20.0, 'LTCUSDT': 20.0, 'BCHUSDT': 20.0, 'ETCUSDT': 20.0}
 fl_binance = np.array([max(6.0, BIG.get(s, 5.0)) for s in syms])
 
 

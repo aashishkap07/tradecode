@@ -7,9 +7,11 @@ account. Would Binance be better, with the bot changed to match?
 - **For real money, yes, Binance is the better home.** It is legally
   registered in India; Bitget is not, and stopped taking new Indian users in
   February 2026.
-- **But at $250 it costs about 0.5% a month** of the tested return, because
-  Binance won't take small orders in BTC and five other big coins.
-- At about $1,000 that turns into a small gain.
+- **But at $250 it costs about 0.4% a month** of the tested return, because
+  Binance won't take small orders in BTC and a few other big coins.
+- At $500 the two are about equal; at $1,000 Binance is slightly ahead.
+- (Corrected the same day with the minimums your server read live: BTC is
+  $50, not the $100 in Binance's 2023 announcement.)
 - **Paper trading can stay on Bitget**, since its public prices still reach
   your server. Moving the bot is a real build, in two phases, after two
   checks only you can run.
@@ -43,7 +45,7 @@ account. Would Binance be better, with the bot changed to match?
 |---|---|---|
 | taker fee (the book uses market orders) | **0.05%**; **0.045%** paying in BNB ([Binance FAQ](https://www.binance.com/en/support/faq/detail/360033544231)) | 0.06% |
 | maker fee | 0.02% | 0.02% |
-| smallest order | **BTC $100**; **ETH, LINK, LTC, BCH, ETC $20**; the rest $5 ([Binance, 2023-11-02](https://www.binance.com/en/support/announcement/updates-on-minimum-notional-value-for-btcusdt-and-ethusdt-perpetual-contracts-2023-11-02-e4384cba297a4bd2a154be644d5d76f9)) | about $5, with coin steps (ETH 0.01 ≈ $27) |
+| smallest order | **read live on your server (30 Sep 12:58 IST): BTC $50, ETH $20, LINK $20, SOL $5, 1000PEPE $5**. LTC, BCH and ETC are $20 per [Binance's 2023 notice](https://www.binance.com/en/support/announcement/updates-on-minimum-notional-value-for-btcusdt-and-ethusdt-perpetual-contracts-2023-11-02-e4384cba297a4bd2a154be644d5d76f9), not yet re-read; the rest $5 | about $5, with coin steps (ETH 0.01 ≈ $27) |
 | liquidity | the deepest in crypto | good for the top 20 |
 | sub-accounts | any verified user with 2FA, up to 5 ([Binance FAQ](https://www.binance.com/en/support/faq/binance-sub-account-functions-and-frequently-asked-questions-360020632811)) | yes |
 
@@ -54,9 +56,9 @@ account. Would Binance be better, with the bot changed to match?
 
 | equity | Bitget | Binance | Binance + BNB fees | why |
 |---|---|---|---|---|
-| **$250** | **+4.01%/mo** (Sharpe 1.81, DD 38%) | +3.44%/mo (1.63, 39%) | +3.47%/mo | BTC's $100 minimum removes 98% of the days the book wants BTC; 9.5 coins held vs 11.2 |
-| $500 | +3.96%/mo | +3.75%/mo | +3.78%/mo | BTC still mostly out |
-| **$1,000** | +3.95%/mo | **+4.07%/mo** (1.78, 41%) | **+4.10%/mo** | minimums matter less; lower fees win |
+| **$250** | **+4.01%/mo** (Sharpe 1.81, DD 38%) | +3.63%/mo (1.69, 36%) | +3.66%/mo | BTC's $50 minimum removes 89% of the days the book wants BTC; 9.6 coins held vs 11.2 |
+| $500 | +3.96%/mo | +3.90%/mo | +3.94%/mo | about equal |
+| **$1,000** | +3.95%/mo | **+4.02%/mo** (1.75, 41%) | **+4.06%/mo** | minimums matter less; lower fees win |
 
 These are research figures before the usual ⅓ real-life haircut. They
 compare the two venues on equal terms.
@@ -81,6 +83,10 @@ the live endpoints have to be proven from **your server**.
 
 ## 4. Two checks before any building
 
+**Done 30 Sep 12:58 IST: your server gets `200` from Binance, and the
+minimums above are its live reading.** Check 2 (the app) is below, as it was
+asked.
+
 **1. Can your server reach Binance's futures API?** In Termius:
 
 ```bash
@@ -100,3 +106,48 @@ curl -s https://fapi.binance.com/fapi/v1/exchangeInfo | python3 -c "import json,
 - which venue for real money;
 - and whether to start it with $250, or with $500–1,000 so the book can
   hold BTC.
+
+---
+
+## 5. The app checks, step by step (added 30 Sep, after check 1 passed)
+
+These paths are from Binance's own help pages. App menu names can shift a
+little between versions. If a name differs, the search bar at the top of
+the Home screen finds each item by name.
+
+**A. Make sure you are in Binance Pro.** Futures is not shown in Binance
+Lite.
+1. Open the app and tap your **profile icon** (top-left).
+2. At the top of that screen is a **Lite / Pro** switch. Choose **Pro**.
+
+**B. Is USDⓈ-M futures open for you?**
+1. Tap **Futures** in the bottom bar.
+2. At the top, choose the **USDⓈ-M** tab (next to COIN-M).
+3. **Already open:** you see a chart and an order form (Buy/Long,
+   Sell/Short, "Cross", a leverage like "20x") on a pair such as BTCUSDT
+   Perpetual. Nothing more to do.
+4. **Not yet open:** you see **"Open Now"** (or "Open Futures Account"). Tap
+   it and take the **futures quiz**; all answers must be right, and you can
+   retry. There may also be a short **questionnaire** about your experience.
+   Finish both.
+5. **Blocked for your region:** a message says futures are not available.
+   Tell me, because that decides the move.
+6. **Don't** change the position mode, the margin mode or the leverage
+   there. The bot will set its own through the API when it goes live.
+
+**C. Is 2FA on?**
+1. Profile icon → tap your **profile** section at the top → **Security**.
+2. Look at **Authenticator App** (Binance or Google Authenticator) and
+   **Passkeys**. "On", or a green tick, means enabled.
+3. If the Authenticator App is off: tap it → **Enable** → copy the setup key
+   → add it in Google Authenticator (**+** → "Enter a setup key") → type the
+   6-digit code back into Binance.
+4. An authenticator app is safer than SMS. **Keep the setup key written
+   down offline**: it is your only way back in if you lose the phone.
+
+**D. Identity verification**: the same profile screen shows "Verified"
+next to your name. Sub-accounts and API keys need it.
+
+**Not now:** creating the sub-account and its API key. That comes in phase 2
+(live). It is easiest on the website: Profile → Sub Accounts, then API
+Management. Nothing to create yet.
