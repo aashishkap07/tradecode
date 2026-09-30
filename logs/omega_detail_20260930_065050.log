@@ -682,3 +682,88 @@
 09:14:56 | 🔻 Book guard: $0.00 of $50.00 used this month on marked equity (0%, from $250.00) · realised today -0.00% [C497]
 09:14:56 | ============================================================
 09:14:56 | 
+ 
+  09:22  up 2h32m  daily book --------------------------------------------------------------------
+  EQUITY    $250.23  unreal $+0.30
+  OPEN      no intraday positions  book holds 12 (BOOK row)  free $227.37 after open P&L
+  SHADOW    intraday M1 $251.44 (+0.60%)  M1g $250.79 (+0.34%)  2d paper only
+  CARRY     $249.61 (-0.13%)  8 held  paper only
+  SPOT      $249.64 (-0.14%)  14 held  20% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $164.83 (66%)  at 7.63% +$0.03 so far  ~$1.05/month  paper
+  BOOK      12 pos gross $113.24 (0.45x)  open $+0.29  funding $-0.00  vol 27% top 20
+            rebal 2026-09-30
+  CONTEXT   since 29 Sep +0.09%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   1d since 2026-09-29  base -0.18%  N2 -0.17%  N3 -0.19%  N2+N3* -0.18%  +K4 -0.31%
+            +GK -0.19%  +K4+GK -0.32%
+  DATA      on time  prices 9s  funding booked  book today  shadow 03:00  carry today
+            spot pot today
+  SESSION   $-0.39 -0.16%  peak $250.72  dd 0.20%
+  CURVE     +++++++++++++++=====
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+09:22:56 | 
+09:22:56 | ============================================================
+09:22:56 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+09:22:56 | 💰 Equity: $249.93 | Unrealized: $+0.30
+09:22:56 | 💵 Available: $227.37 after open P&L | Locked: $22.86
+09:22:56 | 📈 Session: $-0.39 (-0.2%)
+09:22:56 | 🎯 C510 Book (what trades): 12 positions, gross 0.45x, open $+0.29 | rule C2 N2+N3 | closed 0: 0W/0L $+0.00
+09:22:56 | ============================================================
+09:22:56 | ============================================================
+09:22:56 | 🔻 Book guard: $0.00 of $50.00 used this month on marked equity (0%, from $250.00) · realised today -0.00% [C497]
+09:22:56 | ============================================================
+09:22:56 | 
+ 
+  09:30  up 2h40m  daily book --------------------------------------------------------------------
+  EQUITY    $250.27  unreal $+0.34
+  OPEN      no intraday positions  book holds 12 (BOOK row)  free $227.41 after open P&L
+  SHADOW    intraday M1 $251.44 (+0.60%)  M1g $250.79 (+0.34%)  2d paper only
+  CARRY     $249.61 (-0.13%)  8 held  paper only
+  SPOT      $249.73 (-0.11%)  14 held  20% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $164.84 (66%)  at 7.63% +$0.03 so far  ~$1.05/month  paper
+  BOOK      12 pos gross $113.40 (0.45x)  open $+0.34  funding $-0.00  vol 27% top 20
+            rebal 2026-09-30
+  CONTEXT   since 29 Sep +0.11%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   1d since 2026-09-29  base -0.18%  N2 -0.17%  N3 -0.19%  N2+N3* -0.18%  +K4 -0.31%
+            +GK -0.19%  +K4+GK -0.32%
+  DATA      on time  prices 2s  funding booked  book today  shadow 03:00  carry today
+            spot pot today
+  SESSION   $-0.35 -0.14%  peak $250.72  dd 0.18%
+  CURVE     +++++++++++++++======
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+09:30:56 | 
+09:30:56 | ============================================================
+09:30:56 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+09:30:56 | 💰 Equity: $249.93 | Unrealized: $+0.34
+09:30:56 | 💵 Available: $227.41 after open P&L | Locked: $22.86
+09:30:56 | 📈 Session: $-0.35 (-0.1%)
+09:30:56 | 🎯 C510 Book (what trades): 12 positions, gross 0.45x, open $+0.34 | rule C2 N2+N3 | closed 0: 0W/0L $+0.00
+09:30:56 | ============================================================
+09:30:56 | ============================================================
+09:30:56 | 🔻 Book guard: $0.00 of $50.00 used this month on marked equity (0%, from $250.00) · realised today -0.00% [C497]
+09:30:56 | ============================================================
+09:30:56 | 
+09:32:43 |    👻 C489 shadow hour 04:00 UTC: 38 coins scored (warm-up (14, no flow)), gate shut | M1 $250.50 (+0.23%) M1g $250.79 (+0.34%) over 2d [18s]
+09:32:50 | 
+============================================================
+🛑 Signal 15 — saving logs...
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       2h42m  daily book  0 book fills this run  book closed 0 in all
+  P&L       $-0.35 (-0.14%)  $250.62 > $250.27  maxDD 0.20%
+  CURVE     #@*#@@##**##*+*--__..
+  COST      fees $0.00  maker 0 / taker 0 fills
+  ------------------------------------------------------------------------------------------------
+ 

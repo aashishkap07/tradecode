@@ -1,0 +1,37 @@
+
+  ================================================================================================
+  OMEGA C513  PAPER  Bitget perps
+  30 Sep 2026   10:05
+  start $249.93 realised  risk dial 20%/month
+  ================================================================================================
+
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $249.93 realised  804 markets
+  MONTH     dial 20% = $50.00 this month  used $0.07 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+
+
+
+  10:13  up 0h08m  daily book --------------------------------------------------------------------
+  EQUITY    $250.43  unreal $+0.50
+  OPEN      no intraday positions  book holds 12 (BOOK row)  free $227.57 after open P&L
+  SHADOW    intraday M1 $250.50 (+0.23%)  M1g $250.79 (+0.34%)  2d paper only
+  CARRY     $249.61 (-0.13%)  8 held  paper only
+  SPOT      $249.91 (-0.03%)  14 held  20% invested  cash earns 7.63%  paper pot
+  SAVINGS   idle $164.97 (66%)  at 7.63% +$0.03 so far  ~$1.05/month  paper
+  BOOK      12 pos gross $114.09 (0.46x)  open $+0.50  funding $-0.00  vol 27% top 20
+            rebal 2026-09-30
+  CONTEXT   since 29 Sep +0.17%  under a day: too early to judge
+  RULE      C2 N2+N3  forward test (paper)
+  TOURNEY   7 rules held  first score at the next rebalance, for 2026-09-30
+  DATA      on time  prices 31s  funding booked  book today  shadow 04:00  carry today
+            spot pot today
+  SESSION   $-0.01 -0.00%  peak $250.44
+  MONTH     book guard $0.00 of $50.00 used  on marked equity  from $250.00  dial 20%
+            ..........................
+  RECORD    book closed 0  0W 0L  net $+0.00  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+
