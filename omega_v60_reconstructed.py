@@ -1829,12 +1829,12 @@ class _C462Report:
                         _sh510 = {'base': 'base', 'n2': 'N2', 'n3': 'N3', 'n2n3': 'N2+N3', 'n2n3_k4': '+K4',
                                   'n2n3_gk': '+GK', 'n2n3_k4_gk': '+K4+GK'}
                         if _ts510['days'] > 0:
-                            self._pack('TOURNEY', [f"{_ts510['days']}d since {_ts510['since']}"]
+                            self._pack('TOURNEY', [f"{_ts510['days']}d from {_ts510['first']}"]
                                        + [f"{_sh510.get(v['name'], v['name'])}{'*' if v['traded'] else ''} "
                                           f"{100 * v['ret']:+.2f}%" for v in _ts510['rows'] if v['on']])
                         elif _ts510.get('last_obs'):
-                            self._pack('TOURNEY', [f"{sum(1 for v in _ts510['rows'] if v['on'])} rules held since "
-                                                   f"{_ts510['since']}", 'first scores at the next rebalance'])
+                            self._pack('TOURNEY', [f"{sum(1 for v in _ts510['rows'] if v['on'])} rules held",
+                                                   f"first score at the next rebalance, for {_ts510['next_day']}"])
             except Exception:
                 pass
             # C504: every feed against its own schedule
@@ -2342,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C512'
+_OMEGA_VERSION = 'C513'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -21748,7 +21748,9 @@ class C510Tournament(_C501Store):
                 self.eq0, self.since = round(float(eq), 2), self.last_obs
         self.save()
         st = self.status()
-        logger.info(f"   \U0001f3c1 C510 tournament (paper, same prices, {st['days']} days scored since {st['since']}): "
+        sc = (f"{st['days']} day{'' if st['days'] == 1 else 's'} scored from {st['first']}" if st['days'] else
+              f"first score, for {st['next_day']}, at the next rebalance")
+        logger.info(f"   \U0001f3c1 C510 tournament (paper, same prices, {sc}): "
                     + ' | '.join(f"{v['label']}{' (traded)' if v['traded'] else ''} {100 * v['ret']:+.2f}%"
                                  for v in st['rows'] if v['on'])
                     + f" [{time.time() - t0:.0f}s]")
@@ -21780,7 +21782,12 @@ class C510Tournament(_C501Store):
                 rows.append(row)
             for row in rows:
                 row['vs_base'] = round(row['ret'] - base_ret, 5) if base_ret is not None else 0.0
+            # C513: the dates shown are the days scored, not the day the books were first
+            # held -- after C512 dropped the 29 Sep row, the record starts with 30 Sep
+            day = lambda ms: datetime.utcfromtimestamp(ms / 1000.0).strftime('%Y-%m-%d')
             return dict(mode='paper' if self.active() else 'off', days=len(self.daily), since=self.since,
+                        first=day(self.daily[0][0]) if self.daily else '',
+                        next_day=day(self.last_day + _C488_DAY) if self.last_day else '',
                         eq0=self.eq0, last_obs=self.last_obs, traded=tn, rows=rows)
 
 
@@ -41853,7 +41860,7 @@ async function pull(){
       else if(tt.mode!=='paper'){q('tourney').innerHTML='<span class="muted">off</span>'}
       else if(!tt.last_obs){q('tourney').innerHTML='<span class="muted">starts at the next rebalance (00:05 UTC)</span>'}
       else{
-        var th='<div class="s muted">'+(tt.days?tt.days+' days scored':'first scores at the next rebalance')+' since '+tt.since+
+        var th='<div class="s muted">'+(tt.days?tt.days+(tt.days==1?' day':' days')+' scored, from '+tt.first:'first score at the next rebalance, for '+tt.next_day)+
           ' \u00b7 each on the same $'+Number(tt.eq0||0).toFixed(2)+' \u00b7 nothing here trades</div>';
         (tt.rows||[]).forEach(function(v){
           if(!v.on&&!v.skipped)return;
@@ -41890,7 +41897,8 @@ async function pull(){
         var cx=b.context||{},pc=function(x){return (x>=0?'+':'')+(100*x).toFixed(1)+'%'};
         [['start','since the book began'],['month','this month']].forEach(function(kv){
           var c=cx[kv[0]];if(!c)return;
-          if(c.pct===undefined){h+='<div class="s muted">'+kv[1]+' ('+c.since+'): '+(100*c.ret).toFixed(2)+'% \u00b7 under a day: too early to judge</div>';return}
+          if(c.pct===undefined){h+='<div class="s muted">'+kv[1]+' ('+c.since+'): '+(c.ret>=0?'+':'')+(100*c.ret).toFixed(2)+'% in '+
+            Number(c.days||0).toFixed(1)+' days \u00b7 under a day: too early to judge</div>';return}
           var rk=c.pct<1?'worse than 99% of spans':c.pct>99?'better than 99% of spans':c.pct<50?('bottom '+c.pct.toFixed(0)+'%'):('top '+(100-c.pct).toFixed(0)+'%');
           h+='<div class="s">'+kv[1]+' ('+c.since+', '+c.days.toFixed(1)+' days): <span class="'+cls(c.pnl)+'">'+sgn(c.pnl)+' ('+
             (c.ret>=0?'+':'')+(100*c.ret).toFixed(2)+'%)</span> <span class="muted">\u00b7 normal for that long: '+pc(c.p10)+' to '+

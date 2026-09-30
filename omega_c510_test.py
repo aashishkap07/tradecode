@@ -313,7 +313,7 @@ ok("FEES: the book's fills, 'book $0.11 | 12 taker fills this run | 0.059% of $1
 ok("LIFETIME: '139tr 44W 95L old scanner | account $-6.20 realised'",
    '139tr 44W 95L old scanner' in row_('LIFETIME') and 'account $-6.20 realised' in row_('LIFETIME'), row_('LIFETIME'))
 ok("RULE: 'C2 N2+N3 | forward test (paper)'", 'C2 N2+N3' in row_('RULE') and 'forward test' in row_('RULE'), row_('RULE'))
-ok("TOURNEY: '1d since .. | base ... | N2+N3* ...'", '1d since' in row_('TOURNEY') and 'N2+N3*' in row_('TOURNEY')
+ok("TOURNEY: '1d from <first scored day> | base ... | N2+N3* ...' (C513: the day scored)", '1d from' in row_('TOURNEY') and 'N2+N3*' in row_('TOURNEY')
    and '+K4+GK' in row_('TOURNEY'), row_('TOURNEY'))
 # the 8-minute summary line and the boot, through the real TradingBot methods
 tb = om.TradingBot.__new__(om.TradingBot)
@@ -336,7 +336,7 @@ ok("the boot prints no 'edge is positive' for the idle scanner while the book tr
 F = om._C460ConsoleFilter()
 rec = lambda m_: logging.LogRecord('OmegaV60', logging.INFO, __file__, 1, m_, None, None)
 ok("the tournament, the book line and the boot RULE line reach the session log",
-   F.filter(rec('   🏁 C510 tournament (paper, same prices, 1 days scored since x): base +0.1%'))
+   F.filter(rec('   🏁 C510 tournament (paper, same prices, 1 day scored from x): base +0.1%'))
    and F.filter(rec('🎯 C510 Book (what trades): 1 positions')) and F.filter(rec('   RULE   C2 N2+N3: C2 = x')))
 cfgL = om.Config(); cfgL.PAPER_MODE = False; cfgL.C488_LIVE_OK = True
 bl = types.SimpleNamespace(cfg=cfgL, portfolio=pf, _c462_state_settled=False)

@@ -16,9 +16,25 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C512 is pushed, not deployed:** the just-finished day comes from Bitget's
-    LIVE candles and is checked against its 23:59 UTC minute before the book
-    trades (`reports/2026-09-30_paper_check_2.md`). A normal pull + restart.
+  - **C513 is pushed, not deployed:** wording only. The tournament's dates
+    are the days it scored ("first score at the next rebalance, for
+    2026-09-30", then "1 day scored, from …"); the C509 under-a-day line has
+    its sign and span ("+0.12% in 0.8 days"). A normal pull + restart
+    (`reports/2026-09-30_c512_screens.md`).
+  - **C512 from 30 Sep 09:32 IST, verified from 4 screenshots (09:35 IST)**
+    against the 03:47 UTC logs push and Bitget's 04:03–04:05 UTC minutes:
+    - the C512 drop line in the log; the tournament holds all 7 books (the
+      same coin counts and gross as `c510_tournament.json`);
+    - 11 of 12 positions exact to the cent at mid prices (TRUMP 1 cent);
+    - marked $250.29 = realised $249.93 + open $0.36. Open = position price
+      P&L $0.43 − the $0.07 exit fee (`unrealized()` nets the closing
+      taker fee);
+    - Savings reserve $85.43 = margin $22.86 + 25% × $250.29;
+    - month $0 of $50; C509 +0.12% (born $250.00, 29 Sep 08:44 UTC).
+    - The just-finished day from Bitget's LIVE candles, checked against its
+      23:59 UTC minute before the book trades
+      (`reports/2026-09-30_paper_check_2.md`), is first exercised at the
+      1 Oct 00:05 UTC rebalance.
   - **C511 from 29 Sep 20:13 IST, verified in paper check #2:**
     - the boot is clean (IDLE record line, no scanner description, "daily
       book" headers, no separate K4);
@@ -172,6 +188,60 @@
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🖥️ 2026-09-30 — THE FIRST C512 SCREENS, AND C513 (WORDING ONLY)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator's 4 screenshots, 09:35 IST, 3 minutes after the C512 restart,**
+are all reconciled (`reports/2026-09-30_c512_screens.md`):
+- **The positions:** quantity × Bitget's 1m price from `c488_book.json`'s
+  entries. 11 of 12 are exact; TRUMP is 1 cent off (the book marks at the
+  bid/ask mid).
+- **The equity:** marked $250.29 = $249.93 + $0.36. The book-open figure
+  nets the 0.06% exit fee, so the position rows (price only) sum to $0.43.
+- **The ledgers:**
+  - tournament rows = the file;
+  - Savings, carry and spot pot to the cent;
+  - FARTCOIN held at f3 7.56%/yr: 27–29 Sep funding, between the 5% exit and
+    the 10% entry.
+- **The month:** the server's calendar is IST (the logpush commits are
+  +0530), so October's anchor is set at the first guard check after
+  00:00 IST 1 Oct, on the marked equity then (the book's own anchor), with a
+  budget of 20% of it.
+
+**C513, two lines that were not exactly true:**
+1. **`C510Tournament.status()`** adds:
+   - `first`: the date of the first scored row;
+   - `next_day`: `last_day` + 1 day.
+
+   The page, the log line and the TOURNEY row use them. Before, they printed
+   `since` (the day the books were first held). After C512 dropped 29 Sep,
+   that would have read "1 days scored since 2026-09-29" about a 30 Sep
+   record. Singular "day" is handled too.
+2. **The C509 under-a-day branch on the page** is now signed with its span:
+   "+0.12% in 0.8 days".
+
+**Checks:**
+- **Tests:**
+  - `omega_c513_test.py`: 13 checks. They cover the real `observe()`, the
+    server's 30 Sep file (drop → next_day 2026-09-30) and the TOURNEY row,
+    and in Chromium the tournament, the singular and the signs.
+  - `omega_c510_test.py`'s TOURNEY check reads "1d from".
+  - The battery: 39 of 40 (exit test: `corpusL/`).
+- **The sandbox boot on the server's state files** (logs push 03:47 UTC,
+  including `state_v60.json`):
+  - it resumed at $249.93 with 12 positions;
+  - the C512 drop line;
+  - 0 warnings or tracebacks;
+  - the page showed both fixes.
+  - **Note:** a boot without `state_v60.json` starts FRESH and resets the
+    copied ledgers. Always copy it for a resume test.
+
+**Open:** unchanged. The 1 Oct 00:05 UTC rebalance is C512's first live test,
+and paper check #3 is at 01:15 UTC (trig_01HVGLAPPnPAkcdtjMiULK4r).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🕰️ 2026-09-30 — PAPER CHECK #2 AND C512: THE BOOK WAS DECIDING ON A DAY-OLD CLOSE
