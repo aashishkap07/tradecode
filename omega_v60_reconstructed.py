@@ -1286,7 +1286,7 @@ class _C462Report:
             self._emit('')
             self._rule(head=True)
             self._raw(f"OMEGA {version}{self.g['sep']}{mode}"
-                      f"{self.g['sep']}Bitget perps")
+                      f"{self.g['sep']}{_c516_name()} perps")
             self._raw(datetime.now().strftime('%d %b %Y   %H:%M'))
             # C498: `equity` here is REALISED; the curve is MARKED. With the
             # book holding positions the two differ by its open P&L, and this
@@ -2342,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C513'
+_OMEGA_VERSION = 'C516'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3073,6 +3073,14 @@ class Config:
         # 'intraday': the C487 engine exactly as it was (the book is closed first).
         # OMEGA_ENGINE=portfolio|intraday in the environment overrides this at start.
         self.C488_ENGINE = 'portfolio'
+        # C516: the venue. 'bitget' (as before) or 'binance' (USDⓈ-M futures and
+        # Binance spot). OMEGA_VENUE=binance in the environment sets it at start.
+        # Phase 1 is PAPER on Binance: its prices, contract rules, history and
+        # funding. The Binance live order path is phase 2 and is not built, so on
+        # Binance the book never trades live money whatever C488_LIVE_OK says.
+        self.VENUE = 'bitget'
+        self.C516_BN_FUND_DAYS = 200            # C516: Binance keeps every funding record; 200 days covers the book's windows
+        self.C501_SPOT_TDS = 0.0                # C516: India's 1% TDS on each spot sale (s.194S), set on Binance
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
         self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
         self.C488_TOPN_40_FROM = 1000.0
@@ -8494,13 +8502,26 @@ class ExchangeManager:
             else:
                 logger.info("💰 LIVE Mode")
 
-            self.exchange = ccxt.bitget({
-                'apiKey': self.cfg.API_KEY,
-                'secret': self.cfg.API_SECRET,
-                'password': self.cfg.API_PASSWORD,
-                'enableRateLimit': True,
-                'options': {'defaultType': 'swap', 'defaultSubType': 'USDT'},
-            })
+            if _c516_venue(self.cfg) == 'binance':
+                if not self.cfg.PAPER_MODE:
+                    # C516: nothing may reach Binance with a key before the phase-2 order path
+                    # exists and is tested -- not the book, not the idle intraday scanner
+                    logger.error("🛑 C516 LIVE mode on Binance is not built (phase 2): run OMEGA_MODE=paper, "
+                                 "or remove OMEGA_VENUE=binance to trade on Bitget")
+                    return False
+                # C516: Binance USDⓈ-M. No key in phase 1 (paper reads public data only)
+                self.exchange = ccxt.binanceusdm({
+                    'enableRateLimit': True,
+                    'options': {'defaultType': 'future'},
+                })
+            else:
+                self.exchange = ccxt.bitget({
+                    'apiKey': self.cfg.API_KEY,
+                    'secret': self.cfg.API_SECRET,
+                    'password': self.cfg.API_PASSWORD,
+                    'enableRateLimit': True,
+                    'options': {'defaultType': 'swap', 'defaultSubType': 'USDT'},
+                })
 
             markets = self.exchange.load_markets()
             self.markets = {
@@ -8508,8 +8529,9 @@ class ExchangeManager:
                 if m.get('swap') and m.get('quote') == 'USDT' and m.get('active')
             }
             self._c425_markets_at = time.time()
-            logger.info(f"✅ Connected | {len(self.markets)} futures markets")
-            logger.info(f"📊 Bitget Fees: Maker {self.cfg.MAKER_FEE_PCT}% | Taker {self.cfg.TAKER_FEE_PCT}%")
+            logger.info(f"✅ Connected | {len(self.markets)} futures markets"
+                        + (" (Binance USDⓈ-M)" if _c516_venue(self.cfg) == 'binance' else ""))
+            logger.info(f"📊 {_c516_name(self.cfg)} Fees: Maker {self.cfg.MAKER_FEE_PCT}% | Taker {self.cfg.TAKER_FEE_PCT}%")
             logger.info(f"📊 Market type: PERPETUAL FUTURES (swap) — verified")
             if self.cfg.USE_LIMIT_ORDERS:
                 # C503: the book trades with market orders; this is the scanner's setting
@@ -8662,6 +8684,11 @@ class ExchangeManager:
                 return hit[0], hit[1], hit[2]
             t = self.exchange.fetch_ticker(symbol)
             bid, ask = t.get('bid'), t.get('ask')
+            if not (bid and ask):
+                # C516: Binance USDⓈ-M's ticker has no bid/ask; its order book does
+                ob = self.exchange.fetch_order_book(symbol, 5)
+                bid = (ob.get('bids') or [[None]])[0][0]
+                ask = (ob.get('asks') or [[None]])[0][0]
             if bid and ask and float(ask) > float(bid) > 0:
                 c[symbol] = (float(bid), float(ask), 'book', now)
                 return float(bid), float(ask), 'book'
@@ -18662,6 +18689,71 @@ class CategoryClassifier:
 # numbers, so what trades is exactly what was measured.
 
 _C488_DAY = 86400000
+
+# ═══ C516: THE VENUE ══════════════════════════════════════════════════════
+# The operator trades from India. Bitget stopped onboarding Indian users on
+# 6 Feb 2026 and is not FIU-registered; Binance is (reports/
+# 2026-09-30_binance_vs_bitget.md). The research itself was measured on
+# Binance's archive. Phase 1 runs the paper book, the ledgers and the shadow
+# on Binance's public data; the Binance live order path is phase 2.
+_C516_VENUES = ('bitget', 'binance')
+# OMEGA_BN_FAPI points the futures feeds elsewhere: Binance's futures testnet
+# (https://testnet.binancefuture.com) for phase 2, or a test's stand-in
+_C516_BN_FAPI = os.environ.get('OMEGA_BN_FAPI', '').strip() or 'https://fapi.binance.com'
+_C516_BN_SPOT = ('https://api.binance.com', 'https://data-api.binance.vision')
+# what changes with the venue (Binance FAQ 360033544231: USDⓈ-M maker 0.02%,
+# taker 0.05%; spot 0.10%; spot's order minimum $5; India deducts 1% TDS on
+# each spot sale made through an FIU-registered exchange)
+_C516_VENUE_DEFAULTS = {'binance': dict(TAKER_FEE_PCT=0.05, MAKER_FEE_PCT=0.02, C501_SPOT_FEE=0.001,
+                                        C501_SPOT_TDS=0.01, C502_SPOT_FLOOR=6.0, C502_SPOT_MIN_ORDER=5.0)}
+
+
+def _c516_venue(cfg=None):
+    cfg = cfg if cfg is not None else (_c467_cfg_ref[0] if _c467_cfg_ref and _c467_cfg_ref[0] else None)
+    v = str(getattr(cfg, 'VENUE', 'bitget') or 'bitget').strip().lower()
+    return v if v in _C516_VENUES else 'bitget'
+
+
+def _c516_name(cfg=None):
+    return 'Binance' if _c516_venue(cfg) == 'binance' else 'Bitget'
+
+
+def _c516_bn_get(base, path, params, tries=3):
+    """a Binance public GET: the parsed JSON, or None after `tries` failures.
+    Binance answers an error with an HTTP 4xx and {'code': -1121, 'msg': ...};
+    451/403 means the caller's country is refused."""
+    for k in range(tries):
+        try:
+            r = requests.get(base + path, params=params, timeout=12)
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        if k + 1 < tries:
+            time.sleep(0.6 * (k + 1))
+    return None
+
+
+def _c516_bn_spot_book(tries=3):
+    """Binance spot bid/ask for every pair, one call: {'BTCUSDT': (bid, ask)}.
+    api.binance.com first; data-api.binance.vision serves the same public
+    market data if the first is refused."""
+    for base in _C516_BN_SPOT:
+        d = _c516_bn_get(base, '/api/v3/ticker/bookTicker', {}, tries)
+        if isinstance(d, list):
+            out = {}
+            for x in d:
+                try:
+                    b, a = float(x.get('bidPrice') or 0), float(x.get('askPrice') or 0)
+                except (TypeError, ValueError):
+                    continue
+                if b > 0 and a > 0:
+                    out[str(x.get('symbol', ''))] = (b, a)
+            if out:
+                return out
+    return {}
+
+
 _C488_NOT_CRYPTO = {'USDC', 'BUSD', 'TUSD', 'USDP', 'FDUSD', 'USDE', 'USD1', 'RLUSD', 'XUSD', 'BFUSD',
                     'DAI', 'PYUSD', 'EUR', 'GBP', 'AUD', 'BTCDOM', 'DEFI', 'BLUEBIRD', 'FOOTBALL',
                     'XAUT', 'PAXG', 'XAU', 'XAG'}
@@ -19106,6 +19198,9 @@ class C488Engine:
         self.born = {}            # C509: when the book began and its equity then (ts, eq, approx)
         self.tally = {}           # C510: every position the book has closed: n, wins, losses, net $
         self.fills_run = [0, 0.0, 0.0]   # C510: this process's fills: count, fees $, notional $
+        self.venue = _c516_venue(self.cfg)   # C516: where the prices, rules and history come from
+        self.venue_block = ''     # C516: set when a saved book belongs to the other venue
+        self._bn_fi, self._bn_fi_at = None, 0.0   # C516: Binance funding intervals (fundingInfo)
         self.path = os.path.join(BASE_PATH, self.STATE_FILE)
         self.load()
 
@@ -19206,6 +19301,16 @@ class C488Engine:
                     self.live[k] = float((d.get('live') or {}).get(k) or 0.0)
                 for k in ('drift_loud', 'corrections', 'bills'):
                     self.live[k] = int((d.get('live') or {}).get(k) or 0)
+                # C516: a book is priced on the venue it was built on. Its positions
+                # are that venue's contracts (Bitget's PEPE is Binance's 1000PEPE), so
+                # another venue's prices would mark it wrong. It is not traded, marked
+                # or charged funding until a fresh start begins the new venue flat.
+                was = self._saved_venue = str(d.get('venue') or 'bitget')
+                if self.book and was != self.venue:
+                    self.venue_block = (f"the book holds {len(self.book)} {was.capitalize()} positions but this run "
+                                        f"reads {_c516_name(self.cfg)}: it will not trade or mark them. To change "
+                                        f"venue, start fresh (touch data/FRESH_START, then restart)")
+                    logger.warning(f"🛑 C516 {self.venue_block}")
         except Exception as e:
             logger.warning(f"⚠️ C488 book could not be loaded ({type(e).__name__}: {e}) -- starting flat")
             self.book = {}
@@ -19218,6 +19323,7 @@ class C488Engine:
                          closed=self.closed[-50:], topn=int(getattr(self, '_topn', 0) or 0),
                          bill_since=int(self.bill_since or 0), bill_seen=self.bill_seen[-2000:],
                          month=self.month, born=self.born, tally=self.tally,
+                         venue=(getattr(self, '_saved_venue', '') or 'bitget') if self.venue_block else self.venue,
                          live={k: self.live.get(k) for k in ('drift_total', 'funding_live', 'funding_other',
                                                              'drift_loud', 'corrections', 'bills')},
                          saved=time.time())
@@ -19313,6 +19419,8 @@ class C488Engine:
     def refresh_marks(self, force=False):
         if not force and time.time() - self._marks_at < 30:
             return bool(self.marks)
+        if self.venue == 'binance':
+            return self._bn_refresh_marks()
         d = self._get('tickers', {'productType': 'USDT-FUTURES'})
         if not d:
             return bool(self.marks)
@@ -19362,6 +19470,10 @@ class C488Engine:
         base = sym.split('/')[0].upper()
         if base in _C488_NOT_CRYPTO:
             return False
+        if self.venue == 'binance':
+            kind = str((self.rules.get(sym) or {}).get('kind') or '')
+            if kind and kind != 'COIN':            # C516: INDEX (BTCDOM ...), PREMARKET, TradFi underlyings
+                return False
         try:
             return self.bot._c408_asset_class(sym) == 'crypto'
         except Exception:
@@ -19411,6 +19523,8 @@ class C488Engine:
         ETH sold, gross 0.40x); nothing else tried does. A failure now raises,
         so the rebalance retries in 10 minutes instead of trading on a partial
         picture. An EMPTY answer (a new coin with no history) is not a failure."""
+        if self.venue == 'binance':
+            return self._bn_history(sym, days)
         raw = self._raw(sym)
         tries = int(getattr(self.cfg, 'C488_HIST_TRIES', 5))
         out, end = {}, int(time.time() * 1000)
@@ -19481,6 +19595,132 @@ class C488Engine:
                 raise RuntimeError(f"{sym.split('/')[0]} daily close not final: {c_day:g} vs its last minute "
                                    f"{c_min:g} (C512)")
 
+    # ── C516: the same inputs from Binance USDⓈ-M ─────────────────────────
+    def _bn_refresh_marks(self):
+        """every USDT perpetual's bid/ask (bookTicker), last price and 24 h quote
+        volume (ticker/24hr) and current funding rate (premiumIndex): three calls,
+        weight 55 of Binance's 2400 a minute"""
+        bt = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/ticker/bookTicker', {})
+        t24 = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/ticker/24hr', {})
+        pi = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/premiumIndex', {})
+        if not isinstance(bt, list) or not isinstance(t24, list):
+            return bool(self.marks)
+        last = {str(x.get('symbol')): x for x in t24}
+        frs = {str(x.get('symbol')): x for x in pi} if isinstance(pi, list) else {}
+        m = {}
+        for x in bt:
+            try:
+                raw = str(x.get('symbol') or '')
+                if not raw.endswith('USDT'):
+                    continue                        # dated futures (BTCUSDT_260925) and other quotes
+                sym = self._ccxt(raw)
+                t = last.get(raw) or {}
+                f = frs.get(raw)
+                fr = float(f.get('lastFundingRate') or 0) if f else float((self.marks.get(sym) or {}).get('fr', 0.0))
+                m[sym] = dict(bid=float(x.get('bidPrice') or 0), ask=float(x.get('askPrice') or 0),
+                              last=float(t.get('lastPrice') or 0), fr=fr, vol=float(t.get('quoteVolume') or 0))
+            except Exception:
+                continue
+        if m:
+            self.marks = m
+            self._marks_at = time.time()
+        return bool(self.marks)
+
+    def _bn_refresh_rules(self):
+        """the contract table from exchangeInfo: the MARKET order step, minimum and
+        maximum (MARKET_LOT_SIZE), the minimum order value (MIN_NOTIONAL: $50 BTC,
+        $20 ETH/LINK/LTC/BCH/ETC, $5 the rest, read on the operator's server
+        30 Sep 2026) and whether it trades. TRADING reads as 'normal'."""
+        d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/exchangeInfo', {})
+        r = {}
+        for x in ((d or {}).get('symbols') or []) if isinstance(d, dict) else []:
+            try:
+                if x.get('contractType') != 'PERPETUAL' or x.get('quoteAsset') != 'USDT' \
+                        or str(x.get('marginAsset') or 'USDT') != 'USDT':
+                    continue
+                f = {y.get('filterType'): y for y in (x.get('filters') or [])}
+                lot = f.get('LOT_SIZE') or {}
+                mk = f.get('MARKET_LOT_SIZE') or lot
+                r[self._ccxt(str(x['symbol']))] = dict(
+                    step=float(mk.get('stepSize') or lot.get('stepSize') or 0.0),
+                    min_qty=float(mk.get('minQty') or lot.get('minQty') or 0.0),
+                    min_usdt=float((f.get('MIN_NOTIONAL') or {}).get('notional') or 0.0),
+                    max_mkt=float(mk.get('maxQty') or 0.0),
+                    status='normal' if x.get('status') == 'TRADING' else str(x.get('status') or '').lower(),
+                    kind=str(x.get('underlyingType') or ''))
+            except Exception:
+                continue
+        if len(r) >= max(50, len(self.rules) // 2):     # a short read never replaces a full table
+            self.rules, self._rules_at = r, time.time()
+        return bool(self.rules)
+
+    def _bn_history(self, sym, days=330):
+        """C499's contract on Binance: completed UTC days {day_ms: (close, quote
+        volume, open, high, low)} and funding {ms: rate}, complete or it raises.
+        One klines call holds 330 days (limit 1000); funding pages forward from
+        C516_BN_FUND_DAYS ago, 1000 records a page (Binance keeps them all)."""
+        raw = self._raw(sym)
+        base = sym.split('/')[0]
+        tries = int(getattr(self.cfg, 'C488_HIST_TRIES', 5))
+        today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/klines',
+                         {'symbol': raw, 'interval': '1d', 'startTime': today - days * _C488_DAY,
+                          'limit': min(1000, days + 2)}, tries)
+        if not isinstance(d, list):
+            raise RuntimeError(f"{base} daily candles did not load")
+        out = {}
+        for x in d:
+            t = int(x[0])
+            if t < today:                           # the day still running is not a day yet
+                out[t] = (float(x[4]), float(x[7]), float(x[1]), float(x[2]), float(x[3]))
+        self._bn_check_last_day(sym, raw, out, tries)
+        fund = {}
+        st = today - int(getattr(self.cfg, 'C516_BN_FUND_DAYS', 200)) * _C488_DAY
+        for _ in range(20):
+            f = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate', {'symbol': raw, 'startTime': st, 'limit': 1000},
+                             tries)
+            if not isinstance(f, list):
+                raise RuntimeError(f"{base} funding did not load")
+            for x in f:
+                fund[int(x['fundingTime'])] = float(x['fundingRate'])
+            if len(f) < 1000:
+                break
+            st = max(int(x['fundingTime']) for x in f) + 1
+        return out, fund
+
+    def _bn_check_last_day(self, sym, raw, out, tries):
+        """C512 on Binance: the just-finished day's close must equal its 23:59 UTC
+        minute's close, or the rebalance waits 10 minutes (it raises)"""
+        today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        yday = today - _C488_DAY
+        if yday not in out:
+            return
+        m = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/klines',
+                         {'symbol': raw, 'interval': '1m', 'startTime': today - 60000, 'limit': 1}, tries)
+        if not isinstance(m, list):
+            raise RuntimeError(f"{sym.split('/')[0]} last-minute candle did not load")
+        last = [x for x in m if int(x[0]) == today - 60000]
+        if last:
+            c_day, c_min = out[yday][0], float(last[0][4])
+            if c_min > 0 and abs(c_day / c_min - 1) > 1e-9:
+                raise RuntimeError(f"{sym.split('/')[0]} daily close not final: {c_day:g} vs its last minute "
+                                   f"{c_min:g} (C512)")
+
+    def _bn_fund_interval(self, sym):
+        """hours between settlements. Binance's fundingInfo lists only the
+        contracts whose interval was changed from the default 8 h."""
+        if self._bn_fi is None or time.time() - self._bn_fi_at > 43200:
+            d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingInfo', {}, 2)
+            if isinstance(d, list):
+                fi = {}
+                for x in d:
+                    try:
+                        fi[self._ccxt(str(x['symbol']))] = int(x.get('fundingIntervalHours') or 8)
+                    except Exception:
+                        continue
+                self._bn_fi, self._bn_fi_at = fi, time.time()
+        return int((self._bn_fi or {}).get(sym, 8))
+
     def matrices(self, syms):
         hist = {}
         with ThreadPoolExecutor(max_workers=8) as pool:
@@ -19527,6 +19767,8 @@ class C488Engine:
 
     # ── the book ──────────────────────────────────────────────────────────
     def unrealized(self):
+        if self.venue_block:
+            return 0.0                              # C516: another venue's positions cannot be priced here
         tot = 0.0
         taker = float(self.cfg.TAKER_FEE_PCT) / 100.0
         for s, p in list(self.book.items()):
@@ -19650,7 +19892,7 @@ class C488Engine:
             return 0.0
         if not self._tradable(sym, reduce_only):
             self._say(f"status{sym}{datetime.utcnow():%Y%m%d}",
-                      f"   ⚠️ C488 {sym.split('/')[0]}: Bitget lists the contract as "
+                      f"   ⚠️ C488 {sym.split('/')[0]}: {_c516_name(self.cfg)} lists the contract as "
                       f"'{(self.rules.get(sym) or {}).get('status', 'missing')}' -- no "
                       f"{'close' if reduce_only else 'new position'} today", 'warning')
             return 0.0
@@ -19774,6 +20016,8 @@ class C488Engine:
         last table (or ccxt's, if there never was one)."""
         if not force and self.rules and time.time() - self._rules_at < 600:
             return True
+        if self.venue == 'binance':
+            return self._bn_refresh_rules()
         d = self._get('contracts', {'productType': self.PT})
         r = {}
         for x in (d or []):
@@ -19820,6 +20064,12 @@ class C488Engine:
         mode. A flat hedge-mode account is switched; one that holds anything
         waits, says why, and is re-checked every 10 minutes."""
         L = self.live
+        if self.venue == 'binance':
+            # C516: phase 1 is paper. Nothing here knows Binance's private API yet.
+            L['why'] = 'the Binance live order path is phase 2 and is not built'
+            self._say('bnlive', "\U0001f6d1 C516 the book will not trade live on Binance: "
+                                "the Binance live order path is phase 2 and is not built", 'warning')
+            return False
         if L.get('ready'):
             return True
         if time.time() - float(L.get('checked_at') or 0.0) < 600:
@@ -20225,11 +20475,15 @@ class C488Engine:
         for s, p in list(self.book.items()):
             iv = self.fund_iv.get(s)
             if not iv or time.time() - iv[1] > 43200:
-                d = self._get('current-fund-rate', {'symbol': self._raw(s), 'productType': 'USDT-FUTURES'}, tries=2)
-                try:
-                    hrs = int((d or [{}])[0].get('fundingRateInterval') or 8)
-                except Exception:
-                    hrs = 8
+                if self.venue == 'binance':
+                    hrs = self._bn_fund_interval(s)
+                else:
+                    d = self._get('current-fund-rate', {'symbol': self._raw(s), 'productType': 'USDT-FUTURES'},
+                                  tries=2)
+                    try:
+                        hrs = int((d or [{}])[0].get('fundingRateInterval') or 8)
+                    except Exception:
+                        hrs = 8
                 self.fund_iv[s] = iv = (max(1, hrs), time.time())
             step = iv[0] * 3600000
             nxt = self.fund_next.get(s)
@@ -20302,6 +20556,7 @@ class C488Engine:
             self.open0 = None                                              # C498
             self.born = {}                                                 # C509
             self.tally = {}                                                # C510
+            self.venue_block = ''                                          # C516: flat, on this run's venue
         self.save()
 
     def tick(self, can_trade=True):
@@ -20316,6 +20571,9 @@ class C488Engine:
                 self._say('off', f"\U0001f4bc C488 engine is '{self.mode()}' -- closing its "
                                  f"{len(self.book)} positions")
                 self.flatten('engine switched off')
+            return
+        if self.venue_block:
+            self._say('venue', f"\U0001f6d1 C516 {self.venue_block}", 'warning')
             return
         if not self.cfg.PAPER_MODE and not bool(getattr(self.cfg, 'C488_LIVE_OK', False)):
             self._say('live', "\U0001f6d1 C488 engine will NOT trade live money until C488_LIVE_OK = True "
@@ -20798,6 +21056,8 @@ class C489Shadow:
         return raw
 
     def _pull(self, raw, hours):
+        if _c516_venue(self.cfg) == 'binance':
+            return self._bn_pull(raw, hours)
         end = int(time.time() * 1000)
         start = end - hours * 3600000
         got = {}
@@ -20826,6 +21086,31 @@ class C489Shadow:
                 fund.update({int(x['fundingTime']): float(x['fundingRate']) for x in d})
                 if len(d) < 100:
                     break
+        return raw, got, flow, fund
+
+    def _bn_pull(self, raw, hours):
+        """C516: the same three inputs from Binance. Its 1-hour candles carry the
+        taker-buy volume of every hour, so the flow share (taker buys / all
+        volume, Bitget's buyVolume / (buy + sell)) exists for every coin and every
+        hour of history -- the full model no longer waits a week for it."""
+        now_h = int(time.time() * 1000) // 3600000 * 3600000
+        got, flow = {}, {}
+        d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/klines',
+                         {'symbol': raw, 'interval': '1h', 'startTime': now_h - hours * 3600000,
+                          'limit': min(1500, hours + 2)}) or []
+        for x in d if isinstance(d, list) else []:
+            t = int(x[0])
+            if t >= now_h:
+                continue                            # the hour still running
+            got[t] = [float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[7])]
+            v = float(x[5])
+            if v > 0:
+                flow[t] = float(x[9]) / v
+        fund = {}
+        if hours > 48 or raw not in self.fund:
+            f = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',
+                             {'symbol': raw, 'startTime': now_h - 31 * 86400000, 'limit': 1000}) or []
+            fund.update({int(x['fundingTime']): float(x['fundingRate']) for x in (f if isinstance(f, list) else [])})
         return raw, got, flow, fund
 
     def refresh(self):
@@ -21033,6 +21318,7 @@ class C489Shadow:
                         last_hour=datetime.utcfromtimestamp(self.last_hour / 1000).strftime('%Y-%m-%d %H:00') if self.last_hour else '',
                         flow_hours=flow_h, flow_week=week, flow_served=served, warming=week < 30, gate=self.gate_last,
                         model=self.model_used, start_equity=round(float(self.start_equity or 0.0), 2),
+                        venue=_c516_name(self.cfg),
                         M1=self.record('M1'), M1g=self.record('M1g'))
 
 
@@ -21046,6 +21332,15 @@ class C489Shadow:
 # the operator's CA has seen it and the C488 implementation check is done.
 _C490_SPOT_COST = 0.0012        # spot taker 0.10% + half-spread 0.02%
 _C490_PERP_COST = 0.0008        # perp taker 0.06% + half-spread 0.02%
+
+
+def _c516_perp_cost(cfg=None):
+    """C516: the carry ledger's perp leg costs the venue's own taker fee + 0.02%
+    half-spread (Bitget 0.06% -> 0.08%, Binance 0.05% -> 0.07%). The research
+    replay (_c490_carry_sim) keeps the research's 0.08%."""
+    if _c516_venue(cfg) == 'binance':
+        return float(getattr(cfg, 'TAKER_FEE_PCT', 0.05)) / 100.0 + 0.0002
+    return _C490_PERP_COST
 
 
 def _c490_decide(held, f3, ok, enter=0.10, exit_=0.05, cap=8):
@@ -21204,7 +21499,9 @@ class C490Carry:
 
     # ── market data ──────────────────────────────────────────────────────
     def spot_prices(self):
-        """Bitget spot mids, one call: {'BTCUSDT': 64000.5, ...}"""
+        """Bitget spot mids, one call: {'BTCUSDT': 64000.5, ...} (C516: Binance's on Binance)"""
+        if _c516_venue(self.cfg) == 'binance':
+            return {k: (b + a) / 2.0 for k, (b, a) in _c516_bn_spot_book().items()}
         for k in range(3):
             try:
                 d = requests.get(self.SPOT_API, timeout=12).json().get('data') or []
@@ -21261,7 +21558,7 @@ class C490Carry:
     # ── the ledger ───────────────────────────────────────────────────────
     def _close(self, raw, s_px, p_px, why, now_ms):
         p = self.pos.pop(raw)
-        cost = (_C490_SPOT_COST + _C490_PERP_COST) * p['qp'] * p_px
+        cost = (_C490_SPOT_COST + _c516_perp_cost(self.cfg)) * p['qp'] * p_px
         self.fees += cost
         self.trades += 1
         self.closed = (self.closed + [dict(coin=raw[:-4], why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
@@ -21316,7 +21613,7 @@ class C490Carry:
             r = raws[j]
             sym_s = self.spot_of(r, spot)
             n = P['size'] * eq_now
-            cost = (_C490_SPOT_COST + _C490_PERP_COST) * n
+            cost = (_C490_SPOT_COST + _c516_perp_cost(self.cfg)) * n
             self.pos[r] = dict(spot=sym_s, qs=n / spot[sym_s], qp=n / perp[r], s=spot[sym_s], p=perp[r],
                                n=n, f3=float(f3[j]), opened=now_ms, marked=now_ms, pnl=-cost, funding=0.0)
             self.fees += cost
@@ -21342,7 +21639,7 @@ class C490Carry:
         e.refresh_marks(force=True)
         spot = self.spot_prices()
         if not spot:
-            raise RuntimeError('Bitget spot tickers unavailable')
+            raise RuntimeError(f'{_c516_name(self.cfg)} spot tickers unavailable')
         P = self.params()
         syms = list(dict.fromkeys(e.candidates(P['topn'], mult=2)        # C499: the ledger keeps its own width
                                   + [C488Engine._ccxt(r) for r in self.pos]))
@@ -21914,6 +22211,7 @@ class C501Spot(_C501Store):
             self.eq_last = float(d.get('eq_last') or 0.0)
             self.last_run = str(d.get('last_run') or '')
             self.fees = float(d.get('fees') or 0.0)
+            self.tds = float(d.get('tds') or 0.0)           # C516
             self.interest = float(d.get('interest') or 0.0)
             self.trades = int(d.get('trades') or 0)
             self.closed = list(d.get('closed') or [])[-50:]
@@ -21928,6 +22226,7 @@ class C501Spot(_C501Store):
             self.cash, self.start_equity, self.pos, self.daily, self.eq_last = 0.0, 0.0, {}, {}, 0.0
             self.last_run, self.fees, self.interest, self.trades, self.closed, self.info = '', 0.0, 0.0, 0, [], {}
             self._last_ts = 0.0
+            self.tds = 0.0                                    # C516
         if save:
             self.save()
 
@@ -21936,13 +22235,19 @@ class C501Spot(_C501Store):
             d = dict(cash=self.cash, start_equity=self.start_equity, pos=self.pos,
                      daily={str(a): b for a, b in self.daily.items()}, eq_last=self.eq_last,
                      last_run=self.last_run, fees=self.fees, interest=self.interest, trades=self.trades,
-                     closed=self.closed[-50:], info=self.info, last_ts=self._last_ts)
+                     closed=self.closed[-50:], info=self.info, last_ts=self._last_ts, tds=self.tds)
         self._write(d)
 
     # ── prices ───────────────────────────────────────────────────────────
     def book(self, force=False):
-        """Bitget spot bid/ask for every pair, one call, at most once a minute"""
+        """Bitget spot bid/ask for every pair, one call, at most once a minute
+        (C516: Binance's on Binance)"""
         if not force and self.bk and time.time() - self._book_at < 60:
+            return self.bk
+        if _c516_venue(self.cfg) == 'binance':
+            out = _c516_bn_spot_book()
+            if out:
+                self.bk, self._book_at = out, time.time()
             return self.bk
         for k in range(3):
             try:
@@ -21984,7 +22289,7 @@ class C501Spot(_C501Store):
             self.eq_last = self.start_equity
         bk = self.book(force=True)
         if not bk:
-            raise RuntimeError('Bitget spot tickers unavailable')
+            raise RuntimeError(f'{_c516_name(self.cfg)} spot tickers unavailable')
         topn = int(getattr(self.cfg, 'C501_SPOT_TOPN', 20))
         M = e.cached_matrices(topn)
         if M is None:
@@ -22029,8 +22334,13 @@ class C501Spot(_C501Store):
             if want == 0.0 or (cur - want >= mn and cur - want > band * want):
                 q = p['qty'] if want == 0.0 else (cur - want) / bid
                 val = q * bid
-                self.cash += val * (1 - fee)
+                # C516: India withholds 1% of each spot sale as TDS (s.194S) on an
+                # FIU-registered exchange. It is tax paid in advance -- creditable on
+                # the return -- but it is cash the pot no longer has.
+                tds = val * float(getattr(self.cfg, 'C501_SPOT_TDS', 0.0) or 0.0)
+                self.cash += val * (1 - fee) - tds
                 self.fees += val * fee
+                self.tds += tds
                 pnl = q * (bid - p['avg']) - val * fee
                 p['qty'] -= q
                 n_tr += 1
@@ -22127,6 +22437,8 @@ class C501Spot(_C501Store):
                         interest=round(self.interest, 4), fees=round(self.fees, 4), trades=self.trades,
                         n=len(self.pos), positions=pos, last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}",
                         info=self.info, record=_c490_record(x),
+                        venue=_c516_name(self.cfg), fee_pct=round(100 * float(getattr(self.cfg, 'C501_SPOT_FEE', 0.0008)), 3),
+                        tds=round(self.tds, 4), tds_pct=round(100 * float(getattr(self.cfg, 'C501_SPOT_TDS', 0.0) or 0.0), 2),
                         apr=round(float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)), 4))
 
 
@@ -40579,6 +40891,16 @@ def startup():
         except:
             pass
 
+    # C516: the venue from the environment (a systemd override), with its fees and minimums
+    _ven516 = os.environ.get('OMEGA_VENUE', '').strip().lower()
+    if _ven516 in _C516_VENUES:
+        cfg.VENUE = _ven516
+    for _k516, _v516 in _C516_VENUE_DEFAULTS.get(_c516_venue(cfg), {}).items():
+        setattr(cfg, _k516, _v516)
+    print(f"  🏦 venue: {_c516_name(cfg).upper()}"
+          + (" (USDⓈ-M futures; PAPER only -- the Binance live order path is phase 2, not built)"
+             if _c516_venue(cfg) == 'binance' else " (USDT-M futures)"))
+
     # C488: which engine trades. OMEGA_ENGINE overrides the Config default.
     _eng488 = os.environ.get('OMEGA_ENGINE', '').strip().lower()
     if _eng488 in ('portfolio', 'intraday'):
@@ -41780,7 +42102,7 @@ async function pull(){
             ' <span class="muted">'+r.days+'d \u00b7 '+r.trades+' trades'+(r.t!==undefined?' \u00b7 t '+r.t+' \u00b7 '+r.npos+'/4':'')+
             (r.eligible?' \u00b7 <b class="good">ELIGIBLE</b>':'')+'</span></div>'};
         q('shadow').innerHTML='<div class="s muted">duplicate paper account from '+money(sh.start_equity)+' \u2014 never touches the real one \u00b7 '+sh.coins+' coins \u00b7 model '+
-          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model needs 30 coins with a week of taker flow: '+(sh.flow_week||0)+' have it; Bitget serves flow for '+(sh.flow_served||0)+' of '+sh.coins:'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
+          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model needs 30 coins with a week of taker flow: '+(sh.flow_week||0)+' have it; '+(sh.venue||'Bitget')+' serves flow for '+(sh.flow_served||0)+' of '+sh.coins:'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
           line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g);
       }
     }
@@ -41808,11 +42130,13 @@ async function pull(){
           if(sp.mode!=='paper'){q('spotpot').innerHTML='<span class="muted">off</span>'}
           else{
             var rs=sp.record||{},hs='<div class="s muted">trend long or flat on the top 20, each coin in its own volatility units, the pot held at a 20% volatility set point \u00b7 cash earns Savings '+
-              (100*sp.apr).toFixed(2)+'% \u00b7 fees 0.08% (BGB) \u00b7 paper pot of '+money(sp.start_equity||250)+' \u2014 separate from the account \u00b7 runs daily '+
+              (100*sp.apr).toFixed(2)+'% \u00b7 fees '+(sp.fee_pct!==undefined?Number(sp.fee_pct).toFixed(2)+'%'+(sp.venue==='Binance'?'':' (BGB)'):'0.08% (BGB)')+
+              (sp.tds_pct?' \u00b7 '+sp.tds_pct+'% TDS on each sale (India)':'')+' \u00b7 paper pot of '+money(sp.start_equity||250)+' \u2014 separate from the account \u00b7 runs daily '+
               sp.next_run_utc+' UTC'+(sp.last_run?' \u00b7 last '+sp.last_run:' \u00b7 first run pending')+'</div>';
             if(sp.start_equity){hs+='<div style="margin:4px 0"><b>'+money(sp.usd)+'</b> <span class="'+cls(sp.pnl_usd)+'">'+sgn(sp.pnl_usd)+' ('+(sp.pct>=0?'+':'')+
               Number(sp.pct).toFixed(2)+'%)</span> <span class="muted">'+sp.n+' held \u00b7 '+sp.invested_pct+'% invested \u00b7 cash '+money(sp.cash)+
-              ' (interest +'+money(sp.interest)+') \u00b7 fees '+money(sp.fees)+' \u00b7 '+(rs.days||0)+'d</span></div>'}
+              ' (interest +'+money(sp.interest)+') \u00b7 fees '+money(sp.fees)+(sp.tds?' \u00b7 TDS withheld '+money(sp.tds)+' (creditable against your tax)':'')+
+              ' \u00b7 '+(rs.days||0)+'d</span></div>'}
             (sp.positions||[]).forEach(function(p){hs+='<div class="s">'+p.coin+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">'+p.days+'d</span></div>'});
             q('spotpot').innerHTML=hs;
           }

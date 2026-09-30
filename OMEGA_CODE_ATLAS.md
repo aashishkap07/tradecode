@@ -16,6 +16,14 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
+  - **C516 is pushed, not deployed:** paper on Binance behind `OMEGA_VENUE=binance`
+    (default Bitget, so a plain pull changes nothing). Steps in
+    `reports/2026-09-30_c516_binance_phase1.md`:
+    - pull + restart;
+    - the read-only `deploy/omega_binance_check.py 500` on the VPS;
+    - after paper check #3 and my review of the check, the switch: drop-in
+      `c516-venue.conf` (OMEGA_VENUE=binance, OMEGA_CAPITAL=500) + FRESH_START.
+    (C514 and C515 are research tags.)
   - **C513 from 30 Sep 10:05 IST, verified from 5 screenshots (10:54 IST)**
     against the 05:47 UTC logs push and Bitget's minutes
     (`reports/2026-09-30_c514_exits_and_accounts.md`):
@@ -195,8 +203,89 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
 | 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
-| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). Still needs: USDⓈ-M enabled on the operator's account, then the two-phase port (`reports/2026-09-30_binance_vs_bitget.md`). |
+| 21 | **Venue for live money: Binance vs Bitget (India)** | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔀 2026-09-30 — C516: PHASE 1 OF THE MOVE TO BINANCE (PAPER, BEHIND OMEGA_VENUE)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Operator's checks:**
+- the VPS reaches `fapi.binance.com` (200);
+- the live minimums: BTC $50; ETH, LINK, LTC, BCH and ETC $20 (all 5
+  confirmed on the VPS); the rest $5;
+- USDⓈ-M futures are open on their account.
+- **Capital answer:** all of it in USDⓈ-M futures (a sub-account), nothing
+  in spot (1% TDS); **$500 recommended**.
+
+**C516 (`reports/2026-09-30_c516_binance_phase1.md`):**
+- **Config:** `VENUE` ('bitget' default | 'binance'), set by `OMEGA_VENUE`
+  in main() before the bot is built.
+- **Venue defaults** (`_C516_VENUE_DEFAULTS['binance']`): taker 0.05%,
+  maker 0.02%, spot fee 0.10%, `C501_SPOT_TDS` 0.01, spot floor $6 and
+  order minimum $5.
+- **Helpers:**
+  - `_c516_venue`, `_c516_name`;
+  - `_c516_bn_get` (Binance public GET, None on failure);
+  - `_c516_bn_spot_book` (api.binance.com, then data-api.binance.vision);
+  - `_C516_BN_FAPI` (env `OMEGA_BN_FAPI`, for the testnet/tests);
+  - `_c516_perp_cost`.
+- **ExchangeManager:** `ccxt.binanceusdm` (no key) on Binance; "Binance
+  Fees" log line; `get_bid_ask` takes the order book's top when the ticker
+  has no bid/ask (Binance futures' 24 h ticker has none).
+- **C488Engine:**
+  - `venue`, `venue_block`;
+  - `_bn_refresh_marks` (bookTicker + ticker/24hr + premiumIndex, keeping
+    the last fr if premiumIndex fails);
+  - `_bn_refresh_rules` (exchangeInfo: MARKET_LOT_SIZE step, min and max;
+    MIN_NOTIONAL; TRADING → 'normal'; `kind` = underlyingType, where
+    non-COIN is not crypto);
+  - `_bn_history` (klines 1d, one call, columns 4/7/1/2/3; fundingRate
+    paged forward from `C516_BN_FUND_DAYS`=200);
+  - `_bn_check_last_day` (C512: close = 23:59 minute close);
+  - `_bn_fund_interval` (fundingInfo, default 8 h).
+  - `live_ready()` is False on Binance (phase 2).
+  - **The saved book carries `venue`;** a book of the other venue is blocked
+    (not marked, traded or charged; `unrealized()` 0) until a fresh start.
+- **C489 `_bn_pull`:** 1 h klines with flow = taker-buy base / volume for
+  every hour, so the **full model runs from day one** (39 coins scored in
+  the fake boot).
+- **C490:** Binance spot mids; perp cost 0.07%.
+- **C501 spot pot:** Binance spot book, `tds` field (cash minus 1% of each
+  sale), status `venue/fee_pct/tds/tds_pct`; the page shows fee, TDS rate
+  and TDS withheld.
+- **Labels:** report header "{venue} perps"; the shadow panel names the
+  venue.
+- **Version C516.**
+
+**Verification:**
+- **Tests:** `omega_c516_test.py`, 58 checks (a simulated Binance in the
+  documented formats; real archive columns and the close = 23:59 rule on
+  BTC/1000PEPE/ZEC; real spot data; ccxt binanceusdm parsing; Chromium).
+  The battery: 40 of 41 (exit: `corpusL/`).
+- **Boots:**
+  - the full boot on Bitget with the server's state: clean;
+  - the full boot on Binance against a local fake fapi: fresh $500, first
+    rebalance 20 trades, shadow 39 coins on the full model, carry, spot pot
+    on real Binance spot prices, 0 errors.
+- **Not provable here:** the live fapi, which answers 451 to the sandbox.
+  So the VPS runs `deploy/omega_binance_check.py` (read-only, a copy of the
+  bot in a temp dir).
+
+**Research addendum (`research/c515_venue_cost.txt`):** at $1,000 the bot
+auto-widens to 40 coins (`C488_TOPN_40_FROM`). There the N2+N3 book is
+weaker on 2020–26: +3.5–3.7%/mo, DD 48%, against about +4.0%/mo and DD 41%
+with 20 coins. **Review before funding $1,000 or more** (keep 20? it is
+descriptive, not pre-registered).
+
+**Open:**
+- the operator's check output;
+- then the switch after paper check #3;
+- Binance's Flexible USDT APR for `C501_SAVINGS_APR`;
+- phase 2 (the live order path) after the Binance paper book checks out
+  against Binance's data.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🌏 2026-09-30 — BINANCE OR BITGET FROM INDIA (C515, descriptive; nothing built)

@@ -151,3 +151,15 @@ next to your name. Sub-accounts and API keys need it.
 **Not now:** creating the sub-account and its API key. That comes in phase 2
 (live). It is easiest on the website: Profile → Sub Accounts, then API
 Management. Nothing to create yet.
+
+---
+
+## 6. Update, 30 Sep evening: the checks passed, and phase 1 is built
+
+- **The checks:** your server reaches Binance; the minimums are confirmed
+  (LTC, BCH, ETC $20 included); futures are open.
+- **Capital:** all of it in USDⓈ-M futures, none in spot. **$500 is the
+  best start.** From $1,000 the bot widens to 40 coins, which was weaker on
+  this data (+3.5–3.7%/mo, DD 48%), so that needs a review first.
+- **Phase 1 is C516:** paper on Binance behind `OMEGA_VENUE=binance`.
+  Steps: `reports/2026-09-30_c516_binance_phase1.md`.

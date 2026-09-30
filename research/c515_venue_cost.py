@@ -83,3 +83,23 @@ for eq in (250.0, 500.0, 1000.0):
         mo, sh, dd, held, c = run(eq, floors, cost)
         print(f"    {lab:48} {100*mo:+5.2f}%/mo  Sharpe {sh:.2f}  maxDD {100*dd:4.1f}%  "
               f"{held:4.1f} coins held  costs {100*c:4.1f}%/yr")
+
+
+# C516 addendum: from $1,000 the bot's 'auto' width is 40 coins (C488_TOPN_40_FROM), so its
+# positions stay about the size of a 20-coin book at $500. The same comparison at that width.
+R.TOPN = 40
+N = 40
+elig = R.universe(close, qv)
+s3 = R.xs_rank(R.lagret(close, 14) - beta * m14[:, None], elig)
+s23 = np.where((s3 < 0) & (np.nan_to_num(f7, nan=0.0) < 0), 0.0, s3)
+parts = {'C1': R.banded(np.where(elig, tr * sc / N, 0.0)),
+         'C2': R.weekly(s23 * sc / (2 * N * 0.2), T),
+         'C3': R.weekly(-R.xs_rank(f7, elig) * sc / (2 * N * 0.2), T)}
+W0 = R.combine(parts, r, fund, 1, target_vol=20 * 4 / 3 / 100)
+print("\n  equity $1000 at the bot's own width, top 40 (C488_TOPN auto)")
+for lab, floors, cost in (("Bitget: 0.08%/turnover, $6 floor (the research)", np.full(len(syms), 6.0), 0.0008),
+                          ("Binance: 0.07%, Binance minimums", fl_binance, 0.0007),
+                          ("Binance + BNB fees: 0.065%, Binance minimums", fl_binance, 0.00065)):
+    mo, sh, dd, held, c = run(1000.0, floors, cost)
+    print(f"    {lab:48} {100*mo:+5.2f}%/mo  Sharpe {sh:.2f}  maxDD {100*dd:4.1f}%  "
+          f"{held:4.1f} coins held  costs {100*c:4.1f}%/yr")
