@@ -55,12 +55,35 @@ say(e.refresh_marks(force=True), f"prices: {len(e.marks)} USDT perpetuals (bid/a
 say(e.refresh_rules(force=True), f"contract rules: {len(e.rules)} perpetuals",
     'BTC min ${:g}, step {:g}; ETH min ${:g}'.format(e._min_usdt('BTC/USDT:USDT'), e._step('BTC/USDT:USDT')[0],
                                                     e._min_usdt('ETH/USDT:USDT')))
+# C516: what is quoted but is not a USDT-margined PERPETUAL (the 30 Sep check: 739 quoted, 658 in the table)
+exi = requests.get(om._C516_BN_FAPI + '/fapi/v1/exchangeInfo', timeout=20).json().get('symbols') or []
+from collections import Counter
+ct = Counter((x.get('contractType'), x.get('quoteAsset'), x.get('marginAsset'), x.get('status')) for x in exi
+             if str(x.get('symbol', '')).endswith('USDT'))
+print("     exchangeInfo, USDT-named contracts by (type, quote, margin, status): "
+      + '; '.join(f"{k}: {v}" for k, v in ct.most_common(8)))
+gone = sorted(k.split('/')[0] for k in e.marks if k not in e.rules)
+print(f"     quoted but not in the book's table ({len(gone)}): {', '.join(gone[:40])}")
 big = sorted((round(v['min_usdt']), k.split('/')[0]) for k, v in e.rules.items() if v.get('min_usdt', 0) > 5)
 print(f"     minimums above $5: {', '.join(f'{b} ${m}' for m, b in big) or 'none'}")
 n_top = e.topn(EQ)
 cands = e.candidates(n_top)
 say(len(cands) >= 3 * n_top, f"candidates: {len(cands)} (the {n_top}-coin book fetches 4x its width)",
     ', '.join(c.split('/')[0] for c in cands[:12]) + ' ...')
+# C516: stock, ETF, commodity and metal perps must never reach the book (the research is crypto only)
+busy = [k for k in sorted(e.marks, key=lambda k: -e.marks[k].get('vol', 0.0)) if k in e.rules][:4 * n_top + 40]
+out = [k.split('/')[0] for k in busy if not e._is_crypto(k)]
+tradfi_in = [c.split('/')[0] for c in cands if c.split('/')[0].upper() in om._C516_TRADFI]
+say(not tradfi_in, "no stock/ETF/commodity/metal perp among the candidates"
+    + (f" -- FOUND {', '.join(tradfi_in)}" if tradfi_in else ''),
+    f"left out among the busiest: {', '.join(out[:20]) or 'none'}")
+labels = sorted({(e.rules[k].get('kind') or '-', e.rules[k].get('sub') or '-') for k in e.rules
+                 if k.split('/')[0].upper() in om._C516_TRADFI})
+print(f"     Binance's own labels on the research's non-crypto names (underlyingType / subType): "
+      f"{'; '.join(f'{a} / {b}' for a, b in labels[:6]) or 'none listed'}")
+tagged = [k.split('/')[0] for k in e.rules if k.split('/')[0].upper() not in om._C516_TRADFI
+          and any(t in str(e.rules[k].get('sub') or '').upper() for t in om._C516_TRADFI_TAGS)]
+print(f"     newer contracts caught by Binance's tag alone: {', '.join(sorted(tagged)[:20]) or 'none'}")
 fails = []
 t1 = time.time()
 try:
@@ -89,6 +112,7 @@ for s, x in zip(keep, np.nan_to_num(w)):
     plan.append((s.split('/')[0], usd, q * px, e._min_usdt(s)))
 held = [p for p in plan if abs(p[2]) >= p[3] and p[2] != 0]
 dropped = [p for p in plan if not (abs(p[2]) >= p[3] and p[2] != 0)]
+say(not any(p[0].upper() in om._C516_TRADFI for p in plan), "the plan is crypto only")
 say(len(held) > 0, f"today's plan at ${EQ:.0f}, dial 20% (paper, nothing is sent): {len(held)} positions, "
     f"gross ${sum(abs(p[2]) for p in held):.2f} ({sum(abs(p[2]) for p in held) / EQ:.2f}x)")
 for b, usd, act, mn in sorted(held, key=lambda p: -abs(p[2])):

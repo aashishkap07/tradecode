@@ -16,7 +16,16 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C516 is pushed, not deployed:** paper on Binance behind `OMEGA_VENUE=binance`
+  - **C517 is pushed, not deployed:**
+    - the research's 62 non-crypto names are excluded on both venues;
+    - on Binance, only USDT-margined PERPETUALs in the rules table count, and
+      TradFi-tagged listings are excluded;
+    - Binance Savings 6.8%.
+    The operator's 01:06 IST check of C516 planned BZ, CL, SOXL, SNDK, MU,
+    SKHYNIX and SPCX, because Binance has no isRwa flag. Re-run the check
+    after the pull.
+  - **C516 from 1 Oct 01:04 IST, on Bitget (the check passed its lines; its
+    plan found the defect above):** paper on Binance behind `OMEGA_VENUE=binance`
     (default Bitget, so a plain pull changes nothing). Steps in
     `reports/2026-09-30_c516_binance_phase1.md`:
     - pull + restart;
@@ -280,10 +289,32 @@ weaker on 2020–26: +3.5–3.7%/mo, DD 48%, against about +4.0%/mo and DD 41%
 with 20 coins. **Review before funding $1,000 or more** (keep 20? it is
 descriptive, not pre-registered).
 
+**C517 (1 Oct 01:06 IST), from the operator's check.** The check passed
+every line: fapi 200; 739 prices, 658 rules; minimums BTC $50 / ETH, LINK,
+LTC, BCH, ETC $20; 80 coins × 330 days in 12 s; funding on 200 days; spot
+1,374 pairs; shadow flow 200/200 h; ccxt 4.5.78, 739 perps; weight 65/2400.
+- **But the $500 plan held 7 non-crypto perps of 12:** BZ, CL, SOXL, SNDK,
+  MU, SKHYNIX, SPCX.
+  - Binance has no isRwa flag, so `_c408_asset_class` said crypto.
+  - The 81 quoted-but-not-PERPETUAL contracts are probably TradFi, under
+    another contractType.
+- **Fix:**
+  - `_C516_TRADFI`, the research's TRADFI list, 62 names, identical by test,
+    is excluded in `_is_crypto` on both venues. On Bitget it is a no-op: 0
+    of the last 80 candidates.
+  - On Binance, `_is_crypto` requires `sym in self.rules` (a USDT-margined
+    PERPETUAL) and no TradFi tag in `underlyingSubType` (`rules[...]['sub']`).
+  - The check now fails on any non-crypto candidate or plan line, and
+    prints the contract types and Binance's labels.
+  - `C501_SAVINGS_APR` is 0.068 on Binance (the operator's app: USDT
+    Flexible 6.8%, USDC 7.8%; USDT because the cash is USDT and a swap is a
+    TDS-able transfer).
+- **Tests:** `omega_c516_test.py` 62 checks. The battery: 40/41. Both boots
+  are clean.
+
 **Open:**
-- the operator's check output;
+- the operator's C517 check output (crypto-only plan; what the 81 are);
 - then the switch after paper check #3;
-- Binance's Flexible USDT APR for `C501_SAVINGS_APR`;
 - phase 2 (the live order path) after the Binance paper book checks out
   against Binance's data.
 

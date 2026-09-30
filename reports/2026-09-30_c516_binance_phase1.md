@@ -136,3 +136,67 @@ on Bitget. It needs:
 - the order path;
 - the sub-account and its trade-only key;
 - the live checklist.
+
+---
+
+## C517 (1 Oct, 01:06 IST): what your server check found, and the fix
+
+**The check passed every line, and its plan showed a real problem.** The
+$500 Binance plan held:
+- **BZ and CL** (crude oil);
+- **SOXL** (a 3× leveraged semiconductor ETF);
+- **SNDK, MU and SKHYNIX** (company shares);
+- **SPCX**.
+
+Seven of the day's 12 positions were not crypto.
+
+**Why:**
+- On Bitget the bot recognises these through Bitget's own "real-world
+  asset" flag. Binance carries no such flag, so every contract passed as
+  crypto.
+- Binance also quotes 739 USDT perpetuals while only 658 are plain
+  `PERPETUAL` contracts. The rest are, most likely, these stock and
+  commodity contracts under another contract type. That would leave them
+  priced, but not tradable, by the book.
+
+**Why it matters:** the book was tested on **crypto only**. The research
+removed these exact names (its list of 62 includes all seven). Round 5
+found that including them was what had made the book look like it was
+decaying.
+
+**C517:**
+- **The research's own list of 62 stock/ETF/commodity/metal names is
+  excluded** on both venues. On Bitget it changes nothing: none of your
+  last 80 Bitget candidates is on it.
+- On Binance, a contract is a candidate only if it is a USDT-margined
+  `PERPETUAL` in Binance's own contract table.
+- A newer listing that Binance itself tags as TradFi is excluded too.
+- The server check now **fails** if any such contract reaches the
+  candidates or the plan. It also prints what the 81 non-`PERPETUAL`
+  contracts are, and Binance's labels for them, so we know rather than
+  guess.
+- **Savings on Binance: 6.8%** (your app's USDT Flexible rate). USDC pays
+  7.8%, but the book's cash is USDT, and swapping it into USDC is a crypto
+  transfer that India taxes at source, so USDT it is.
+
+**The tests:**
+- `omega_c516_test.py`: 62 checks. The simulated Binance's five busiest
+  contracts are now non-crypto (SOXL, CL, SKHYNIX, a TradFi-tagged listing,
+  and a non-`PERPETUAL` type); none reaches the candidates, the plan or the
+  book.
+- The battery: 40 of 41. Both full boots (Bitget on the server's state;
+  Binance on the simulation) are clean.
+
+**Next (Termius):** pull, restart (the bot stays on Bitget), and re-run the
+check:
+
+```bash
+sudo -u omega git -C /home/omega/omega pull
+sudo systemctl restart omega
+sleep 90
+sudo journalctl -u omega -n 200 --no-pager | grep -E "OMEGA C5|venue|Traceback"
+sudo -u omega /home/omega/omega/venv/bin/python /home/omega/omega/deploy/omega_binance_check.py 500
+```
+
+You should see `OMEGA C517` and `venue: BITGET`, and the check should end
+`ALL OK` with a crypto-only plan.

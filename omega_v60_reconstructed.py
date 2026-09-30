@@ -2342,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C516'
+_OMEGA_VERSION = 'C517'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -18704,8 +18704,11 @@ _C516_BN_SPOT = ('https://api.binance.com', 'https://data-api.binance.vision')
 # what changes with the venue (Binance FAQ 360033544231: USDⓈ-M maker 0.02%,
 # taker 0.05%; spot 0.10%; spot's order minimum $5; India deducts 1% TDS on
 # each spot sale made through an FIU-registered exchange)
+# Simple Earn Flexible USDT 6.8% APR, read in the operator's Binance app on 30 Sep 2026 (USDC 7.8%,
+# but the book's cash is USDT, and swapping it for USDC is a crypto transfer that India taxes at source)
 _C516_VENUE_DEFAULTS = {'binance': dict(TAKER_FEE_PCT=0.05, MAKER_FEE_PCT=0.02, C501_SPOT_FEE=0.001,
-                                        C501_SPOT_TDS=0.01, C502_SPOT_FLOOR=6.0, C502_SPOT_MIN_ORDER=5.0)}
+                                        C501_SPOT_TDS=0.01, C502_SPOT_FLOOR=6.0, C502_SPOT_MIN_ORDER=5.0,
+                                        C501_SAVINGS_APR=0.068)}
 
 
 def _c516_venue(cfg=None):
@@ -18754,6 +18757,18 @@ def _c516_bn_spot_book(tries=3):
     return {}
 
 
+# C516/C517: THE RESEARCH'S OWN LIST OF STOCK, ETF, COMMODITY AND METAL PERPS
+# (research/omega_c493_research.py TRADFI, the exclusion every admitted result
+# was measured with). Bitget tags these contracts isRwa and _c408_asset_class
+# reads the tag; Binance carries no such flag, so on 30 Sep 2026 the operator's
+# server check put BZ and CL (crude oil), SOXL (a 3x chip ETF), SNDK, MU and
+# SKHYNIX (shares) and SPCX in Binance's top 80 by volume and in the day's plan.
+# The name list applies on both venues; on Binance, a contract whose own
+# underlyingSubType reads as TradFi is excluded too, for listings newer than it.
+_C516_TRADFI = frozenset("""AAPL ADBE AMD AMZN ARM AVGO BABA BZ CL COIN COPPER CRCL CRM CRWV DIS DRAM EWY GME GOOGL HOOD
+    IBM INTC IREN IWM JPM KORU KO MARA META MSFT MSTR MU MUU NATGAS NFLX NVDA ORCL PLTR QCOM QQQ RIVN SAMSUNG SKDD
+    SKHYNIX SKHY SMCI SNDK SNXX SOXL SOXS SPCX SPY TQQQ TSLA TSM TXN UBER V WMT XAUT XPD XPT""".split())
+_C516_TRADFI_TAGS = ('TRADFI', 'STOCK', 'EQUIT', 'COMMODIT', 'ETF', 'FOREX', 'METAL', 'INDEX')
 _C488_NOT_CRYPTO = {'USDC', 'BUSD', 'TUSD', 'USDP', 'FDUSD', 'USDE', 'USD1', 'RLUSD', 'XUSD', 'BFUSD',
                     'DAI', 'PYUSD', 'EUR', 'GBP', 'AUD', 'BTCDOM', 'DEFI', 'BLUEBIRD', 'FOOTBALL',
                     'XAUT', 'PAXG', 'XAU', 'XAG'}
@@ -19468,11 +19483,17 @@ class C488Engine:
 
     def _is_crypto(self, sym):
         base = sym.split('/')[0].upper()
-        if base in _C488_NOT_CRYPTO:
+        if base in _C488_NOT_CRYPTO or base in _C516_TRADFI:
             return False
         if self.venue == 'binance':
-            kind = str((self.rules.get(sym) or {}).get('kind') or '')
+            if self.rules and sym not in self.rules:
+                return False                       # C516: not a USDT-margined PERPETUAL the book could trade
+            r = self.rules.get(sym) or {}
+            kind = str(r.get('kind') or '')
             if kind and kind != 'COIN':            # C516: INDEX (BTCDOM ...), PREMARKET, TradFi underlyings
+                return False
+            sub = str(r.get('sub') or '').upper()
+            if any(t in sub for t in _C516_TRADFI_TAGS):
                 return False
         try:
             return self.bot._c408_asset_class(sym) == 'crypto'
@@ -19647,7 +19668,8 @@ class C488Engine:
                     min_usdt=float((f.get('MIN_NOTIONAL') or {}).get('notional') or 0.0),
                     max_mkt=float(mk.get('maxQty') or 0.0),
                     status='normal' if x.get('status') == 'TRADING' else str(x.get('status') or '').lower(),
-                    kind=str(x.get('underlyingType') or ''))
+                    kind=str(x.get('underlyingType') or ''),
+                    sub=','.join(str(t) for t in (x.get('underlyingSubType') or [])))
             except Exception:
                 continue
         if len(r) >= max(50, len(self.rules) // 2):     # a short read never replaces a full table

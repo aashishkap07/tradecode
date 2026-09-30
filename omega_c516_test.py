@@ -70,9 +70,11 @@ c0 = om.Config()
 ok("Bitget stays the default (Config.VENUE 'bitget', fees 0.06% taker)", c0.VENUE == 'bitget'
    and om._c516_venue(c0) == 'bitget' and abs(c0.TAKER_FEE_PCT - 0.06) < 1e-12)
 cb = bn_cfg()
-ok("OMEGA_VENUE=binance: taker 0.05%, maker 0.02% (Binance FAQ), spot 0.10%, TDS 1%, spot minimum $5",
+ok("OMEGA_VENUE=binance: taker 0.05%, maker 0.02% (Binance FAQ), spot 0.10%, TDS 1%, spot minimum $5, "
+   "Savings 6.8% (USDT Flexible, the operator's app)",
    om._c516_venue(cb) == 'binance' and cb.TAKER_FEE_PCT == 0.05 and cb.MAKER_FEE_PCT == 0.02
-   and cb.C501_SPOT_FEE == 0.001 and cb.C501_SPOT_TDS == 0.01 and cb.C502_SPOT_MIN_ORDER == 5.0)
+   and cb.C501_SPOT_FEE == 0.001 and cb.C501_SPOT_TDS == 0.01 and cb.C502_SPOT_MIN_ORDER == 5.0
+   and cb.C501_SAVINGS_APR == 0.068 and om.Config().C501_SAVINGS_APR == 0.0763)
 x = om.Config(); x.VENUE = 'kraken'
 ok("an unknown venue name falls back to Bitget", om._c516_venue(x) == 'bitget')
 ok("main() reads OMEGA_VENUE and applies the venue's defaults before the bot is built",
@@ -111,7 +113,10 @@ class FakeBinance:
     def __init__(s, n_days=400, fund_rows=None, minute_close=None, fail=(), bad_day=None):
         s.n_days, s.fund_rows, s.minute_close, s.fail, s.bad_day = n_days, fund_rows, minute_close, set(fail), bad_day
         s.calls = []
-        s.coins = {'BTCUSDT': 83461.0, 'ETHUSDT': 4100.0, '1000PEPEUSDT': 0.004211, 'ZECUSDT': 1482.85,
+        # the busiest first: four non-crypto perps as Binance lists them on 30 Sep 2026 (no isRwa flag;
+        # ABC stands for a listing newer than the research's name list, caught by its TradFi tag)
+        s.coins = {'SOXLUSDT': 38.2, 'CLUSDT': 72.4, 'SKHYNIXUSDT': 180.0, 'ABCUSDT': 12.0, 'STKUSDT': 55.0,
+                   'BTCUSDT': 83461.0, 'ETHUSDT': 4100.0, '1000PEPEUSDT': 0.004211, 'ZECUSDT': 1482.85,
                    'HYPEUSDT': 41.2, 'SUIUSDT': 3.3}
         for k in range(60):                   # Binance lists ~500; the bot refuses a table under 50
             s.coins[f"C{k:02d}USDT"] = 1.0 + k
@@ -143,15 +148,17 @@ class FakeBinance:
                          nextFundingTime=TODAY + DAY) for c in coins]
         if path == '/fapi/v1/exchangeInfo':
             def one(c, notional='5', step='1', typ='COIN', status='TRADING', ctype='PERPETUAL', base=None,
-                    delivery=4133404800000):
+                    delivery=4133404800000, sub=()):
                 return dict(symbol=c, pair=c.split('_')[0], contractType=ctype, status=status,
                             baseAsset=base or c[:-4], quoteAsset='USDT', deliveryDate=delivery,
-                            marginAsset='USDT', underlyingType=typ,
+                            marginAsset='USDT', underlyingType=typ, underlyingSubType=list(sub),
                             filters=[dict(filterType='PRICE_FILTER', tickSize='0.0001', minPrice='0.0001', maxPrice='1000000'),
                                      dict(filterType='LOT_SIZE', stepSize=step, minQty=step, maxQty='1000000'),
                                      dict(filterType='MARKET_LOT_SIZE', stepSize=step, minQty=step, maxQty='120000'),
                                      dict(filterType='MIN_NOTIONAL', notional=notional)])
-            sy = [one('BTCUSDT', '50', '0.001'), one('ETHUSDT', '20', '0.001'), one('1000PEPEUSDT', '5', '1'),
+            sy = [one('SOXLUSDT', '5', '0.01'), one('CLUSDT', '5', '0.01'), one('SKHYNIXUSDT', '5', '0.01'),
+                  one('ABCUSDT', '5', '0.1', sub=('TradFi',)), one('STKUSDT', ctype='TRADIFI_PERPETUAL'),
+                  one('BTCUSDT', '50', '0.001'), one('ETHUSDT', '20', '0.001'), one('1000PEPEUSDT', '5', '1'),
                   one('ZECUSDT', '5', '0.001'), one('HYPEUSDT', '5', '0.01'), one('SUIUSDT', '5', '0.1')]
             sy += [one(f"C{k:02d}USDT", '5', '0.1') for k in range(60)]
             sy += [one('BTCDOMUSDT', typ='INDEX'), one('XYZUSDT', status='SETTLING'),
@@ -225,6 +232,17 @@ ok("  a SETTLING contract takes no new position; the quarterly future is not a p
    and 'BTC_261225/USDT:USDT' not in e.rules and 'BTCUSDT_261225' not in str(list(e.rules)))
 ok("  INDEX (BTCDOM) and PREMARKET underlyings are not crypto coins for the book",
    not e._is_crypto('BTCDOM/USDT:USDT') and not e._is_crypto('NEW/USDT:USDT') and e._is_crypto('ZEC/USDT:USDT'))
+ok("  stock, ETF and commodity perps (SOXL, CL, SKHYNIX: the research's list) are not crypto, though Binance calls them COIN",
+   not any(e._is_crypto(f"{b}/USDT:USDT") for b in ('SOXL', 'CL', 'SKHYNIX')) and e.rules['SOXL/USDT:USDT']['kind'] == 'COIN')
+ok("  a quoted contract that is not a USDT-margined PERPETUAL (STK, another contract type) is never a candidate",
+   'STK/USDT:USDT' in e.marks and 'STK/USDT:USDT' not in e.rules and not e._is_crypto('STK/USDT:USDT'))
+ok("  and a newer listing tagged TradFi by Binance (underlyingSubType) is left out too",
+   not e._is_crypto('ABC/USDT:USDT') and e.rules['ABC/USDT:USDT']['sub'] == 'TradFi')
+import sys
+sys.path.insert(0, os.path.join(REPO, 'research'))
+from omega_c493_research import TRADFI as RESEARCH_TRADFI
+ok("  the bot's list is the research's list, name for name (62)",
+   om._C516_TRADFI == {x[:-4] for x in RESEARCH_TRADFI} and len(om._C516_TRADFI) == 62)
 fk.calls.clear()
 c, f = e._history('ZEC/USDT:USDT')
 kl = [p for p, q in fk.calls if p == '/fapi/v1/klines']
@@ -272,10 +290,15 @@ class PaperEx:
 fk5 = FakeBinance(); b5, e5 = mk(fk5)
 e5.refresh_rules(force=True); e5.refresh_marks(force=True)
 b5.exchange = PaperEx(e5)
-e5.candidates = lambda n: [k for k in e5.marks if e5._is_crypto(k)][:4 * n]
+cand5 = e5.candidates(20)
+ok("the busiest perps on Binance are the four non-crypto ones, and none is a candidate",
+   [k.split('/')[0] for k in sorted(e5.marks, key=lambda k: -e5.marks[k]['vol'])[:5]] == ['SOXL', 'CL', 'SKHYNIX', 'ABC', 'STK']
+   and not any(c.split('/')[0] in ('SOXL', 'CL', 'SKHYNIX', 'ABC', 'STK') for c in cand5), str([c.split('/')[0] for c in cand5[:6]]))
 LOG.clear()
 e5.rebalance('first')
 ords = b5.exchange.orders
+ok("  and none is in the plan or the book", not any(s_.split('/')[0] in ('SOXL', 'CL', 'SKHYNIX', 'ABC')
+                                                   for s_ in list(e5.plan) + list(e5.book)))
 ok(f"the first rebalance trades on Binance prices ({len(ords)} fills), all at the book's side of the spread",
    len(ords) > 0 and all(px == (e5.marks[s_]['ask'] if sd == 'buy' else e5.marks[s_]['bid']) for s_, sd, q, px in ords))
 ok("  every quantity is a whole Binance step, and every opening order meets its minimum ($50 BTC, $20 ETH)",
