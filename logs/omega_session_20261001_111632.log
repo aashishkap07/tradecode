@@ -1,0 +1,35 @@
+11:16:32 | 📊 Paper Mode
+11:16:32 | ✅ Connected | 739 futures markets (Binance USDⓈ-M)
+ 
+  ================================================================================================
+  OMEGA C520  PAPER  Binance perps
+  01 Oct 2026   11:16
+  start $499.83 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $499.83 realised  739 markets
+  MONTH     dial 20% = $100.00 this month  used $0.17 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+11:16:32 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+11:16:32 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+11:16:32 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+11:16:32 |        See deploy/DEPLOY.md — one command, no open ports, free.
+11:16:32 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+11:16:32 |    RULE   C2 N2+N3: C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST
+    in paper (C510); the admitted rule is scored beside it in the rule tournament
+11:16:32 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the
+    20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+11:16:32 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid,
+    taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month
+    guard on MARKED equity
+11:16:32 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10
+    UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at 6.69%
+    every minute · rule tournament (C510, 7 rules on the same prices) at each rebalance
+11:16:32 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep
+    2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed
+    (OMEGA_ENGINE=intraday runs and describes it)
+11:16:33 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)

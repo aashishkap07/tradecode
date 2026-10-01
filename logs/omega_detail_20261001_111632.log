@@ -1,0 +1,38 @@
+11:16:32 | 📊 Paper Mode
+11:16:32 | ✅ Connected | 739 futures markets (Binance USDⓈ-M)
+11:16:32 | 📊 Binance Fees: Maker 0.02% | Taker 0.05%
+11:16:32 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+11:16:32 | 📋 Limit Orders: ENABLED (offset 0.1%) -- the idle intraday scanner's; the book trades with market orders
+11:16:32 | 📂 Loaded state: $499.83 realised | 0 intraday positions | available $433.22 before open P&L (locked $66.62)
+11:16:32 | 📐 RISK @ $499.83: monthly dial 20% = $100.00/month (20% of this month's anchor $500.00)  |  the portfolio book trades: its month guard closes the book if MARKED equity falls that far below the month's anchor [C497]
+ 
+  ================================================================================================
+  OMEGA C520  PAPER  Binance perps
+  01 Oct 2026   11:16
+  start $499.83 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $499.83 realised  739 markets
+  MONTH     dial 20% = $100.00 this month  used $0.17 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+11:16:32 |    (legacy Flask page not installed — the dashboard is the control panel)
+11:16:32 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+11:16:32 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+11:16:32 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+11:16:32 |        See deploy/DEPLOY.md — one command, no open ports, free.
+11:16:32 | ============================================================
+11:16:32 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+11:16:32 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+11:16:32 |    RULE   C2 N2+N3: C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+11:16:32 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+11:16:32 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+11:16:32 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at 6.69% every minute · rule tournament (C510, 7 rules on the same prices) at each rebalance
+11:16:32 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+11:16:33 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+11:16:33 | ============================================================
+11:16:33 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before) -- it watches INTRADAY positions; the book has no stops, its one limit is the month guard
+11:16:34 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it); the book holds 12 positions
