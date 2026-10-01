@@ -16,7 +16,26 @@
   - **C495 from 26 Sep 21:59 IST** (logs branch: `OMEGA C495`, and
     `C488 month anchor 2026-09: $252.81 (carried from C482 …)`).
   - C497 from 26 Sep 22:41 IST (logs: `OMEGA C497`, `🔻 Book guard: …` lines);
-  - **C517 is pushed, not deployed:**
+  - **Paper check #3 (1 Oct, `reports/2026-10-01_paper_check_3.md`): ALL PASSED on C517.**
+    - **C512's first live test:** the 00:05 UTC rebalance traded at once
+      (05:35:40 IST, 40 s, no "not final" retry).
+    - **The data:** the saved 30 Sep closes and volumes equal Bitget's final
+      candles on 80/80 coins (0 stale; it was 0/80 correct before C512).
+    - **The plan** replays to the cent; 0 trades (all within the band).
+    - **The tournament's first real day** (30 Sep): N2+N3 +1.1699% = the hand
+      calculation (base +1.2795%, K4 +1.8181%). The real book did +1.12%
+      ($250.18 → $252.98); the gap is execution.
+    - **October anchors** (00:00:09 IST): the book's guard $252.89 marked,
+      budget $50.58.
+    - **C509's first rating:** +1.19% in 1.6 d, top 22%, normal.
+    - **Funding** equals Bitget exactly on all 12 positions (3 settlements on
+      the 8 h coins, 6 on the 4 h coins), across 5 restarts.
+    - Carry, spot pot, Savings, shadow and DATA all OK; 0 Traceback in 3
+      sessions.
+    - **The switch to Binance paper ($500, fresh) is given the go** in that
+      report.
+  - **C517 deployed 1 Oct 01:22 IST (the operator's check: ALL OK,
+    crypto-only plan):**
     - the research's 62 non-crypto names are excluded on both venues;
     - on Binance, only USDT-margined PERPETUALs in the rules table count, and
       TradFi-tagged listings are excluded;
@@ -620,8 +639,11 @@ day, at 00:05 UTC, as a snapshot from its FIRST MINUTES.**
 - **The live load** of all 80 candidates through the check: no false alarm.
   The battery: 38 of 39 (the exit test needs `corpusL/`).
 
-**Open:**
-- Tomorrow's 00:05 UTC is the first live test of the fix. Either the live
+**Closed by paper check #3 (1 Oct):** the 00:05 UTC rebalance traded at
+once on final data (80/80 closes = Bitget's final candles).
+
+**Open (superseded):**
+- ~~Tomorrow's 00:05 UTC is the first live test of the fix.~~ Either the live
   bar is final at 00:05 and it trades, or "not final … retrying in 10 min"
   and it trades a few minutes later. Paper check #3 (1 Oct 01:15 UTC,
   trig_01HVGLAPPnPAkcdtjMiULK4r) confirms which, and the tournament's first
