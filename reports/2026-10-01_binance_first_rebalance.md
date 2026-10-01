@@ -99,9 +99,10 @@ sleep 90
 sudo journalctl -u omega -n 200 --no-pager | grep -E "OMEGA C5|venue|Loaded state|C516|Traceback"
 ```
 
-**What you should see:** `OMEGA C519`, `venue: BINANCE`, `Loaded state:
-$499.83 realised` (the Binance book resumed), no 🛑 line and no Traceback. The
-dashboard keeps its 12 positions.
+**What you should see:** `OMEGA C520` (C519 plus the monthly review's Savings
+rate, 6.69%: `reports/2026-10-01_monthly_review_september.md`), `venue:
+BINANCE`, `Loaded state: $499.83 realised` (the Binance book resumed), no 🛑
+line and no Traceback. The dashboard keeps its 12 positions.
 
 Tomorrow after 05:35 IST, this line shows the first C519 rebalance:
 

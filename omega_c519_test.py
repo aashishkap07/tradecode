@@ -228,7 +228,7 @@ for fresh in (True, False):
         ok("a switch WITHOUT a fresh start: the stop sign, as before (blocked)", len(stop) == 1 and not calm
            and ev.venue_block)
 ok("main() sets C519_FRESH before the bot is built", SRC.index("cfg.C519_FRESH = bool(fresh)") < SRC.index("    bot = TradingBot(cfg)\n"))
-ok("version C519", om._OMEGA_VERSION == 'C519')
+ok("version C519 or later", om._OMEGA_VERSION >= 'C519')
 
 print("\n" + "=" * 66)
 print(f"{len(fails)} FAILURE(S): {fails}" if fails else "ALL CHECKS PASSED")

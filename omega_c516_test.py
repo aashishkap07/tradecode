@@ -71,10 +71,10 @@ ok("Bitget stays the default (Config.VENUE 'bitget', fees 0.06% taker)", c0.VENU
    and om._c516_venue(c0) == 'bitget' and abs(c0.TAKER_FEE_PCT - 0.06) < 1e-12)
 cb = bn_cfg()
 ok("OMEGA_VENUE=binance: taker 0.05%, maker 0.02% (Binance FAQ), spot 0.10%, TDS 1%, spot minimum $5, "
-   "Savings 6.8% (USDT Flexible, the operator's app)",
+   "Savings 6.69% (USDT Flexible: Binance's public Earn listing, 1 Oct, C520)",
    om._c516_venue(cb) == 'binance' and cb.TAKER_FEE_PCT == 0.05 and cb.MAKER_FEE_PCT == 0.02
    and cb.C501_SPOT_FEE == 0.001 and cb.C501_SPOT_TDS == 0.01 and cb.C502_SPOT_MIN_ORDER == 5.0
-   and cb.C501_SAVINGS_APR == 0.068 and om.Config().C501_SAVINGS_APR == 0.0763)
+   and cb.C501_SAVINGS_APR == 0.0669 and om.Config().C501_SAVINGS_APR == 0.0763)
 x = om.Config(); x.VENUE = 'kraken'
 ok("an unknown venue name falls back to Bitget", om._c516_venue(x) == 'bitget')
 ok("main() reads OMEGA_VENUE and applies the venue's defaults before the bot is built",

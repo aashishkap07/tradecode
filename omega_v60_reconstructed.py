@@ -2342,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C519'
+_OMEGA_VERSION = 'C520'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -18706,10 +18706,13 @@ _C516_BN_SPOT = ('https://api.binance.com', 'https://data-api.binance.vision')
 # taker 0.05%; spot 0.10%; spot's order minimum $5; India deducts 1% TDS on
 # each spot sale made through an FIU-registered exchange)
 # Simple Earn Flexible USDT 6.8% APR, read in the operator's Binance app on 30 Sep 2026 (USDC 7.8%,
-# but the book's cash is USDT, and swapping it for USDC is a crypto transfer that India taxes at source)
+# but the book's cash is USDT, and swapping it for USDC is a crypto transfer that India taxes at source).
+# C520 (monthly review, 1 Oct 2026): Binance's public Earn listing gives 6.69% -- a 4.00% bonus on the
+# first 1,000 USDT plus the 2.69% market rate, which floats daily. Above 1,000 USDT idle only the
+# market rate is paid; at $500 of equity every idle dollar is inside the bonus tier.
 _C516_VENUE_DEFAULTS = {'binance': dict(TAKER_FEE_PCT=0.05, MAKER_FEE_PCT=0.02, C501_SPOT_FEE=0.001,
                                         C501_SPOT_TDS=0.01, C502_SPOT_FLOOR=6.0, C502_SPOT_MIN_ORDER=5.0,
-                                        C501_SAVINGS_APR=0.068)}
+                                        C501_SAVINGS_APR=0.0669)}
 
 
 def _c516_venue(cfg=None):
