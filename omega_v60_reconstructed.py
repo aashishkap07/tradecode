@@ -2342,7 +2342,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C517'
+_OMEGA_VERSION = 'C519'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3081,6 +3081,7 @@ class Config:
         self.VENUE = 'bitget'
         self.C516_BN_FUND_DAYS = 200            # C516: Binance keeps every funding record; 200 days covers the book's windows
         self.C501_SPOT_TDS = 0.0                # C516: India's 1% TDS on each spot sale (s.194S), set on Binance
+        self.C519_FRESH = False                 # C519: set by main() when this run starts fresh
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
         self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
         self.C488_TOPN_40_FROM = 1000.0
@@ -19325,7 +19326,15 @@ class C488Engine:
                     self.venue_block = (f"the book holds {len(self.book)} {was.capitalize()} positions but this run "
                                         f"reads {_c516_name(self.cfg)}: it will not trade or mark them. To change "
                                         f"venue, start fresh (touch data/FRESH_START, then restart)")
-                    logger.warning(f"🛑 C516 {self.venue_block}")
+                    # C519: on the switch itself the fresh start is already chosen (main
+                    # decides it before the bot is built), so the stop sign only shows
+                    # when the operator changed venue WITHOUT one. On 1 Oct it printed
+                    # at the switch, a second before the fresh start cleared it.
+                    if getattr(self.cfg, 'C519_FRESH', False):
+                        logger.info(f"   🏦 C516 the saved book is {was.capitalize()}'s ({len(self.book)} positions); "
+                                    f"this run starts fresh on {_c516_name(self.cfg)}, so it begins flat")
+                    else:
+                        logger.warning(f"🛑 C516 {self.venue_block}")
         except Exception as e:
             logger.warning(f"⚠️ C488 book could not be loaded ({type(e).__name__}: {e}) -- starting flat")
             self.book = {}
@@ -19889,6 +19898,16 @@ class C488Engine:
         v = float((self.rules.get(sym) or {}).get('min_usdt') or 0.0)
         return v if v > 0 else float(getattr(self.cfg, 'C488_EXCHANGE_MIN', 5.0))
 
+    def floor(self, sym):
+        """C519: the smallest position the book holds in this coin -- the $6 floor,
+        or the venue's own minimum order where that is higher (Binance: BTC $50;
+        ETH, LINK, LTC, BCH, ETC $20; Bitget: $5 on all 812 contracts, so $6).
+        The first Binance rebalance (1 Oct) targeted 14 positions and held 12:
+        two targets between $6 and $20 were refused by _fill's minimum check
+        without a word, and still counted as trades. The research priced this
+        floor (C515, C518: max($6, the coin's minimum)), so the plan uses it."""
+        return max(float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0)), self._min_usdt(sym))
+
     def _tradable(self, sym, reduce_only):
         """C492: Bitget's own status for the contract. 'normal' trades; a
         'limit_open' contract can still be CLOSED; 'maintain', 'restrictedAPI',
@@ -20380,6 +20399,7 @@ class C488Engine:
         if M is None:
             raise RuntimeError('no history')
         T, keep, close, qv, fund = M
+        fl = {s: self.floor(s) for s in keep}           # C519: each coin's floor, on the table just read
         _ohlc510 = self.ohlc_for(T, keep)
         _vol510 = self.volest() if _ohlc510 is not None else 'close'
         w, sleeves, elig = _c488_targets(T, close, qv, fund, n_top, self.target_vol(),
@@ -20397,14 +20417,15 @@ class C488Engine:
             np.savez_compressed(os.path.join(BASE_PATH, 'c488_inputs.npz'), T=T, keep=np.array(keep, dtype=str),
                                 close=close, qv=qv, fund=fund, eq=np.array([eq]), n_top=np.array([n_top]),
                                 at=np.array([time.time()]), op=_o[0], hi=_o[1], lo=_o[2],
-                                rule=np.array([self.c2_rule(), _vol510, self.sizing()], dtype=str))
+                                rule=np.array([self.c2_rule(), _vol510, self.sizing()], dtype=str),
+                                floor=np.array([fl[s] for s in keep]), venue=np.array([self.venue], dtype=str))
         except Exception as _e506:
             logger.warning(f"⚠️ C506 plan inputs not saved ({type(_e506).__name__}: {_e506})")
         try:
             _k501 = getattr(self.bot, 'c501k', None)
             if _k501 is not None:
                 _k501.observe(T, keep, close, qv, fund, n_top, self.target_vol(),
-                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, w, rule=self.c2_rule())
+                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, w, rule=self.c2_rule(), floors=fl)
         except Exception as _e501:
             logger.warning(f"⚠️ C501 allostatic shadow skipped ({type(_e501).__name__}: {_e501})")
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
@@ -20412,7 +20433,7 @@ class C488Engine:
         plan = {}
         for j, s in enumerate(keep):
             wj = float(np.nan_to_num(w[j]))
-            if abs(wj) * eq < mn:
+            if abs(wj) * eq < fl[s]:
                 wj = 0.0
             if wj != 0.0:
                 plan[s] = dict(w=round(wj, 6), c1=round(float(sleeves['C1'][j]), 6),
@@ -20429,9 +20450,11 @@ class C488Engine:
             logger.info(f"   \U0001f4cb C488 PLAN {datetime.utcnow():%Y-%m-%d}: {len(syms)} candidates, "
                         f"{int(elig.sum())} eligible, eq ${eq:.2f} | "
                         + ', '.join(f"{s.split('/')[0]} {d['w'] * eq:+.2f} {_lbl(d)}" for s, d in _pl)
-                        + (f" | under ${mn:.0f}: {len(_dr)} ("
-                           + ', '.join(f"{s.split('/')[0]} {x * eq:+.2f}" for s, x in
-                                       sorted(_dr, key=lambda z: -abs(z[1]))[:8]) + ")" if _dr else ""))
+                        + (f" | under ${mn:.0f}"
+                           + (f" or {_c516_name(self.cfg)}'s minimum" if any(fl[s] > mn for s, _ in _dr) else "")
+                           + f": {len(_dr)} ("
+                           + ', '.join(f"{s.split('/')[0]} {x * eq:+.2f}" + (f" < ${fl[s]:.0f}" if fl[s] > mn else "")
+                                       for s, x in sorted(_dr, key=lambda z: -abs(z[1]))[:8]) + ")" if _dr else ""))
             # the weekly sleeves' Monday ranks are re-derived inside TODAY's
             # candidate list, so the list itself is part of the decision
             logger.info(f"   \U0001f4cb C488 CANDIDATES ({len(keep)} with history): "
@@ -20457,12 +20480,29 @@ class C488Engine:
             flip = cq != 0.0 and tq != 0.0 and (tq > 0) != (cq > 0)
             if not (closing or flip) and (dn < mn or dn < band * abs(tq) * px):
                 continue
-            traded += self.trade_to(s, tq, why)
-            n += 1
+            x = self.trade_to(s, tq, why)
+            traded += x
+            n += 1 if x > 0 else 0                      # C519: a trade is a fill, not an attempt
+        # C519: a target the book does not hold is said, with the reason, never silent
+        _miss = []
+        for s, d in sorted(plan.items(), key=lambda kv: -abs(kv[1]['w'])):
+            if self._qty(s) != 0.0:
+                continue
+            px = self.mark(s)
+            tq = self.round_qty(s, d['w'] * eq / px) if px > 0 else 0.0
+            why_not = ('no price' if px <= 0 else
+                       f"its smallest order is {self._step(s)[1]:g} = ${self._step(s)[1] * px:.2f}" if tq == 0.0 else
+                       f"under {_c516_name(self.cfg)}'s ${self._min_usdt(s):.0f} minimum order"
+                       if abs(tq) * px < self._min_usdt(s) else
+                       f"the contract is '{(self.rules.get(s) or {}).get('status', 'missing')}'"
+                       if not self._tradable(s, False) else 'not filled')
+            _miss.append(f"{s.split('/')[0]} {d['w'] * eq:+.2f} ({why_not})")
+        if _miss:
+            logger.warning(f"   ⚠️ C488 {len(_miss)} of {len(plan)} targets not held: " + ', '.join(_miss))
         self.plan = plan
         self.last_rebal = datetime.utcnow().strftime('%Y-%m-%d')
         gross_t = sum(abs(v['w']) for v in plan.values())
-        self.info = dict(at=time.time(), why=why, n_trades=n, traded=round(traded, 2),
+        self.info = dict(at=time.time(), why=why, n_trades=n, traded=round(traded, 2), not_held=len(_miss),
                          equity=round(eq, 2), topn=n_top, universe=int(elig.sum()),
                          target_vol=round(self.target_vol(), 4), gross_target=round(gross_t, 3),
                          n_targets=len(plan), secs=round(time.time() - t0, 1),
@@ -20477,7 +20517,7 @@ class C488Engine:
             _t510 = getattr(self.bot, 'c510t', None)
             if _t510 is not None:
                 _t510.observe(T, keep, close, qv, fund, _ohlc510, n_top, self.target_vol(),
-                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq)
+                              float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, floors=fl)
         except Exception as _e510:
             logger.warning(f"⚠️ C510 tournament skipped ({type(_e510).__name__}: {_e510})")
         try:                                            # C509: and whether the result so far is normal
@@ -21886,16 +21926,18 @@ class C501Allostatic(_C501Store):
             f += x * float(np.nan_to_num(f_row[j]))
         return g - f
 
-    def observe(self, T, keep, close, qv, fund, topn, target_vol, lev_cap, eq, w_base, rule='base'):
+    def observe(self, T, keep, close, qv, fund, topn, target_vol, lev_cap, eq, w_base, rule='base', floors=None):
         """called by C488Engine.rebalance with its own matrices and targets. C510:
-        K4 sizes the same C2 rule the book trades, so the A/B stays sizing only."""
+        K4 sizes the same C2 rule the book trades, so the A/B stays sizing only.
+        C519: each coin's floor is the book's own (floors), $6 when not given."""
         if not self.active() or eq <= 0:
             return
         hl = float(getattr(self.cfg, 'C501_K4_HL', 10.0))
         wk_all = _c501_k4_targets(T, close, qv, fund, topn, target_vol, lev_cap, hl, rule=rule)
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
-        nb = {s: float(x) for s, x in zip(keep, np.nan_to_num(w_base)) if abs(x) * eq >= mn}
-        nk = {s: float(x) for s, x in zip(keep, np.nan_to_num(wk_all)) if abs(x) * eq >= mn}
+        fl = floors or {}
+        nb = {s: float(x) for s, x in zip(keep, np.nan_to_num(w_base)) if abs(x) * eq >= fl.get(s, mn)}
+        nk = {s: float(x) for s, x in zip(keep, np.nan_to_num(wk_all)) if abs(x) * eq >= fl.get(s, mn)}
         r = _c488_returns(close)
         pos = {s: j for j, s in enumerate(keep)}
         with self._lock:
@@ -22018,12 +22060,15 @@ class C510Tournament(_C501Store):
                      c512=bool(getattr(self, 'c512', True)))
         self._write(d)
 
-    def observe(self, T, keep, close, qv, fund, ohlc, topn, target_vol, lev_cap, eq):
-        """called by C488Engine.rebalance, after its trades, with its own matrices"""
+    def observe(self, T, keep, close, qv, fund, ohlc, topn, target_vol, lev_cap, eq, floors=None):
+        """called by C488Engine.rebalance, after its trades, with its own matrices.
+        C519: every rule holds what the book could hold -- the book's own floor
+        for each coin (floors: $6, or the venue's minimum where higher)."""
         if not self.active() or eq <= 0:
             return
         t0 = time.time()
         mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+        fl = floors or {}
         new, sl, skipped = {}, {}, {}
         for name, rule, vol, sizing, _w, _e in _C510_VARIANTS:
             if vol != 'close' and ohlc is None:
@@ -22038,7 +22083,7 @@ class C510Tournament(_C501Store):
                 Wc = _c488_combine_ewma(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
             else:
                 Wc = _c488_combine(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
-            new[name] = {s: float(x) for s, x in zip(keep, np.nan_to_num(Wc[-1])) if abs(x) * eq >= mn}
+            new[name] = {s: float(x) for s, x in zip(keep, np.nan_to_num(Wc[-1])) if abs(x) * eq >= fl.get(s, mn)}
         r = _c488_returns(close)
         pos = {s: j for j, s in enumerate(keep)}
         turn = lambda a, b: sum(abs(a.get(s, 0.0) - b.get(s, 0.0)) for s in set(a) | set(b))
@@ -40939,6 +40984,7 @@ def startup():
             setattr(cfg, _v510, _x510)
 
     # Initialize bot
+    cfg.C519_FRESH = bool(fresh)             # C519: the book's load knows a fresh start follows
     bot = TradingBot(cfg)
     if fresh:
         bot.c488.reset()                     # C488: a fresh account starts flat

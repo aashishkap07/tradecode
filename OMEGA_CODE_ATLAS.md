@@ -5,6 +5,24 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 **Deployed state (checked in the server's own logs):**
+- **BINANCE PAPER since 1 Oct 09:17 IST** (`c516-venue.conf`: OMEGA_VENUE=binance,
+  OMEGA_CAPITAL=500, FRESH_START), on C517; verified from 5 screenshots and the
+  10:17 IST logs push (`reports/2026-10-01_binance_first_rebalance.md`):
+  - fresh $500.00; `Connected | 739 futures markets (Binance USDⓈ-M)`; taker 0.05%;
+  - the first rebalance (09:17:19–23): 80 candidates, 20 eligible; **the plan
+    replays to the cent** from the saved inputs (14 targets, 7 under $6);
+  - the saved inputs equal Binance's archive: closes and quote volumes 80/80 on
+    28 and 29 Sep, 78/78 on 15 Jul; daily funding on all 2,418 coin-days of
+    August (30 Sep's archive file was not out yet);
+  - all 12 fills inside Binance's 03:47 UTC minute (spot proxy, ≤ 20 bp);
+    fees $0.17 at 0.05%; equity $499.83 = $500 − fees;
+  - **defect: 14 targeted, 12 held, "14 trades".** ETH +$11.12 and LINK +$6.90
+    were under Binance's $20 minimum; `_fill` refused them silently and the
+    loop counted them. **Fixed in C519** (not yet deployed);
+  - carry 8 × $49.98 (4 at Binance's 0.01%/8 h base rate = 10.95%/yr), spot pot
+    3 held (BNB, ETH, SOL: the rule's other 17 targets are under the $6 spot
+    floor), Savings idle $308.06 at 6.8%, shadow on the full 16-feature model,
+    0 Traceback.
 - **C489 has run on the VPS since 25 Sep 17:46 IST.**
 - **The C488 book built its first 9 positions:** $118.63 traded, 0.41× gross on
   $252.63.
@@ -226,13 +244,71 @@
 | 13 | ~~C488: why ETH was sold on 26 Sep~~ | **SOLVED and fixed in C499 (27 Sep)** | **Cause found by replay** (`research/c498_plan_replay.py`, Rule 56). **Ruled out on real data:** the candidate list (54 extra coins tried, 0 reproduce it); the 18-hour slide of the 200-record funding window (00:05 and 17:57 give the same book); a code change; the dial; rounding. **The one explanation that reproduces all three logged facts** (exactly the 8 held targets, only ETH traded, gross 0.40x): **ARB's funding request failed silently**. `_get` returned None after 3 tries, `if not d: break` read that as "no more data", so ARB's funding was zero and it ranked "cheapest", pushing ETH (0.4bp inside the cutoff) out of the carry-long fifth. Five other single failures were tried; none fits all three facts. **The same replay found a bigger, proven defect:** the 200-record funding fetch. See C499. Evidence is inference (the server logs no failed request), but C499 makes any recurrence loud. |
 | 12 | **Re-run the C489 research with the C495 standardisation fix** | optional, at a quarterly refresh | `research/omega_c489_research.py` had the same `btc4` 0/0 hole, so its results were computed on the hours where a rounding residue let it through, with noise in `btc4`. The verdict is **not expected to change**: it failed on per-hour costs (turnover 4–9×/day, costs 100–270%/yr against a gross of −3% to +40%), and scoring more hours adds costs in proportion. A re-run needs the 1-hour corpus (`research/c489_fetch_h1.py`, 383 coins). |
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy. Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. |
-| 15 | **The spot pot (S1): a second $250 in spot** | paper from C501; live only when the operator decides | Admitted in round 8 (`research/c501_results.txt`): long or flat trend on the top 20, 20% vol set point, never above 100% invested, cash in Savings, 0.08% BGB fee. 2020–26: +2.20%/month, max DD 27%, t 2.19, 4/4 quarters, 2025–26 +14%/yr excess. It runs in the bot as a **separate $250 paper pot** (`C501Spot`, daily 00:20 UTC, live spot bid/ask). **To go live it needs:** a spot order path with read-back (as C492 did for futures); the second $250 moved to the spot wallet; a small BGB balance with "pay fees in BGB" enabled; the tax check (#8). Its first run on the server (28 Sep) held BNB, BTC and ETH, 10% invested. **Correction (C502):** that was not "only 3 coins trending": all 20 were trending up and the rule wanted 35.8%. The $6 futures floor dropped 17. **C502** uses spot's real minimums ($2 position floor, $1 order): +2.59%/month, max DD 29%, t 2.47, 3/4 quarters, holdout +13.6%/yr. On 28 Sep's weights it holds 18 coins, 34.3% invested. |
+| 15 | **The spot pot (S1): a second $250 in spot** | paper from C501; live only when the operator decides | Admitted in round 8 (`research/c501_results.txt`): long or flat trend on the top 20, 20% vol set point, never above 100% invested, cash in Savings, 0.08% BGB fee. 2020–26: +2.20%/month, max DD 27%, t 2.19, 4/4 quarters, 2025–26 +14%/yr excess. It runs in the bot as a **separate $250 paper pot** (`C501Spot`, daily 00:20 UTC, live spot bid/ask). **To go live it needs:** a spot order path with read-back (as C492 did for futures); the second $250 moved to the spot wallet; a small BGB balance with "pay fees in BGB" enabled; the tax check (#8). Its first run on the server (28 Sep) held BNB, BTC and ETH, 10% invested. **Correction (C502):** that was not "only 3 coins trending": all 20 were trending up and the rule wanted 35.8%. The $6 futures floor dropped 17. **C502** uses spot's real minimums ($2 position floor, $1 order): +2.59%/month, max DD 29%, t 2.47, 3/4 quarters, holdout +13.6%/yr. On 28 Sep's weights it holds 18 coins, 34.3% invested. **On Binance (1 Oct): spot's minimum is $5, so the floor is $6** (`_C516_VENUE_DEFAULTS`): of the rule's 20 targets (33.2% invested) only BNB $9.71, ETH $9.61, SOL $6.54 clear it (LINK $5.96), 10.3% invested; on Bitget's $2 floor 16 would be held. At $250 the Binance pot is a thin copy of the rule, and India's 1% TDS on each sale weighs on it too: it stays paper. |
 | 16 | **The allostatic shadow (K4)** | running from C501; decided at the December refresh (#11) | `C501Allostatic` scores the running sizing and K4's (EWMA, 10-day half-life) identically at every rebalance, a paper A/B that never trades. Round 7: same return, worst month −9.7% vs −15.5%. It replaces the running sizing only if the December re-test on NEW data passes (Rule: pre-registered bars). On 28 Sep K4 wanted 0.66x vs the running 0.40x: it adjusts both ways. |
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. |
-| 18 | **ETH lumpiness at $250** | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. |
+| 18 | **ETH lumpiness at $250** (Bitget) / **minimums at $500** (Binance) | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. **On Binance at $500 (1 Oct):** BTC's step 0.001 = $83.65 against a $63.10 target (+33%); ETH +$11.12 and LINK +$6.90 sit under their $20 minimum (C519 leaves them out, as the research did); gross 0.667× held vs 0.652× planned. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧱 2026-10-01 — C519: THE PLAN HOLDS WHAT THE VENUE TAKES (THE FIRST BINANCE REBALANCE)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Report:** `reports/2026-10-01_binance_first_rebalance.md`.
+
+**What happened:** the first Binance paper rebalance (09:17 IST, C517) logged
+"14 positions targeted, gross 0.65x of $500.00, 14 trades" and the book held
+12. The plan's floor was a flat $6 (`C488_MIN_NOTIONAL`); Binance's minimum
+order is $50 BTC and $20 ETH/LINK/LTC/BCH/ETC. ETH +$11.12 and LINK +$6.90
+were refused by `_fill`'s `qty * px < _min_usdt` check, which returns 0 without
+a word, and `rebalance` counted every `trade_to` call as a trade. The research
+(C515, C518) priced the floor as max($6, the coin's minimum), so the paper book
+was trading 2 positions the backtest did not have (or would have, had they
+filled).
+
+**C519 (code):**
+- `C488Engine.floor(sym)` = max(`C488_MIN_NOTIONAL`, `_min_usdt(sym)`). Bitget:
+  $5 on all 812 contracts (read 1 Oct), so $6 everywhere, unchanged.
+- `rebalance`: `fl = {s: self.floor(s)}` on the table just read; the plan drops
+  a target under its coin's floor; the PLAN line reads `under $6 or Binance's
+  minimum: N (ETH +11.12 < $20, ...)`.
+- `n` counts fills (`trade_to` > 0). After the loop every plan target with no
+  position is named in one warning: `C488 k of N targets not held: X +$y
+  (its smallest order is q = $z | under Binance's $20 minimum order | the
+  contract is 'maintain' | not filled)`. `info['not_held']`.
+- `C510Tournament.observe(..., floors=None)` and `C501Allostatic.observe(...,
+  floors=None)` take the book's floors (default $6).
+- `c488_inputs.npz` adds `floor` (per coin) and `venue`.
+  `research/c498_plan_replay.py` reads both (inputs before C519: `OMEGA_VENUE`
+  and the live table), uses `ccxt.binanceusdm` for Binance inputs, and runs
+  without markets when it cannot reach them (the sandbox gets 451).
+- `cfg.C519_FRESH` (set by `main()` before `TradingBot(cfg)`): a venue switch
+  with a fresh start logs one calm line instead of the 🛑 (the 🛑 printed on
+  1 Oct a second before the fresh start cleared the block).
+- Version C519.
+
+**Today's plan under C519:** 12 targets (ETH and LINK out; BTC +$63.10 stays,
+over $50, held as one 0.001 step = $83.65) = exactly what the book holds, so
+the next rebalance does not trade because of C519. The tournament's books
+saved at 09:17 hold ETH and LINK in "N2+N3 (traded)"; 1 Oct is scored on them,
+2 Oct onward on the floors.
+
+**Verification:** `omega_c519_test.py` 26 checks; battery 41/42 (exit:
+`corpusL/`); boots: simulated Binance with an old Bitget book + FRESH_START
+(calm line, floors in the PLAN line, 0 errors) and fresh on real Bitget (the
+server's plan at $250, 12/12 held, "under $6: 9"). (The sandbox boot's detail
+log shows the calm line twice: the C429-2 early-line replay; the server's log
+showed its line once.)
+
+**Open:**
+- deploy (pull + restart; the Binance book resumes);
+- paper check #4 (2 Oct): the first C519 plan; 30 Sep and 1 Oct closes
+  against Binance's archive (out a day late); the tournament's first Binance
+  day; funding on Binance's schedule (the 4-hourly coins).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧭 2026-10-01 — C518: EVERY WAY TO THE TARGET; ROUND 13 (SELLING VOLATILITY) FAILS; INDIA'S TAX DECIDES THE VENUE

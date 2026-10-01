@@ -34,9 +34,20 @@ import ccxt
 
 eq = float(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else 250.0
 dial = float(sys.argv[sys.argv.index('--dial') + 1]) if '--dial' in sys.argv else 15.0   # the operator's saved dial
-x = ccxt.bitget({'options': {'defaultType': 'swap'}}); x.session.trust_env = True
-mk = x.load_markets()
-cfg = om.Config(); cfg.PAPER_MODE = True; cfg.C380_MAX_MONTHLY_DD_PCT = dial
+z = np.load(sys.argv[sys.argv.index('--inputs') + 1]) if '--inputs' in sys.argv else None
+# C519: the venue the inputs came from (files before C519: Bitget)
+venue = str(z['venue'][0]) if z is not None and 'venue' in z.files else os.environ.get('OMEGA_VENUE', 'bitget')
+cfg = om.Config(); cfg.PAPER_MODE = True; cfg.C380_MAX_MONTHLY_DD_PCT = dial; cfg.VENUE = venue
+om._c467_cfg_ref[0] = cfg
+try:
+    x = (ccxt.binanceusdm if venue == 'binance' else ccxt.bitget)({'options': {'defaultType': 'swap'}})
+    x.session.trust_env = True
+    mk = x.load_markets()
+except Exception as _e:
+    if z is None:
+        raise
+    mk = {}
+    print(f"({venue} markets not reachable here: {type(_e).__name__}; the saved inputs need none)")
 pf = om.Portfolio(cfg); pf.equity = eq
 ex = types.SimpleNamespace(markets=mk, exchange=types.SimpleNamespace(markets=mk))
 bot = types.SimpleNamespace(cfg=cfg, portfolio=pf, exchange=ex, _c462_state_settled=True,
@@ -45,13 +56,13 @@ for k in ('_C411_INDEX', '_C411_METAL', '_C411_ENERGY', '_C411_US_LISTED', '_C41
     setattr(bot, k, getattr(om.TradingBot, k))
 bot._c408_asset_class = lambda s: om.TradingBot._c408_asset_class(bot, s)
 e = om.C488Engine(bot)
-assert e.refresh_marks(force=True), 'no tickers'
+marks = e.refresh_marks(force=True)
+assert marks or z is not None, 'no tickers'
 now = dt.datetime.utcnow()
 n_top = e.topn(eq)
-if '--inputs' in sys.argv:
+if z is not None:
     # C506: the server's own inputs (data/c488_inputs.npz, on the logs branch) -- the exact data the
     # rebalance used, so the plan can be recomputed to the cent at any later time
-    z = np.load(sys.argv[sys.argv.index('--inputs') + 1])
     T, keep, close, qv, fund = z['T'], [str(k) for k in z['keep']], z['close'], z['qv'], z['fund']
     if len(sys.argv) < 2 or sys.argv[1].startswith('--'):
         eq = float(z['eq'][0])
@@ -68,10 +79,16 @@ else:
     if '--rule' in sys.argv:
         rule = sys.argv[sys.argv.index('--rule') + 1]
     ohlc = e.ohlc_for(T, keep)
-    print(f"live Bitget data, rule {rule}/{volest}/{sizing}")
+    print(f"live {venue} data, rule {rule}/{volest}/{sizing}")
 w, sl, el_now = om._c488_targets(T, close, qv, fund, n_top, e.target_vol(), float(getattr(cfg, 'C488_LEV_CAP', 3.0)),
                                  rule=rule, ohlc=ohlc, volest=volest if ohlc is not None else 'close', sizing=sizing)
 mn = float(getattr(cfg, 'C488_MIN_NOTIONAL', 6.0))
+# C519: each coin's floor as the server read it ($6, or the venue's minimum order where higher)
+if z is not None and 'floor' in z.files:
+    fl = {s: float(v) for s, v in zip(keep, z['floor'])}
+else:
+    e.refresh_rules(force=True)
+    fl = {s: e.floor(s) for s in keep}
 elig = om._c488_universe(close, qv, n_top)
 mi = max(i for i in range(len(T)) if dt.datetime.utcfromtimestamp(T[i] / 1000).weekday() == 0)
 lr = om._c488_lagret(close, 14)
@@ -91,15 +108,15 @@ for j, s in enumerate(keep):
         continue
     step, _ = e._step(s)
     px = e.mark(s)
-    held = e.round_qty(s, wj * eq / px) if px > 0 and abs(wj) * eq >= mn else 0.0
+    held = e.round_qty(s, wj * eq / px) if px > 0 and abs(wj) * eq >= fl[s] else 0.0
     rows.append(dict(coin=s.split('/')[0], target=round(wj * eq, 2), c1=float(sl['C1'][j]), c2=float(sl['C2'][j]),
-                     c3=float(sl['C3'][j]), in_plan=bool(abs(wj) * eq >= mn), qty=held,
-                     held_usd=round(abs(held) * px, 2), step_usd=round(step * px, 2) if step else None))
+                     c3=float(sl['C3'][j]), in_plan=bool(abs(wj) * eq >= fl[s]), floor=fl[s], qty=held,
+                     held_usd=round(abs(held) * px, 2), step_usd=round(step * px, 2) if step and px > 0 else None))
 rows.sort(key=lambda r: -abs(r['target']))
-print(f"\n{'coin':8} {'target $':>9} {'C1':>8} {'C2':>8} {'C3':>8}  plan  held after rounding (step $)")
+print(f"\n{'coin':8} {'target $':>9} {'C1':>8} {'C2':>8} {'C3':>8}  {'plan':9} held after rounding (step $)")
 for r in rows:
     print(f"{r['coin']:8} {r['target']:+9.2f} {r['c1']:+8.4f} {r['c2']:+8.4f} {r['c3']:+8.4f}  "
-          f"{'yes' if r['in_plan'] else 'no ($6)':7} {r['held_usd']:7.2f} ({r['step_usd']})")
+          f"{'yes' if r['in_plan'] else 'no ($%.0f)' % r['floor']:9} {r['held_usd']:7.2f} ({r['step_usd']})")
 
 
 def cut(sig, label, fmt):
