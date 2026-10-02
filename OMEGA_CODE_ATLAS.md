@@ -14,9 +14,18 @@
   - tournament day 1 = the hand calculation to 4 decimals.
   - **www.binance.com/fapi answers the sandbox** (fapi.binance.com does not):
     Binance futures data can now be checked the same day.
-- **C521 deployed 2 Oct 12:26 IST** (after the Ubuntu updates and a reboot;
-  the quick tunnel has a new address, not recorded here). The 12:31 IST
-  screens are verified (`reports/2026-10-02_c521_screens_c522.md`):
+- **C521 running since 2 Oct 12:18 IST** (sessions 12:18, 12:20 and 12:26 IST
+  around the Ubuntu updates and the reboot; the quick tunnel has a new address,
+  not recorded here; 0 Traceback in all three). **The Delta bootstrap
+  (12:18:46 IST = 06:48:46 UTC) is verified** from the 13:17 IST logs push:
+  10 fills (1000PEPE −8, ARB +61, BNB +1, BTC +1, DOGE −3, HYPE +1, NEAR +4,
+  SUI +21, TAO −5, XRP −18 contracts), **all 10 inside Delta's own 06:48 UTC
+  mark-price minute**. Notional = contracts × contract value × price, and fee =
+  0.05% × 1.18 on all 10 (total $0.20). Five targets were named "under one
+  contract" (AKE, ETH, LINK, SOL, UNI). Five under $6 (WLD, FIL, PUMP, ADA, ENA)
+  were skipped silently; C522 names them. BFUSD started at the book's
+  equity. The 12:31 IST screens are verified
+  (`reports/2026-10-02_c521_screens_c522.md`):
   - book marked $499.19, 11 positions inside Binance's 06:59–07:03 UTC range;
   - Savings reserve $190.19 = margin $65.37 + 25% of $499.26;
   - BFUSD $3.19/month vs $1.72, TDS $4.99, payback 103 days;
@@ -332,8 +341,11 @@
 **Open:**
 - deploy C522; expect `OMEGA C522` and the "C522 the shadow's record restarts"
   line at the next hour;
-- the C521 Delta bootstrap fills vs Delta's real prices (the 13:17 IST log
-  push, after the reboot);
+- ~~the C521 Delta bootstrap fills vs Delta's real prices~~ **verified** (13:17
+  IST push: 10/10 inside Delta's 06:48 UTC mark minute, fees exact);
+- **`deploy/omega-logpush.sh` now also pushes `c521_delta.json` and
+  `c521_bfusd.json`** (`omega_c480_logpush_test.sh` 10/10). The operator must
+  re-copy it to `/usr/local/bin` (the C506 step);
 - 3 Oct: the first GK rebalance, Delta's first full day and funding, BFUSD.
 
 # ═══════════════════════════════════════════════════════════════════════════
