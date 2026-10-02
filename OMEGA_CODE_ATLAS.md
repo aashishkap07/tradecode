@@ -14,8 +14,19 @@
   - tournament day 1 = the hand calculation to 4 decimals.
   - **www.binance.com/fapi answers the sandbox** (fapi.binance.com does not):
     Binance futures data can now be checked the same day.
-- **C521 pushed, NOT yet deployed:** range vol (GK) traded; 9-rule tournament;
-  BFUSD and Delta Exchange India paper accounts.
+- **C521 deployed 2 Oct 12:26 IST** (after the Ubuntu updates and a reboot;
+  the quick tunnel has a new address, not recorded here). The 12:31 IST
+  screens are verified (`reports/2026-10-02_c521_screens_c522.md`):
+  - book marked $499.19, 11 positions inside Binance's 06:59–07:03 UTC range;
+  - Savings reserve $190.19 = margin $65.37 + 25% of $499.26;
+  - BFUSD $3.19/month vs $1.72, TDS $4.99, payback 103 days;
+  - Delta prices = Delta's marks at 06:55–06:56 UTC (5-minute refresh);
+  - shadow M1 −7.09% / 549 trades is real (replayed: $455.74 vs the server's
+    $464.42 at 06:00 UTC). Cause: a 24-hour-volume universe with meme
+    listings. **C522 fixes the universe.**
+- **C522 pushed, NOT yet deployed:** the shadow on the research's universe
+  (old record archived), max DD from the start, Delta vs the Binance book on
+  one window, Delta names targets under the $6 floor.
 - **BINANCE PAPER since 1 Oct 09:17 IST** (`c516-venue.conf`: OMEGA_VENUE=binance,
   OMEGA_CAPITAL=500, FRESH_START), on C517; verified from 5 screenshots and the
   10:17 IST logs push (`reports/2026-10-01_binance_first_rebalance.md`):
@@ -263,6 +274,67 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.6%/yr for a long, corr 0.40); whole contracts hold 93% of the plan at $500. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧭 2026-10-02 — THE FIRST C521 SCREENS (12:31 IST) AND C522
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Report:** `reports/2026-10-02_c521_screens_c522.md`.
+
+**What the screens showed (all checked against Binance and Delta's public APIs):**
+- Every money number is right (book, Savings, BFUSD, spot pot, carry, Delta).
+- **Shadow M1 −7.09% in ~26 h, 549 trades: real.**
+  - A replay with the bot's own code on Binance's hourly candles reached
+    $455.74 at 06:00 UTC (the server: $464.42).
+  - Cause: `C489Shadow.universe()` ranked coins by **24-hour volume with no age
+    filter**. On Binance that admits new meme listings (龙虾, listed 11 Mar 2026,
+    fell 32% in one hour on $85M).
+  - The research used `_c488_universe` (30-day median volume, AGE 90). That is
+    a specification defect.
+  - **Caveat:** the research universe would also have lost ~10.3% over the same
+    26 h (龙虾 passes the age filter). The hourly P&L sd was 0.56% vs the
+    research's ~0.11%. The equal-weight cohorts (0.5/n per side, HOLD 4) have no
+    vol scaling, so the model is fragile to meme volatility. **Paper only**;
+    it is not a candidate.
+  - The book is unaffected: it sizes by own vol, and 龙虾 is not in its top 20.
+- Display gaps:
+  - the tournament's "max DD 0.0%" for a rule that only fell;
+  - Delta "vs the Binance book" compared different windows;
+  - Delta skipped under-$6 targets silently (WLD, FIL, PUMP, ADA, ENA).
+
+**C522 (code):**
+- **`C489Shadow.universe()`** = `_c488_universe(M[2], M[3], n)[-1]`, read from
+  `e._last_M` (today) or `c488_inputs.npz` (< 2 days old). It falls back to
+  24-hour volume and says so (`self.universe_rule`). The result is cached by day.
+- **Archive once:** a saved shadow without `c522` and with trades goes to
+  `self.archive` (until, why, M1/M1g pct, days, trades). Then the ledgers
+  reset, `start_equity` 0 (re-seeded at the next hour), `c522=True` is saved,
+  and the first tick logs "C522 the shadow's record restarts on the research's
+  universe … Archived: M1 …". The panel shows "coins by …" and "archived …".
+- **`_c501_stats` max DD** counts from the starting point
+  (`e = [1, cumprod(1+x)]`).
+- **`C521Delta._cmp_start()`:** the snapshot `cmp0` (time, Delta equity,
+  `c488.live_equity()`) is taken at the first rebalance, before fills. A
+  C521-era book takes it at its next tick. It is saved and reset with the book.
+  Status adds `book_pct`, `delta_cmp_pct`, `cmp_since` and `marks_age_min`.
+- **Delta's $6 floor named:** a target with |x|·eq < `C488_MIN_NOTIONAL` goes
+  into `zero` ("WLD +4.18 < $6"). The panel and log say "not held (under one
+  contract or the $6 floor)".
+- **Version C522.** `omega_c521_test.py` pins `>= 521`.
+
+**Verification:**
+- `omega_c522_test.py` 25 checks;
+- C521 test 41 checks;
+- battery 43/44 (exit: `corpusL/`).
+
+**Open:**
+- deploy C522; expect `OMEGA C522` and the "C522 the shadow's record restarts"
+  line at the next hour;
+- the C521 Delta bootstrap fills vs Delta's real prices (the 13:17 IST log
+  push, after the reboot);
+- 3 Oct: the first GK rebalance, Delta's first full day and funding, BFUSD.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔬 2026-10-02 — ROUND 14 (THE AUDIT OF THE TESTING) AND C521 (GK TRADED, BFUSD, DELTA)

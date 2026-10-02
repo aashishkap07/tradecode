@@ -2359,7 +2359,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C521'
+_OMEGA_VERSION = 'C522'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -21078,6 +21078,8 @@ class C489Shadow:
         self.start_equity = 0.0         # $: the real account's equity when the shadow began
         self.model_used = ''
         self.last_universe = ''
+        self.universe_rule = ''
+        self.archive = []                # C522: records closed for a stated reason, kept and shown
         self.gate_last = False
         self._tick_at = 0.0
         self._fail_at = 0.0
@@ -21105,6 +21107,21 @@ class C489Shadow:
                 # restart painted "gate shut" over an hour logged "gate OPEN"
                 # (28 Sep: 09:00 UTC opened at 14:32 IST; C503 restarted 14:46).
                 self.gate_last = bool(d.get('gate_last', False))
+                self.archive = list(d.get('archive') or [])
+                # C522: a record kept on the 24-hour-volume universe is not the
+                # researched model's; it is archived (and shown), and the ledgers
+                # start again on the research's universe -- once
+                if not d.get('c522') and any(L.get('trades') for L in self.led.values()):
+                    self.archive.append(dict(until=datetime.utcnow().strftime('%Y-%m-%d %H:%M'),
+                                             why="24-hour-volume universe, not the research's",
+                                             **{k: dict(pct=round(100 * (float(v.get('eq', 1.0)) - 1), 2),
+                                                        days=len(v.get('daily') or {}), trades=int(v.get('trades') or 0))
+                                                for k, v in self.led.items()}))
+                    self.led = {k: dict(eq=1.0, w={}, cohorts=[], daily={}, trades=0, cost=0.0, funding=0.0)
+                                for k in ('M1', 'M1g')}
+                    self.start_equity = 0.0
+                    self._c522_restart = True
+                    self.save()
         except Exception as e:
             logger.warning(f"⚠️ C489 shadow state not loaded ({type(e).__name__}) -- starting fresh")
 
@@ -21113,7 +21130,8 @@ class C489Shadow:
             with self._lock:
                 cut = (int(time.time()) // 3600 - self.CACHE_H) * 3600000
                 d = dict(led=self.led, last_hour=self.last_hour, syms=self.syms, start_equity=self.start_equity,
-                         model_used=self.model_used, gate_last=self.gate_last,
+                         model_used=self.model_used, gate_last=self.gate_last, c522=True,
+                         archive=list(getattr(self, 'archive', []))[-10:],
                          flow={s: {str(t): v for t, v in f.items() if t >= cut} for s, f in self.flow.items()})
             tmp = self.path + '.tmp'
             json.dump(d, open(tmp, 'w'))
@@ -21141,14 +21159,43 @@ class C489Shadow:
         return None
 
     def universe(self):
-        """the 40 most liquid crypto perps now, plus BTC (the market anchor)"""
+        """C522: the RESEARCH's universe -- the C488 rule: top 40 by 30-day median
+        daily quote volume through yesterday, listed >= 90 days, plus BTC (the
+        market anchor). research/omega_c489_research.py builds U from
+        R488.universe exactly so; the live shadow ranked by 24-HOUR volume with no
+        age limit, which on Binance took in days-old listings (US, NOM, CAP, GTC
+        ...) swinging 20-36%% an hour. Built from the book's own daily matrices
+        (today's rebalance, or its saved inputs after a restart); 24-hour volume
+        only until the book has rebalanced once."""
         e = self.bot.c488
-        e.refresh_marks()
-        rows = sorted(((v.get('vol', 0.0), s) for s, v in e.marks.items() if e._is_crypto(s)), reverse=True)
         n = int(getattr(self.cfg, 'C489_TOPN', 40))
-        raw = [C488Engine._raw(s) for _, s in rows[:n]]
+        day = datetime.utcnow().strftime('%Y-%m-%d')
+        if getattr(self, '_uni', None) and getattr(self, '_uni_day', '') == day:
+            return self._uni
+        M = None
+        c = getattr(e, '_last_M', None)
+        if c and c[0] == day:
+            M = c[2]
+        if M is None:
+            try:
+                z = np.load(os.path.join(BASE_PATH, 'c488_inputs.npz'))
+                if time.time() - float(z['at'][0]) < 2 * 86400:
+                    M = (z['T'], [str(k) for k in z['keep']], z['close'], z['qv'], z['fund'])
+            except Exception:
+                M = None
+        if M is not None:
+            el = _c488_universe(M[2], M[3], n)[-1]
+            raw = [C488Engine._raw(s) for j, s in enumerate(M[1]) if el[j] and e._is_crypto(s)]
+            self.universe_rule = 'research (30-day median volume, listed 90+ days)'
+        else:
+            e.refresh_marks()
+            rows = sorted(((v.get('vol', 0.0), s) for s, v in e.marks.items() if e._is_crypto(s)), reverse=True)
+            raw = [C488Engine._raw(s) for _, s in rows[:n]]
+            self.universe_rule = '24-hour volume (until the book has rebalanced)'
         if 'BTCUSDT' not in raw:
             raw.append('BTCUSDT')
+        if M is not None:
+            self._uni, self._uni_day = raw, day
         return raw
 
     def _pull(self, raw, hours):
@@ -21356,6 +21403,12 @@ class C489Shadow:
         self._tick_at = time.time()
         if not bool(getattr(self.bot, '_c462_state_settled', False)):
             return
+        if getattr(self, '_c522_restart', False) and self.archive:
+            self._c522_restart = False
+            a = self.archive[-1]
+            logger.info(f"   👻 C522 the shadow's record restarts on the research's universe (30-day median volume, "
+                        f"listed 90+ days). Archived: M1 {a['M1']['pct']:+.2f}% and M1g {a['M1g']['pct']:+.2f}% over "
+                        f"{a['M1']['days']}d on {a['why']}")
         now_h = int(time.time() * 1000) // 3600000 * 3600000
         if now_h <= self.last_hour or datetime.utcnow().minute < 2 or time.time() - self._fail_at < 300:
             return
@@ -21414,7 +21467,8 @@ class C489Shadow:
                         last_hour=datetime.utcfromtimestamp(self.last_hour / 1000).strftime('%Y-%m-%d %H:00') if self.last_hour else '',
                         flow_hours=flow_h, flow_week=week, flow_served=served, warming=week < 30, gate=self.gate_last,
                         model=self.model_used, start_equity=round(float(self.start_equity or 0.0), 2),
-                        venue=_c516_name(self.cfg),
+                        venue=_c516_name(self.cfg), universe=self.universe_rule,
+                        archive=list(getattr(self, 'archive', []))[-3:],
                         M1=self.record('M1'), M1g=self.record('M1g'))
 
 
@@ -21868,7 +21922,7 @@ def _c501_stats(x):
     x = np.asarray(x, float)
     if not len(x):
         return dict(days=0, ret=0.0, vol=0.0, maxdd=0.0, worst=0.0)
-    e = np.cumprod(1 + x)
+    e = np.concatenate([[1.0], np.cumprod(1 + x)])      # C522: from the starting point (a first-day loss is a drawdown)
     return dict(days=int(len(x)), ret=round(float(e[-1] - 1), 5),
                 vol=round(float(x.std() * math.sqrt(365)), 4) if len(x) > 1 else 0.0,
                 maxdd=round(float((1 - e / np.maximum.accumulate(e)).max()), 5), worst=round(float(x.min()), 5))
@@ -22489,6 +22543,7 @@ class C521Delta(_C501Store):
             self.info = dict(d.get('info') or {})
             self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
             self.eq_last = float(d.get('eq_last') or 0.0)
+            self.cmp0 = dict(d.get('cmp0') or {})
 
     def active(self):
         return bool(getattr(self.cfg, 'C521_DELTA', True))
@@ -22499,12 +22554,13 @@ class C521Delta(_C501Store):
             self.pos, self.closed, self.info, self.daily = {}, [], {}, {}
             self.fees = self.funding = self.realized = 0.0
             self.trades, self.last_run, self.eq_last = 0, '', 0.0
+            self.cmp0 = {}
         if save:
             self.save()
 
     def save(self):
         with self._lock:
-            d = dict(start_equity=self.start_equity, cash=self.cash, pos=self.pos, fees=self.fees,
+            d = dict(start_equity=self.start_equity, cash=self.cash, pos=self.pos, fees=self.fees, cmp0=self.cmp0,
                      funding=self.funding, realized=self.realized, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
                      eq_last=self.eq_last)
@@ -22626,6 +22682,7 @@ class C521Delta(_C501Store):
                 self.cash = self.start_equity
                 self.eq_last = self.start_equity
                 why = 'first'
+                self._cmp_start()
             eq = self.equity()
             if eq <= 0:
                 return
@@ -22647,6 +22704,9 @@ class C521Delta(_C501Store):
                 q = float(round(x * eq / cn))
                 if q == 0:
                     zero.append(f"{s.split('/')[0]} {x * eq:+.2f} < ${cn / 2:.0f}")
+                    continue
+                if abs(x) * eq < mn:                      # C522: the book's own $6 floor, said (C521 skipped these silently)
+                    zero.append(f"{s.split('/')[0]} {x * eq:+.2f} < ${mn:.0f}")
                     continue
                 tgt[prod['sym']] = (q, prod)
             traded, n = 0.0, 0
@@ -22676,7 +22736,16 @@ class C521Delta(_C501Store):
         logger.info(f"   🇮🇳 C521 Delta Exchange India (paper, same plan): {len(self.pos)} held, gross ${gross:.2f} of "
                     f"${planned:.2f} planned ({100 * gross / planned if planned else 0:.0f}%), {n} trades ${traded:.2f} | equity "
                     f"${self.equity():.2f}" + (f" | not on Delta: {', '.join(missing[:8])}" if missing else '')
-                    + (f" | under one contract: {', '.join(zero[:6])}" if zero else '') + f" [{time.time() - t0:.0f}s]")
+                    + (f" | not held (under one contract or the $6 floor): {', '.join(zero[:6])}" if zero else '') + f" [{time.time() - t0:.0f}s]")
+
+    def _cmp_start(self):
+        """C522: one snapshot -- the time, this book's equity and the Binance book's
+        marked equity -- so the panel compares the two over the SAME window (C521
+        set Delta's minutes against the Binance book's whole life)"""
+        try:
+            self.cmp0 = dict(t=time.time(), delta=float(self.equity()), book=float(self.bot.c488.live_equity()))
+        except Exception:
+            self.cmp0 = {}
 
     def bootstrap(self):
         """first run without waiting a day: the plan of the book's last rebalance,
@@ -22736,6 +22805,8 @@ class C521Delta(_C501Store):
             with self._lock:
                 if not self.start_equity and not self.pos:
                     self.bootstrap()
+                if self.start_equity and not self.cmp0:
+                    self._cmp_start()                          # C522: a book begun before the snapshot existed
                 self.accrue_funding(now)
             self.save()
         except Exception as e:
@@ -22750,14 +22821,22 @@ class C521Delta(_C501Store):
                 rows.append(dict(sym=s, coin=s[:-3], side='LONG' if p['qty'] > 0 else 'SHORT', contracts=p['qty'],
                                  usd=round(abs(p['qty']) * p['cv'] * mk, 2), pnl=round(p['qty'] * p['cv'] * (mk - p['avg']), 2),
                                  funding=round(p['funding'], 4)))
-            bk = self.bot.c488
-            beq0 = float((getattr(bk, 'born', {}) or {}).get('eq') or 0.0)
-            bpct = 100.0 * (float(bk.live_equity()) / beq0 - 1.0) if beq0 > 0 else None
+            c0 = self.cmp0 or {}
+            bpct = dpct = None
+            if c0.get('book', 0) > 0 and c0.get('delta', 0) > 0:
+                try:
+                    bpct = 100.0 * (float(self.bot.c488.live_equity()) / c0['book'] - 1.0)
+                    dpct = 100.0 * (eq / c0['delta'] - 1.0)
+                except Exception:
+                    bpct = dpct = None
             return dict(mode='paper' if self.active() else 'off', venue='Delta Exchange India',
                         start_equity=round(self.start_equity, 2), eq=round(eq, 2),
                         pnl=round(eq - self.start_equity, 2) if self.start_equity else 0.0,
                         pct=round(100.0 * (eq / self.start_equity - 1.0), 2) if self.start_equity else 0.0,
                         book_pct=round(bpct, 2) if bpct is not None else None,
+                        delta_cmp_pct=round(dpct, 2) if dpct is not None else None,
+                        cmp_since=datetime.fromtimestamp(c0['t']).strftime('%d %b %H:%M') if c0.get('t') else '',
+                        marks_age_min=round((time.time() - self._marks_at) / 60.0, 1) if self._marks_at else None,
                         fees=round(self.fees, 4), funding=round(self.funding, 4), realized=round(self.realized, 4),
                         trades=self.trades, n=len(self.pos), positions=rows, last_run=self.last_run,
                         info=self.info, gst=float(getattr(self.cfg, 'C521_DELTA_GST', 0.18)),
@@ -42710,8 +42789,10 @@ async function pull(){
             ' <span class="muted">'+r.days+'d \u00b7 '+r.trades+' trades'+(r.t!==undefined?' \u00b7 t '+r.t+' \u00b7 '+r.npos+'/4':'')+
             (r.eligible?' \u00b7 <b class="good">ELIGIBLE</b>':'')+'</span></div>'};
         q('shadow').innerHTML='<div class="s muted">duplicate paper account from '+money(sh.start_equity)+' \u2014 never touches the real one \u00b7 '+sh.coins+' coins \u00b7 model '+
-          (sh.model||'pending')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model needs 30 coins with a week of taker flow: '+(sh.flow_week||0)+' have it; '+(sh.venue||'Bitget')+' serves flow for '+(sh.flow_served||0)+' of '+sh.coins:'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
-          line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g);
+          (sh.model||'pending')+(sh.universe?' \u00b7 coins by '+sh.universe:'')+' \u00b7 last hour '+(sh.last_hour||'pending')+(sh.warming?' \u00b7 full model needs 30 coins with a week of taker flow: '+(sh.flow_week||0)+' have it; '+(sh.venue||'Bitget')+' serves flow for '+(sh.flow_served||0)+' of '+sh.coins:'')+' \u00b7 gate '+(sh.gate?'open':'shut')+'</div>'+
+          line('M1 probability model',sh.M1)+line('M1g cost-gated',sh.M1g)+
+          (sh.archive||[]).map(function(a){return '<div class="s muted">archived '+a.until+' ('+a.why+'): M1 '+(a.M1.pct>=0?'+':'')+a.M1.pct+
+            '% \u00b7 M1g '+(a.M1g.pct>=0?'+':'')+a.M1g.pct+'% over '+a.M1.days+'d, '+a.M1.trades+' trades</div>'}).join('');
       }
     }
     /* C490: the cash-and-carry ledger -- a record, not the account */
@@ -42780,15 +42861,17 @@ async function pull(){
           else if(!dl.start_equity){q('delta').innerHTML='<span class="muted">starts within a minute of the book\u2019s rebalance (Delta\u2019s public API)</span>'}
           else{
             var inf=dl.info||{},dh='<div class="s muted">the book\u2019s own plan held on Delta\u2019s whole contracts \u00b7 Delta\u2019s prices and funding, 0.05% taker + '+
-              Math.round(100*dl.gst)+'% GST \u00b7 paper account of '+money(dl.start_equity)+' \u2014 never touches money \u00b7 last '+(dl.last_run||'\u2014')+'</div>';
+              Math.round(100*dl.gst)+'% GST \u00b7 paper account of '+money(dl.start_equity)+' \u2014 never touches money \u00b7 last '+(dl.last_run||'\u2014')+
+              (dl.marks_age_min!==null&&dl.marks_age_min!==undefined?' \u00b7 Delta prices '+Math.round(dl.marks_age_min)+' min old (refreshed every 5)':'')+'</div>';
             dh+='<div style="margin:4px 0"><b>'+money(dl.eq)+'</b> <span class="'+cls(dl.pnl)+'">'+sgn(dl.pnl)+' ('+(dl.pct>=0?'+':'')+Number(dl.pct).toFixed(2)+'%)</span>'+
-              (dl.book_pct!==null&&dl.book_pct!==undefined?' <span class="muted">vs the Binance book '+(dl.book_pct>=0?'+':'')+Number(dl.book_pct).toFixed(2)+'%</span>':'')+
+              (dl.book_pct!==null&&dl.book_pct!==undefined?' <span class="muted">\u00b7 since '+dl.cmp_since+': Delta '+(dl.delta_cmp_pct>=0?'+':'')+
+                Number(dl.delta_cmp_pct).toFixed(2)+'% vs the Binance book '+(dl.book_pct>=0?'+':'')+Number(dl.book_pct).toFixed(2)+'%</span>':'')+
               ' <span class="muted">\u00b7 '+dl.n+' held \u00b7 gross '+money(inf.gross||0)+' of '+money(inf.planned||0)+' planned \u00b7 fees '+money(dl.fees)+
               ' \u00b7 funding '+sgn(dl.funding)+'</span></div>';
             (dl.positions||[]).forEach(function(p){dh+='<div class="s">'+p.coin+' '+p.side+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+
               '</span> <span class="muted">'+Math.abs(p.contracts)+' contracts \u00b7 funding '+sgn(p.funding)+'</span></div>'});
             if((inf.missing||[]).length)dh+='<div class="s muted">not on Delta: '+inf.missing.join(', ')+'</div>';
-            if((inf.zero||[]).length)dh+='<div class="s muted">under one contract: '+inf.zero.join(', ')+'</div>';
+            if((inf.zero||[]).length)dh+='<div class="s muted">not held (under one contract or the $6 floor): '+inf.zero.join(', ')+'</div>';
             q('delta').innerHTML=dh;
           }
         }

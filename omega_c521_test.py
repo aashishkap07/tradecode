@@ -45,7 +45,7 @@ c0 = om.Config()
 ok("BFUSD on (7.66% base APY, 9.51% boosted shown, 1% TDS once); Delta on at $500 with 18% GST",
    c0.C521_BFUSD and c0.C521_BFUSD_APY == 0.0766 and c0.C521_BFUSD_BOOST == 0.0951 and c0.C521_BFUSD_TDS == 0.01
    and c0.C521_DELTA and c0.C521_DELTA_EQUITY == 500.0 and c0.C521_DELTA_GST == 0.18)
-ok("version C521", om._OMEGA_VERSION == 'C521')
+ok("version C521 or later", int(om._OMEGA_VERSION[1:]) >= 521)
 ok("the bot builds both, ticks both every pass, resets both on a fresh start",
    'self.c521b = C521Bfusd(self)' in SRC and 'self.c521d = C521Delta(self)' in SRC
    and '(self.c501s, self.c501v, self.c521b, self.c521d)' in SRC and 'bot.c521b.reset(); bot.c521d.reset()' in SRC)
