@@ -138,8 +138,8 @@ ok("_c488_targets with no rule given = the admitted book", np.array_equal(
 
 print("\n2. THE BOOK TRADES THE CHOSEN RULE")
 cfg = om.Config()
-ok("the default: C2 = N2+N3 in paper (the forward test); vol and sizing as admitted",
-   (cfg.C488_C2_RULE, cfg.C488_VOL_EST, cfg.C488_SIZING) == ('n2n3', 'close', 'running'))
+ok("the default: C2 = N2+N3 in paper (the forward test); range vol (admitted in round 14, C521); running sizing",
+   (cfg.C488_C2_RULE, cfg.C488_VOL_EST, cfg.C488_SIZING) == ('n2n3', 'gk', 'running'))
 
 
 class FakeEx:
@@ -153,6 +153,7 @@ class FakeEx:
 
 def make_bot(rule=None, day=-1):
     c = om.Config(); c.PAPER_MODE = True; c.C380_MAX_MONTHLY_DD_PCT = 15.0
+    c.C488_VOL_EST = 'close'            # C510's own setting: these checks are about the rule and the tournament
     if rule:
         c.C488_C2_RULE = rule
     p = om.Portfolio(c); p.equity = p.available_balance = 250.0
@@ -219,8 +220,8 @@ ok("the carry ledger reads the same (now five-value) daily history: closes and v
 
 print("\n3. THE TOURNAMENT")
 t1 = b1.c510t.status()
-ok("seven rules held after the first rebalance, the traded one marked, none skipped (OHLC present)",
-   sum(v['on'] for v in t1['rows']) == 7 and t1['traded'] == 'n2n3' and not any(v['skipped'] for v in t1['rows'])
+ok(f"all {len(om._C510_VARIANTS)} rules held after the first rebalance, the traded one marked, none skipped (OHLC present)",
+   sum(v['on'] for v in t1['rows']) == len(om._C510_VARIANTS) and t1['traded'] == 'n2n3' and not any(v['skipped'] for v in t1['rows'])
    and t1['days'] == 0, str([(v['name'], v['on'], v['skipped']) for v in t1['rows']]))
 row = next(v for v in t1['rows'] if v['name'] == 'n2n3')
 ok("  the traded rule's row holds the same book the paper book was planned from",
@@ -253,7 +254,8 @@ e3.rebalance('first')
 t3 = b3.c510t.status()
 sk = [v for v in t3['rows'] if v['skipped']]
 ok("matrices without high/low: the range-vol rules are skipped and say why; the rest run",
-   len(sk) == 2 and all('no high/low' in v['skipped'] for v in sk) and sum(v['on'] for v in t3['rows']) == 5)
+   len(sk) == sum(1 for v in om._C510_VARIANTS if v[2] != 'close') and all('no high/low' in v['skipped'] for v in sk)
+   and sum(v['on'] for v in t3['rows']) == sum(1 for v in om._C510_VARIANTS if v[2] == 'close'))
 TODAY = dt.datetime.utcnow().strftime('%Y-%m-%d')
 bw = types.SimpleNamespace(cfg=b1.cfg, c488=e1, c510t=b1.c510t, c501k=None, c489=None, c490=None, c501s=None, c501v=None)
 e1.last_rebal = TODAY; e1._last_M = (TODAY, 20, None); e1._marks_at = time.time()
@@ -313,7 +315,8 @@ ok("FEES: the book's fills, 'book $0.11 | 12 taker fills this run | 0.059% of $1
 ok("LIFETIME: '139tr 44W 95L old scanner | account $-6.20 realised'",
    '139tr 44W 95L old scanner' in row_('LIFETIME') and 'account $-6.20 realised' in row_('LIFETIME'), row_('LIFETIME'))
 ok("RULE: 'C2 N2+N3 | forward test (paper)'", 'C2 N2+N3' in row_('RULE') and 'forward test' in row_('RULE'), row_('RULE'))
-ok("TOURNEY: '1d from <first scored day> | base ... | N2+N3* ...' (C513: the day scored)", '1d from' in row_('TOURNEY') and 'N2+N3*' in row_('TOURNEY')
+ok("TOURNEY: '1d from <first scored day> | base ... | +GK* ...' (C513: the day scored; C521: range vol traded)",
+   '1d from' in row_('TOURNEY') and '+GK*' in row_('TOURNEY') and '+GK+DD' in row_('TOURNEY')
    and '+K4+GK' in row_('TOURNEY'), row_('TOURNEY'))
 # the 8-minute summary line and the boot, through the real TradingBot methods
 tb = om.TradingBot.__new__(om.TradingBot)
@@ -375,7 +378,7 @@ try:
        and 'rule tournament' in run_ and 'OFF' in run_ and '44W 95L' in run_ and 'crypto only' in run_, run_)
     ok("the book panel names its rule", 'rule: C2 N2+N3' in bk and 'forward test' in bk, bk)
     ok("the tournament table: every rule, the traded one marked, each with its research evidence",
-       '(traded)' in tt and 'admitted C488 rule' in tt and 'round 11' in tt and 'vs base' in tt, tt)
+       '(traded)' in tt and 'admitted C488 rule' in tt and 'round 14' in tt and 'vs base' in tt, tt)
     ok("the Record tile is the book's: '3W 8L · book: 11 closed, net -$8.47 · old scanner (off)'",
        '3W 8L' in rc and 'book: 11 closed' in rc and '-$8.47' in rc and 'old scanner (off)' in rc, rc)
     ok("  the separate K4 line gives way to the tournament's K4 row", 'allostatic shadow (K4' not in bk, bk)

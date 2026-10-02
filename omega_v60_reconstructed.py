@@ -1780,6 +1780,22 @@ class _C462Report:
                                            f"~{_c462_money(_u501['month_est'])}/month", 'paper'])
             except Exception:
                 pass
+            # C521: BFUSD and the same book on Delta Exchange India, one line each
+            try:
+                _b521 = getattr(bot, 'c521b', None)
+                if _b521 is not None and _b521.active() and _b521.last_ts:
+                    _x521 = _b521.status()
+                    self._pack('BFUSD', [f"wallet {_c462_money(_x521['eq'])} at {100 * _x521['apy']:.2f}%",
+                                         f"+{_c462_money(_x521['interest'])} so far", f"~{_c462_money(_x521['month_est'])}/month",
+                                         f"vs Savings {_c462_money(_x521['savings_month'])}", 'paper'])
+                _d521 = getattr(bot, 'c521d', None)
+                if _d521 is not None and _d521.active() and _d521.start_equity:
+                    _y521 = _d521.status()
+                    self._pack('DELTA', [f"{_c462_money(_y521['eq'])} ({_y521['pct']:+.2f}%)",
+                                         f"{_y521['n']} held", f"fees {_c462_money(_y521['fees'])}",
+                                         f"funding {_c462_money(_y521['funding'], sign=True)}", 'paper, same plan'])
+            except Exception:
+                pass
             # C488: the portfolio engine's book, one line
             try:
                 if _e488 is not None and _e488.active():
@@ -1827,7 +1843,8 @@ class _C462Report:
                     if _tt510 is not None and _tt510.active():
                         _ts510 = _tt510.status()
                         _sh510 = {'base': 'base', 'n2': 'N2', 'n3': 'N3', 'n2n3': 'N2+N3', 'n2n3_k4': '+K4',
-                                  'n2n3_gk': '+GK', 'n2n3_k4_gk': '+K4+GK'}
+                                  'n2n3_gk': '+GK', 'n2n3_k4_gk': '+K4+GK', 'n2n3_gk_dd': '+GK+DD',
+                                  'n2n3_gk_xa': '+GK+XA'}
                         if _ts510['days'] > 0:
                             self._pack('TOURNEY', [f"{_ts510['days']}d from {_ts510['first']}"]
                                        + [f"{_sh510.get(v['name'], v['name'])}{'*' if v['traded'] else ''} "
@@ -2342,7 +2359,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C520'
+_OMEGA_VERSION = 'C521'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3082,6 +3099,14 @@ class Config:
         self.C516_BN_FUND_DAYS = 200            # C516: Binance keeps every funding record; 200 days covers the book's windows
         self.C501_SPOT_TDS = 0.0                # C516: India's 1% TDS on each spot sale (s.194S), set on Binance
         self.C519_FRESH = False                 # C519: set by main() when this run starts fresh
+        self.C521_BFUSD = True                  # C521: BFUSD on the whole futures wallet (paper, Binance only)
+        self.C521_BFUSD_APY = 0.0766            # C521: base APY, Binance's BFUSD page, Sep 2026 -- update from the app monthly
+        self.C521_BFUSD_BOOST = 0.0951          # C521: the boosted APY shown beside it (not booked)
+        self.C521_BFUSD_TDS = 0.01              # C521: India's 1% TDS, once, on converting USDT to BFUSD (creditable)
+        self.C521_DELTA = True                  # C521: the same book on Delta Exchange India (paper)
+        self.C521_DELTA_EQUITY = 500.0          # C521: its own paper capital (whole contracts hold 93% of the plan at $500)
+        self.C521_DELTA_GST = 0.18              # C521: GST on Delta's fees
+        self.C521_DELTA_MARK_S = 300            # C521: Delta's tickers for the panel every 5 min (forced at trades/funding)
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
         self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
         self.C488_TOPN_40_FROM = 1000.0
@@ -3102,7 +3127,7 @@ class Config:
         # prices by the rule tournament (C510Tournament). Live money on anything
         # but 'base' / 'close' / 'running' is warned about loudly (C510).
         self.C488_C2_RULE = 'n2n3'              # 'base' (admitted) | 'n2' | 'n3' | 'n2n3'
-        self.C488_VOL_EST = 'close'             # 'close' (admitted) | 'park' | 'gk' (round 11, not admitted)
+        self.C488_VOL_EST = 'gk'                # 'gk' range vol: ADMITTED in round 14 (C521, risk-matched) | 'close' | 'park'
         self.C488_SIZING = 'running'            # 'running' (admitted) | 'k4' (round 7, not admitted)
         self.C510_TOURNAMENT = True             # score every candidate rule at each rebalance (paper)
         # ═══ C492: WHAT LIVE MONEY NEEDS (pending task #2) ════════════════
@@ -19259,7 +19284,7 @@ class C488Engine:
 
     def admitted(self):
         """True when the book trades only what passed its pre-registered test"""
-        return (self.c2_rule(), self.volest(), self.sizing()) == ('base', 'close', 'running')
+        return (self.c2_rule(), self.sizing()) == ('base', 'running') and self.volest() in ('close', 'gk')
 
     def rule_label(self):
         bits = [{'base': 'C2 raw', 'n2': 'C2 N2', 'n3': 'C2 N3', 'n2n3': 'C2 N2+N3'}[self.c2_rule()]]
@@ -20523,6 +20548,12 @@ class C488Engine:
                               float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), eq, floors=fl)
         except Exception as _e510:
             logger.warning(f"⚠️ C510 tournament skipped ({type(_e510).__name__}: {_e510})")
+        try:                                            # C521: the same plan on Delta Exchange India (paper)
+            _d521 = getattr(self.bot, 'c521d', None)
+            if _d521 is not None and _d521.active():
+                _d521.rebalance(keep, w, 'first' if not _d521.start_equity else why)
+        except Exception as _e521:
+            logger.warning(f"⚠️ C521 Delta paper book skipped ({type(_e521).__name__}: {_e521})")
         try:                                            # C509: and whether the result so far is normal
             _c = self.context()
             for _k, _lab in (('start', 'since the book began'), ('month', 'this month')):
@@ -21990,9 +22021,62 @@ _C510_VARIANTS = (
     ('n2n3_k4', 'n2n3', 'close', 'k4', 'N2+N3, K4 sizing',
      'K4 round 7: worst month -9.7% vs -15.5%'),
     ('n2n3_gk', 'n2n3', 'gk', 'running', 'N2+N3, range vol',
-     'round 11: range vol +4.3%/yr, t 1.87 (bar 1.96)'),
-    ('n2n3_k4_gk', 'n2n3', 'gk', 'k4', 'N2+N3, K4, range vol', 'descriptive only'),
+     'round 14: at equal risk Sharpe +0.19 (p 0.017), 4/4 quarters, holdout +0.23 -- ADMITTED'),
+    ('n2n3_k4_gk', 'n2n3', 'gk', 'k4', 'N2+N3, K4, range vol', 'round 14: at equal vol worst month -12.2% vs -17.4%'),
+    # C521 (round 14): two risk rules that cut the tail at equal volatility without a significant
+    # Sharpe gain -- scored forward, never traded, as the pre-registration says
+    ('n2n3_gk_dd', 'n2n3', 'gk', 'dd', 'N2+N3, range vol, drawdown loop',
+     'round 14: at equal vol max DD 30% vs 42%, worst month -12.5% vs -17.4%'),
+    ('n2n3_gk_xa', 'n2n3', 'gk', 'xa', 'N2+N3, range vol, ex-ante risk',
+     'round 14: at equal vol worst month -11.8% vs -17.4%'),
 )
+
+
+def _c521_combine_exante(parts, r, fund, lag, target_vol=0.20, lev_cap=3.0, win=60, periods=365,
+                         hl_v=10.0, hl_c=30.0, shrink=0.5):
+    """C521 B2 (research/omega_c521_research.py combine_exante): the sleeves at equal
+    trailing risk as _c488_combine, but the book scaled by the FORECAST volatility of
+    the weights it holds now -- sqrt(w' S w), S = the coins' EWMA vols (10-day
+    half-life) and EWMA correlation (30-day) shrunk halfway to its average --
+    instead of the realised volatility of the book it held over the last 60 days"""
+    unit = {k: _c488_pnl(w, r, fund, lag)[0] for k, w in parts.items()}
+    n, k = r.shape
+    sw = {}
+    for name, u in unit.items():
+        sd_ = np.full(n, np.nan)
+        for i in range(win, n):
+            x = u[i - win:i]
+            sd_[i] = x.std() if x.std() > 0 else np.nan
+        sw[name] = np.nan_to_num(1.0 / sd_) / len(unit)
+    Wu = sum(sw[name][:, None] * parts[name] for name in parts)
+    av, ac = 1 - 0.5 ** (1 / hl_v), 1 - 0.5 ** (1 / hl_c)
+    rz = np.nan_to_num(r)
+    var = np.zeros(k); cov = np.zeros((k, k)); seen = np.zeros(k, int)
+    L = np.zeros(n)
+    for i in range(n):
+        x = rz[i]
+        live = ~np.isnan(r[i])
+        var = np.where(live, (1 - av) * var + av * x * x, var)
+        cov = (1 - ac) * cov + ac * np.outer(x, x)
+        seen += live
+        if i < 2 * win:
+            continue
+        j = np.nonzero(Wu[i])[0]
+        ok = j[seen[j] >= 60] if len(j) else j
+        if len(ok) < 2:
+            continue
+        sd = np.sqrt(np.maximum(var[ok], 1e-12))
+        cv = cov[np.ix_(ok, ok)]
+        dd = np.sqrt(np.maximum(np.diag(cv), 1e-12))
+        C = cv / np.outer(dd, dd)
+        off = C[~np.eye(len(ok), dtype=bool)]
+        cbar = float(np.clip(off.mean(), -0.99, 0.99)) if len(off) else 0.0
+        C = (1 - shrink) * C + shrink * (np.full_like(C, cbar) + (1 - cbar) * np.eye(len(ok)))
+        sp = math.sqrt(max(Wu[i][ok] @ (np.outer(sd, sd) * C) @ Wu[i][ok], 1e-18)) * math.sqrt(periods)
+        L[i] = target_vol / sp if sp > 0 else 0.0
+    W = Wu * L[:, None]
+    g = np.abs(W).sum(1)
+    return W * np.where(g > lev_cap, lev_cap / np.maximum(g, 1e-12), 1.0)[:, None]
 
 
 class C510Tournament(_C501Store):
@@ -22084,9 +22168,14 @@ class C510Tournament(_C501Store):
             parts = {k: W_[k] for k in ('C1', 'C2', 'C3')}
             if sizing == 'k4':
                 Wc = _c488_combine_ewma(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
+            elif sizing == 'xa':
+                Wc = _c521_combine_exante(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
             else:
                 Wc = _c488_combine(parts, r_, fund, 1, target_vol=target_vol, lev_cap=lev_cap)
-            new[name] = {s: float(x) for s, x in zip(keep, np.nan_to_num(Wc[-1])) if abs(x) * eq >= fl.get(s, mn)}
+            wl = np.nan_to_num(Wc[-1])
+            if sizing == 'dd':                  # C521: risk x clip(1 - its own drawdown / 30%, 0.25, 1)
+                wl = wl * self._dd_scale(name)
+            new[name] = {s: float(x) for s, x in zip(keep, wl) if abs(x) * eq >= fl.get(s, mn)}
         r = _c488_returns(close)
         pos = {s: j for j, s in enumerate(keep)}
         turn = lambda a, b: sum(abs(a.get(s, 0.0) - b.get(s, 0.0)) for s in set(a) | set(b))
@@ -22121,6 +22210,14 @@ class C510Tournament(_C501Store):
                     + ' | '.join(f"{v['label']}{' (traded)' if v['traded'] else ''} {100 * v['ret']:+.2f}%"
                                  for v in st['rows'] if v['on'])
                     + f" [{time.time() - t0:.0f}s]")
+
+    def _dd_scale(self, name, cap=0.30, floor=0.25):
+        """the drawdown loop's scale from this row's own scored record"""
+        eq_, peak = 1.0, 1.0
+        for d in self.daily:
+            if name in d[1]:
+                eq_ *= 1.0 + float(d[1][name]); peak = max(peak, eq_)
+        return min(max(1.0 - (1.0 - eq_ / peak) / cap, floor), 1.0)
 
     def traded_name(self):
         e = getattr(self.bot, 'c488', None)
@@ -22240,6 +22337,431 @@ class C501Savings(_C501Store):
                         idle=round(self.idle, 2), idle_pct=round(100.0 * self.idle / self.eq, 1) if self.eq else 0.0,
                         interest=round(self.interest, 4), days=round(days, 2),
                         month_est=round(self.idle * self.apr() / 12.0, 2))
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  C521: TWO MORE PAPER ACCOUNTS -- BFUSD ON BINANCE, AND THE SAME BOOK ON DELTA
+# ════════════════════════════════════════════════════════════════════════════
+# The operator asked to run BFUSD and Delta Exchange India side by side, on
+# paper, as separate accounts. Neither ever touches money.
+#   * BFUSD: Binance's reward-bearing margin asset. Held as the futures wallet,
+#     the WHOLE balance earns its rate while the book trades (Savings earns only
+#     on the idle part). The rate has no public API (Binance's page renders it in
+#     the browser), so C521_BFUSD_APY is set by hand from the app, like
+#     C501_SAVINGS_APR. Converting USDT to BFUSD is probably a crypto-to-crypto
+#     transfer under India's 1% TDS (s.194S): the ledger withholds it once, as
+#     creditable tax, until a CA says otherwise.
+#   * Delta Exchange India: the SAME plan the book trades (Binance's data decides
+#     it), held on Delta's contracts, at Delta's prices, fees (0.05% taker + 18%
+#     GST) and funding. Round 14 (research/c521_delta.py, 2 Oct 2026): Delta lists
+#     55 of the book's 80 candidates; daily returns track Binance at a median
+#     correlation of 0.994 (BTC/ETH/SOL ~1.000, small coins 10-27%/yr tracking
+#     error); funding does NOT track (median +5.6%/yr dearer for a long, from
+#     -60% to +50% by coin, correlation 0.40); whole contracts hold 93% of the
+#     planned gross at $500. This paper book measures what that costs in practice.
+_C521_DELTA_API = os.environ.get('OMEGA_DELTA_API', '').strip() or 'https://api.india.delta.exchange'
+
+
+def _c521_get(path, params, tries=3):
+    """a Delta Exchange India public GET: the 'result' field, or None"""
+    for k in range(tries):
+        try:
+            r = requests.get(_C521_DELTA_API + path, params=params, timeout=12)
+            if r.status_code == 200:
+                j = r.json()
+                if j.get('success', True):
+                    return j.get('result')
+        except Exception:
+            pass
+        if k + 1 < tries:
+            time.sleep(0.6 * (k + 1))
+    return None
+
+
+class C521Bfusd(_C501Store):
+    """BFUSD (paper): the futures wallet held in Binance's reward-bearing margin
+    asset. Every minute the whole marked equity accrues C521_BFUSD_APY; a one-time
+    TDS (C521_BFUSD_TDS of the first equity) stands for the USDT -> BFUSD
+    conversion. Shown against the Savings ledger, which earns only on idle cash."""
+
+    STATE_FILE = 'c521_bfusd.json'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = 0.0
+        self._saved_at = 0.0
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            for k in ('interest', 'since', 'last_ts', 'eq', 'tds', 'eq0'):
+                setattr(self, k, float(d.get(k) or 0.0))
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C521_BFUSD', True)) and _c516_venue(self.cfg) == 'binance'
+
+    def apy(self):
+        return float(getattr(self.cfg, 'C521_BFUSD_APY', 0.0766))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.interest, self.since, self.last_ts, self.eq, self.tds, self.eq0 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(interest=self.interest, since=self.since, last_ts=self.last_ts, eq=self.eq, tds=self.tds, eq0=self.eq0)
+        self._write(d)
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 60:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        eq = float(self.bot.c488.live_equity())
+        if eq <= 0:
+            return
+        with self._lock:
+            if self.last_ts:
+                dt_ = max(0.0, min(now - self.last_ts, 86400.0))
+                self.interest += self.eq * self.apy() * dt_ / (365.0 * 86400.0)
+            else:
+                self.since, self.eq0 = now, eq
+                self.tds = eq * float(getattr(self.cfg, 'C521_BFUSD_TDS', 0.01))
+            self.last_ts, self.eq = now, eq
+        if now - self._saved_at > 300:
+            self._saved_at = now
+            self.save()
+
+    def status(self):
+        with self._lock:
+            days = (time.time() - self.since) / 86400.0 if self.since else 0.0
+            month = self.eq * self.apy() / 12.0
+            sv = getattr(self.bot, 'c501v', None)
+            sm = 0.0
+            try:
+                if sv is not None and sv.active():
+                    st = sv.status()
+                    sm = float(st.get('month_est') or 0.0)
+            except Exception:
+                pass
+            gain = month - sm
+            return dict(mode='paper' if self.active() else 'off', apy=round(self.apy(), 4),
+                        boost=round(float(getattr(self.cfg, 'C521_BFUSD_BOOST', 0.0951)), 4),
+                        eq=round(self.eq, 2), interest=round(self.interest, 4), days=round(days, 2),
+                        month_est=round(month, 2), savings_month=round(sm, 2), gain_month=round(gain, 2),
+                        tds=round(self.tds, 2), tds_pct=round(100 * float(getattr(self.cfg, 'C521_BFUSD_TDS', 0.01)), 2),
+                        payback_days=round(30.4 * self.tds / gain, 0) if gain > 0 and self.tds > 0 else None)
+
+
+class C521Delta(_C501Store):
+    """Delta Exchange India (paper): the book's own plan, held on Delta's
+    contracts. At every C488 rebalance it is handed the RAW weights (before
+    Binance's minimums) and sizes them on its own equity: contracts =
+    round(target / (contract value x mark)), whole contracts only. It fills at
+    Delta's best bid/ask, pays 0.05% taker plus 18% GST, and books Delta's
+    funding at each coin's own exchange time (FUNDING:<SYM>, the rate in force
+    the hour before). Coins Delta does not list are named, never forced."""
+
+    STATE_FILE = 'c521_delta.json'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = 0.0
+        self._marks_at = 0.0
+        self._prod_at = 0.0
+        self.prods, self.marks = {}, {}
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.start_equity = float(d.get('start_equity') or 0.0)
+            self.cash = float(d.get('cash') or 0.0)
+            self.pos = {k: dict(v) for k, v in (d.get('pos') or {}).items()}
+            for k in ('fees', 'funding', 'realized'):
+                setattr(self, k, float(d.get(k) or 0.0))
+            self.trades = int(d.get('trades') or 0)
+            self.closed = list(d.get('closed') or [])[-200:]
+            self.last_run = str(d.get('last_run') or '')
+            self.info = dict(d.get('info') or {})
+            self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
+            self.eq_last = float(d.get('eq_last') or 0.0)
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C521_DELTA', True))
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.start_equity, self.cash = 0.0, 0.0
+            self.pos, self.closed, self.info, self.daily = {}, [], {}, {}
+            self.fees = self.funding = self.realized = 0.0
+            self.trades, self.last_run, self.eq_last = 0, '', 0.0
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(start_equity=self.start_equity, cash=self.cash, pos=self.pos, fees=self.fees,
+                     funding=self.funding, realized=self.realized, trades=self.trades, closed=self.closed[-200:],
+                     last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
+                     eq_last=self.eq_last)
+        self._write(d)
+
+    # ── Delta's tables ───────────────────────────────────────────────────────
+    def refresh_products(self, force=False):
+        if not force and self.prods and time.time() - self._prod_at < 6 * 3600:
+            return True
+        d = _c521_get('/v2/products', {'contract_types': 'perpetual_futures', 'states': 'live'})
+        out = {}
+        for p in d or []:
+            try:
+                sp = p.get('product_specs') or {}
+                tags = sp.get('tags') or []
+                if sp.get('top_tag') == 'tradfi' or any(t in ('xStock', 'metal') for t in tags):
+                    continue                                    # tokenised stocks, ETFs, metals: not crypto
+                if (p.get('settling_asset') or {}).get('symbol') != 'USD':
+                    continue
+                base = str((p.get('underlying_asset') or {}).get('symbol') or '')
+                if base in _C516_TRADFI:
+                    continue
+                out[base] = dict(sym=str(p['symbol']), cv=float(p['contract_value']),
+                                 iv=int(sp.get('rate_exchange_interval') or 28800),
+                                 taker=float(p.get('taker_commission_rate') or 0.0005))
+            except Exception:
+                continue
+        if len(out) >= 20:
+            self.prods, self._prod_at = out, time.time()
+        return bool(self.prods)
+
+    def refresh_marks(self, force=False):
+        """all of Delta's perpetual tickers in one call (~47 KB gzipped): every
+        C521_DELTA_MARK_S (5 min) for the panel; forced at a rebalance and a funding exchange"""
+        if not force and self.marks and time.time() - self._marks_at < float(getattr(self.cfg, 'C521_DELTA_MARK_S', 300)):
+            return True
+        d = _c521_get('/v2/tickers', {'contract_types': 'perpetual_futures'})
+        m = {}
+        for t in d or []:
+            try:
+                q = t.get('quotes') or {}
+                mk = float(t.get('mark_price') or 0.0)
+                bid, ask = float(q.get('best_bid') or 0.0), float(q.get('best_ask') or 0.0)
+                m[str(t['symbol'])] = dict(mark=mk, bid=bid if bid > 0 else mk, ask=ask if ask > 0 else mk,
+                                           fr=float(t.get('funding_rate') or 0.0) / 100.0)
+            except Exception:
+                continue
+        if len(m) >= 20:
+            self.marks, self._marks_at = m, time.time()
+        return bool(self.marks)
+
+    def _sym(self, ccxt_sym):
+        """the book's 'BTC/USDT:USDT' -> Delta's product for BTC, or None"""
+        return self.prods.get(ccxt_sym.split('/')[0])
+
+    def unrealized(self):
+        u = 0.0
+        for s, p in self.pos.items():
+            m = (self.marks.get(s) or {}).get('mark') or 0.0
+            if m > 0:
+                u += p['qty'] * p['cv'] * (m - p['avg'])
+        return u
+
+    def equity(self):
+        return self.cash + self.unrealized()
+
+    # ── trading on the book's plan ───────────────────────────────────────────
+    def _fill(self, sym, prod, dq, why):
+        """move a position by dq contracts at Delta's bid/ask; realised P&L on any reduction"""
+        mk = self.marks.get(sym) or {}
+        px = mk.get('ask') if dq > 0 else mk.get('bid')
+        if not px or px <= 0:
+            return 0.0
+        fee_rate = prod['taker'] * (1.0 + float(getattr(self.cfg, 'C521_DELTA_GST', 0.18)))
+        notional = abs(dq) * prod['cv'] * px
+        fee = notional * fee_rate
+        p = self.pos.get(sym) or dict(qty=0.0, cv=prod['cv'], avg=0.0, fees=0.0, funding=0.0, opened=time.time())
+        q0 = p['qty']
+        if q0 != 0 and (dq > 0) != (q0 > 0):                   # a reduction (or the closing part of a flip)
+            red = min(abs(dq), abs(q0))
+            pnl = red * prod['cv'] * (px - p['avg']) * (1 if q0 > 0 else -1)
+            self.cash += pnl; self.realized += pnl
+            left = abs(dq) - red
+            q1 = q0 + (red if dq > 0 else -red)
+            if q1 == 0:
+                self.closed.append(dict(sym=sym, pnl=round(pnl + 0.0, 4), fees=round(p['fees'] + fee, 4),
+                                        funding=round(p['funding'], 4), opened=p['opened'], closed=time.time()))
+                p = dict(qty=0.0, cv=prod['cv'], avg=0.0, fees=0.0, funding=0.0, opened=time.time())
+            else:
+                p['qty'] = q1
+            if left > 0:
+                p['qty'] = left if dq > 0 else -left
+                p['avg'] = px
+        else:
+            nq = q0 + dq
+            p['avg'] = (abs(q0) * p['avg'] + abs(dq) * px) / abs(nq) if nq != 0 else 0.0
+            p['qty'] = nq
+        p['fees'] += fee
+        self.cash -= fee; self.fees += fee; self.trades += 1
+        if p['qty'] == 0:
+            self.pos.pop(sym, None)
+        else:
+            self.pos[sym] = p
+        logger.info(f"   🇮🇳 C521 Delta {why}: {'BUY' if dq > 0 else 'SELL'} {sym} {abs(dq):g} x {prod['cv']:g} @ ${px:,.6g} "
+                    f"(${notional:.2f}; fee ${fee:.3f} incl. GST) -> holding {p['qty']:+g}")
+        return notional
+
+    def rebalance(self, keep, w, why='daily'):
+        """the book's raw weights (before Binance's minimums) on Delta's contracts"""
+        if not self.active():
+            return
+        t0 = time.time()
+        with self._lock:
+            if not self.refresh_products() or not self.refresh_marks(force=True):
+                logger.warning("⚠️ C521 Delta Exchange India did not answer -- its paper book waits for the next rebalance")
+                return
+            if not self.start_equity:
+                self.start_equity = float(getattr(self.cfg, 'C521_DELTA_EQUITY', 500.0))
+                self.cash = self.start_equity
+                self.eq_last = self.start_equity
+                why = 'first'
+            eq = self.equity()
+            if eq <= 0:
+                return
+            band = float(getattr(self.cfg, 'C488_TRADE_BAND', 0.30))
+            mn = float(getattr(self.cfg, 'C488_MIN_NOTIONAL', 6.0))
+            tgt, missing, zero = {}, [], []
+            for s, x in zip(keep, np.nan_to_num(np.asarray(w, float))):
+                if abs(x) < 1e-12:
+                    continue
+                prod = self._sym(s)
+                if prod is None:
+                    missing.append(f"{s.split('/')[0]} {x * eq:+.0f}")
+                    continue
+                mk = (self.marks.get(prod['sym']) or {}).get('mark') or 0.0
+                if mk <= 0:
+                    missing.append(f"{s.split('/')[0]} (no price)")
+                    continue
+                cn = prod['cv'] * mk
+                q = float(round(x * eq / cn))
+                if q == 0:
+                    zero.append(f"{s.split('/')[0]} {x * eq:+.2f} < ${cn / 2:.0f}")
+                    continue
+                tgt[prod['sym']] = (q, prod)
+            traded, n = 0.0, 0
+            for sym in sorted(set(tgt) | set(self.pos)):
+                q, prod = tgt.get(sym, (0.0, None))
+                if prod is None:
+                    prod = next((p for p in self.prods.values() if p['sym'] == sym), None)
+                    if prod is None:
+                        continue
+                cur = (self.pos.get(sym) or {}).get('qty', 0.0)
+                dq = q - cur
+                if dq == 0:
+                    continue
+                mk = (self.marks.get(sym) or {}).get('mark') or 0.0
+                dn = abs(dq) * prod['cv'] * mk
+                closing, flip = q == 0 and cur != 0, cur != 0 and q != 0 and (q > 0) != (cur > 0)
+                if not (closing or flip) and (dn < mn or dn < band * abs(q) * prod['cv'] * mk):
+                    continue
+                x_ = self._fill(sym, prod, dq, why)
+                traded += x_; n += 1 if x_ > 0 else 0
+            gross = sum(abs(p['qty']) * p['cv'] * ((self.marks.get(s) or {}).get('mark') or 0.0) for s, p in self.pos.items())
+            planned = float(np.nansum(np.abs(np.asarray(w, float)))) * eq
+            self.last_run = datetime.utcnow().strftime('%Y-%m-%d')
+            self.info = dict(at=time.time(), why=why, n_trades=n, traded=round(traded, 2), held=len(self.pos),
+                             planned=round(planned, 2), gross=round(gross, 2), missing=missing[:20], zero=zero[:20])
+        self.save()
+        logger.info(f"   🇮🇳 C521 Delta Exchange India (paper, same plan): {len(self.pos)} held, gross ${gross:.2f} of "
+                    f"${planned:.2f} planned ({100 * gross / planned if planned else 0:.0f}%), {n} trades ${traded:.2f} | equity "
+                    f"${self.equity():.2f}" + (f" | not on Delta: {', '.join(missing[:8])}" if missing else '')
+                    + (f" | under one contract: {', '.join(zero[:6])}" if zero else '') + f" [{time.time() - t0:.0f}s]")
+
+    def bootstrap(self):
+        """first run without waiting a day: the plan of the book's last rebalance,
+        from its saved inputs (C506's c488_inputs.npz) -- the same weights it traded"""
+        p = os.path.join(BASE_PATH, 'c488_inputs.npz')
+        e = self.bot.c488
+        if not os.path.exists(p) or not e.last_rebal:
+            return False
+        z = np.load(p)
+        if datetime.utcfromtimestamp(float(z['at'][0])).strftime('%Y-%m-%d') != e.last_rebal:
+            return False
+        keep = [str(k) for k in z['keep']]
+        rule, vol, sizing = [str(x) for x in z['rule']] if 'rule' in z.files else ['base', 'close', 'running']
+        ohlc = (z['op'], z['hi'], z['lo']) if 'hi' in z.files and not np.all(np.isnan(z['hi'])) else None
+        w, _, _ = _c488_targets(z['T'], z['close'], z['qv'], z['fund'], int(z['n_top'][0]), e.target_vol(),
+                                float(getattr(self.cfg, 'C488_LEV_CAP', 3.0)), rule=rule, ohlc=ohlc,
+                                volest=vol if ohlc is not None else 'close', sizing=sizing)
+        self.rebalance(keep, w, 'first')
+        return True
+
+    def accrue_funding(self, now=None):
+        """each position pays or receives Delta's funding at its own exchange times"""
+        now_s = int(now or time.time())
+        if any(0 < int(p.get('fund_next') or 0) <= now_s for p in self.pos.values()):
+            self.refresh_marks(force=True)                     # the mark at the exchange, not five minutes old
+        for sym, p in list(self.pos.items()):
+            prod = next((x for x in self.prods.values() if x['sym'] == sym), None)
+            iv = int((prod or {}).get('iv') or 28800)
+            due = int(p.get('fund_next') or 0)
+            if not due:
+                p['fund_next'] = (now_s // iv + 1) * iv
+                continue
+            while due and due <= now_s:
+                rate = None
+                c = _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + sym,
+                                                       'start': due - 3600, 'end': due - 1})
+                if c:
+                    rate = float(c[-1]['close']) / 100.0
+                if rate is None:
+                    rate = (self.marks.get(sym) or {}).get('fr', 0.0)
+                mk = (self.marks.get(sym) or {}).get('mark') or p['avg']
+                f = -p['qty'] * p['cv'] * mk * rate
+                p['funding'] += f; self.funding += f; self.cash += f
+                due += iv
+                p['fund_next'] = due
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 60:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        try:
+            if not self.refresh_products() or not self.refresh_marks():
+                return
+            with self._lock:
+                if not self.start_equity and not self.pos:
+                    self.bootstrap()
+                self.accrue_funding(now)
+            self.save()
+        except Exception as e:
+            logger.warning(f"⚠️ C521 Delta tick: {type(e).__name__}: {e}")
+
+    def status(self):
+        with self._lock:
+            eq = self.equity() if self.start_equity else 0.0
+            rows = []
+            for s, p in sorted(self.pos.items(), key=lambda kv: -abs(kv[1]['qty'] * kv[1]['cv'] * kv[1]['avg'])):
+                mk = (self.marks.get(s) or {}).get('mark') or p['avg']
+                rows.append(dict(sym=s, coin=s[:-3], side='LONG' if p['qty'] > 0 else 'SHORT', contracts=p['qty'],
+                                 usd=round(abs(p['qty']) * p['cv'] * mk, 2), pnl=round(p['qty'] * p['cv'] * (mk - p['avg']), 2),
+                                 funding=round(p['funding'], 4)))
+            bk = self.bot.c488
+            beq0 = float((getattr(bk, 'born', {}) or {}).get('eq') or 0.0)
+            bpct = 100.0 * (float(bk.live_equity()) / beq0 - 1.0) if beq0 > 0 else None
+            return dict(mode='paper' if self.active() else 'off', venue='Delta Exchange India',
+                        start_equity=round(self.start_equity, 2), eq=round(eq, 2),
+                        pnl=round(eq - self.start_equity, 2) if self.start_equity else 0.0,
+                        pct=round(100.0 * (eq / self.start_equity - 1.0), 2) if self.start_equity else 0.0,
+                        book_pct=round(bpct, 2) if bpct is not None else None,
+                        fees=round(self.fees, 4), funding=round(self.funding, 4), realized=round(self.realized, 4),
+                        trades=self.trades, n=len(self.pos), positions=rows, last_run=self.last_run,
+                        info=self.info, gst=float(getattr(self.cfg, 'C521_DELTA_GST', 0.18)),
+                        listed=len(self.prods))
 
 
 class C501Spot(_C501Store):
@@ -22525,6 +23047,8 @@ class TradingBot:
         self.c501v = C501Savings(self)          # C501: idle cash in Savings (paper)
         self.c501k = C501Allostatic(self)       # C501: the allostatic shadow of the book (paper)
         self.c510t = C510Tournament(self)       # C510: every candidate rule, scored on the same prices (paper)
+        self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
+        self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -23145,6 +23669,10 @@ class TradingBot:
                 led.append("allostatic shadow (K4) at each rebalance")
             if getattr(self, 'c510t', None) is not None and self.c510t.active():
                 led.append(f"rule tournament (C510, {len(_C510_VARIANTS)} rules on the same prices) at each rebalance")
+            if getattr(self, 'c521b', None) is not None and self.c521b.active():
+                led.append(f"BFUSD wallet at {100 * float(getattr(c, 'C521_BFUSD_APY', 0.0766)):.2f}% (C521)")
+            if getattr(self, 'c521d', None) is not None and self.c521d.active():
+                led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 500.0)):.0f} (C521)")
             if led:
                 logger.info("   PAPER  never touches the account: " + " · ".join(led))
             _lt511 = int(self.portfolio.lifetime_trades or 0)
@@ -23515,7 +24043,7 @@ class TradingBot:
                         self.c490.tick()
                     except Exception as _e490:
                         logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
-                    for _c501 in (self.c501s, self.c501v):  # C501: the spot pot (daily) and Savings (minutely)
+                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d):  # C501/C521: the paper ledgers
                         try:
                             _c501.tick()
                         except Exception as _e501:
@@ -40995,6 +41523,7 @@ def startup():
         bot.c490.reset()                     # C490: and a fresh carry ledger
         bot.c501s.reset(); bot.c501v.reset(); bot.c501k.reset()   # C501: and fresh paper ledgers
         bot.c510t.reset()                    # C510: and a fresh tournament
+        bot.c521b.reset(); bot.c521d.reset() # C521: and fresh BFUSD and Delta ledgers
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -41698,6 +42227,12 @@ class RemoteControl:
                         except Exception as _x501:
                             _out469['c501'] = {'error': f"{type(_x501).__name__}: {_x501}"}
                         _out469['scanner_hist'] = dict(_C511_OLD_SCANNER)   # C511
+                        try:      # C521: BFUSD and the Delta paper book
+                            _out469['c521'] = {k: getattr(bot_ref, a).status() for k, a in
+                                               (('bfusd', 'c521b'), ('delta', 'c521d'))
+                                               if getattr(bot_ref, a, None) is not None}
+                        except Exception as _x521:
+                            _out469['c521'] = {'error': f"{type(_x521).__name__}: {_x521}"}
                         try:      # C510: the rule tournament
                             _t510 = getattr(bot_ref, 'c510t', None)
                             if _t510 is not None:
@@ -41932,6 +42467,8 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <!-- C501: the second $250 in spot, and what the idle cash would earn -- paper ledgers -->
 <section><h2>Spot pot <span class="muted">(paper, second $250)</span></h2><div id="spotpot" class="muted">&mdash;</div></section>
 <section><h2>Idle cash &rarr; Savings <span class="muted">(paper)</span></h2><div id="savings" class="muted">&mdash;</div></section>
+<section><h2>BFUSD <span class="muted">(paper, Binance margin asset)</span></h2><div id="bfusd" class="muted">&mdash;</div></section>
+<section><h2>Delta Exchange India <span class="muted">(paper, same plan)</span></h2><div id="delta" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -42222,6 +42759,41 @@ async function pull(){
         }
       }
     }
+    /* C521: BFUSD and the same book on Delta Exchange India -- paper accounts, never money */
+    var c52=d.c521;
+    if(c52){
+      if(c52.error){q('bfusd').innerHTML=q('delta').innerHTML='<span class="'+cls(-1)+'">unavailable: '+c52.error+'</span>'}
+      else{
+        var bf=c52.bfusd;
+        if(bf){
+          q('bfusd').innerHTML=bf.mode!=='paper'?'<span class="muted">off (Binance only)</span>':
+            '<div class="s muted">the whole futures wallet held as BFUSD, Binance\u2019s reward-bearing margin asset: it earns while the book trades \u00b7 base APY '+
+            (100*bf.apy).toFixed(2)+'% (boosted up to '+(100*bf.boost).toFixed(2)+'%, not booked; set by hand from the app) \u00b7 '+bf.tds_pct+
+            '% TDS once on converting USDT (creditable) \u00b7 paper: nothing is moved</div>'+
+            '<div style="margin:4px 0">wallet <b>'+money(bf.eq)+'</b> \u00b7 earned <span class="good">+'+money(bf.interest)+'</span> in '+bf.days+
+            'd \u00b7 about <b>'+money(bf.month_est)+'/month</b> vs Savings '+money(bf.savings_month)+' (<span class="'+cls(bf.gain_month)+'">'+
+            sgn(bf.gain_month)+'/month</span>) \u00b7 TDS '+money(bf.tds)+(bf.payback_days?' (paid back in ~'+bf.payback_days+' days)':'')+'</div>';
+        }
+        var dl=c52.delta;
+        if(dl){
+          if(dl.mode!=='paper'){q('delta').innerHTML='<span class="muted">off</span>'}
+          else if(!dl.start_equity){q('delta').innerHTML='<span class="muted">starts within a minute of the book\u2019s rebalance (Delta\u2019s public API)</span>'}
+          else{
+            var inf=dl.info||{},dh='<div class="s muted">the book\u2019s own plan held on Delta\u2019s whole contracts \u00b7 Delta\u2019s prices and funding, 0.05% taker + '+
+              Math.round(100*dl.gst)+'% GST \u00b7 paper account of '+money(dl.start_equity)+' \u2014 never touches money \u00b7 last '+(dl.last_run||'\u2014')+'</div>';
+            dh+='<div style="margin:4px 0"><b>'+money(dl.eq)+'</b> <span class="'+cls(dl.pnl)+'">'+sgn(dl.pnl)+' ('+(dl.pct>=0?'+':'')+Number(dl.pct).toFixed(2)+'%)</span>'+
+              (dl.book_pct!==null&&dl.book_pct!==undefined?' <span class="muted">vs the Binance book '+(dl.book_pct>=0?'+':'')+Number(dl.book_pct).toFixed(2)+'%</span>':'')+
+              ' <span class="muted">\u00b7 '+dl.n+' held \u00b7 gross '+money(inf.gross||0)+' of '+money(inf.planned||0)+' planned \u00b7 fees '+money(dl.fees)+
+              ' \u00b7 funding '+sgn(dl.funding)+'</span></div>';
+            (dl.positions||[]).forEach(function(p){dh+='<div class="s">'+p.coin+' '+p.side+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+
+              '</span> <span class="muted">'+Math.abs(p.contracts)+' contracts \u00b7 funding '+sgn(p.funding)+'</span></div>'});
+            if((inf.missing||[]).length)dh+='<div class="s muted">not on Delta: '+inf.missing.join(', ')+'</div>';
+            if((inf.zero||[]).length)dh+='<div class="s muted">under one contract: '+inf.zero.join(', ')+'</div>';
+            q('delta').innerHTML=dh;
+          }
+        }
+      }
+    }
     /* C510: what is running -- one line each: what trades, what is paper, what is off */
     (function(){
       var bk=d.c488||{},c5=d.c501||{},rn=[],acct=d.paper?'the paper account':'<b class="bad">LIVE money</b>';
@@ -42239,6 +42811,9 @@ async function pull(){
       if(d.c490&&!d.c490.error&&d.c490.mode!=='off')pp.push('cash-and-carry');
       if(c5.k4&&c5.k4.mode==='paper')pp.push('K4 sizing shadow');
       if(d.c489&&d.c489.mode==='shadow')pp.push('intraday shadow (C489)');
+      var c52r=d.c521||{};
+      if(c52r.bfusd&&c52r.bfusd.mode==='paper')pp.push('BFUSD wallet');
+      if(c52r.delta&&c52r.delta.mode==='paper')pp.push('Delta Exchange India book $'+Math.round(c52r.delta.start_equity||500));
       if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
       var sh5=d.scanner_hist||{};
       if(bk.mode==='portfolio')rn.push('<div style="margin:4px 0"><b>OFF</b> the old intraday scanner'+

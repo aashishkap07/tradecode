@@ -57,6 +57,7 @@ fund = g.normal(0.00005, 0.00025, size=(n, k)) * 3
 keep = [f"K{j:02d}/USDT:USDT" for j in range(k)]
 
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.C380_MAX_MONTHLY_DD_PCT = 20.0; cfg.C488_ENGINE = 'portfolio'
+cfg.C488_VOL_EST = 'close'                # the C510/C513 setting these wording checks were written for
 om._c467_cfg_ref[0] = cfg
 pf = om.Portfolio(cfg); pf.equity = 249.93; pf.available_balance = 227.0; pf.session_start_equity = 250.0
 pf.get_live_equity = lambda *a: 250.29
