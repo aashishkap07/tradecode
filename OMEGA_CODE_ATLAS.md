@@ -46,8 +46,27 @@
     $0.0128 booked vs $0.0127 at Delta's settled rates.** Right, but only by
     luck, and C523 fixes the timing;
   - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
-- **C523 pushed, NOT yet deployed:** Delta funding read at the exchange time;
-  the shadow's starting size.
+- **C523 deployed 2 Oct 22:30 IST.** The 22:33 IST screens were verified
+  against Binance and Delta at 16:59–17:04 UTC:
+  - **book** 11/11 prices inside Binance's range; open −$0.50 = −$0.36 on
+    the positions − $0.16 exit fee; funding −$0.0162; marked $499.20;
+  - **Delta** 10/10 marks inside Delta's range, P&L per position exact;
+    equity $499.40 = cash $499.816 − $0.41 open; "since 18:49: −0.29% vs
+    the book −0.27%" exact. **Funding through 21:30 IST (booked by C522's
+    fallback): $0.01566 vs $0.01555 at the settled rates.** 05:30 IST
+    3 Oct is C523's first exchange;
+  - **spot pot** BTC/ETH/SOL inside Binance spot's range (ETH back at entry,
+    +$0.00);
+  - Savings, BFUSD ($0.04 in 0.43 d) and the tournament's max DD
+    (C522 fix, 0.4–0.9%) all correct;
+  - **shadow, research universe: replayed to the cent** ($499.62 → $500.37 →
+    $499.98 → $497.10, 64 trades, 31 open). The 17:00 UTC hour's −0.56% is
+    ONE coin: short 龙虾 at 4.7% weight, +12.6% in the hour = −0.59%; the
+    other 30 positions netted +0.03%. 龙虾 passes the research rule (listed
+    11 Mar 2026, high 30-day volume). Equal weight with no vol scaling is the
+    model's known weakness. It stays paper; any change needs pre-registration;
+  - chart "1 sample $499.00" = the first status block's marked equity (two
+    decimals), not a bug.
 - **BINANCE PAPER since 1 Oct 09:17 IST** (`c516-venue.conf`: OMEGA_VENUE=binance,
   OMEGA_CAPITAL=500, FRESH_START), on C517; verified from 5 screenshots and the
   10:17 IST logs push (`reports/2026-10-01_binance_first_rebalance.md`):
