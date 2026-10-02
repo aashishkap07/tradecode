@@ -46,7 +46,18 @@
     $0.0128 booked vs $0.0127 at Delta's settled rates.** Right, but only by
     luck, and C523 fixes the timing;
   - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
-- **C524 pushed, NOT yet deployed** (round 15): the shadow's settled funding,
+- **C524 deployed 3 Oct 01:42 IST** (20:12 UTC 2 Oct). The 01:44 IST screens
+  were verified: book 11/11 inside Binance's 20:11–20:16 UTC range, open −$0.55
+  = −$0.40 − $0.16 exit fee. The cross-venue ledger ran at boot (it was due:
+  first day) and entered 10 pairs; fees $0.74. **C525 fixes a C524 bug found
+  in that ledger:** the funding window was (since, today) and then the cut-off
+  moved to midnight, so every day after the first would have lost the 00:00 UTC
+  settlement. Now [since, today). Also: Binance funding is fetched with limit
+  1000 (was 100; an hourly coin has 192 in 8 days), the panel says it is
+  marked once a day, and the tournament panel names rules not yet scored
+  ("9 rules" vs 7 rows). Deploy before 06:00 IST 4 Oct, the first run the bug
+  would touch.
+- **C524 (round 15), the change list:** the shadow's settled funding,
   hourly-fresh funding history and venue cost; the book's and carry ledger's
   160-coin candidate lists with one history fetch per coin per day; the
   cross-venue funding paper ledger (`C524CrossVenue`, first run 00:30 UTC

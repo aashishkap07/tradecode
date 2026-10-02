@@ -193,6 +193,15 @@ ok("each leg's SETTLED funding since it opened: HOT's short Delta collects 0.10%
                                                                                    + fu_hot)) < 1e-9,
    f"{x.pairs['HOT']['funding']:.6f} vs {fu_hot:.6f}")
 ok("  the 00:00 exchange of the opening day is not collected (opened 00:30)", hD == 5)
+f_day1 = x.pairs['HOT']['funding']
+x.last_run = ''
+x.run(now_ms=today + 2 * DAY + 30 * 60000)
+fu_day2 = 25 * 2.2 * 0.10 / 100 * 6 - 25.0 * 2.2 * 0.01 / 100 * 3
+ok("C525: the next full day collects all 6 of Delta's exchanges and all 3 of Binance's, 00:00 UTC included "
+   "(C524 lost the 00:00 settlement every day after the first)",
+   abs((x.pairs['HOT']['funding'] - f_day1) - fu_day2) < 1e-9, f"{x.pairs['HOT']['funding'] - f_day1:.6f} vs {fu_day2:.6f}")
+ok("  Binance's funding history is asked for 1000 records (an hourly coin has 192 in 8 days)",
+   "'startTime': lo * 1000, 'limit': 1000}" in SRC)
 # the spread collapses on HOT: out, with costs
 fdl.c['HOT'] = (0.002, 0.01, 1.0, 2.2)
 x.last_run = ''
@@ -215,6 +224,12 @@ ok("wired: created, ticked with the paper ledgers, reset on a fresh start, in th
                                                  "bot.c524x.reset()", "_out469['c524']", "self._pack('XVENUE'",
                                                  "Delta vs Binance funding spread, both legs"))
    and 'c524_xvenue.json' in open(os.path.join(REPO, 'deploy', 'omega-logpush.sh')).read())
+
+ok("C525: the tournament panel names a rule with no book yet ('not scored yet ... join at the next rebalance') instead of "
+   "dropping it (2 Oct: 'rule tournament (9 rules)' above, 7 rows shown)",
+   "notyet.push(v.label);return;" in SRC and "not scored yet (they join at the next rebalance" in SRC)
+ok("C525: the cross-venue panel says it is marked, funded and traded once a day (a new pair shows only its costs until then)",
+   "marked, funded and traded once a day at" in SRC)
 
 print("\n5. THE PAGE (Chromium)")
 

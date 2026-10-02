@@ -2365,7 +2365,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C524'
+_OMEGA_VERSION = 'C525'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23328,8 +23328,8 @@ class C524CrossVenue(_C501Store):
         lo = today // 1000 - 8 * 86400
         d = _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + p['sym'],
                                                'start': lo, 'end': today // 1000 - 1}) or []
-        b = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',
-                         {'symbol': coin + 'USDT', 'startTime': lo * 1000, 'limit': 100})
+        b = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',                 # C525: 1000, not 100 -- an
+                         {'symbol': coin + 'USDT', 'startTime': lo * 1000, 'limit': 1000})   # hourly coin has 192 in 8 days
         if not isinstance(b, list):
             b = None
         fD = _c524_delta_daily(d, p['iv'], lo, today // 1000)
@@ -23370,11 +23370,15 @@ class C524CrossVenue(_C501Store):
                 continue
             pr = p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
             hrs = max(1, int(self.prods.get(c, {}).get('iv') or 28800) // 3600)
+            # C525: [since, today) -- the window starts AT the last cut-off. C524 had
+            # (since, today) and then moved the cut-off to midnight, so every day after
+            # the first lost its 00:00 UTC settlement (1 of 6 on a 4-hour coin, 1 of 3
+            # on an 8-hour one); the opening day's starts at the entry time, after 00:00.
             since = int(p['fund_from'])
             fu_d = sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in fD_rec or []
-                       if (int(x['time']) // 3600) % hrs == 0 and since < int(x['time']) * 1000 < today)
+                       if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < today)
             fu_b = sum(-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
-                       if since < int(x['fundingTime']) < today)
+                       if since <= int(x['fundingTime']) < today)
             if b_rec is None or not fD_rec:
                 fu_d = fu_b = 0.0                                   # a venue did not answer: booked next day
             else:
@@ -43269,7 +43273,7 @@ async function pull(){
       else if(!xv.start_equity){q('xvenue').innerHTML='<span class="muted">first run at '+xv.next_run_utc+' UTC</span>'}
       else{
         var xi=xv.info||{},xh='<div class="s muted">the same coin long on the venue where longs pay less funding, short on the other: prices cancel, the funding difference is collected · '+
-          'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';
+          'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · marked, funded and traded once a day at '+xv.next_run_utc+' UTC (a new pair shows only its costs until then) · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';
         xh+='<div style="margin:4px 0"><b>'+money(xv.eq)+'</b> <span class="'+cls(xv.pnl)+'">'+sgn(xv.pnl)+' ('+(xv.pct>=0?'+':'')+Number(xv.pct).toFixed(2)+'%)</span>'+
           ' <span class="muted">· '+xv.n+' pairs · funding '+sgn(xv.funding)+' · prices '+sgn(xv.price_pnl)+' · fees '+money(xv.fees)+
           (xi.scored!==undefined?' · '+xi.wide+' of '+xi.scored+' coins at 20%/yr+':'')+'</span></div>';
@@ -43317,14 +43321,16 @@ async function pull(){
       else{
         var th='<div class="s muted">'+(tt.days?tt.days+(tt.days==1?' day':' days')+' scored, from '+tt.first:'first score at the next rebalance, for '+tt.next_day)+
           ' \u00b7 each on the same $'+Number(tt.eq0||0).toFixed(2)+' \u00b7 nothing here trades</div>';
+        var notyet=[];   /* C525: a rule with no book yet is named, not dropped ("9 rules" above, 7 rows shown, on 2 Oct) */
         (tt.rows||[]).forEach(function(v){
-          if(!v.on&&!v.skipped)return;
+          if(!v.on&&!v.skipped){notyet.push(v.label);return;}
           th+='<div style="margin:6px 0"><b>'+v.label+'</b>'+(v.traded?' <span class="good">(traded)</span>':'')+' '+
             (v.days?'<span class="'+cls(v.ret)+'">'+(v.ret>=0?'+':'')+(100*v.ret).toFixed(2)+'%</span> <span class="muted">\u00b7 vs base '+
               (v.vs_base>=0?'+':'')+(100*v.vs_base).toFixed(2)+'% \u00b7 max DD '+(100*v.maxdd).toFixed(1)+'%</span>'
               :'<span class="muted">holds '+v.n+' coins, '+v.gross+'x</span>')+
             (v.skipped?' <span class="bad">'+v.skipped+'</span>':'')+
             '<div class="s muted">'+v.evidence+'</div></div>'});
+        if(notyet.length)th+='<div class="s muted">not scored yet (they join at the next rebalance, '+(tt.next_utc||'00:05 UTC')+'): '+notyet.join(', ')+'</div>';
         q('tourney').innerHTML=th;
       }
     }
