@@ -46,6 +46,8 @@
     $0.0128 booked vs $0.0127 at Delta's settled rates.** Right, but only by
     luck, and C523 fixes the timing;
   - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
+- **C525 pushed, NOT yet deployed** (deploy before 06:00 IST 4 Oct): the
+  cross-venue funding window fix, the record limit, two panel clarifications.
 - **C524 deployed 3 Oct 01:42 IST** (20:12 UTC 2 Oct). The 01:44 IST screens
   were verified: book 11/11 inside Binance's 20:11–20:16 UTC range, open −$0.55
   = −$0.40 − $0.16 exit fee. The cross-venue ledger ran at boot (it was due:
@@ -330,6 +332,67 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🌐 2026-10-03 — C525 AND ROUND 16: THE C524 SCREENS, MORE VENUES, DELTA OPTIONS
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Report:** `reports/2026-10-03_c524_screens_round16.md`. Pre-registration
+`research/c525_preregistration.md` (860905a, pushed before any test).
+
+**The 01:44 IST screens (C524), checked:**
+- book 11/11 inside Binance's 20:11–20:16 UTC range; open −$0.55 = −$0.40
+  − $0.16 exit fee;
+- NEAR −14% since 1 Oct (5.38 → 4.63);
+- **cross-venue: 10/10 pairs, both legs at their venue's mark in the entry
+  minute (20:12 UTC, Delta MARK and Binance markPriceKlines), notionals
+  matched; fees $0.7408 = 0.149% × $497;**
+- **Delta 20:00 UTC (C523's first live read): HYPE −$0.000434 and TAO
+  +$0.001165 = the settled rate × the mark, exactly;**
+- 0 Traceback, 0 warnings in the C524 session.
+
+**C525 (code):**
+1. `C524CrossVenue` funding window `[since, today)`. It was `(since, today)`
+   with the cut-off then set to midnight, which lost the 00:00 UTC settlement
+   every day after the first.
+2. Binance `fundingRate` limit 1000 (was 100).
+3. Panel: "marked, funded and traded once a day at 00:30 UTC".
+4. Tournament panel names rules with no book yet ("9 rules" vs 7 rows).
+- **Version C525.**
+- `omega_c524_test.py`: +3 checks, including a third-day run (6 + 3
+  settlements; the old code gives 0.2585 vs 0.3135).
+- Battery 44/45 (exit: `corpusL/`); the page tests (C510/C513/C521/C522/C524)
+  re-run after the panel change: all pass.
+
+**Round 16:**
+- **CoinDCX "B-" futures:** funding = Binance's (339 of 542 identical).
+  Nothing to collect.
+- **Pi42:** market data 403 from the sandbox; **Bybit:** region-blocked.
+  Both untested.
+- **D1, Delta options vs Deribit (descriptive,
+  `research/c525_delta_options.py/.txt`):** near-the-money IV the same
+  (BTC median −0.2..0.0 points, ETH +0.5..+0.6; Delta's bids at Deribit's
+  mid). Indian retail does not overpay for options. No candidate.
+- **H1, Binance vs Hyperliquid (`research/c525_hyperliquid.py/.txt/.json`),**
+  X1's rule unchanged, 173 coins, 2024-10 → 2026-09:
+  - **+8.1%/yr, t 3.66, 21/24 months, PASSED the bar**;
+  - **costs ×5: −23.9%/yr (fail); ×10: −63.8%**;
+  - persistence +0.40 (Delta +0.71); mean spread +3.2%/yr.
+  - **Not added as a paper ledger, by recommendation** (the operator may ask
+    for it): a paper ledger replays the same cost assumption it is most
+    sensitive to; ≤ 0.65%/month; needs an on-chain wallet.
+  - **Lesson:** the Delta edge comes from India-only access; on a global
+    venue the same mechanism is arbitraged away.
+- **Yields (sourced):** Hyperliquid HLP ~10–25%/yr with 5–12% drawdowns
+  (~4% in Sep 2026); Aave USDT ~3.2%.
+
+**Open:**
+- deploy C525 before 06:00 IST 4 Oct;
+- the cross-venue ledger's first full days (funding at 00:30 UTC runs);
+- the 3 Oct paper check (the first GK rebalance, Delta's and the
+  tournament's 9 rules).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔀 2026-10-02 — ROUND 15 (C524): THE SHADOW'S WEIGHTING, A LEDGER AUDIT, DELTA vs BINANCE FUNDING
