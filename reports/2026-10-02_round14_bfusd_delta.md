@@ -108,7 +108,11 @@ Round 14 adds the one adaptive piece that passed:
    - **Prices track Binance closely** (median correlation 0.994; BTC, ETH,
      SOL almost perfectly; small coins 10–27%/yr of tracking noise).
    - **Funding does NOT track:** Delta's is a median +5.6%/yr dearer for a
-     long, ranging from −60% to +50% by coin, correlation only 0.40. The
+     long, ranging from −60% to +50% by coin, correlation only 0.40.
+     *(C523 correction, same day: Delta's funding value was read one
+     interval late. With the value set at each exchange it is +5.7%/yr,
+     correlation 0.44, the same range: the conclusion stands. See
+     `reports/2026-10-02_c521_screens_c522.md` §6.)* The
      carry part of the book (ranked on Binance's funding) will earn something
      different on Delta. The paper book measures what that costs.
    - **Whole contracts hold 93% of the plan at $500** (98% at $1,000). The

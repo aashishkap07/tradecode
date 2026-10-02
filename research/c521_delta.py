@@ -83,13 +83,16 @@ def main():
         a = np.array([dc[d] for d in days]); b = np.array([bc[d] for d in days])
         ra, rb = a[1:] / a[:-1] - 1, b[1:] / b[:-1] - 1
         corr = float(np.corrcoef(ra, rb)[0, 1]); te = float((ra - rb).std() * math.sqrt(365))
-        # funding: Delta's rate at each exchange (the hourly value in force just before it), % -> fraction
+        # funding: Delta's rate at each exchange, % -> fraction. C523: FUNDING:<SYM> is a step
+        # series that changes AT each exchange, and the value set at time T is the rate settled
+        # at T (it matches Binance's settled rate at T: ETH corr 0.95, against 0.35 for the value
+        # in force before T). Round 14 first took the hour BEFORE T, one interval late.
         iv = prods[c]['iv'] // 3600
         dfund = {}
         for x in (fk or {}).get('result') or []:
             t = int(x['time'])
-            if (t // 3600 + 1) % iv == 0:                                # the hour ending at an exchange time
-                d = (t + 3600) // DAY * DAY
+            if (t // 3600) % iv == 0:                                    # the hour starting at an exchange time
+                d = t // DAY * DAY
                 dfund[d] = dfund.get(d, 0.0) + float(x['close']) / 100.0
         bfund = {}
         for x in bf or []:

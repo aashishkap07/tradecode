@@ -2359,7 +2359,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C522'
+_OMEGA_VERSION = 'C523'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -21335,13 +21335,19 @@ class C489Shadow:
         return p, gate, r1[-1], int(m.sum())
 
     # ── the ledgers ──────────────────────────────────────────────────────
-    def step(self, now_h, p, gate, r_last):
-        """book the hour that just closed, then form this hour's cohort"""
+    def _seed(self):
+        """the dollar ledger's base: the account's equity, read once (C523: at the first tick
+        after a start, so the panel never shows $250 for an hour after a fresh start or the
+        C522 restart; it was read at the first hour)"""
         if not self.start_equity:
             try:
                 self.start_equity = float(self.bot.portfolio.equity) or 250.0    # read once: a seed, never a write
             except Exception:
                 self.start_equity = 250.0
+
+    def step(self, now_h, p, gate, r_last):
+        """book the hour that just closed, then form this hour's cohort"""
+        self._seed()
         day = now_h // 86400000 * 86400000
         settle = (datetime.utcfromtimestamp(now_h / 1000).hour % 8) == 0
         rets = {s: float(r_last[j]) for j, s in enumerate(self.syms) if not np.isnan(r_last[j])}
@@ -21403,6 +21409,7 @@ class C489Shadow:
         self._tick_at = time.time()
         if not bool(getattr(self.bot, '_c462_state_settled', False)):
             return
+        self._seed()
         if getattr(self, '_c522_restart', False) and self.archive:
             self._c522_restart = False
             a = self.archive[-1]
@@ -22767,9 +22774,21 @@ class C521Delta(_C501Store):
         return True
 
     def accrue_funding(self, now=None):
-        """each position pays or receives Delta's funding at its own exchange times"""
+        """each position pays or receives Delta's funding at its own exchange times.
+
+        C523: the rate is Delta's FUNDING:<SYM> record stamped AT the exchange time T.
+        That series is a step that Delta writes at every exchange (even when the
+        rate is unchanged), and the value written at T is the rate settled at T: it
+        matches Binance's settled rate at T (ETH corr 0.95; 0.35 for the value in
+        force before T). C521 asked for the hour BEFORE T, which Delta answers with
+        nothing (a window gets records only from the first exchange inside it), so
+        every exchange fell back to the ticker's rate. On 2 Oct that came to the
+        same money ($0.0128 vs $0.0127), but by luck. Not yet published: wait, and
+        use the ticker only after 15 minutes."""
         now_s = int(now or time.time())
-        if any(0 < int(p.get('fund_next') or 0) <= now_s for p in self.pos.values()):
+        dues = [int(p.get('fund_next') or 0) for p in self.pos.values()]
+        dues = [d for d in dues if 0 < d <= now_s]
+        if dues and self._marks_at < max(dues):
             self.refresh_marks(force=True)                     # the mark at the exchange, not five minutes old
         for sym, p in list(self.pos.items()):
             prod = next((x for x in self.prods.values() if x['sym'] == sym), None)
@@ -22781,11 +22800,16 @@ class C521Delta(_C501Store):
             while due and due <= now_s:
                 rate = None
                 c = _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + sym,
-                                                       'start': due - 3600, 'end': due - 1})
-                if c:
-                    rate = float(c[-1]['close']) / 100.0
+                                                       'start': due, 'end': due + 3599})
+                for x in c or []:
+                    if int(x.get('time') or 0) == due:
+                        rate = float(x['close']) / 100.0
                 if rate is None:
+                    if now_s < due + 900:
+                        break                                  # not written yet: the next tick asks again
                     rate = (self.marks.get(sym) or {}).get('fr', 0.0)
+                    logger.info(f"   🇮🇳 C523 Delta funding {sym} at {datetime.utcfromtimestamp(due):%H:%M} UTC: no record "
+                                f"after 15 min, the ticker's rate {100 * rate:+.4f}% used")
                 mk = (self.marks.get(sym) or {}).get('mark') or p['avg']
                 f = -p['qty'] * p['cv'] * mk * rate
                 p['funding'] += f; self.funding += f; self.cash += f

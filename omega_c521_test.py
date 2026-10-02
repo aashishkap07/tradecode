@@ -6,7 +6,8 @@
 3. Delta: its table (crypto only: tokenised stocks, ETFs, metals out), whole contracts, fills at
    bid/ask, 0.05% taker + 18% GST, coins not listed and targets under one contract named.
 4. Delta: reductions realise P&L, flips, the 30% band, funding at each coin's own exchange
-   time from FUNDING:<SYM> (the hour before), catch-up after downtime.
+   time from FUNDING:<SYM> (C523: the record stamped AT the exchange, as Delta's API really
+   answers), catch-up after downtime, a record not yet written waits 15 minutes.
 5. The book's rebalance hands Delta its RAW weights; the first run can start from the saved inputs.
 6. Persistence and the fresh start.
 7. The page (Chromium): both panels, no JavaScript errors.
@@ -95,8 +96,14 @@ class FakeDelta:
         s.cv = {'BTC': 0.001, 'ETH': 0.01, 'SOL': 1.0, '1000PEPE': 1000.0, 'HYPE': 0.1, 'XAUT': 0.001, 'TSLAX': 0.01}
         for k in range(22):
             s.px[f"C{k:02d}"] = 1.0 + k; s.cv[f"C{k:02d}"] = 1.0
-        s.fr = 0.01                       # percent per exchange
+        s.fr = 0.02                       # the ticker's live (next-exchange) rate, percent: only a fallback
         s.calls = []
+        s.unwritten = set()               # exchange times whose record Delta has not written yet
+
+    @staticmethod
+    def rate_at(t):
+        """the rate SETTLED at exchange time t, percent: a different value at each exchange"""
+        return 0.01 + (t // 3600 % 7) * 0.001
 
     def __call__(s, path, params, tries=3):
         s.calls.append((path, dict(params)))
@@ -115,7 +122,20 @@ class FakeDelta:
             return [dict(symbol=c + 'USD', mark_price=str(p), funding_rate=str(s.fr),
                          quotes={'best_bid': str(p * 0.9999), 'best_ask': str(p * 1.0001)}) for c, p in s.px.items()]
         if path == '/v2/history/candles':
-            return [dict(time=int(params['start']), open=s.fr, high=s.fr, low=s.fr, close=s.fr, volume=None)]
+            # C523: as Delta answers FUNDING:<SYM> -- a step series written AT each exchange time (even
+            # when unchanged), hourly candles forward-filled, and NOTHING before the first exchange
+            # record inside the window (so the hour before an exchange comes back empty)
+            iv = 14400 if params['symbol'].split(':')[-1] == 'HYPEUSD' else 28800
+            st, en = int(params['start']), int(params['end'])
+            first = -(-st // iv) * iv
+            out = []
+            for t in range(first, en + 1, 3600):
+                step = t // iv * iv
+                if step in s.unwritten:
+                    break
+                r = s.rate_at(step)
+                out.append(dict(time=t, open=r, high=r, low=r, close=r, volume=None))
+            return out
         return None
 
 
@@ -178,18 +198,36 @@ pay = {s: d.pos[s]['funding'] - f0[s] for s in d.pos}
 m = {s: d.marks[s]['mark'] for s in d.pos}
 due0 = NOW // 28800 * 28800
 nex = {s: len(range(due0, NOW + 1, d.prods[s[:-3]]['iv'])) for s in d.pos}     # exchanges owed on each coin's clock
-ok("a long pays a positive rate, a short receives it: -qty x cv x mark x 0.01% per exchange (HYPE every 4 h)",
-   all(abs(pay[s] - nex[s] * (-d.pos[s]['qty'] * d.pos[s]['cv'] * m[s] * 0.0001)) < 1e-12 for s in d.pos)
+owed = {s: sum(fd.rate_at(t) / 100 for t in range(due0, NOW + 1, d.prods[s[:-3]]['iv'])) for s in d.pos}
+ok("a long pays a positive rate, a short receives it: -qty x cv x mark x the rate SETTLED at each exchange (HYPE every 4 h)",
+   all(abs(pay[s] - (-d.pos[s]['qty'] * d.pos[s]['cv'] * m[s] * owed[s])) < 1e-12 for s in d.pos)
    and pay['ETHUSD'] < 0 < pay['1000PEPEUSD'], str({k: round(v, 6) for k, v in pay.items()}))
-ok("  the rate comes from FUNDING:<SYM>, the hour before the exchange", any(p == '/v2/history/candles' and q_['symbol'].startswith('FUNDING:')
-                                                                            and q_['end'] - q_['start'] == 3599 for p, q_ in fd.calls))
+ok("  C523: the rate is FUNDING:<SYM>'s record stamped AT the exchange (start = the exchange time), not the ticker's",
+   all(q_['start'] % 14400 == 0 and q_['end'] - q_['start'] == 3599 for p, q_ in fd.calls
+       if p == '/v2/history/candles' and q_['symbol'].startswith('FUNDING:'))
+   and any(p == '/v2/history/candles' for p, q_ in fd.calls) and fd.rate_at(due0) != fd.fr)
+ok("  (the C521 window, the hour BEFORE the exchange, gets nothing from Delta: why every exchange fell back to the ticker)",
+   fd('/v2/history/candles', {'symbol': 'FUNDING:ETHUSD', 'start': due0 - 3600, 'end': due0 - 1, 'resolution': '1h'}) == [])
 for p in d.pos.values():
     p['fund_next'] = NOW // 28800 * 28800 - 2 * 28800              # down for 16 hours: three exchanges owed
 f1 = d.pos['ETHUSD']['funding']
 d.accrue_funding(now=NOW)
-ok("after downtime every missed exchange is booked (3 for ETH), then the next is scheduled",
-   abs((d.pos['ETHUSD']['funding'] - f1) - 3 * (-2 * 0.01 * m['ETHUSD'] * 0.0001)) < 1e-12
+ok("after downtime every missed exchange is booked (3 for ETH, each at its own settled rate), then the next is scheduled",
+   abs((d.pos['ETHUSD']['funding'] - f1)
+       - sum(-2 * 0.01 * m['ETHUSD'] * fd.rate_at(due0 - k * 28800) / 100 for k in range(3))) < 1e-12
    and d.pos['ETHUSD']['fund_next'] > NOW)
+# C523: a record Delta has not written yet: wait (nothing booked, the exchange stays owed) ...
+d.pos['ETHUSD']['fund_next'] = due0; fd.unwritten = {due0}
+f2 = d.pos['ETHUSD']['funding']
+d.accrue_funding(now=due0 + 60)
+ok("C523: a record not yet written is waited for (nothing booked, the exchange still owed)",
+   d.pos['ETHUSD']['funding'] == f2 and d.pos['ETHUSD']['fund_next'] == due0)
+LOG.clear()
+d.accrue_funding(now=due0 + 901)
+ok("  after 15 minutes the ticker's rate is used, and said",
+   abs((d.pos['ETHUSD']['funding'] - f2) - (-2 * 0.01 * m['ETHUSD'] * fd.fr / 100)) < 1e-12
+   and d.pos['ETHUSD']['fund_next'] == due0 + 28800 and any('no record after 15 min' in str(x) for x in LOG), str(LOG[-2:]))
+fd.unwritten = set()
 
 print("\n5. THE BOOK HANDS DELTA ITS RAW PLAN; THE FIRST RUN CAN START FROM THE SAVED INPUTS")
 ok("C488Engine.rebalance calls c521d.rebalance(keep, w, ...) with the raw weights, after the tournament",

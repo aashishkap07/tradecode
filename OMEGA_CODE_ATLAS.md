@@ -33,9 +33,21 @@
   - shadow M1 −7.09% / 549 trades is real (replayed: $455.74 vs the server's
     $464.42 at 06:00 UTC). Cause: a 24-hour-volume universe with meme
     listings. **C522 fixes the universe.**
-- **C522 pushed, NOT yet deployed:** the shadow on the research's universe
-  (old record archived), max DD from the start, Delta vs the Binance book on
-  one window, Delta names targets under the $6 floor.
+- **C522 deployed 2 Oct 18:49 IST**, verified from the 19:17 IST logs push:
+  - `OMEGA C522`, 0 Traceback;
+  - "C522 the shadow's record restarts on the research's universe … Archived:
+    M1 −9.54% and M1g +0.00% over 2d";
+  - Delta's comparison snapshot was taken at the first tick (18:49:47 IST):
+    Delta $500.83, the Binance book $500.57;
+  - logpush re-copied (`--check` all OK). `c521_delta.json` and
+    `c521_bfusd.json` arrive on the logs branch from 19:17 IST;
+  - BFUSD: $0.0303 in 6.94 h = $500 × 7.66% × 6.94/8760 ✅;
+  - **Delta funding (08:00 UTC, plus 12:00 UTC for the 4-hour HYPE and TAO):
+    $0.0128 booked vs $0.0127 at Delta's settled rates.** Right, but only by
+    luck, and C523 fixes the timing;
+  - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
+- **C523 pushed, NOT yet deployed:** Delta funding read at the exchange time;
+  the shadow's starting size.
 - **BINANCE PAPER since 1 Oct 09:17 IST** (`c516-venue.conf`: OMEGA_VENUE=binance,
   OMEGA_CAPITAL=500, FRESH_START), on C517; verified from 5 screenshots and the
   10:17 IST logs push (`reports/2026-10-01_binance_first_rebalance.md`):
@@ -281,8 +293,66 @@
 | 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. **Binance (the venue since 1 Oct):** read it from the public listing `https://www.binance.com/bapi/earn/v1/friendly/finance-earn/simple/product/simpleEarnProducts?asset=USDT` (no key; answers this sandbox). 1 Oct: **6.69%** = 4.00% bonus on the first 1,000 USDT + 2.69% market (floats daily) → C520 sets 0.0669. Above 1,000 USDT idle only the market rate is paid (from about $1,600 of equity; not modelled). **C521: also `C521_BFUSD_APY`** (7.66% base, Sep 2026): no public API (the page renders it in the browser), so read it in the app monthly. |
 | 18 | **ETH lumpiness at $250** (Bitget) / **minimums at $500** (Binance) | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. **On Binance at $500 (1 Oct):** BTC's step 0.001 = $83.65 against a $63.10 target (+33%); ETH +$11.12 and LINK +$6.90 sit under their $20 minimum (C519 leaves them out, as the research did); gross 0.667× held vs 0.652× planned. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
-| 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.6%/yr for a long, corr 0.40); whole contracts hold 93% of the plan at $500. |
+| 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ⏱️ 2026-10-02 — C523: DELTA'S FUNDING READ AT THE EXCHANGE (THE C522 DEPLOY CHECK)
+# ═══════════════════════════════════════════════════════════════════════════
+
+**Found while checking the first Delta funding (19:17 IST logs push):**
+- **What the FUNDING:<SYM> series is.** Delta's FUNDING:<SYM> hourly candles
+  are a step series. Delta writes a record AT every exchange time (00/08/16
+  UTC; every 4 h for HYPE and TAO), even when the rate is unchanged, and
+  forward-fills it hourly.
+- **What the API returns.** A window that holds no exchange time (07:00–07:59)
+  comes back EMPTY: Delta returns records only from the first exchange inside
+  the window.
+- **Which value settles.** The value written at T is the rate settled at T.
+  Against Binance's settled rate at T, the per-exchange correlation is a
+  median 0.33 for the value set AT T vs 0.22 for the value in force before T;
+  AT wins on 9 of 12 coins (ETH 0.95 vs 0.35, BTC 0.47 vs 0.20).
+  Evidence: `research/c523_delta_funding_alignment.py/.txt`.
+- **What the C521 bot did.** It asked for the hour BEFORE T, so every exchange
+  fell back to the ticker's rate at the forced refresh. Just after an exchange
+  that rate happened to equal the new settled rate. 2 Oct total: booked
+  $0.01279 vs $0.01271 recomputed (per coin within $0.00004). Under the C521
+  rule as designed (the value before T), the total would have been $0.01430.
+- **The research had the same timing error.** Round 14 D2
+  (`research/c521_delta.py`) used the value before T, one interval late.
+  Re-run with the value set at T: median **+5.7%/yr** (was +5.6), daily corr
+  **0.44** (was 0.40), range −60% to +50% unchanged, no sign flips. The
+  conclusion stands.
+
+**C523 (code):**
+- `C521Delta.accrue_funding` asks for `start = T, end = T + 3599` and takes
+  the record whose time == T.
+  - Not written yet → wait (the exchange stays owed). After 15 minutes it
+    uses the ticker's rate and logs "C523 Delta funding … no record after
+    15 min".
+  - Marks are forced to refresh once per exchange (`_marks_at < due`), not on
+    every waiting tick.
+- `C489Shadow._seed()`: the ledger's base (the account's equity, read once:
+  still the shadow's ONLY portfolio line, as `omega_c489_test.py`'s
+  isolation check requires) is now set at the first tick after a start,
+  before the hour logic. Before, it was set at the first hour, so the panel
+  showed $250 for up to an hour after a fresh start or the C522 restart.
+- **Version C523.**
+
+**Tests:**
+- `omega_c521_test.py` 43 checks. The fake Delta now answers FUNDING as the
+  real API does: records only from the first exchange in the window, and a
+  different rate at each exchange. Under it the C521 code would have failed.
+  New checks: the window starts at T; the hour before comes back empty; a
+  record not yet written is waited for; after 15 minutes the ticker's rate is
+  used and logged.
+- `omega_c522_test.py` 26 checks (the base is seeded at the first tick: $500.00);
+- `omega_c489_test.py`'s isolation check still holds: one read of equity.
+- battery 43/44 (exit: `corpusL/`).
+
+**Rule (learned):** a fake API must reproduce the real one's answers to the
+exact request the code makes, including empty ones. A fake that answers
+everything hides a wrong window.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧭 2026-10-02 — THE FIRST C521 SCREENS (12:31 IST) AND C522
@@ -396,7 +466,9 @@
 - Delta lists 55 of 80 candidates;
 - return correlation median 0.994 (BTC/ETH/SOL ~1.000), tracking 10.6%/yr
   median;
-- **funding median +5.6%/yr dearer for a long, −60% to +50% by coin, corr 0.40**;
+- **funding median +5.6%/yr dearer for a long, −60% to +50% by coin, corr 0.40**
+  (C523 correction: Delta's funding value set AT each exchange, not the hour
+  before: **+5.7%/yr, corr 0.44**, the same range, no coin changes sign);
 - whole contracts hold 93% of the plan at $500, 98% at $1,000.
 
 **C521 (code):**

@@ -9,7 +9,7 @@
 4. Delta and the Binance book are compared over the SAME window; Delta's price age is shown.
 5. The page (Chromium).
 """
-import os, io, sys, json, time, glob, types, socket, logging, tempfile, contextlib, importlib.util
+import os, io, sys, inspect, json, time, glob, types, socket, logging, tempfile, contextlib, importlib.util
 import numpy as np
 REPO = os.path.dirname(os.path.abspath(__file__))
 BASE = tempfile.mkdtemp(prefix='c522_test_')
@@ -35,7 +35,7 @@ class _H(logging.Handler):
 lg = logging.getLogger('OmegaV60'); lg.handlers = [_H()]; lg.propagate = False
 print("=" * 66); print("C522: THE SHADOW'S UNIVERSE, DRAWDOWN FROM THE START, DELTA ON ONE WINDOW"); print("=" * 66)
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
-ok("version C522", om._OMEGA_VERSION == 'C522')
+ok("version C522 or later", int(om._OMEGA_VERSION[1:]) >= 522)
 
 
 def cfg_bn():
@@ -103,6 +103,13 @@ d4 = json.load(open(p))
 ok("  saved at once with the C522 mark and the archive", d4.get('c522') is True and len(d4.get('archive') or []) == 1)
 sh5 = om.C489Shadow(bot)
 ok("  reloading does not archive again", len(sh5.archive) == 1 and sh5.led['M1']['eq'] == 1.0)
+_tk = inspect.getsource(om.C489Shadow.tick)
+sh5._seed()
+ok("C523: the ledger's base is seeded at the first tick after a start (before the hour logic), so it shows the account's "
+   "size ($500.00), not $250 for an hour (seen on 2 Oct 18:49 IST)",
+   sh5.record('M1')['usd'] == 500.0 and sh5.start_equity == 500.0
+   and -1 < _tk.index('self._seed()') < _tk.index('now_h ='), str(sh5.record('M1')['usd']))
+sh5.start_equity = 0.0
 st5 = sh5.status()
 ok("  the status carries the universe rule and the archive", 'archive' in st5 and st5['archive'][0]['M1']['pct'] == -7.09
    and 'universe' in st5)
