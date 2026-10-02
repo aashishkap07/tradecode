@@ -1794,6 +1794,12 @@ class _C462Report:
                     self._pack('DELTA', [f"{_c462_money(_y521['eq'])} ({_y521['pct']:+.2f}%)",
                                          f"{_y521['n']} held", f"fees {_c462_money(_y521['fees'])}",
                                          f"funding {_c462_money(_y521['funding'], sign=True)}", 'paper, same plan'])
+                _x524 = getattr(bot, 'c524x', None)
+                if _x524 is not None and _x524.active() and _x524.start_equity:
+                    _z524 = _x524.status()
+                    self._pack('XVENUE', [f"{_c462_money(_z524['eq'])} ({_z524['pct']:+.2f}%)",
+                                          f"{_z524['n']} pairs", f"funding {_c462_money(_z524['funding'], sign=True)}",
+                                          f"fees {_c462_money(_z524['fees'])}", 'paper, Delta vs Binance'])
             except Exception:
                 pass
             # C488: the portfolio engine's book, one line
@@ -2359,7 +2365,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C523'
+_OMEGA_VERSION = 'C524'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3107,6 +3113,11 @@ class Config:
         self.C521_DELTA_EQUITY = 500.0          # C521: its own paper capital (whole contracts hold 93% of the plan at $500)
         self.C521_DELTA_GST = 0.18              # C521: GST on Delta's fees
         self.C521_DELTA_MARK_S = 300            # C521: Delta's tickers for the panel every 5 min (forced at trades/funding)
+        self.C524_XVENUE = True                 # C524: Delta vs Binance funding spread, both legs (paper, round 15)
+        self.C524_XVENUE_EQUITY = 500.0         # C524: its paper account
+        self.C524_XVENUE_RUN_UTC = (0, 30)      # C524: once a day, after the book (00:05), carry (00:10), spot (00:20)
+        self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
+        self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
         self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
         self.C488_TOPN_40_FROM = 1000.0
@@ -3115,7 +3126,9 @@ class Config:
         self.C488_MIN_NOTIONAL = 6.0            # a position worth less than this is not held
         self.C488_EXCHANGE_MIN = 5.0            # Bitget's minimum order, USDT
         self.C488_TRADE_BAND = 0.30             # within 30% of its target a position is left alone
-        self.C488_CANDIDATE_MULT = 4            # C499: history for 4x the book's width (80 at top 20)
+        self.C488_CANDIDATE_MULT = 8            # C524: 8x the book's width (160 at top 20); C499 had 4x. On 2021-26
+                                                # the research's top 20 (over ALL coins) held a coin outside the
+                                                # day's top 80 by 24-hour volume on 4.2% of days, top 160: 0.1%
         self.C488_FUND_PAGES = 40               # C499: every funding page Bitget serves (~90 days)
         self.C488_HIST_TRIES = 5                # C499: a history request gets 5 tries, then the rebalance waits
         self.C488_REBAL_UTC = (0, 5)            # 00:05 UTC = 05:35 IST
@@ -19559,7 +19572,7 @@ class C488Engine:
         rows = [(v.get('vol', 0.0), s) for s, v in self.marks.items()
                 if (not mk or s in mk) and self._is_crypto(s)]
         rows.sort(reverse=True)
-        m = int(mult if mult is not None else getattr(self.cfg, 'C488_CANDIDATE_MULT', 4))
+        m = int(mult if mult is not None else getattr(self.cfg, 'C488_CANDIDATE_MULT', 8))
         return [s for _, s in rows[:m * topn]]
 
     def _history(self, sym, days=330):
@@ -19580,7 +19593,25 @@ class C488Engine:
         -- ARB's funding -- reproduces the 26 Sep rebalance exactly (8 targets,
         ETH sold, gross 0.40x); nothing else tried does. A failure now raises,
         so the rebalance retries in 10 minutes instead of trading on a partial
-        picture. An EMPTY answer (a new coin with no history) is not a failure."""
+        picture. An EMPTY answer (a new coin with no history) is not a failure.
+
+        C524: one fetch per coin per UTC day. The book's 00:05 rebalance and the
+        carry ledger's 00:10 run read the same coins (160 each since C524) on the
+        same day; the second read comes from this cache, so the wider candidate
+        list does not double the calls (Binance's funding endpoint allows 500 per
+        5 minutes per IP). Same answer: candles cut to the asked window, funding
+        as fetched (it is fetched from a fixed start, whatever `days` is)."""
+        today = int(time.time() * 1000) // _C488_DAY * _C488_DAY
+        cache = self.__dict__.setdefault('_hist_cache', {})
+        hit = cache.get(sym)
+        if hit and hit[0] == today and hit[1] >= days:
+            lo = today - days * _C488_DAY
+            return {t: v for t, v in hit[2].items() if t >= lo}, dict(hit[3])
+        out, fund = self._history_fetch(sym, days)
+        cache[sym] = (today, days, out, fund)
+        return {t: v for t, v in out.items()}, dict(fund)
+
+    def _history_fetch(self, sym, days=330):
         if self.venue == 'binance':
             return self._bn_history(sym, days)
         raw = self._raw(sym)
@@ -20796,6 +20827,15 @@ class C488Engine:
 # trades a paper ledger of its own.
 
 _C489_HOLD = 4
+
+
+def _c489_cost(cfg=None):
+    """C524: the shadow's cost per unit of turnover is the venue's taker fee + 0.02%
+    half-spread, as the carry ledger's perp leg (Bitget 0.08%, the research's;
+    Binance 0.07%). The gate's 'beats the round trip' threshold is twice it."""
+    if _c516_venue(cfg) == 'binance':
+        return float(getattr(cfg, 'TAKER_FEE_PCT', 0.05)) / 100.0 + 0.0002
+    return 0.0008
 # the warm-up model: the same fit without flow1/flow4 (research/c489_model_noflow.json),
 # used until the shadow has collected a week of Bitget taker flow (only 30 h is served)
 _C489_MODEL_NOFLOW = {"feats": ["z_r1", "z_r4", "z_r24", "xs_r4", "vsurp", "volreg", "resid4", "btc4", "fundz", "pe", "hurst", "mk1", "mk2", "rpos"], "w": [-0.005112929, -0.0304657974, 0.0064555911, 0.0084276895, -0.0190231158, 0.0023574995, 0.0222224495, -0.0503842414, 0.0008760664, 0.0112450023, -0.0207727701, -0.0191296238, -0.0024703202, -0.0091136456, 0.0035520794], "gate": [-0.0026351746, 0.0715908368]}
@@ -21271,8 +21311,32 @@ class C489Shadow:
         cut = now_h - self.CACHE_H * 3600000
         for raw in list(self.candles):
             self.candles[raw] = {t: v for t, v in self.candles[raw].items() if t >= cut}
+        self._fund_fresh(syms, now_h)
         self.syms = syms
         return now_h
+
+    def _fund_fresh(self, syms, now_h):
+        """C524: every settlement since the last hour, for every coin. A coin's funding
+        history was fetched once (its first hour, or a restart) and never again, so
+        the funding z-score went stale and the ledger had nothing to charge. Binance
+        answers every coin's settlements of one hour in one call (about 470 coins
+        settle every 4 hours, ~790 at 00/08/16 UTC), so this is one call an hour
+        (up to 48 after a gap; a longer gap is covered by the restart's full pull)."""
+        if _c516_venue(self.cfg) != 'binance':
+            return
+        last = int(getattr(self, '_fund_h', 0) or 0)
+        hours = list(range(max(last + 3600000, now_h - 48 * 3600000), now_h + 1, 3600000))
+        want = set(syms)
+        for h in hours:
+            d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',
+                             {'startTime': h - 60000, 'endTime': h + 60000, 'limit': 1000})
+            if not isinstance(d, list):
+                return                                  # try again next hour, from the same point
+            for x in d:
+                raw = str(x.get('symbol', ''))
+                if raw in want:
+                    self.fund.setdefault(raw, {})[int(x['fundingTime'])] = float(x['fundingRate'])
+            self._fund_h = h
 
     def matrices(self, now_h):
         T = np.arange(now_h - self.CACHE_H * 3600000, now_h, 3600000, dtype=np.int64)
@@ -21331,7 +21395,7 @@ class C489Shadow:
         if m.sum() >= 10:
             v = p[m]; lo, hi = np.quantile(v, [0.2, 0.8])
             g0, g1 = mdl['gate']
-            gate = (g0 + g1 * (v[v >= hi].mean() - v[v <= lo].mean())) > 2 * 0.0008
+            gate = (g0 + g1 * (v[v >= hi].mean() - v[v <= lo].mean())) > 2 * _c489_cost(self.cfg)
         return p, gate, r1[-1], int(m.sum())
 
     # ── the ledgers ──────────────────────────────────────────────────────
@@ -21349,9 +21413,15 @@ class C489Shadow:
         """book the hour that just closed, then form this hour's cohort"""
         self._seed()
         day = now_h // 86400000 * 86400000
-        settle = (datetime.utcfromtimestamp(now_h / 1000).hour % 8) == 0
         rets = {s: float(r_last[j]) for j, s in enumerate(self.syms) if not np.isnan(r_last[j])}
-        rates = {C488Engine._raw(s): float(v.get('fr', 0.0)) for s, v in self.bot.c488.marks.items()}
+        # C524: the funding each coin SETTLED in the hour it was held, as the research
+        # charged it (hourly_pnl: events in [T, T + 1 h) to the weights held over that
+        # hour). It charged the live rate at 00/08/16 UTC only, which missed every
+        # 4-hour and 1-hour coin's other settlements.
+        h0 = now_h - 3600000
+        rates = {s: sum(r for t, r in (self.fund.get(s) or {}).items() if h0 <= t // 3600000 * 3600000 < now_h)
+                 for s in self.syms}
+        cpt = _c489_cost(self.cfg)
         q = np.zeros(len(self.syms))
         m = ~np.isnan(p)
         if m.sum() >= 10:
@@ -21364,7 +21434,7 @@ class C489Shadow:
         for name, led in self.led.items():
             w = led['w']
             pnl = sum(wt * rets.get(s, 0.0) for s, wt in w.items())
-            fu = -sum(wt * rates.get(s, 0.0) for s, wt in w.items()) if settle else 0.0
+            fu = -sum(wt * rates.get(s, 0.0) for s, wt in w.items())
             c_new = cohort if (name == 'M1' or gate) else {}
             led['cohorts'] = (led['cohorts'] + [c_new])[-_C489_HOLD:]
             nw = {}
@@ -21372,7 +21442,7 @@ class C489Shadow:
                 for s, wt in c.items():
                     nw[s] = nw.get(s, 0.0) + wt / _C489_HOLD
             turn = sum(abs(nw.get(s, 0.0) - w.get(s, 0.0)) for s in set(nw) | set(w))
-            cost = turn * 0.0008
+            cost = turn * cpt
             r = pnl + fu - cost
             led['eq'] *= (1.0 + r)
             led['daily'][day] = led['daily'].get(day, 0.0) + r
@@ -21798,7 +21868,8 @@ class C490Carry:
         if not spot:
             raise RuntimeError(f'{_c516_name(self.cfg)} spot tickers unavailable')
         P = self.params()
-        syms = list(dict.fromkeys(e.candidates(P['topn'], mult=2)        # C499: the ledger keeps its own width
+        syms = list(dict.fromkeys(e.candidates(P['topn'], mult=4)        # C524: 160 for its top 40 (80 missed a research
+                                                                         # pick on 41% of 2021-26 days, 160 on 3.6%)
                                   + [C488Engine._ccxt(r) for r in self.pos]))
         h = self.history(syms)
         if h is None:
@@ -23137,6 +23208,284 @@ class C501Spot(_C501Store):
                         apr=round(float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)), 4))
 
 
+_C524_COST_B = 0.0005 + 0.0002          # Binance taker 0.05% + 0.02% half-spread
+_C524_COST_D = 0.0005 * 1.18 + 0.0002   # Delta taker 0.05% + 18% GST + 0.02% half-spread
+
+
+def _c524_delta_daily(recs, iv_s, lo, hi):
+    """Delta's funding per UTC day, fraction: the FUNDING:<SYM> record at each exchange
+    time (the value set AT T is the rate settled at T, C523), days lo <= d < hi"""
+    hrs = max(1, int(iv_s) // 3600)
+    out = {}
+    for x in recs or []:
+        t = int(x.get('time') or 0)
+        if (t // 3600) % hrs == 0 and lo <= t < hi:
+            d = t // 86400 * 86400
+            out[d] = out.get(d, 0.0) + float(x['close']) / 100.0
+    return out
+
+
+def _c524_signal(fD, fB, days):
+    """the trailing mean of (Delta - Binance) daily funding over `days`, annualised, as paid
+    by a long; None unless both venues have every one of those days"""
+    if not days or any(d not in fD or d not in fB for d in days):
+        return None
+    return sum(fD[d] - fB[d] for d in days) / len(days) * 365.0
+
+
+class C524CrossVenue(_C501Store):
+    """C524 X1 (paper): THE SAME COIN ON TWO VENUES, LONG WHERE LONGS PAY LESS.
+
+    Delta Exchange India's funding differs from Binance's on the same coin, and
+    the difference persists (the 7-day spread's correlation with the next 7
+    days', across coins: +0.71). Long the perpetual on the venue where longs pay
+    less, short it on the other: the prices cancel, the funding difference is
+    collected. Round 15 (research/c524_preregistration.md, then
+    research/c524_xvenue.py and c524_xvenue_checks.py), 2024-10 .. 2026-09, the
+    190 coins both list: net +97%/yr on capital, t 12.5, 24 of 24 months
+    positive; with every assumption made harder (the midnight exchange to the
+    day before, Delta's mark, costs x10, only coins with $100k of Delta turnover
+    and the same asset on both) +57%/yr, t 6.7, 19 of 24.
+
+    The rule, exactly as tested, once a day (00:30 UTC):
+      s      trailing 7-day mean of (Delta - Binance) daily funding, annualised,
+             as paid by a long
+      enter  |s| >= 20%/yr, highest |s| first, at most 10 pairs
+      exit   |s| < 10%/yr, or s changes sign, or a venue stops listing it
+      size   10% of the ledger's equity per leg; Delta in whole contracts, the
+             Binance leg matched to the Delta leg's notional
+      costs  Binance 0.05% + 0.02%; Delta 0.05% x 1.18 GST + 0.02%; both legs,
+             in and out
+    Funding: each leg's SETTLED rates since it was opened (Delta's FUNDING
+    records at its exchange times, Binance's fundingRate history), at the mark.
+    Prices: each venue's mark.
+
+    IT NEVER TOUCHES MONEY. The catches for live money: the coins it picks are
+    thin on Delta ($5k-$300k of open interest), it needs capital on two venues
+    and transfers between them, and two venues' legs may be taxed differently
+    (a gain on one taxed while the other's loss cannot offset it) -- the CA
+    question (#8)."""
+
+    STATE_FILE = 'c524_xvenue.json'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = 0.0
+        self._fail_at = 0.0
+        self._prod_at = 0.0
+        self.prods = {}
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            self.start_equity = float(d.get('start_equity') or 0.0)
+            self.eq = float(d.get('eq') or 0.0)
+            self.pairs = {k: dict(v) for k, v in (d.get('pairs') or {}).items()}
+            for k in ('fees', 'funding', 'price_pnl'):
+                setattr(self, k, float(d.get(k) or 0.0))
+            self.trades = int(d.get('trades') or 0)
+            self.closed = list(d.get('closed') or [])[-200:]
+            self.last_run = str(d.get('last_run') or '')
+            self.info = dict(d.get('info') or {})
+            self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C524_XVENUE', True)) and _c516_venue(self.cfg) == 'binance'
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.start_equity = self.eq = 0.0
+            self.pairs, self.closed, self.info, self.daily = {}, [], {}, {}
+            self.fees = self.funding = self.price_pnl = 0.0
+            self.trades, self.last_run = 0, ''
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(start_equity=self.start_equity, eq=self.eq, pairs=self.pairs, fees=self.fees,
+                     funding=self.funding, price_pnl=self.price_pnl, trades=self.trades, closed=self.closed[-200:],
+                     last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()})
+        self._write(d)
+
+    def due(self, now=None):
+        now = now or datetime.utcnow()
+        h, m = getattr(self.cfg, 'C524_XVENUE_RUN_UTC', (0, 30))
+        return (now.hour, now.minute) >= (h, m) and self.last_run != now.strftime('%Y-%m-%d')
+
+    # ── data ─────────────────────────────────────────────────────────────────
+    def refresh_products(self, force=False):
+        return C521Delta.refresh_products(self, force)            # Delta's crypto perps, the same filter
+
+    def _delta_marks(self):
+        d = _c521_get('/v2/tickers', {'contract_types': 'perpetual_futures'})
+        return {str(x['symbol']): float(x.get('mark_price') or 0) for x in d or [] if float(x.get('mark_price') or 0) > 0}
+
+    def _funding(self, coin, today):
+        """(Delta {day: rate}, Binance {day: rate}, Delta records, Binance records) over the
+        last 8 days; Delta's from its exchange records, Binance's from its settlements"""
+        p = self.prods[coin]
+        lo = today // 1000 - 8 * 86400
+        d = _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + p['sym'],
+                                               'start': lo, 'end': today // 1000 - 1}) or []
+        b = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',
+                         {'symbol': coin + 'USDT', 'startTime': lo * 1000, 'limit': 100})
+        if not isinstance(b, list):
+            b = None
+        fD = _c524_delta_daily(d, p['iv'], lo, today // 1000)
+        fB = {}
+        for x in b or []:
+            t = int(x['fundingTime']) // 1000
+            if t < today // 1000:
+                fB[t // 86400 * 86400] = fB.get(t // 86400 * 86400, 0.0) + float(x['fundingRate'])
+        return fD, fB, d, b
+
+    # ── the day ──────────────────────────────────────────────────────────────
+    def run(self, now_ms=None):
+        e = self.bot.c488
+        now_ms = int(now_ms or time.time() * 1000)
+        today = now_ms // _C488_DAY * _C488_DAY
+        if not self.start_equity:
+            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 500.0))
+        if not self.refresh_products(force=True):
+            raise RuntimeError("Delta's product list did not load")
+        e.refresh_marks(force=True)
+        bm = {C488Engine._raw(s): e.mark(s) for s in e.marks}
+        dm = self._delta_marks()
+        if not dm:
+            raise RuntimeError("Delta's prices did not load")
+        coins = sorted(c for c in self.prods if bm.get(c + 'USDT', 0) > 0 and dm.get(self.prods[c]['sym'], 0) > 0)
+        coins = sorted(set(coins) | set(self.pairs))
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today) if c in self.prods else ({}, {}, [], None),
+                                           coins)))
+        days = [today // 1000 - k * 86400 for k in range(7, 0, -1)]                 # the 7 completed days
+        sig = {c: _c524_signal(got[c][0], got[c][1], days) for c in coins}
+        day_pnl, n_fund = 0.0, 0
+        # 1. mark what is held: each leg at its venue's mark, plus each leg's settled funding since
+        for c, p in list(self.pairs.items()):
+            fD_rec, b_rec = got.get(c, ({}, {}, [], None))[2], got.get(c, ({}, {}, [], None))[3]
+            dpx, bpx = dm.get(p['d_sym'], 0.0), bm.get(c + 'USDT', 0.0)
+            if dpx <= 0 or bpx <= 0:
+                continue
+            pr = p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
+            hrs = max(1, int(self.prods.get(c, {}).get('iv') or 28800) // 3600)
+            since = int(p['fund_from'])
+            fu_d = sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in fD_rec or []
+                       if (int(x['time']) // 3600) % hrs == 0 and since < int(x['time']) * 1000 < today)
+            fu_b = sum(-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
+                       if since < int(x['fundingTime']) < today)
+            if b_rec is None or not fD_rec:
+                fu_d = fu_b = 0.0                                   # a venue did not answer: booked next day
+            else:
+                p['fund_from'] = today
+                n_fund += 1
+            p.update(d_px=dpx, b_px=bpx, pnl=p['pnl'] + pr + fu_d + fu_b, funding=p['funding'] + fu_d + fu_b,
+                     s_now=sig.get(c))
+            self.price_pnl += pr
+            self.funding += fu_d + fu_b
+            day_pnl += pr + fu_d + fu_b
+        eq0 = self.eq
+        self.eq += day_pnl
+        # 2. exits
+        out = []
+        for c in list(self.pairs):
+            p, s = self.pairs[c], sig.get(c)
+            why = None
+            if c not in self.prods or bm.get(c + 'USDT', 0) <= 0 or dm.get(p['d_sym'], 0) <= 0:
+                why = 'not listed'
+            elif s is None:
+                why = 'no 7-day spread'
+            elif abs(s) < 0.10:
+                why = 'spread under 10%/yr'
+            elif (1 if s > 0 else -1) != p['side']:
+                why = 'spread changed sign'
+            if why:
+                n = abs(p['d_qty']) * p['cv'] * p['d_px']
+                cost = n * (_C524_COST_B + _C524_COST_D)
+                self.fees += cost; self.eq -= cost; day_pnl -= cost
+                p['pnl'] -= cost
+                self.closed = (self.closed + [dict(coin=c, why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
+                                                   pnl=round(p['pnl'], 4), funding=round(p['funding'], 4))])[-200:]
+                del self.pairs[c]
+                self.trades += 1
+                out.append(f"{c} ({why})")
+        # 3. entries: the widest spreads first
+        inn, small = [], []
+        room = int(getattr(self.cfg, 'C524_XVENUE_PAIRS', 10)) - len(self.pairs)
+        cand = sorted((c for c in coins if c not in self.pairs and sig.get(c) is not None and abs(sig[c]) >= 0.20),
+                      key=lambda c: -abs(sig[c]))
+        for c in cand:
+            if room <= 0:
+                break
+            p_, dpx, bpx = self.prods[c], dm.get(self.prods[c]['sym'], 0.0), bm.get(c + 'USDT', 0.0)
+            if dpx <= 0 or bpx <= 0:
+                continue
+            n = float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10)) * self.eq
+            k = int(round(n / (p_['cv'] * dpx)))
+            if k < 1:
+                small.append(f"{c} 1 contract ${p_['cv'] * dpx:.0f} > ${n:.0f}")
+                continue
+            nd = k * p_['cv'] * dpx
+            side = 1 if sig[c] > 0 else -1                         # +1: Delta dearer for longs -> short Delta
+            cost = nd * (_C524_COST_B + _C524_COST_D)
+            self.fees += cost; self.eq -= cost; day_pnl -= cost
+            self.pairs[c] = dict(side=side, d_sym=p_['sym'], cv=p_['cv'], d_qty=float(-side * k), b_qty=side * nd / bpx,
+                                 d_px=dpx, b_px=bpx, notional=round(nd, 2), s_entry=sig[c], s_now=sig[c],
+                                 opened=now_ms, fund_from=now_ms, pnl=-cost, funding=0.0)
+            self.trades += 1
+            room -= 1
+            inn.append(f"{c} {'short Delta/long Binance' if side > 0 else 'long Delta/short Binance'} {100 * sig[c]:+.0f}%/yr")
+        if eq0 > 0:
+            self.daily[today] = self.daily.get(today, 0.0) + day_pnl / eq0
+        self.last_run = datetime.utcfromtimestamp(now_ms / 1000).strftime('%Y-%m-%d')
+        wide = sum(1 for c in coins if sig.get(c) is not None and abs(sig[c]) >= 0.20)
+        self.info = dict(at=now_ms, coins=len(coins), scored=sum(1 for c in coins if sig.get(c) is not None),
+                         wide=wide, entered=inn, exited=out, under_one_contract=small[:10], funded=n_fund)
+        return day_pnl
+
+    def tick(self):
+        if not self.active() or time.time() - self._tick_at < 30:
+            return
+        self._tick_at = time.time()
+        if not bool(getattr(self.bot, '_c462_state_settled', False)) or getattr(self.bot, 'c488', None) is None:
+            return
+        if not self.due() or time.time() - self._fail_at < 300:
+            return
+        try:
+            t0 = time.time()
+            with self._lock:
+                pnl = self.run()
+            self.save()
+            inf = self.info
+            logger.info(f"   \U0001f500 C524 cross-venue (paper, Delta vs Binance) {self.last_run}: day {pnl:+.2f} -> "
+                        f"${self.eq:.2f} ({100 * (self.eq / (self.start_equity or 1) - 1):+.2f}%) | {len(self.pairs)} pairs, "
+                        f"{inf.get('wide', 0)} of {inf.get('scored', 0)} coins with a 7-day spread >= 20%/yr"
+                        f"{' | in ' + '; '.join(inf['entered']) if inf.get('entered') else ''}"
+                        f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''} [{time.time() - t0:.0f}s]")
+        except Exception as ex:
+            self._fail_at = time.time()
+            logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def status(self):
+        with self._lock:
+            base = self.start_equity
+            pairs = [dict(coin=c, how='short Delta / long Binance' if p['side'] > 0 else 'long Delta / short Binance',
+                          notional=p.get('notional', 0.0), pnl=round(p['pnl'], 2), funding=round(p['funding'], 3),
+                          s_entry=round(100 * p['s_entry'], 1),
+                          s_now=round(100 * p['s_now'], 1) if p.get('s_now') is not None else None,
+                          days=round((time.time() * 1000 - p['opened']) / _C488_DAY, 1))
+                     for c, p in sorted(self.pairs.items(), key=lambda a: -abs(a[1]['s_entry']))]
+            h, m = getattr(self.cfg, 'C524_XVENUE_RUN_UTC', (0, 30))
+            return dict(mode='paper' if self.active() else 'off', start_equity=round(base, 2), eq=round(self.eq, 2),
+                        pnl=round(self.eq - base, 2) if base else 0.0,
+                        pct=round(100 * (self.eq / base - 1), 2) if base else 0.0,
+                        n=len(self.pairs), pairs=pairs, fees=round(self.fees, 4), funding=round(self.funding, 4),
+                        price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
+                        last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
+                        record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)))
+
+
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
@@ -23152,6 +23501,7 @@ class TradingBot:
         self.c510t = C510Tournament(self)       # C510: every candidate rule, scored on the same prices (paper)
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
+        self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance funding spread, both legs (paper)
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -23776,6 +24126,8 @@ class TradingBot:
                 led.append(f"BFUSD wallet at {100 * float(getattr(c, 'C521_BFUSD_APY', 0.0766)):.2f}% (C521)")
             if getattr(self, 'c521d', None) is not None and self.c521d.active():
                 led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 500.0)):.0f} (C521)")
+            if getattr(self, 'c524x', None) is not None and self.c524x.active():
+                led.append(f"Delta vs Binance funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 500.0)):.0f} (C524)")
             if led:
                 logger.info("   PAPER  never touches the account: " + " · ".join(led))
             _lt511 = int(self.portfolio.lifetime_trades or 0)
@@ -24146,7 +24498,7 @@ class TradingBot:
                         self.c490.tick()
                     except Exception as _e490:
                         logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
-                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d):  # C501/C521: the paper ledgers
+                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d, self.c524x):  # C501/C521/C524: paper
                         try:
                             _c501.tick()
                         except Exception as _e501:
@@ -41627,6 +41979,8 @@ def startup():
         bot.c501s.reset(); bot.c501v.reset(); bot.c501k.reset()   # C501: and fresh paper ledgers
         bot.c510t.reset()                    # C510: and a fresh tournament
         bot.c521b.reset(); bot.c521d.reset() # C521: and fresh BFUSD and Delta ledgers
+        if getattr(bot, 'c524x', None) is not None:
+            bot.c524x.reset()                # C524: and a fresh cross-venue ledger
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -42336,6 +42690,11 @@ class RemoteControl:
                                                if getattr(bot_ref, a, None) is not None}
                         except Exception as _x521:
                             _out469['c521'] = {'error': f"{type(_x521).__name__}: {_x521}"}
+                        try:      # C524: the cross-venue funding ledger
+                            if getattr(bot_ref, 'c524x', None) is not None:
+                                _out469['c524'] = bot_ref.c524x.status()
+                        except Exception as _x524:
+                            _out469['c524'] = {'error': f"{type(_x524).__name__}: {_x524}"}
                         try:      # C510: the rule tournament
                             _t510 = getattr(bot_ref, 'c510t', None)
                             if _t510 is not None:
@@ -42572,6 +42931,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <section><h2>Idle cash &rarr; Savings <span class="muted">(paper)</span></h2><div id="savings" class="muted">&mdash;</div></section>
 <section><h2>BFUSD <span class="muted">(paper, Binance margin asset)</span></h2><div id="bfusd" class="muted">&mdash;</div></section>
 <section><h2>Delta Exchange India <span class="muted">(paper, same plan)</span></h2><div id="delta" class="muted">&mdash;</div></section>
+<section><h2>Delta vs Binance funding <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -42899,6 +43259,24 @@ async function pull(){
             q('delta').innerHTML=dh;
           }
         }
+      }
+    }
+    /* C524: the same coin on two venues, long where longs pay less -- paper */
+    var xv=d.c524;
+    if(xv){
+      if(xv.error){q('xvenue').innerHTML='<span class="'+cls(-1)+'">unavailable: '+xv.error+'</span>'}
+      else if(xv.mode!=='paper'){q('xvenue').innerHTML='<span class="muted">off (needs the Binance venue)</span>'}
+      else if(!xv.start_equity){q('xvenue').innerHTML='<span class="muted">first run at '+xv.next_run_utc+' UTC</span>'}
+      else{
+        var xi=xv.info||{},xh='<div class="s muted">the same coin long on the venue where longs pay less funding, short on the other: prices cancel, the funding difference is collected · '+
+          'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';
+        xh+='<div style="margin:4px 0"><b>'+money(xv.eq)+'</b> <span class="'+cls(xv.pnl)+'">'+sgn(xv.pnl)+' ('+(xv.pct>=0?'+':'')+Number(xv.pct).toFixed(2)+'%)</span>'+
+          ' <span class="muted">· '+xv.n+' pairs · funding '+sgn(xv.funding)+' · prices '+sgn(xv.price_pnl)+' · fees '+money(xv.fees)+
+          (xi.scored!==undefined?' · '+xi.wide+' of '+xi.scored+' coins at 20%/yr+':'')+'</span></div>';
+        (xv.pairs||[]).forEach(function(p){xh+='<div class="s">'+p.coin+' <span class="muted">'+p.how+' '+money(p.notional)+' a leg · spread '+
+          (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+' · '+p.days+'d</span></div>'});
+        if((xi.under_one_contract||[]).length)xh+='<div class="s muted">skipped (one Delta contract is more than a leg): '+xi.under_one_contract.join(', ')+'</div>';
+        q('xvenue').innerHTML=xh;
       }
     }
     /* C510: what is running -- one line each: what trades, what is paper, what is off */

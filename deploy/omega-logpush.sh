@@ -322,12 +322,13 @@ done
 # once a day), so `c498_plan_replay.py --inputs` recomputes the plan to the cent.
 # C510: c510_tournament.json, every candidate rule's forward record.
 # C522: c521_delta.json and c521_bfusd.json, the Delta Exchange India and BFUSD
-# paper accounts (positions, fills, funding; no keys).
+# paper accounts (positions, fills, funding; no keys). C524: c524_xvenue.json, the
+# cross-venue funding ledger.
 for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json \
          "$REPO"/data/c488_book.json "$REPO"/data/c490_carry.json \
          "$REPO"/data/c501_spot.json "$REPO"/data/c501_savings.json "$REPO"/data/c501_allostatic.json \
          "$REPO"/data/c510_tournament.json "$REPO"/data/c488_inputs.npz \
-         "$REPO"/data/c521_delta.json "$REPO"/data/c521_bfusd.json; do
+         "$REPO"/data/c521_delta.json "$REPO"/data/c521_bfusd.json "$REPO"/data/c524_xvenue.json; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done
 [ "$copied" -gt 0 ] || exit 0

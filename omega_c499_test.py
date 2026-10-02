@@ -174,11 +174,12 @@ print("\n3b. THE HISTORY HOLDS THE COINS THAT WERE TOP 20 THEN")
 bot, e = mkbot()
 e.marks = {f"K{j:03d}/USDT:USDT": dict(bid=1.0, ask=1.0, last=1.0, fr=0.0, vol=1e9 - j) for j in range(200)}
 c20 = e.candidates(20)
-ok("the book fetches history for 4x its width: 80 coins at top 20, busiest first",
-   len(c20) == 80 and c20[0] == 'K000/USDT:USDT' and c20[-1] == 'K079/USDT:USDT')
+ok("the book fetches history for several times its width, busiest first (C499: 4x = 80 at top 20; C524: 8x = 160)",
+   len(c20) == 20 * om.Config().C488_CANDIDATE_MULT and len(c20) >= 80 and c20[0] == 'K000/USDT:USDT'
+   and c20[-1] == f'K{len(c20) - 1:03d}/USDT:USDT', f"{len(c20)} candidates")
 ok("  the carry ledger keeps its own width (2x: 80 at its top 40)", len(e.candidates(40, mult=2)) == 80)
 src = open(os.path.join(REPO, 'omega_v60_reconstructed.py'), encoding='utf-8').read()
-ok("  and the ledger asks for it explicitly", "e.candidates(P['topn'], mult=2)" in src)
+ok("  and the ledger asks for it explicitly (C524: 4x, 160 at its top 40)", "e.candidates(P['topn'], mult=4)" in src)
 
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n4. NOTHING ELSE MOVES")

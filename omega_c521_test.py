@@ -49,7 +49,7 @@ ok("BFUSD on (7.66% base APY, 9.51% boosted shown, 1% TDS once); Delta on at $50
 ok("version C521 or later", int(om._OMEGA_VERSION[1:]) >= 521)
 ok("the bot builds both, ticks both every pass, resets both on a fresh start",
    'self.c521b = C521Bfusd(self)' in SRC and 'self.c521d = C521Delta(self)' in SRC
-   and '(self.c501s, self.c501v, self.c521b, self.c521d)' in SRC and 'bot.c521b.reset(); bot.c521d.reset()' in SRC)
+   and '(self.c501s, self.c501v, self.c521b, self.c521d' in SRC and 'bot.c521b.reset(); bot.c521d.reset()' in SRC)
 
 
 def bn_cfg(venue='binance'):

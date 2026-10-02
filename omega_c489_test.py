@@ -127,10 +127,22 @@ hs = h0 + (8 - (h0 // 3600000) % 8) * 3600000                  # the next settle
 for hh in range(h0 + 3600000, hs, 3600000):
     sh.step(hh, p, True, np.zeros(k))
 eq0 = sh.led['M1']['eq']; wS = dict(sh.led['M1']['w'])
+# C524: the settled records of the hour held (as research's hourly_pnl), not the live rate at 00/08/16 UTC
+sh.fund = {'AUSDT': {hs - 3600000: 0.001}, 'BUSDT': {hs - 3600000 + 7: 0.001}}
 sh.step(hs, p, True, np.zeros(k))
 fu = -sum(wS.get(s, 0.0) * 0.001 for s in ('AUSDT', 'BUSDT'))
-ok("at a funding settlement, the held weights pay the current rate (flat prices, same book)",
+ok("the held weights pay each coin's SETTLED rate of the hour held (C524; flat prices, same book)",
    abs(sh.led['M1']['eq'] - eq0 * (1 + fu)) < 1e-12 and fu < 0, f"funding {fu:+.6f}")
+eq1 = sh.led['M1']['eq']; wT = dict(sh.led['M1']['w'])
+h4 = hs + 4 * 3600000                                            # 04:00-type hour: a 4-hour coin settles, an 8-hour one does not
+sh.fund = {'AUSDT': {h4 - 3600000: 0.002}}
+for hh in range(hs + 3600000, h4, 3600000):
+    sh.step(hh, p, True, np.zeros(k))
+eq2 = sh.led['M1']['eq']; wU = dict(sh.led['M1']['w'])
+sh.step(h4, p, True, np.zeros(k))
+ok("  a 4-hour coin's settlement off the 8-hour clock is charged; the live 'fr' (0.001 on both) is not used",
+   abs(sh.led['M1']['eq'] - eq2 * (1 - wU.get('AUSDT', 0.0) * 0.002)) < 1e-12 and eq1 == eq2,
+   f"{sh.led['M1']['eq']:.10f} vs {eq2 * (1 - wU.get('AUSDT', 0.0) * 0.002):.10f}")
 bot, sh = mkshadow(); sh.syms = [f'S{j:02d}USDT' for j in range(20)] + ['AUSDT', 'BUSDT']
 for i in range(6):
     sh.step(h0 + i * 3600000, p, False, np.zeros(k))
