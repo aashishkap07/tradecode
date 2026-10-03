@@ -1,0 +1,60 @@
+12:18:43 | 📊 Paper Mode
+12:18:44 | ✅ Connected | 740 futures markets (Binance USDⓈ-M)
+12:18:44 | 📊 Binance Fees: Maker 0.02% | Taker 0.05%
+12:18:44 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+12:18:44 | 📋 Limit Orders: ENABLED (offset 0.1%) -- the idle intraday scanner's; the book trades with market orders
+12:18:44 | 📂 Loaded state: $499.72 realised | 0 intraday positions | available $434.35 before open P&L (locked $65.37)
+12:18:44 | 📐 RISK @ $499.72: monthly dial 20% = $100.00/month (20% of this month's anchor $500.00)  |  the portfolio book trades: its month guard closes the book if MARKED equity falls that far below the month's anchor [C497]
+ 
+  ================================================================================================
+  OMEGA C521  PAPER  Binance perps
+  02 Oct 2026   12:18
+  start $499.72 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $499.72 realised  740 markets
+  MONTH     dial 20% = $100.00 this month  used $0.28 realised
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+12:18:44 |    (legacy Flask page not installed — the dashboard is the control panel)
+12:18:44 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+12:18:44 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+12:18:44 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+12:18:44 |        See deploy/DEPLOY.md — one command, no open ports, free.
+12:18:44 | ============================================================
+12:18:44 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+12:18:44 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades:
+12:18:44 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+12:18:44 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+12:18:44 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+12:18:44 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at 6.69% every minute · rule tournament (C510, 9 rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same plan on Delta Exchange India, $500 (C521)
+12:18:44 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+12:18:44 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+12:18:44 | ============================================================
+12:18:44 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before) -- it watches INTRADAY positions; the book has no stops, its one limit is the month guard
+12:18:46 |    🇮🇳 C521 Delta first: SELL 1000PEPEUSD 8 x 1000 @ $0.0045584 ($36.47; fee $0.022 incl. GST) -> holding -8
+12:18:46 |    🇮🇳 C521 Delta first: BUY ARBUSD 61 x 1 @ $0.20538 ($12.53; fee $0.007 incl. GST) -> holding +61
+12:18:46 |    🇮🇳 C521 Delta first: BUY BNBUSD 1 x 0.1 @ $777.34 ($77.73; fee $0.046 incl. GST) -> holding +1
+12:18:46 |    🇮🇳 C521 Delta first: BUY BTCUSD 1 x 0.001 @ $85,926 ($85.93; fee $0.051 incl. GST) -> holding +1
+12:18:46 |    🇮🇳 C521 Delta first: SELL DOGEUSD 3 x 100 @ $0.09604 ($28.81; fee $0.017 incl. GST) -> holding -3
+12:18:46 |    🇮🇳 C521 Delta first: BUY HYPEUSD 1 x 0.1 @ $90.298 ($9.03; fee $0.005 incl. GST) -> holding +1
+12:18:46 |    🇮🇳 C521 Delta first: BUY NEARUSD 4 x 1 @ $5.008 ($20.03; fee $0.012 incl. GST) -> holding +4
+12:18:46 |    🇮🇳 C521 Delta first: BUY SUIUSD 21 x 1 @ $1.1889 ($24.97; fee $0.015 incl. GST) -> holding +21
+12:18:46 |    🇮🇳 C521 Delta first: SELL TAOUSD 5 x 0.01 @ $309.67 ($15.48; fee $0.009 incl. GST) -> holding -5
+12:18:46 |    🇮🇳 C521 Delta first: SELL XRPUSD 18 x 1 @ $1.5235 ($27.42; fee $0.016 incl. GST) -> holding -18
+12:18:46 |    🇮🇳 C521 Delta Exchange India (paper, same plan): 10 held, gross $338.44 of $343.42 planned (99%), 10 trades $338.40 | equity $499.76 | under one contract: AKE -0.31 < $160, ETH +11.20 < $14, LINK +6.94 < $7, SOL +7.63 < $61, UNI +1.82 < $5 [0s]
+12:18:46 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it); the book holds 11 positions
+12:19:23 | 
+============================================================
+🛑 Signal 15 — saving logs...
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       0h00m  daily book  0 book fills this run  book closed 1 in all
+  P&L       $+0.00 (+0.00%)  $499.38 > $499.38  maxDD 0.00%
+  COST      fees $0.00  maker 0 / taker 0 fills
+  ------------------------------------------------------------------------------------------------
+ 
