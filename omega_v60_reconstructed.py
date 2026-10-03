@@ -1854,7 +1854,8 @@ class _C462Report:
                         if _ts510['days'] > 0:
                             self._pack('TOURNEY', [f"{_ts510['days']}d from {_ts510['first']}"]
                                        + [f"{_sh510.get(v['name'], v['name'])}{'*' if v['traded'] else ''} "
-                                          f"{100 * v['ret']:+.2f}%" for v in _ts510['rows'] if v['on']])
+                                          + (f"{100 * v['ret']:+.2f}%" if v.get('days') else 'new')   # C526: not '+0.00%'
+                                          for v in _ts510['rows'] if v['on']])
                         elif _ts510.get('last_obs'):
                             self._pack('TOURNEY', [f"{sum(1 for v in _ts510['rows'] if v['on'])} rules held",
                                                    f"first score at the next rebalance, for {_ts510['next_day']}"])
@@ -2365,7 +2366,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C525'
+_OMEGA_VERSION = 'C526'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -22339,7 +22340,8 @@ class C510Tournament(_C501Store):
         sc = (f"{st['days']} day{'' if st['days'] == 1 else 's'} scored from {st['first']}" if st['days'] else
               f"first score, for {st['next_day']}, at the next rebalance")
         logger.info(f"   \U0001f3c1 C510 tournament (paper, same prices, {sc}): "
-                    + ' | '.join(f"{v['label']}{' (traded)' if v['traded'] else ''} {100 * v['ret']:+.2f}%"
+                    + ' | '.join(f"{v['label']}{' (traded)' if v['traded'] else ''} "
+                                 + (f"{100 * v['ret']:+.2f}%" if v.get('days') else 'new, scored from tomorrow')
                                  for v in st['rows'] if v['on'])
                     + f" [{time.time() - t0:.0f}s]")
 

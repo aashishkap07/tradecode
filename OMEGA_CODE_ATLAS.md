@@ -46,8 +46,24 @@
     $0.0128 booked vs $0.0127 at Delta's settled rates.** Right, but only by
     luck, and C523 fixes the timing;
   - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
-- **C525 pushed, NOT yet deployed** (deploy before 06:00 IST 4 Oct): the
-  cross-venue funding window fix, the record limit, two panel clarifications.
+- **C525 deployed 3 Oct 09:33 IST** (0 Traceback, 0 warnings). The 11:35 IST
+  screens were verified:
+  - book 9/9 inside Binance's 06:01–06:07 UTC range; open −$0.14 =
+    +$0.01 − $0.15 exit fee; record 2W 1L net −$0.0869 (ADA −0.1174,
+    HYPE +0.0203, SOL +0.0102, fees and funding in);
+  - **all 9 tournament books recomputed from `c488_inputs.npz` with the
+    bot's functions: identical**. +GK+XA holds 14 coins at 1.313× because
+    its ex-ante (10-day EWMA) risk forecast reads the recent calm, while
+    the running sizing uses 60-day sleeve P&L vol. That is real, not a bug;
+    it will swing about 2× the others, so it must be judged risk-matched
+    (#11). +GK+DD = the traded book (no drawdown yet, scale 1.0);
+  - Delta 9/9 at its mark, equity $499.99 = cash $499.702 + open $0.29;
+    fees $0.2049;
+  - Savings reserve $187.60 = locked $62.70 + 25% × $499.60; BFUSD $0.10
+    in 0.97 d ✓; spot TDS $0.26 = $0.10 + 1% of the ETH and SOL sales;
+    carry fees $0.95 incl. UNI's entry.
+  - **C526:** a tournament rule with no scored day reads "new" (the status
+    block showed "+GK+DD +0.00%"). Battery 44/45.
 - **Paper check, 3 Oct (06:17 IST push, server on C524): ALL PASSED.**
   0 Traceback, 0 warnings.
   - **The first GK rebalance** (05:36:08 IST, 56 s, **160 candidates**):

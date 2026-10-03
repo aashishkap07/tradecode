@@ -231,6 +231,9 @@ ok("C525: the tournament panel names a rule with no book yet ('not scored yet ..
 ok("C525: the cross-venue panel says it is marked, funded and traded once a day (a new pair shows only its costs until then)",
    "marked, funded and traded once a day at" in SRC)
 
+ok("C526: a rule not yet scored reads 'new' in the status block and the tournament's log line, not '+0.00%'",
+   "else 'new')   # C526" in SRC and "else 'new, scored from tomorrow')" in SRC)
+
 print("\n5. THE PAGE (Chromium)")
 
 
