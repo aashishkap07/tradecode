@@ -475,10 +475,18 @@
     exit 2 (missing data, not a code failure).
   - Both fetchers create their folder (`omega_fetch_corpus_32.py` crashed on
     a fresh checkout).
-- **Option, the operator's call:** force-add `corpusL/` (16 MB, as
-  `corpusO/` was) so the battery is 49/49 on any checkout, with numbers
-  frozen. Not done: the engine it measures is retired, and the server's pull
-  would carry 16 MB of data it never uses.
+- **`corpusL/` is now in git** (force-added as `corpusO/` was; the operator:
+  "do what you feel would be better"): 32 files, 16 MB, about 5 MB
+  compressed, Bitget 15m candles 16 Jun → 3 Oct 2026 06:30 UTC.
+  - Every checkout now passes 49/49 with no network step, and these numbers
+    are frozen and citable.
+  - The original C463 corpusL (an earlier ~108 days) is gone; its numbers
+    stay in the C463 notes.
+  - Refetching (`omega_fetch_corpus_32.py`) would overwrite this copy:
+    don't, unless a new study needs a new window and says so.
+  - The `.gitignore` line stays, so stray files are not picked up; ignored
+    files are expendable to `git pull`, so an untracked copy on the server
+    cannot block a deploy.
 - **Rebuild:** `python3 omega_fetch_corpus_32.py`, about 90 seconds,
   public Bitget endpoints (`omega_fetch_funding.py` only if `corpusF/` is
   missing; the tracked copy is C464's research data, so don't overwrite it).
