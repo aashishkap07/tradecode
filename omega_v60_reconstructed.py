@@ -1802,6 +1802,18 @@ class _C462Report:
                                           f"fees {_c462_money(_z524['fees'])}", 'paper, Delta vs Binance'])
             except Exception:
                 pass
+            # C527: every account in one total
+            try:
+                _t527 = _c527_total(bot)
+                _p527, _a527 = _t527['plan'], _t527['all']
+                if _a527['n']:
+                    self._pack('TOTAL', [f"planned {_c462_money(_p527['eq'])} of {_c462_money(_p527['start'])} "
+                                         f"({_c462_money(_p527['pnl'], sign=True)})",
+                                         f"all {_a527['n']} accounts {_c462_money(_a527['eq'])} of {_c462_money(_a527['start'])} "
+                                         f"({_c462_money(_a527['pnl'], sign=True)})",
+                                         'paper' if _t527['paper'] else 'book LIVE, the rest paper'])
+            except Exception:
+                pass
             # C488: the portfolio engine's book, one line
             try:
                 if _e488 is not None and _e488.active():
@@ -2366,7 +2378,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C526'
+_OMEGA_VERSION = 'C527'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3119,6 +3131,8 @@ class Config:
         self.C524_XVENUE_RUN_UTC = (0, 30)      # C524: once a day, after the book (00:05), carry (00:10), spot (00:20)
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
+        self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
+        self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
         self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
         self.C488_TOPN_40_FROM = 1000.0
@@ -22389,6 +22403,67 @@ class C510Tournament(_C501Store):
                         eq0=self.eq0, last_obs=self.last_obs, traded=tn, rows=rows)
 
 
+# C527: THE SAVINGS RATE READS ITSELF. Binance's Simple Earn listing is public
+# (no key) and gives the USDT flexible product's floating market APR and its
+# bonus tier (3 Oct 2026: 2.69% market + 4.00% on the first 1,000 USDT = 6.69%).
+# Read every 6 hours (a failure: again in 30 min, and C501_SAVINGS_APR stands
+# in). The bonus tier is per account, so the Savings ledger's idle cash and the
+# spot pot's cash share it: above 1,000 USDT together, the excess earns only the
+# market rate. Off Binance, or with C527_SAVINGS_LIVE False, the config value.
+_C527_EARN_URL = 'https://www.binance.com/bapi/earn/v1/friendly/finance-earn/simple/product/simpleEarnProducts'
+_C527_EARN = {'at': 0.0, 'fail_at': 0.0, 'market': None, 'bonus': 0.0, 'cap': 0.0}
+
+
+def _c527_earn_refresh(now=None):
+    now = now or time.time()
+    E = _C527_EARN
+    if now - E['at'] < 6 * 3600 or now - E['fail_at'] < 1800:
+        return
+    try:
+        r = requests.get(_C527_EARN_URL, params={'asset': 'USDT'}, timeout=12)
+        d = r.json() if r.status_code == 200 else {}
+        for p in (d.get('data') or {}).get('list') or []:
+            if p.get('asset') != 'USDT':
+                continue
+            for x in p.get('productDetailList') or []:
+                if x.get('productType') != 'LENDING_FLEXIBLE' or x.get('status', 'ENABLE') != 'ENABLE':
+                    continue
+                m = float(x['marketApr'])
+                t = sorted(x.get('apyTierOption') or [], key=lambda y: float(y.get('beginAmount') or 0))
+                bonus, cap = (float(t[0]['ratio']), float(t[0]['endAmount'])) if t else (0.0, 0.0)
+                if 0.0 <= m < 0.5 and 0.0 <= bonus < 0.5:
+                    old = E['market'], E['bonus']
+                    E.update(at=now, market=m, bonus=bonus, cap=cap)
+                    if old[0] is None or abs(m - old[0]) >= 0.001 or bonus != old[1]:
+                        logger.info(f"   \U0001f3e6 C527 Binance Flexible Savings USDT: {100 * (m + bonus):.2f}% = {100 * m:.2f}% market"
+                                    + (f" + {100 * bonus:.2f}% on the first {cap:,.0f} USDT" if bonus else '') + " (read every 6 h)")
+                    return
+        raise ValueError('no USDT flexible product in the listing')
+    except Exception as ex:
+        E['fail_at'] = now
+        logger.warning(f"⚠️ C527 Binance Savings rate not read ({type(ex).__name__}) -- C501_SAVINGS_APR stands in; again in 30 min")
+
+
+def _c527_savings_apr(bot, cfg):
+    """the rate idle cash earns now: Binance's own (market + the bonus on the account's first `cap` USDT,
+    shared by the Savings ledger's idle cash and the spot pot's cash), or C501_SAVINGS_APR"""
+    base = float(getattr(cfg, 'C501_SAVINGS_APR', 0.0763))
+    E = _C527_EARN
+    if _c516_venue(cfg) != 'binance' or not getattr(cfg, 'C527_SAVINGS_LIVE', True) or E['market'] is None:
+        return base
+    sv, sp = getattr(bot, 'c501v', None), getattr(bot, 'c501s', None)
+    held = 0.0
+    try:
+        if sv is not None and sv.active():
+            held += max(0.0, float(sv.idle or 0.0))
+        if sp is not None and sp.active():
+            held += max(0.0, float(sp.cash or 0.0))
+    except Exception:
+        pass
+    share = 1.0 if E['cap'] <= 0 or held <= E['cap'] else E['cap'] / held
+    return E['market'] + E['bonus'] * share
+
+
 class C501Savings(_C501Store):
     """F2: IDLE CASH IN SAVINGS, a paper ledger that never moves money.
 
@@ -22396,8 +22471,8 @@ class C501Savings(_C501Store):
     Every minute: reserve = locked margin + the dial's month budget (dial% of
     marked equity) + a 5% buffer -- self-adjusting, so more margin or a higher
     dial keeps more in futures -- and idle = marked equity - reserve. Idle
-    cash accrues the Flexible Savings APR (C501_SAVINGS_APR: 7.63% on 28 Sep
-    2026). The account's equity, sizing and guard are untouched: this is what
+    cash accrues the Flexible Savings APR: on Binance the venue's own floating
+    rate, read every 6 hours (C527); otherwise C501_SAVINGS_APR. The account's equity, sizing and guard are untouched: this is what
     the live version (pending #14) would add."""
 
     STATE_FILE = 'c501_savings.json'
@@ -22419,7 +22494,7 @@ class C501Savings(_C501Store):
         return bool(getattr(self.cfg, 'C501_SAVINGS', True))
 
     def apr(self):
-        return float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763))
+        return _c527_savings_apr(self.bot, self.cfg)             # C527: Binance's own rate when it can be read
 
     def reset(self, save=True):
         with getattr(self, '_lock', threading.RLock()):
@@ -22470,7 +22545,9 @@ class C501Savings(_C501Store):
                         eq=round(self.eq, 2), locked=round(self.locked, 2), reserve=round(self.reserve, 2),
                         idle=round(self.idle, 2), idle_pct=round(100.0 * self.idle / self.eq, 1) if self.eq else 0.0,
                         interest=round(self.interest, 4), days=round(days, 2),
-                        month_est=round(self.idle * self.apr() / 12.0, 2))
+                        month_est=round(self.idle * self.apr() / 12.0, 2),
+                        apr_live=_C527_EARN['market'] is not None and _c516_venue(self.cfg) == 'binance'
+                        and bool(getattr(self.cfg, 'C527_SAVINGS_LIVE', True)))
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -23157,7 +23234,7 @@ class C501Spot(_C501Store):
         with self._lock:                                  # the cash earns Savings, every tick
             if self._last_ts and self.cash > 0:
                 dt_ = max(0.0, min(now - self._last_ts, 86400.0))
-                gain = self.cash * float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)) * dt_ / (365.0 * 86400.0)
+                gain = self.cash * _c527_savings_apr(self.bot, self.cfg) * dt_ / (365.0 * 86400.0)   # C527
                 self.cash += gain
                 self.interest += gain
             self._last_ts = now
@@ -23172,7 +23249,7 @@ class C501Spot(_C501Store):
                 st = self.status()
                 logger.info(f"   \U0001fa99 C501 spot pot (paper) {self.last_run}: ${st['usd']:.2f} ({st['pct']:+.2f}%) | "
                             f"{st['n']} held, {st['invested_pct']:.0f}% invested, cash ${st['cash']:.2f} earning "
-                            f"{100 * float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)):.2f}% | {n} trades today"
+                            f"{100 * _c527_savings_apr(self.bot, self.cfg):.2f}% | {n} trades today"
                             f"{' | no spot pair: ' + ','.join(self.info['no_spot']) if self.info.get('no_spot') else ''}"
                             f" [{time.time() - t0:.0f}s]")
                 # C506: what it holds, coin by coin. On 29 Sep the log said "16
@@ -23207,7 +23284,7 @@ class C501Spot(_C501Store):
                         info=self.info, record=_c490_record(x),
                         venue=_c516_name(self.cfg), fee_pct=round(100 * float(getattr(self.cfg, 'C501_SPOT_FEE', 0.0008)), 3),
                         tds=round(self.tds, 4), tds_pct=round(100 * float(getattr(self.cfg, 'C501_SPOT_TDS', 0.0) or 0.0), 2),
-                        apr=round(float(getattr(self.cfg, 'C501_SAVINGS_APR', 0.0763)), 4))
+                        apr=round(_c527_savings_apr(self.bot, self.cfg), 4))
 
 
 _C524_COST_B = 0.0005 + 0.0002          # Binance taker 0.05% + 0.02% half-spread
@@ -23492,6 +23569,238 @@ class C524CrossVenue(_C501Store):
                         record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)))
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# C527: EVERY ACCOUNT IN ONE TOTAL, AS IF IT WERE LIVE
+# ═══════════════════════════════════════════════════════════════════════════
+# The operator asked for the total equity and net P&L of everything, now. Each
+# ledger already marks itself; this adds them up, at prices the bot already
+# holds (no extra API call):
+#   * the book: marked equity (its exit fee included, as on its panel);
+#   * Savings: the interest on the book's idle cash (an add-on to the book);
+#   * the spot pot, the Delta book: their own marked equity;
+#   * carry and cross-venue: their daily mark plus the price move since, from
+#     Binance's perp marks, the spot pot's spot book and Delta's tickers (each
+#     only when under 15 minutes old), plus the funding SETTLED since their run
+#     and not yet booked (C527Pending reads it once an hour; each ledger still
+#     books it itself at its next run, and the reading is dropped when it does).
+# Two totals: the planned money (the book's $500 with Savings, and the spot
+# pot's $250), and every paper account as if each were funded. BFUSD is an
+# alternative to Savings (the same wallet), so it is shown, not added. The
+# intraday shadow and the tournament are experiments on the book's own
+# prices and are left out. TDS withheld is creditable tax, shown separately.
+_C527_FRESH_S = 900.0
+
+
+class C527Pending:
+    """The funding SETTLED since the carry and cross-venue ledgers' daily run,
+    and not yet booked (each books it at its next run). Shown in the C527 total
+    so that 'now' includes it; neither ledger is changed. Once an hour, a few
+    minutes after the settlements: one Binance call per settlement hour (every
+    coin's settlements in that hour, cached), and one Delta call per
+    cross-venue pair (FUNDING:<SYM>, the record at T = the rate settled at T,
+    C523). The same windows and arithmetic as the ledgers: carry (marked, now],
+    a short perp receives rate x quantity x mark; cross-venue [since, now],
+    each leg pays rate x its notional at the mark. Its tick also refreshes
+    Binance's Savings rate (_c527_earn_refresh, every 6 hours)."""
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = self._fail_at = 0.0
+        self.at = 0.0
+        self.carry = self.xvenue = 0.0
+        self.n_carry = self.n_xvenue = 0
+        self.sig = (None, None)         # what each ledger held when read: a run, reset or new entry voids it
+        self._bh = {}                   # settlement hour (ms) -> {raw symbol: rate}
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C527_PENDING', True)) and _c516_venue(self.cfg) == 'binance'
+
+    def _sigs(self):
+        """each ledger's positions and their booked-to points"""
+        ca, xv = getattr(self.bot, 'c490', None), getattr(self.bot, 'c524x', None)
+        a = tuple(sorted((k, int(p['marked'])) for k, p in (getattr(ca, 'pos', None) or {}).items()))
+        b = tuple(sorted((k, int(p['fund_from'])) for k, p in (getattr(xv, 'pairs', None) or {}).items()))
+        return a, b
+
+    def due(self, now):
+        if now - self._fail_at < 600:
+            return False
+        h = now // 3600 * 3600
+        return self.at < h + 180 <= now or self.sig != self._sigs()
+
+    def _binance(self, since_ms, now_ms):
+        """{raw: [(t_ms, rate)]} for every settlement hour in [since, now], one call per hour (cached)"""
+        h0 = max(int(since_ms) // 3600000 * 3600000, (int(now_ms) // 3600000 - 48) * 3600000)
+        for h in range(h0, int(now_ms) - 180000, 3600000):        # an hour is cached once 3 minutes old
+            if h in self._bh:
+                continue
+            d = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate', {'startTime': h - 60000, 'endTime': h + 60000, 'limit': 1000})
+            if not isinstance(d, list):
+                raise RuntimeError('Binance funding unavailable')
+            self._bh[h] = {str(x.get('symbol', '')): (int(x['fundingTime']), float(x['fundingRate'])) for x in d}
+        for h in [h for h in self._bh if h < now_ms - 72 * 3600000]:
+            del self._bh[h]
+        out = {}
+        for h in sorted(self._bh):
+            for raw, (t, r) in self._bh[h].items():
+                out.setdefault(raw, []).append((t, r))
+        return out
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 60:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)):
+            return
+        if getattr(self.cfg, 'C527_SAVINGS_LIVE', True):
+            _c527_earn_refresh(now)                              # the Savings rate, at most every 6 hours
+        if not self.due(now):
+            return
+        e, ca, xv = self.bot.c488, getattr(self.bot, 'c490', None), getattr(self.bot, 'c524x', None)
+        de = getattr(self.bot, 'c521d', None)
+        now_ms = int(now * 1000)
+        try:
+            cpos = {k: dict(p) for k, p in ca.pos.items()} if ca is not None and ca.active() else {}
+            xpairs = {k: dict(p) for k, p in xv.pairs.items()} if xv is not None and xv.active() else {}
+            since = [p['marked'] + 1 for p in cpos.values()] + [p['fund_from'] for p in xpairs.values()]
+            sig = self._sigs()
+            if not since:
+                with self._lock:
+                    self.carry = self.xvenue = 0.0
+                    self.n_carry = self.n_xvenue = 0
+                    self.at, self.sig = now, sig
+                return
+            # the reads happen outside the lock the page waits on
+            bf = self._binance(min(since), now_ms)
+            c_sum = 0.0
+            for r, p in cpos.items():
+                p1 = e.mark(C488Engine._ccxt(r)) or p['p']
+                c_sum += sum(x for t, x in bf.get(r, []) if p['marked'] < t <= now_ms) * p['qp'] * p1
+            dm = {s: float(x.get('mark') or 0.0) for s, x in (getattr(de, 'marks', None) or {}).items()}
+
+            def one(c):
+                p = xpairs[c]
+                st = int(p['fund_from']) // 1000
+                return c, _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + p['d_sym'],
+                                                           'start': st, 'end': int(now)})
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                got = dict(pool.map(one, list(xpairs)))
+            x_sum = 0.0
+            for c, p in xpairs.items():
+                rec = got.get(c)
+                if rec is None:
+                    raise RuntimeError(f'Delta funding for {c} unavailable')
+                dpx = dm.get(p['d_sym']) or p['d_px']
+                bpx = e.mark(C488Engine._ccxt(c + 'USDT')) or p['b_px']
+                pr = (getattr(xv, 'prods', None) or {}).get(c) or (getattr(de, 'prods', None) or {}).get(c)
+                if not pr:
+                    raise RuntimeError(f'no Delta product for {c} yet')
+                hrs = max(1, int(pr.get('iv') or 28800) // 3600)
+                st = int(p['fund_from']) // 1000
+                x_sum += sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in rec
+                             if (int(x['time']) // 3600) % hrs == 0 and st <= int(x['time']) <= now)
+                x_sum += sum(-p['b_qty'] * bpx * r for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
+            with self._lock:
+                self.carry, self.xvenue, self.n_carry, self.n_xvenue, self.at = c_sum, x_sum, len(cpos), len(xpairs), now
+                self.sig = sig
+        except Exception as ex:
+            self._fail_at = now
+            logger.warning(f"⚠️ C527 funding since the daily runs not read ({type(ex).__name__}: {ex}) -- again in 10 min")
+
+    def for_total(self):
+        """(carry, cross-venue) funding not yet booked; None where the ledger has changed since the read"""
+        with self._lock:
+            if not self.at:
+                return None, None
+            a, b = self._sigs()
+            return (self.carry if self.sig[0] == a else None), (self.xvenue if self.sig[1] == b else None)
+
+
+def _c527_total(bot, now=None):
+    now = now or time.time()
+    rows = []
+
+    def add(key, label, start, eq, plan, how):
+        rows.append(dict(key=key, label=label, start=round(float(start), 2), eq=round(float(eq), 2),
+                         pnl=round(float(eq) - float(start), 2),
+                         pct=round(100 * (float(eq) / float(start) - 1), 2) if start else None, plan=plan, how=how))
+
+    e = getattr(bot, 'c488', None)
+    if e is not None and e.active() and not getattr(e, 'venue_block', False):
+        born = getattr(e, 'born', None) or {}
+        start = float(born.get('eq') or 0.0)
+        if start > 0:
+            add('book', 'Main book (futures)', start, e.live_equity(), True, 'live marks, exit fee included')
+    sv = getattr(bot, 'c501v', None)
+    if sv is not None and sv.active() and sv.last_ts:
+        add('savings', "Savings on the book's idle cash", 0.0, sv.interest, True, 'interest so far, every minute')
+    sp = getattr(bot, 'c501s', None)
+    if sp is not None and sp.active() and sp.start_equity:
+        st = sp.status()
+        add('spot', 'Spot pot', st['start_equity'], st['usd'], True, 'live spot prices')
+    bk = {}
+    if sp is not None and getattr(sp, 'bk', None) and now - float(getattr(sp, '_book_at', 0.0) or 0.0) < _C527_FRESH_S:
+        bk = {k: (b + a) / 2.0 for k, (b, a) in sp.bk.items() if b > 0 and a > 0}
+    perp_ok = e is not None and getattr(e, 'marks', None) and now - float(getattr(e, '_marks_at', 0.0) or 0.0) < _C527_FRESH_S
+    pc, px = (None, None)
+    pend = getattr(bot, 'c527p', None)
+    if pend is not None and pend.active():
+        pc, px = pend.for_total()
+    ca = getattr(bot, 'c490', None)
+    if ca is not None and ca.active() and ca.start_equity and ca.last_run:
+        mv, n = 0.0, 0
+        with ca._lock:
+            for r, p in ca.pos.items():
+                s1, p1 = bk.get(p['spot'], 0.0), e.mark(C488Engine._ccxt(r)) if perp_ok else 0.0
+                if s1 > 0 and p1 > 0:
+                    mv += p['qs'] * (s1 - p['s']) - p['qp'] * (p1 - p['p'])
+                    n += 1
+            eq = ca.eq + mv + (pc or 0.0)
+        add('carry', 'Funding carry (spot + perp)', ca.start_equity, eq, False,
+            f"daily mark + prices since ({n} of {len(ca.pos)})"
+            + (f" + funding settled since, not yet booked {'+' if pc >= 0 else '-'}${abs(pc):.2f}" if pc is not None
+               else "; funding since the daily run joins at the next hour"))
+    de = getattr(bot, 'c521d', None)
+    if de is not None and de.active() and de.start_equity:
+        with de._lock:
+            add('delta', 'Same book on Delta India', de.start_equity, de.equity(), False, 'Delta marks, every 5 min')
+    xv = getattr(bot, 'c524x', None)
+    if xv is not None and xv.active() and xv.start_equity:
+        dm = {}
+        if de is not None and de.marks and now - float(getattr(de, '_marks_at', 0.0) or 0.0) < _C527_FRESH_S:
+            dm = {s: float(x.get('mark') or 0.0) for s, x in de.marks.items()}
+        mv, n = 0.0, 0
+        with xv._lock:
+            for c, p in xv.pairs.items():
+                dpx = dm.get(p['d_sym'], 0.0)
+                bpx = e.mark(C488Engine._ccxt(c + 'USDT')) if perp_ok else 0.0
+                if dpx > 0 and bpx > 0:
+                    mv += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
+                    n += 1
+            eq = xv.eq + mv + (px or 0.0)
+        add('xvenue', 'Delta vs Binance funding gap', xv.start_equity, eq, False,
+            f"daily mark + prices since ({n} of {len(xv.pairs)})"
+            + (f" + funding settled since, not yet booked {'+' if px >= 0 else '-'}${abs(px):.2f}" if px is not None
+               else "; funding since the daily run joins at the next hour"))
+
+    def total(sel):
+        s0 = sum(r['start'] for r in sel)
+        s1 = sum(r['eq'] for r in sel)
+        return dict(start=round(s0, 2), eq=round(s1, 2), pnl=round(s1 - s0, 2),
+                    pct=round(100 * (s1 / s0 - 1), 2) if s0 else None, n=len(sel))
+    out = dict(rows=rows, plan=total([r for r in rows if r['plan']]), all=total(rows), at=now,
+               paper=bool(getattr(bot.cfg, 'PAPER_MODE', True)))
+    bf = getattr(bot, 'c521b', None)
+    if bf is not None and bf.active() and bf.last_ts:
+        out['bfusd'] = dict(interest=round(bf.interest, 4), tds=round(bf.tds, 2))
+    out['tds'] = round(float(getattr(sp, 'tds', 0.0) or 0.0), 4) if sp is not None else 0.0
+    out['left_out'] = [x for x, a in (('intraday shadow', 'c489'), ('rule tournament', 'c510t'))
+                       if getattr(bot, a, None) is not None]
+    return out
+
+
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
@@ -23508,6 +23817,7 @@ class TradingBot:
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance funding spread, both legs (paper)
+        self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
         self.ta._bot_ref = self  # C15: for OHLCV cache access
@@ -24504,7 +24814,8 @@ class TradingBot:
                         self.c490.tick()
                     except Exception as _e490:
                         logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
-                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d, self.c524x):  # C501/C521/C524: paper
+                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d, self.c524x,
+                                  self.c527p):  # C501/C521/C524: paper; C527: their unbooked funding
                         try:
                             _c501.tick()
                         except Exception as _e501:
@@ -42701,6 +43012,10 @@ class RemoteControl:
                                 _out469['c524'] = bot_ref.c524x.status()
                         except Exception as _x524:
                             _out469['c524'] = {'error': f"{type(_x524).__name__}: {_x524}"}
+                        try:      # C527: every account in one total
+                            _out469['c527'] = _c527_total(bot_ref)
+                        except Exception as _x527:
+                            _out469['c527'] = {'error': f"{type(_x527).__name__}: {_x527}"}
                         try:      # C510: the rule tournament
                             _t510 = getattr(bot_ref, 'c510t', None)
                             if _t510 is not None:
@@ -42922,6 +43237,8 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
      you might have to act on, and it was below the fold on a phone. -->
 <!-- C510: one place that says what trades, what is only paper, and what is off -->
 <section><h2>What is running</h2><div id="running" class="muted">&mdash;</div></section>
+<!-- C527: every account in one total, as if it were live -->
+<section><h2>All accounts <span class="muted">(as if live)</span></h2><div id="alltotal" class="muted">&mdash;</div></section>
 <section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
 <!-- C488: the portfolio engine's book -- the daily trend + momentum + carry
      positions it holds for days to weeks, separate from any intraday position. -->
@@ -43224,7 +43541,7 @@ async function pull(){
         if(sv){
           q('savings').innerHTML=sv.mode!=='paper'?'<span class="muted">off</span>':
             '<div class="s muted">what the account\u2019s idle cash would earn in Simple Earn Flexible at '+(100*sv.apr).toFixed(2)+
-            '% \u2014 reserve = margin + the dial\u2019s month budget + 5%, recomputed every minute \u00b7 paper: nothing is moved</div>'+
+            '%'+(sv.apr_live?' (Binance\u2019s rate now, read every 6 h)':' (set by hand)')+' \u2014 reserve = margin + the dial\u2019s month budget + 5%, recomputed every minute \u00b7 paper: nothing is moved</div>'+
             '<div style="margin:4px 0">idle <b>'+money(sv.idle)+'</b> ('+sv.idle_pct+'% of '+money(sv.eq)+') \u00b7 reserve '+money(sv.reserve)+
             ' \u00b7 earned <span class="good">+'+money(sv.interest)+'</span> in '+sv.days+'d \u00b7 about '+money(sv.month_est)+'/month</div>';
         }
@@ -43283,6 +43600,28 @@ async function pull(){
           (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+' · '+p.days+'d</span></div>'});
         if((xi.under_one_contract||[]).length)xh+='<div class="s muted">skipped (one Delta contract is more than a leg): '+xi.under_one_contract.join(', ')+'</div>';
         q('xvenue').innerHTML=xh;
+      }
+    }
+    /* C527: every account in one total, as if it were live */
+    var tt7=d.c527;
+    if(tt7){
+      if(tt7.error){q('alltotal').innerHTML='<span class="'+cls(-1)+'">unavailable: '+tt7.error+'</span>'}
+      else if(!(tt7.rows||[]).length){q('alltotal').innerHTML='<span class="muted">no account has started yet</span>'}
+      else{
+        var pc7=function(v){return v===null||v===undefined?'':' ('+(v>=0?'+':'')+Number(v).toFixed(2)+'%)'};
+        var th7='<div class="s muted">'+(tt7.paper?'every account here is paper: what it would be worth if each were real money, at prices now':
+          'the book is LIVE money; the rest are paper')+'</div>';
+        [['planned money (the book with Savings, and the spot pot)',tt7.plan],['every account, as if each were funded',tt7.all]].forEach(function(z){
+          th7+='<div style="margin:4px 0"><b>'+money(z[1].eq)+'</b> <span class="muted">of '+money(z[1].start)+'</span> <span class="'+cls(z[1].pnl)+'">'+sgn(z[1].pnl)+pc7(z[1].pct)+
+            '</span> <span class="muted">· '+z[0]+'</span></div>'});
+        tt7.rows.forEach(function(r){th7+='<div class="s">'+r.label+' <b>'+money(r.eq)+'</b> <span class="'+cls(r.pnl)+'">'+sgn(r.pnl)+pc7(r.pct)+'</span> <span class="muted">· '+
+          (r.plan?'planned · ':'')+r.how+'</span></div>'});
+        var ex7=[];
+        if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
+        if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');
+        if((tt7.left_out||[]).length)ex7.push('left out (experiments on the same prices): '+tt7.left_out.join(', '));
+        if(ex7.length)th7+='<div class="s muted">'+ex7.join(' · ')+'</div>';
+        q('alltotal').innerHTML=th7;
       }
     }
     /* C510: what is running -- one line each: what trades, what is paper, what is off */

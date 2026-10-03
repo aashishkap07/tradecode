@@ -220,7 +220,7 @@ ok("status: equity, pairs, funding, price P&L, fees, the record", all(k in st fo
 x.save(); x2 = om.C524CrossVenue(xb)
 ok("saved and loaded", x2.eq == x.eq and set(x2.pairs) == set(x.pairs) and x2.trades == x.trades)
 ok("wired: created, ticked with the paper ledgers, reset on a fresh start, in the API, the status block, the boot line, "
-   "the hourly log push", all(t in SRC for t in ("self.c524x = C524CrossVenue(self)", "self.c521d, self.c524x)",
+   "the hourly log push", all(t in SRC for t in ("self.c524x = C524CrossVenue(self)", "self.c521d, self.c524x",
                                                  "bot.c524x.reset()", "_out469['c524']", "self._pack('XVENUE'",
                                                  "Delta vs Binance funding spread, both legs"))
    and 'c524_xvenue.json' in open(os.path.join(REPO, 'deploy', 'omega-logpush.sh')).read())

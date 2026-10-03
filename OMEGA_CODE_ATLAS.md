@@ -5,6 +5,18 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 **Deployed state (checked in the server's own logs):**
+- **C527 pushed 3 Oct (not yet deployed; C526 rides with it).** Every account
+  in one total, "as if live" (`reports/2026-10-03_how_the_bot_works.md`):
+  - at 12:02 IST: planned money (book + Savings + spot pot) **$749.33 of $750
+    (−$0.67)**; every paper account **$2,248.00 of $2,249.83 (−$1.83)**;
+  - costs so far ≈ $2.55 (fees, the book's exit fee, TDS), so the positions
+    have earned about +$0.72 before costs;
+  - cross-venue: +$0.2957 of funding settled 00:00–06:21 UTC (2 of the
+    day's 6), not yet booked, about 5%/month before costs. CROSS's spread
+    is 101 → 65%/yr since entry.
+  - The Savings rate now reads Binance's public listing (6.69% = 2.69%
+    market + 4% bonus on the first 1,000 USDT).
+- **C526 pushed, not deployed** (cosmetic: "new" instead of "+0.00%").
 - **C520 since 1 Oct 11:16 IST (Binance paper); the first C519 rebalance (2 Oct
   05:35 IST) verified** (`reports/2026-10-02_round14_bfusd_delta.md` §1):
   - the plan names "ETH +11.16 < $20, LINK +6.92 < $20"; 11 targeted = 11 held,
@@ -372,11 +384,106 @@
 | 14 | **Idle cash to Simple Earn (live only)** | build with the live switch | At 0.5× gross and 5× leverage the book locks about 10% of equity as margin. Keeping about 30–35% in the futures wallet covers margin plus the whole month budget; the rest could earn Flexible Savings (7.63% APR on 28 Sep), about **+0.4%/month on the account** with no change to the strategy (**review #1, Sep paper: average idle 66–70% of equity, +0.42–0.45%/month at 7.63%; on Binance at $500, 62% idle at 6.69% ≈ +0.34%/month**). Needs: equity = futures + savings for sizing; an automatic top-up/redeem rule; Bitget v2 earn API (`/api/v2/earn/savings/assets`, `subscribe`, `redeem`). Paper mode doesn't need it. **C521: BFUSD (paper) is the better live option on Binance:** the WHOLE futures wallet earns (7.66% base) while it trades, about $3.19/month at $500 vs Savings' $1.72 on idle cash; 1% TDS once (creditable), paid back in ~3 months. Risks: not a stablecoin; Binance's hedged-strategy backing; CA on its tax. |
 | 15 | **The spot pot (S1): a second $250 in spot** | paper from C501; live only when the operator decides | Admitted in round 8 (`research/c501_results.txt`): long or flat trend on the top 20, 20% vol set point, never above 100% invested, cash in Savings, 0.08% BGB fee. 2020–26: +2.20%/month, max DD 27%, t 2.19, 4/4 quarters, 2025–26 +14%/yr excess. It runs in the bot as a **separate $250 paper pot** (`C501Spot`, daily 00:20 UTC, live spot bid/ask). **To go live it needs:** a spot order path with read-back (as C492 did for futures); the second $250 moved to the spot wallet; a small BGB balance with "pay fees in BGB" enabled; the tax check (#8). Its first run on the server (28 Sep) held BNB, BTC and ETH, 10% invested. **Correction (C502):** that was not "only 3 coins trending": all 20 were trending up and the rule wanted 35.8%. The $6 futures floor dropped 17. **C502** uses spot's real minimums ($2 position floor, $1 order): +2.59%/month, max DD 29%, t 2.47, 3/4 quarters, holdout +13.6%/yr. On 28 Sep's weights it holds 18 coins, 34.3% invested. **On Binance (1 Oct): spot's minimum is $5, so the floor is $6** (`_C516_VENUE_DEFAULTS`): of the rule's 20 targets (33.2% invested) only BNB $9.71, ETH $9.61, SOL $6.54 clear it (LINK $5.96), 10.3% invested; on Bitget's $2 floor 16 would be held. At $250 the Binance pot is a thin copy of the rule, and India's 1% TDS on each sale weighs on it too: it stays paper. |
 | 16 | **The allostatic shadow (K4)** | running from C501; decided at the December refresh (#11) | `C501Allostatic` scores the running sizing and K4's (EWMA, 10-day half-life) identically at every rebalance, a paper A/B that never trades. Round 7: same return, worst month −9.7% vs −15.5%. It replaces the running sizing only if the December re-test on NEW data passes (Rule: pre-registered bars). On 28 Sep K4 wanted 0.66x vs the running 0.40x: it adjusts both ways. **Review #1 (Sep):** this ledger scored 0 days (reset 29 Sep; it rests while the tournament runs, C511). The tournament's K4 row, day 1 (30 Sep): +1.82% vs N2+N3 +1.17% at 0.71× vs 0.49×; vol and drawdown need ≥ 20 days. |
-| 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. **Binance (the venue since 1 Oct):** read it from the public listing `https://www.binance.com/bapi/earn/v1/friendly/finance-earn/simple/product/simpleEarnProducts?asset=USDT` (no key; answers this sandbox). 1 Oct: **6.69%** = 4.00% bonus on the first 1,000 USDT + 2.69% market (floats daily) → C520 sets 0.0669. Above 1,000 USDT idle only the market rate is paid (from about $1,600 of equity; not modelled). **C521: also `C521_BFUSD_APY`** (7.66% base, Sep 2026): no public API (the page renders it in the browser), so read it in the app monthly. |
+| 17 | **Keep the Savings APR current** | monthly (the review reminder) | `C501_SAVINGS_APR` = 7.63% (28 Sep 2026) drives the paper ledgers. Check Bitget Simple Earn Flexible USDT each month and update it. Live mode would read it from `/api/v2/earn/savings/product`. **Binance (the venue since 1 Oct):** read it from the public listing `https://www.binance.com/bapi/earn/v1/friendly/finance-earn/simple/product/simpleEarnProducts?asset=USDT` (no key; answers this sandbox). 1 Oct: **6.69%** = 4.00% bonus on the first 1,000 USDT + 2.69% market (floats daily) → C520 sets 0.0669. Above 1,000 USDT idle only the market rate is paid (from about $1,600 of equity; ~~not modelled~~ **modelled from C527**). **C527: the Savings rate now reads this listing itself every 6 hours** (market + the 4% tier on the first 1,000 USDT, shared with the spot pot's cash); `C501_SAVINGS_APR` is only the fallback. **C521: also `C521_BFUSD_APY`** (7.66% base, Sep 2026): no public API (the page renders it in the browser), so read it in the app monthly. |
 | 18 | **ETH lumpiness at $250** (Bitget) / **minimums at $500** (Binance) | resolves with size | ETH's smallest order is 0.01 ETH ≈ $27, against targets of $17–31, so the book holds 0 or 1 step. This is known tracking error and costs cents. It fades as equity grows. **On Binance at $500 (1 Oct):** BTC's step 0.001 = $83.65 against a $63.10 target (+33%); ETH +$11.12 and LINK +$6.90 sit under their $20 minimum (C519 leaves them out, as the research did); gross 0.667× held vs 0.652× planned. |
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧮 2026-10-03 — C527: EVERY ACCOUNT IN ONE TOTAL; THE SAVINGS RATE READS ITSELF; A LOGIC AUDIT
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**Report:** `reports/2026-10-03_how_the_bot_works.md`. It covers:
+- a plain-English tour with analogies;
+- the total as if live;
+- a 15-item reasoning audit and the self-adjusting map;
+- non-trading 2–4%/month research.
+
+**The operator asked:**
+- "explain in simple layman English with analogies what our bot is doing";
+- "analyse for logical inconsistencies / fallacies / wrong reasoning, and
+  confirm the relativistic & self-adjusting framework";
+- "the total equity as if live & the real-time net P&L from all my
+  investments";
+- "methods other than trading for 2–4% a month using running code".
+
+**C527 (code):**
+1. **`_c527_total(bot)`**, in the API as `c527`, the status block as
+   `TOTAL`, and the page as "All accounts (as if live)". Per account:
+   - book = `live_equity()` (exit fee in), start = `born['eq']`;
+   - Savings interest (start 0);
+   - spot pot and Delta book at their own marks;
+   - carry and cross-venue = the daily mark + the price move since, from
+     prices < 15 min old (`e.marks`, `c501s.bk`, `c521d.marks`; stale →
+     the daily mark alone), + the unbooked funding from `C527Pending`.
+   - Totals: `plan` (book + Savings + spot pot, start $750) and `all`
+     (+ carry, Delta, cross-venue).
+   - BFUSD is shown, not added; the shadow and the tournament are named in
+     `left_out`; the spot pot's TDS is reported.
+2. **`C527Pending`**, ticked with the paper ledgers. Once an hour (3 min
+   after the hour) or when a ledger's holdings change:
+   - Binance `/fapi/v1/fundingRate` bulk, one call per settlement hour, cached
+     72 h; an hour is cached once 3 min old;
+   - Delta `FUNDING:<SYM>` per cross-venue pair: about 11 calls/hour (17 on
+     a cold start).
+   - Same windows as the ledgers: carry (marked, now]; cross-venue
+     [fund_from, now], Delta filtered to its interval.
+   - A signature of (position, booked-to) per ledger voids a reading once
+     that ledger books it, so nothing is counted twice. Failure: retry in
+     10 min. `C527_PENDING`.
+   - **Real data, 3 Oct 06:21 UTC:** carry +$0.0087, cross-venue +$0.2957,
+     identical to an independent per-coin calculation.
+3. **The Savings rate reads itself (`_c527_earn_refresh` /
+   `_c527_savings_apr`):**
+   - source: Binance's public Simple Earn listing (no key), every 6 h from
+     C527Pending's tick; on failure it retries in 30 min and keeps the last
+     good rate (`C501_SAVINGS_APR` before any read);
+   - the bonus tier (4% on the first 1,000 USDT) is shared by Savings' idle
+     cash and the spot pot's cash; above 1,000 together, the excess earns
+     the market rate only (#17's "not modelled" is now modelled);
+   - used by `C501Savings.apr()` and the spot pot's cash interest; the panel
+     says "Binance's rate now" or "set by hand";
+   - off Binance or with `C527_SAVINGS_LIVE` False: the config value.
+   - Real read on 3 Oct: 2.690624% market + 4% = 6.69%.
+4. **Version C527.**
+   - `omega_c527_test.py`, 41 checks: the server's own ledgers
+     (`research/c527_snapshot/`, logs push 05:47 UTC) at one fixed set of
+     real prices (06:24 UTC) vs an independent calculation; the pending
+     windows and call counts; the Savings tier and fallbacks; the TOTAL row;
+     the page (Chromium).
+   - `omega_c524_test.py`: the tick-tuple pin relaxed (`self.c527p` added).
+   - **Battery 48/49** (exit: `corpusL/` missing, as before).
+
+**Audit findings (no new ledger bug):**
+- 2–4% "every month" vs on average: monthly sd ≈ 7.7% at 26.7% vol, so
+  about 4 months in 10 lose even as researched.
+- "Equal risk" means each sleeve at 1 / its own 60-day vol, with
+  correlation ignored. Gross today: C1 0.23, C2 0.34, C3 0.47.
+- The vol target reacts after jumps; correlations rise in crashes.
+- Cross-venue risks: margin on both venues, delistings, the India-only gap
+  closing, two-venue tax, capacity.
+- Carry: fees $0.95 vs funding $0.17; about 9 days to recover at $0.10/day.
+- The Delta book is the same strategy: kept out of "planned".
+- BFUSD is still hand-set (no public source): update monthly (#17).
+
+**Non-trading 2–4% (sourced):**
+- FD 6.8–8% (0.55–0.67%/mo); LenDenClub ~8.5–9%; ETH staking 2.8–3.8%;
+  sUSDe ~4–4.7%;
+- GPU rental: RTX 4090 ~$63–74/month net (needs the hardware, depreciates,
+  $0.12–0.13/h median);
+- Grass: pocket money; MEV: a professionals' speed race;
+- USDT's Indian premium 7–10%: **legal risk** (ED raids on the remittance
+  chains), 1% TDS;
+- only the Delta-vs-Binance gap reaches the range (on paper).
+
+**Open:**
+- deploy C527 (pull + restart; no logpush change);
+- watch the cross-venue ledger's first full funding day (00:30 UTC 4 Oct
+  books 00:00–20:00 UTC 3 Oct);
+- `C521_BFUSD_APY` by hand monthly.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🌐 2026-10-03 — C525 AND ROUND 16: THE C524 SCREENS, MORE VENUES, DELTA OPTIONS
