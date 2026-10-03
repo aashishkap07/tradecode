@@ -71,9 +71,10 @@ px=load_px(); fu=load_fund()
 syms=sorted(set(px)&set(fu))
 print(f"{len(syms)} pairs with both price and funding\n")
 if not syms:      # it used to run on 0 pairs and exit 0: a pass that measured nothing
-    print("needs corpusL/ (15-minute Bitget candles, 32 pairs, about 108 days) and corpusF/ (their funding\n"
-          "history). Neither is kept in git (.gitignore), so a fresh checkout has none. Rebuild them in about 2 minutes:\n"
-          "    python3 omega_fetch_corpus_32.py && python3 omega_fetch_funding.py\n"
+    print("needs corpusL/ (15-minute Bitget candles, 32 pairs, about 108 days). It is not kept in git\n"
+          "(.gitignore), so a fresh checkout has none. Rebuild it in about 90 seconds:\n"
+          "    python3 omega_fetch_corpus_32.py\n"
+          "(corpusF/, the funding history, is in git; if it is missing too: python3 omega_fetch_funding.py)\n"
           "This is missing data, not a code failure: the script measures the old intraday engine, not the book.")
     raise SystemExit(2)
 atr={s:atrs(px[s]) for s in syms}

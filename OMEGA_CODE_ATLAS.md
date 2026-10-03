@@ -463,9 +463,10 @@
   research scripts from C463 (17 Sep). They measure the OLD intraday
   engine's exit and funding rules, assert nothing, and never import the
   bot. They read `corpusL/` (Bitget 15-minute candles, 32 pairs, about 108
-  days) and `corpusF/` (their funding history).
-- **Why it failed:** both folders are in `.gitignore` (about 16 MB), so
-  every fresh checkout lacks them.
+  days); the funding script also reads `corpusF/` (their funding history).
+- **Why it failed:** `corpusL/` is in `.gitignore` (16 MB) and was never
+  force-added, unlike `corpusO/` and `corpusF/` (C463/C464), so every fresh
+  checkout lacks it.
   - The exit script crashed on an empty list.
   - **The funding script "passed" on 0 pairs**: a pass that measured
     nothing, in every battery since.
@@ -474,9 +475,15 @@
     exit 2 (missing data, not a code failure).
   - Both fetchers create their folder (`omega_fetch_corpus_32.py` crashed on
     a fresh checkout).
-- **Rebuild:** `python3 omega_fetch_corpus_32.py && python3
-  omega_fetch_funding.py`, about 2 minutes, public Bitget endpoints. The 3 Oct
-  fetch had 332,400 bars, 16 Jun → 3 Oct 2026, no gaps or duplicates. XRP
+- **Option, the operator's call:** force-add `corpusL/` (16 MB, as
+  `corpusO/` was) so the battery is 49/49 on any checkout, with numbers
+  frozen. Not done: the engine it measures is retired, and the server's pull
+  would carry 16 MB of data it never uses.
+- **Rebuild:** `python3 omega_fetch_corpus_32.py`, about 90 seconds,
+  public Bitget endpoints (`omega_fetch_funding.py` only if `corpusF/` is
+  missing; the tracked copy is C464's research data, so don't overwrite it).
+  The 3 Oct fetch had 332,400 bars, 16 Jun → 3 Oct 2026, no gaps or
+  duplicates. XRP
   and SUI are 200 bars short at the old end: a page retried inside the
   52-page budget.
 - **Results on the fresh data (they confirm C463's verdict on a window
@@ -484,8 +491,9 @@
   - exit geometry: every variant loses after fees (barrier −0.074%/trade,
     t −7.5; with the giveback −0.058%; giveback vs barrier +0.016, t 1.8,
     4/4 splits; C463 had +0.002, t 0.2);
-  - funding (5 Jul → 2 Oct): fading both tails −0.050%/trade, t −1.5,
-    0/4 splits. No edge.
+  - funding (on the tracked `corpusF/`, 19 Jun → 17 Sep): fading both tails
+    −0.060%/trade, t −2.1, 0/4 splits; on a refetched `corpusF/` (5 Jul →
+    2 Oct, not committed) −0.050%, 0/4. No edge either way.
   - The old engine stays retired (shadow only).
 
 
