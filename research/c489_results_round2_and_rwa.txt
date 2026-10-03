@@ -1,0 +1,22 @@
+# C489 round 2 and the RWA check, 2026-09-25
+
+## Harness checks (research/c489_check.py)
+LOOK-AHEAD (cheat) signal    gross   +4161.0%/yr  cost  267.5%/yr  turnover/day 9.16
+random signal                gross      +2.6%/yr  cost  280.6%/yr  turnover/day 9.61
+H2 +z_r24   gross by year: 2021:+53%  2022:+13%  2023:+56%  2024:+25%  2025:+27%  2026:+33%   turnover/day 4.00
+H4 +mk1     gross by year: 2021:+17%  2022:-9%  2023:+37%  2024:+18%  2025:+24%  2026:+17%   turnover/day 7.58
+H3 +flow4   gross by year: 2021:+31%  2022:+7%  2023:+23%  2024:-15%  2025:+5%  2026:+9%   turnover/day 9.28
+
+## Exploration 2021-07 .. 2023-12 (research/c489_explore.py): 24 low-turnover designs
+best: H2 z_r24 enter 0.9 exit 0.5 minhold 4h   net +15.8%/yr Sharpe +0.19 t +0.35 (the only positive-Sharpe designs were H2 variants)
+all Markov and combined-signal designs: negative, t -1.3 to -12.7
+
+## Timing overlay on the C488 book's daily trades (research/c489_overlay.py), exploration window
+no predictor beat random deferral: best +1.26%/yr of equity (t +0.92) vs random +1.63%/yr
+
+## Holdout 2024-01 .. 2026-08, run once
+H2x z_r24 enter 0.9 exit 0.5 minhold 4h   net -121.4%/yr  Sharpe -1.58  t -2.52  quarters+ 0/4   NOT ADMITTED
+
+## Bitget RWA perps, exploratory, ~4-13 months of 1h data, 4h hold, taker 0.16% round trip
+24 contracts (XAU XAG COPPER XPT XPD CL BZ NATGAS SP500 NDX100 SPY QQQ TSLA NVDA AAPL MSFT AMZN META GOOGL COIN MSTR AMD PLTR HOOD):
+24h continuation and 1h reversal: best gross +0.132%/trade (AMD), every contract NET NEGATIVE after costs.
