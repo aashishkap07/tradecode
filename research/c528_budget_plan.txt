@@ -1,0 +1,101 @@
+C528: A $1,000 BUDGET (AT MOST $1,200), ON REAL HISTORY
+
+book data: 656 coins, 2020-01-01 -> 2026-08-31
+
+1. THE BOOK ALONE (traded rule, dial 20%, top 20, Binance minimums, idle cash in Savings), 2020-26
+   size     avg/month  median  geo/month  months>=2%  months<0  worst   max DD
+   $500      +4.78%    +2.80%    +4.46%       54%         29%    -15.8%   37.2%
+   $700      +4.79%    +2.87%    +4.45%       57%         30%    -15.9%   36.9%
+   $1000     +4.76%    +3.28%    +4.41%       56%         32%    -15.8%   36.7%
+   $1200     +4.80%    +3.16%    +4.45%       56%         32%    -15.7%   36.9%
+   $1000 top 40 (the 'auto' width at $1,000): avg +4.06%/month, geo +3.67%, max DD 47.4% -> set C488_TOPN = 20
+   $1000 at dial 30% (vol target 40%, what-if): avg +6.87%/month, months<0 32%, worst -20.7%, max DD 50.6%
+Delta crypto perps 191; listed on Binance USDⓈ-M too: 190
+
+2. THE CROSS-VENUE TRADE ALONE, 2024-10 -> 2026-09 (on its own capital, both venues)
+   as pre-registered    avg +8.04%/month, months>=2% 88%, months<0 0%, worst +0.26%, max DD 0.0%
+   ALL harder at once   avg +5.16%/month, months>=2% 75%, months<0 17%, worst -1.45%, max DD 3.2%
+   tax read B (each leg's gain taxed 31.2%, its losses ignored): pre-registered +97.5%/yr -> -1.4%/yr; ALL +62.6%/yr -> -34.1%/yr
+
+3. SPLITS OF THE BUDGET, the 23 months both exist (2024-10 -> 2026-08), accounts compounding apart
+
+   BACKTESTED: both as simulated
+   book  xvenue  total |  avg/month  median  months>=2%  months<0  worst   max DD | P(12-mo avg >= 2%)  12-mo median  bad year (10%)
+   $1000 $0     $1000 |  +5.82%   +4.81%      70%       22%     -4.7%    4.7% |       99%            +5.57%        +3.43%
+   $700  $300   $1000 |  +6.63%   +5.94%      78%       17%     -1.3%    1.3% |      100%            +6.54%        +4.77%
+   $500  $500   $1000 |  +7.18%   +7.08%      83%        0%     +0.5%    0.0% |      100%            +7.16%        +5.34%
+   $400  $600   $1000 |  +7.38%   +7.85%      91%        0%     +1.0%    0.0% |      100%            +7.40%        +5.48%
+   $0    $1000  $1000 |  +8.14%   +7.96%      87%        0%     +0.3%    0.0% |      100%            +8.35%        +5.76%
+   $600  $600   $1200 |  +7.18%   +7.08%      83%        0%     +0.5%    0.0% |      100%            +7.16%        +5.34%
+   $500  $700   $1200 |  +7.34%   +7.72%      91%        0%     +0.9%    0.0% |      100%            +7.36%        +5.47%
+   $1200 $0     $1200 |  +5.88%   +4.22%      70%       22%     -4.6%    4.6% |       99%            +5.62%        +3.47%
+
+   PLANNING: book mean cut by 1/3; cross-venue = the ALL-harder series
+   book  xvenue  total |  avg/month  median  months>=2%  months<0  worst   max DD | P(12-mo avg >= 2%)  12-mo median  bad year (10%)
+   $1000 $0     $1000 |  +4.21%   +3.18%      57%       26%     -6.1%    8.9% |       88%            +3.97%        +1.86%
+   $700  $300   $1000 |  +4.49%   +3.93%      70%       22%     -3.0%    4.2% |       97%            +4.44%        +2.65%
+   $500  $500   $1000 |  +4.77%   +4.91%      70%       17%     -1.3%    1.3% |       98%            +4.77%        +2.97%
+   $400  $600   $1000 |  +4.84%   +5.67%      70%        9%     -0.9%    0.6% |       98%            +4.88%        +3.02%
+   $0    $1000  $1000 |  +5.17%   +5.20%      74%       17%     -1.4%    3.2% |       95%            +5.25%        +2.64%
+   $600  $600   $1200 |  +4.77%   +4.91%      70%       17%     -1.3%    1.3% |       98%            +4.77%        +2.97%
+   $500  $700   $1200 |  +4.83%   +5.54%      70%       13%     -1.0%    0.7% |       98%            +4.86%        +3.02%
+   $1200 $0     $1200 |  +4.26%   +2.59%      57%       26%     -6.0%    8.8% |       88%            +4.00%        +1.88%
+
+   PESSIMISTIC: planning, and the cross-venue mean halved again
+   book  xvenue  total |  avg/month  median  months>=2%  months<0  worst   max DD | P(12-mo avg >= 2%)  12-mo median  bad year (10%)
+   $1000 $0     $1000 |  +4.21%   +3.18%      57%       26%     -6.1%    8.9% |       88%            +3.97%        +1.86%
+   $700  $300   $1000 |  +3.76%   +2.60%      57%       22%     -3.9%    6.5% |       88%            +3.67%        +1.86%
+   $500  $500   $1000 |  +3.56%   +3.61%      65%       26%     -2.6%    3.9% |       86%            +3.50%        +1.74%
+   $400  $600   $1000 |  +3.37%   +3.59%      65%       26%     -2.5%    3.0% |       82%            +3.34%        +1.53%
+   $0    $1000  $1000 |  +2.58%   +2.62%      52%       35%     -4.0%   13.2% |       62%            +2.66%        +0.06%
+   $600  $600   $1200 |  +3.56%   +3.61%      65%       26%     -2.6%    3.9% |       86%            +3.50%        +1.74%
+   $500  $700   $1200 |  +3.40%   +3.51%      65%       26%     -2.5%    3.2% |       82%            +3.36%        +1.56%
+   $1200 $0     $1200 |  +4.26%   +2.59%      57%       26%     -6.0%    8.8% |       88%            +4.00%        +1.88%
+
+4. THE BOOK'S WHOLE HISTORY (2020-02 -> 2026-08, 79 months, 2022's -28% year included) WITH THE CROSS-VENUE MONTHS,
+   drawn independently (their monthly correlation over the overlap: -0.02); 12-month paths, 3-month blocks, 20,000 draws
+   after tax A: a year's profit keeps 68.8%, so averaging 2%/month after tax needs +38.9% pre-tax (2.78%/month)
+   (S$500 = the other $500 in Savings at 6.69%, the fallback if the cross-venue trade fails its paper trial)
+   book  xvenue |   12-mo median   bad year (10%)  P(losing year)  P(avg>=2% pre-tax)  P(avg>=2% after tax A)  worst month (5%)
+   PLANNING
+   $1000 $0    |     +2.99%         -0.37%           13%               66%                   53%                 -8.3%
+   $700  $300  |     +3.84%         +1.56%            2%               85%                   73%                 -4.3%
+   $500  $500  |     +4.34%         +2.29%            0%               93%                   84%                 -2.5%
+   $400  $600  |     +4.57%         +2.54%            0%               95%                   87%                 -1.9%
+   $0    $1000 |     +5.33%         +2.75%            0%               95%                   90%                 -0.7%
+   $500  S$500 |     +1.87%         +0.09%            9%               46%                   25%                 -4.0%
+   PESSIMISTIC
+   $1000 $0    |     +3.03%         -0.35%           12%               66%                   54%                 -8.3%
+   $700  $300  |     +2.99%         +0.55%            6%               70%                   55%                 -5.4%
+   $500  $500  |     +2.96%         +0.86%            4%               73%                   54%                 -4.0%
+   $400  $600  |     +2.94%         +0.94%            3%               73%                   54%                 -3.6%
+   $0    $1000 |     +2.73%         +0.15%            9%               64%                   49%                 -3.3%
+   $500  S$500 |     +1.84%         +0.06%            9%               45%                   25%                 -4.0%
+
+5. TAX ON PROFITS ONLY: a year's NET profit taxed at the slab rate (+4% cess), a losing year taxed nothing
+   (the business-income treatment; the strongest case is INR-settled futures, i.e. Delta India)
+   the same 20,000 12-month paths as section 4, planning case; after-tax average per month
+   book  xvenue |  rate 0%: median / P(>=2%)   10.4%            20.8%            31.2%            | losing year
+   PLANNING
+   $1000 $0    |  +2.99% /  66%     +2.72% /  62%     +2.44% /  58%     +2.15% /  53%  |    13%
+   $500  $500  |  +4.34% /  93%     +3.97% /  91%     +3.59% /  88%     +3.19% /  84%  |     0%
+   $0    $1000 |  +5.33% /  95%     +4.90% /  94%     +4.45% /  92%     +3.97% /  90%  |     0%
+   PESSIMISTIC
+   $1000 $0    |  +2.98% /  66%     +2.71% /  63%     +2.43% /  59%     +2.15% /  54%  |    12%
+   $500  $500  |  +2.98% /  73%     +2.71% /  69%     +2.43% /  63%     +2.15% /  55%  |     3%
+   $0    $1000 |  +2.74% /  64%     +2.49% /  61%     +2.23% /  56%     +1.97% /  49%  |     9%
+
+   THE BOOK ON DELTA INDIA (INR-settled): its positions' funding on Delta minus on Binance = +3.72%/yr (2024-10 -> 2026-08), charged daily
+   PLANNING
+   $1000 $0    |  +2.72% /  61%     +2.47% /  58%     +2.22% /  54%     +1.95% /  49%  |    15%
+   $500  $500  |  +4.20% /  92%     +3.84% /  89%     +3.47% /  86%     +3.08% /  81%  |     0%
+   PESSIMISTIC
+   $1000 $0    |  +2.66% /  61%     +2.41% /  57%     +2.16% /  53%     +1.91% /  48%  |    15%
+   $500  $500  |  +2.81% /  70%     +2.56% /  65%     +2.29% /  59%     +2.02% /  51%  |     4%
+
+   the cross-venue trade if its Binance leg (USDT-settled) were taxed as a VDA (31.2% of each winning leg,
+   losses ignored) while its Delta leg is business income (net, by financial year):
+   Delta leg at 10.4%: pre-registered  +97.5%/yr ->  +45.7%/yr; ALL harder  +62.6%/yr ->  +11.3%/yr
+   Delta leg at 31.2%: pre-registered  +97.5%/yr ->  +26.3%/yr; ALL harder  +62.6%/yr ->   +6.4%/yr
+
+   after tax read A (31.2% of each year's net profit), a pre-tax average of g/month is about g x 0.69: 2.9% -> 2.0%, 4.0% -> 2.8%

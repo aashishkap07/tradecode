@@ -8,7 +8,8 @@ written from the ledgers' own arithmetic:
 1. each account's row equals its own ledger's equity (the book's includes its exit fee);
 2. carry and cross-venue: the daily mark plus the price move since, only from prices under 15 minutes
    old (stale prices: the daily mark alone);
-3. the planned money is the book + Savings + the spot pot; 'all' adds carry, Delta, cross-venue;
+3. the operator's plan (C528) is the book on Delta India + the cross-venue trade ($1,000); 'all' adds
+   the Binance book with its Savings, the spot pot and carry;
    BFUSD is shown, not added; the shadow and the tournament are left out and named;
 4. the funding settled since carry's and cross-venue's daily run (C527Pending): windows, call counts,
    no double counting once a ledger books it;
@@ -42,6 +43,7 @@ lg = logging.getLogger('OmegaV60'); lg.handlers = [logging.NullHandler()]; lg.pr
 print("=" * 66); print("C527: EVERY ACCOUNT IN ONE TOTAL, AS IF LIVE"); print("=" * 66)
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C527 or later", int(om._OMEGA_VERSION[1:]) >= 527)
+ok("C528: the book trades 20 coins at every size (top 40 at $1,000 was weaker on the traded rule)", om.Config().C488_TOPN == 20)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
@@ -122,12 +124,31 @@ ok("prices an hour old: carry and cross-venue fall back to their daily mark (no 
 set_prices()
 
 print("\n3. THE TWO TOTALS")
-plan = book + sv0['interest'] + spot
-alln = plan + carry + delta + xven
-ok("planned money = the book + Savings + the spot pot, from $750",
-   T['plan']['start'] == 750.0 and abs(T['plan']['eq'] - plan) < 0.02 and T['plan']['n'] == 3, f"{T['plan']} vs {plan:.4f}")
-ok("every account = planned + carry + Delta + cross-venue, from the sum of their starts",
-   abs(T['all']['start'] - (750 + round(ca0['start_equity'], 2) + 500 + 500)) < 0.011 and abs(T['all']['eq'] - alln) < 0.04
+plan = delta + xven
+alln = plan + book + sv0['interest'] + spot + carry
+ok("C528: the plan = the book on Delta India + the cross-venue trade, from $1,000 (the operator's budget)",
+   T['plan']['start'] == 1000.0 and abs(T['plan']['eq'] - plan) < 0.02 and T['plan']['n'] == 2
+   and T['plan_names'] == ['Same book on Delta India', 'Delta vs Binance funding gap']
+   and T['budget'] == {'invest': 1000.0, 'reserve': 200.0}, f"{T['plan']} vs {plan:.4f} {T.get('plan_names')}")
+ok("C528: tax on the plan's NET profit only: a loss is not taxed",
+   T['tax']['rate'] == 0.312 and (T['tax']['tax'] == 0.0 if T['plan']['pnl'] <= 0 else abs(T['tax']['tax'] - 0.312 * T['plan']['pnl']) < 0.011)
+   and abs(T['tax']['after'] - (T['plan']['pnl'] - T['tax']['tax'])) < 0.011, str(T['tax']))
+_tb = types.SimpleNamespace(**{k: getattr(bot, k) for k in ('c488', 'c501v', 'c501s', 'c490', 'c521d', 'c521b', 'c524x')})
+_tb.cfg = types.SimpleNamespace(**vars(cfg)); _tb.cfg.C528_TAX_RATE = 0.104
+_tb.cfg.C527_PLAN = ('book', 'savings', 'xvenue')
+_e0 = e.live_equity; e.live_equity = lambda: 600.0                  # a $100 profit on the book
+_T6 = om._c527_total(_tb, now=NOW); e.live_equity = _e0
+ok("  a profit is taxed at your slab: C528_TAX_RATE 10.4% on the plan's net profit",
+   abs(_T6['tax']['tax'] - round(0.104 * _T6['plan']['pnl'], 2)) < 0.011 and _T6['plan']['pnl'] > 0, str(_T6['tax']))
+ok("  the Binance book with its Savings, the spot pot and carry are experiments outside it",
+   [r['key'] for r in T['rows'] if not r['plan']] == ['book', 'savings', 'spot', 'carry'])
+_cb = types.SimpleNamespace(**vars(cfg)); _cb.C527_PLAN = ('book', 'savings', 'xvenue')
+_tb2 = types.SimpleNamespace(**{k: getattr(bot, k) for k in ('c488', 'c501v', 'c501s', 'c490', 'c521d', 'c521b', 'c524x')}, cfg=_cb)
+_T7 = om._c527_total(_tb2, now=NOW)
+ok("  if the CA rules Binance's futures business income too: C527_PLAN = book + Savings + cross-venue",
+   _T7['plan']['n'] == 3 and abs(_T7['plan']['eq'] - (book + sv0['interest'] + xven)) < 0.02)
+ok("every account = the plan + the Binance book and Savings + the spot pot + carry, from the sum of their starts",
+   abs(T['all']['start'] - (1750 + round(ca0['start_equity'], 2))) < 0.011 and abs(T['all']['eq'] - alln) < 0.04
    and T['all']['n'] == 6, f"{T['all']} vs {alln:.4f}")
 ok("  P&L = now - start, and the percentage of the start",
    abs(T['all']['pnl'] - (T['all']['eq'] - T['all']['start'])) < 0.011
@@ -297,8 +318,8 @@ rep._emit = lambda line: rows.append(str(line))
 rep.status(fbot)
 ix = [i for i, r in enumerate(rows) if 'TOTAL' in r]
 tot = ' '.join(r.strip() for r in rows[ix[0]:ix[0] + 3]) if len(ix) == 1 else ''   # a row wraps to the phone's width
-ok("the log's status block has a TOTAL row: planned money and every account, with their starts",
-   f"planned ${T['plan']['eq']:.2f} of ${T['plan']['start']:.2f}" in tot and 'all 6 accounts' in tot and 'paper' in tot,
+ok("the log's status block has a TOTAL row: the plan and every account, with their starts",
+   f"planned ${T['plan']['eq']:,.2f} of ${T['plan']['start']:,.2f}" in tot and 'all 6 accounts' in tot and 'paper' in tot,
    tot or '\n'.join(rows[-12:]))
 print('     ' + '\n     '.join(r.rstrip() for r in rows[ix[0]:ix[0] + 3]) if ix else '')
 port = free_port(); om.RemoteControl(fbot, port=port).start(); time.sleep(0.6)
@@ -314,7 +335,9 @@ try:
         svt = pg.inner_text('#savings')
         br.close()
     ok("the panel: both totals, every account's row, BFUSD and TDS notes, what is left out",
-       'planned money' in txt and 'every account' in txt and 'Main book' in txt and 'Delta vs Binance' in txt
+       'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' in txt and 'Main book' in txt
+       and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: at most $1000.00 invested + $200.00 reserve' in txt
+       and 'after tax on its net profit' in txt and 'a loss is not taxed' in txt
        and 'BFUSD' in txt and 'TDS' in txt and 'left out' in txt and 'paper' in txt, txt[:700])
     ok("the Savings panel says its rate is Binance's own, read every 6 h", 'rate now, read every 6 h' in svt, svt[:300])
     ok("no JavaScript errors", not errs, str(errs))

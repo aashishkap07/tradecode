@@ -5,6 +5,28 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 **Deployed state (checked in the server's own logs):**
+- **C528 pushed 3 Oct (not deployed; C526 and C527 ride with it). THE OPERATOR'S
+  BUDGET: $1,000 invested, $1,200 at most** (`reports/2026-10-03_budget_plan.md`):
+  - **Plan:** the $500 book on **Delta India** (INR-settled) + $500
+    cross-venue ($250 Delta short legs + $250 Binance long legs) + a $200
+    reserve for cross-venue margin only.
+  - **Tax, on net profit only** (the operator's instruction):
+    - INR-settled futures (Delta) are most likely business income: the
+      year's net profit at the slab rate + cess; losses carried 4 years.
+    - USDT-settled futures (Binance) are contested: business income or the
+      VDA rule (30% + cess per gain, losses ignored).
+    - The Income-tax Act 2025 (from 1 Apr 2026) keeps the VDA rule; no
+      circular or ruling covers futures.
+  - **After tax at the top slab (31.2%):** +3.08%/month with 81% odds of
+    averaging ≥ 2% (planning), +2.02% / 51% (pessimistic).
+  - **If the Binance leg is VDA:** the cross-venue trade falls to +12.6%/yr
+    (stress-tested), and the plan becomes $1,000 in the Delta book
+    (+1.95%/month, 49%, 15% losing years).
+  - **Gates:** the CA (6 questions); the cross-venue paper trial on
+    **28 Nov 2026** (pre-registered bar: ≥ +3.7% over 8 weeks after costs,
+    ≥ 6/8 weeks positive, funding ≥ 2× fees, Delta unchanged); the Delta
+    book vs the Binance book on paper (Delta not > 1%/month behind beyond
+    the expected ~0.3%); the live order paths.
 - **C527 pushed 3 Oct (not yet deployed; C526 rides with it).** Every account
   in one total, "as if live" (`reports/2026-10-03_how_the_bot_works.md`):
   - at 12:02 IST: planned money (book + Savings + spot pot) **$749.33 of $750
@@ -389,6 +411,81 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 💰 2026-10-03 — C528: THE $1,000 PLAN, TAX ON NET PROFIT ONLY, THE BOOK TO DELTA INDIA
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator:**
+- "i can invest a maximum amount of 1000usdt .. plan out everything
+  accordingly so that both our monthly target and our budget is respected
+  ... the dire maximum ... is 1200 usdt";
+- "analyse taxation correctly .. to be implemented on the profits only".
+
+**Report:** `reports/2026-10-03_budget_plan.md`. **Research:**
+`research/c528_budget_plan.py/.txt/.json`. It is descriptive (no new rule,
+no parameter fitted) and uses the research's own simulators: the traded book
+(N2+N3 + GK, dial 20%, top 20, Binance minimums, Savings on idle cash) and
+X1 as pre-registered and "ALL harder".
+
+**Findings:**
+- **The book alone, 2020-26, $500–$1,200:** +4.8%/month average (median
+  +2.8–3.3%), 29–32% of months negative, worst month −15.8%, max DD 37%.
+  - Size barely matters above $500.
+  - Top 40 at $1,000: +4.06%/month, max DD 47%. → **`C488_TOPN = 20`**
+    (was 'auto').
+  - Dial 30: +6.9%/month but max DD 51% (the code caps the dial at 20).
+- **The book and X1 are uncorrelated** (monthly r −0.03 over the 23 common
+  months).
+- **Splits, the full book history × X1 months, 20,000 bootstrapped years
+  (3-month blocks):**
+  - planning (book mean −1/3, X1 "ALL"): $500/$500 has 93% odds of
+    averaging ≥ 2%/month pre-tax, ~0% losing years, a 1-in-20 month of
+    −2.5%. All-book: 66% odds, 13% losing years, −8.3%.
+  - pessimistic (X1 halved again): every split ~65–73%. All-X1 is the
+    worst (64%, 9% losing years).
+- **Tax on net profit only, by slab** (0 / 10.4 / 20.8 / 31.2%), $500/$500
+  planning: 93 / 91 / 88 / 83% odds (median +4.31 / 3.94 / 3.56 /
+  3.16%/month).
+  - **With the book on Delta India** (its extra funding of +3.72%/yr on the
+    book's own positions, 2024-10 → 2026-08; −0.7% in 2026): 92 / 89 /
+    86 / 81%.
+  - Pessimistic: 70 / 65 / 59 / 51%.
+- **The mixed case** (Binance leg per-gain VDA, Delta leg business, netted
+  by financial year): X1 +97.5% → +26–46%/yr pre-registered; **ALL +62% →
+  +12.6%/yr**.
+  - The VDA rule on everything: the book ≈ +0.5%/yr (C518), X1 −1.4% /
+    −26%/yr.
+- **CoinDCX INR-margined futures** (checked on its API 3 Oct): the same 505
+  "B-" contracts, `settle_currency USDT`, taker 0.059%, min notional 60.
+  INR margin, but USDT settlement behind the scenes: a weaker
+  business-income case than Delta. Pi42 is untested (403 from the
+  sandbox).
+- **The USDT premium in India (7–10% in 2026)** is a currency risk on every
+  dollar held on Binance; Delta takes INR directly.
+
+**C528 (code):**
+- `C527_PLAN = ('delta', 'xvenue')`: the plan total is the Delta book + X1
+  = $1,000. `('book', 'savings', 'xvenue')` if the CA rules USDT-settled
+  futures business income.
+- `C528_BUDGET` 1000, `C528_RESERVE` 200, shown as a budget line.
+- **`C528_TAX_RATE` 0.312: "your plan after tax on its net profit"; a loss
+  is not taxed.**
+- `C488_TOPN = 20`. Experiments are labelled "experiment". Version C528.
+- `omega_c527_test.py` covers the plan membership, the alternative plan,
+  tax on profit vs loss at two slabs, top-20, and the panel.
+
+**Open (in order):**
+1. The operator asks the CA the 6 questions in the report.
+2. The 28 Nov 2026 reviews: the X1 paper gate and the Delta-vs-Binance book
+   gate.
+3. The live order paths (the book on the chosen venue; X1 on both venues;
+   a margin watch with a reserve alert).
+4. Round 17, only if the CA rules Binance VDA: a rupee-settled long leg
+   (Pi42 from the server; CoinDCX only if its INR margin counts as INR
+   settlement).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧮 2026-10-03 — C527: EVERY ACCOUNT IN ONE TOTAL; THE SAVINGS RATE READS ITSELF; A LOGIC AUDIT

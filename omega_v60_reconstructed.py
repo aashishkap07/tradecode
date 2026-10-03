@@ -2378,7 +2378,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C527'
+_OMEGA_VERSION = 'C528'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3133,8 +3133,18 @@ class Config:
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
+        self.C527_PLAN = ('delta', 'xvenue')    # C528: the operator's plan -- the $500 book on Delta India (INR-settled:
+                                                # tax on net profit, no USDT premium, no TDS) and $500 cross-venue
+                                                # ($250 Delta + $250 Binance). ('book', 'savings', 'xvenue') if the CA
+                                                # rules Binance's futures business income too. The rest stay paper.
+        self.C528_BUDGET = 1000.0               # C528: the most the operator will invest ...
+        self.C528_RESERVE = 200.0               # ... and a reserve, only to top up the cross-venue margin (max $1,200)
+        self.C528_TAX_RATE = 0.312              # C528: tax on the plan's NET profit only (business income: your slab
+                                                # + 4% cess; 0.312 = the top slab). A loss is not taxed. Set your own slab.
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
-        self.C488_TOPN = 'auto'                 # 20 coins under $1000 of equity, 40 from there
+        self.C488_TOPN = 20                     # C528: 20 at every size ('auto' = 40 from C488_TOPN_40_FROM). On the
+                                                # traded rule at $1,000 (2020-26) top 40 averaged +4.06%/month with a
+                                                # 47% max drawdown vs top 20's +4.76% and 37% (research/c528_budget_plan.txt)
         self.C488_TOPN_40_FROM = 1000.0
         self.C488_LEV_CAP = 3.0                 # gross notional never above 3x equity
         self.C488_LEVERAGE = 5                  # exchange leverage: margin = notional / 5
@@ -23583,8 +23593,9 @@ class C524CrossVenue(_C501Store):
 #     only when under 15 minutes old), plus the funding SETTLED since their run
 #     and not yet booked (C527Pending reads it once an hour; each ledger still
 #     books it itself at its next run, and the reading is dropped when it does).
-# Two totals: the planned money (the book's $500 with Savings, and the spot
-# pot's $250), and every paper account as if each were funded. BFUSD is an
+# Two totals: the operator's plan (C528, `C527_PLAN`: the book's $500 with
+# Savings, and the cross-venue trade's $500) and every paper account as if
+# each were funded. BFUSD is an
 # alternative to Savings (the same wallet), so it is shown, not added. The
 # intraday shadow and the tournament are experiments on the book's own
 # prices and are left out. TDS withheld is creditable tax, shown separately.
@@ -23722,7 +23733,10 @@ def _c527_total(bot, now=None):
     now = now or time.time()
     rows = []
 
+    plan_keys = set(getattr(bot.cfg, 'C527_PLAN', None) or ('delta', 'xvenue'))   # C528
+
     def add(key, label, start, eq, plan, how):
+        plan = key in plan_keys                                  # C528: the operator's plan decides, not the caller
         rows.append(dict(key=key, label=label, start=round(float(start), 2), eq=round(float(eq), 2),
                          pnl=round(float(eq) - float(start), 2),
                          pct=round(100 * (float(eq) / float(start) - 1), 2) if start else None, plan=plan, how=how))
@@ -23791,7 +23805,15 @@ def _c527_total(bot, now=None):
         return dict(start=round(s0, 2), eq=round(s1, 2), pnl=round(s1 - s0, 2),
                     pct=round(100 * (s1 / s0 - 1), 2) if s0 else None, n=len(sel))
     out = dict(rows=rows, plan=total([r for r in rows if r['plan']]), all=total(rows), at=now,
-               paper=bool(getattr(bot.cfg, 'PAPER_MODE', True)))
+               paper=bool(getattr(bot.cfg, 'PAPER_MODE', True)),
+               plan_names=[r['label'] for r in rows if r['plan']],
+               budget=dict(invest=float(getattr(bot.cfg, 'C528_BUDGET', 1000.0)),
+                           reserve=float(getattr(bot.cfg, 'C528_RESERVE', 200.0))))
+    # C528: tax on the plan's NET profit only (the business-income treatment), never on a loss
+    rate = float(getattr(bot.cfg, 'C528_TAX_RATE', 0.312))
+    pp = out['plan']['pnl']
+    tx = round(max(0.0, pp) * rate, 2)
+    out['tax'] = dict(rate=rate, pnl=pp, tax=tx, after=round(pp - tx, 2), eq_after=round(out['plan']['eq'] - tx, 2))
     bf = getattr(bot, 'c521b', None)
     if bf is not None and bf.active() and bf.last_ts:
         out['bfusd'] = dict(interest=round(bf.interest, 4), tds=round(bf.tds, 2))
@@ -43611,11 +43633,15 @@ async function pull(){
         var pc7=function(v){return v===null||v===undefined?'':' ('+(v>=0?'+':'')+Number(v).toFixed(2)+'%)'};
         var th7='<div class="s muted">'+(tt7.paper?'every account here is paper: what it would be worth if each were real money, at prices now':
           'the book is LIVE money; the rest are paper')+'</div>';
-        [['planned money (the book with Savings, and the spot pot)',tt7.plan],['every account, as if each were funded',tt7.all]].forEach(function(z){
+        [['your plan ('+(tt7.plan_names||[]).join(' + ')+')',tt7.plan],['every paper account, as if each were funded',tt7.all]].forEach(function(z){
           th7+='<div style="margin:4px 0"><b>'+money(z[1].eq)+'</b> <span class="muted">of '+money(z[1].start)+'</span> <span class="'+cls(z[1].pnl)+'">'+sgn(z[1].pnl)+pc7(z[1].pct)+
             '</span> <span class="muted">· '+z[0]+'</span></div>'});
         tt7.rows.forEach(function(r){th7+='<div class="s">'+r.label+' <b>'+money(r.eq)+'</b> <span class="'+cls(r.pnl)+'">'+sgn(r.pnl)+pc7(r.pct)+'</span> <span class="muted">· '+
-          (r.plan?'planned · ':'')+r.how+'</span></div>'});
+          (r.plan?'in your plan · ':'experiment · ')+r.how+'</span></div>'});
+        if(tt7.tax)th7+='<div class="s">your plan after tax on its net profit <b>'+money(tt7.tax.eq_after)+'</b> <span class="'+cls(tt7.tax.after)+'">'+sgn(tt7.tax.after)+
+          '</span> <span class="muted">· tax '+money(tt7.tax.tax)+' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess) · a loss is not taxed</span></div>';
+        if(tt7.budget)th7+='<div class="s muted">budget: at most '+money(tt7.budget.invest)+' invested + '+money(tt7.budget.reserve)+
+          ' reserve, only to top up the cross-venue margin (reports/2026-10-03_budget_plan.md)</div>';
         var ex7=[];
         if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
         if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');
