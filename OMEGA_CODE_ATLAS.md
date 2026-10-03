@@ -48,6 +48,35 @@
   - display: the shadow showed $250.00 until its first new hour (C523 fixes it).
 - **C525 pushed, NOT yet deployed** (deploy before 06:00 IST 4 Oct): the
   cross-venue funding window fix, the record limit, two panel clarifications.
+- **Paper check, 3 Oct (06:17 IST push, server on C524): ALL PASSED.**
+  0 Traceback, 0 warnings.
+  - **The first GK rebalance** (05:36:08 IST, 56 s, **160 candidates**):
+    - the plan replays to the cent from `c488_inputs.npz`
+      (`c498_plan_replay.py --inputs`; 1000PEPE −38.00 vs −37.99 display
+      rounding);
+    - 9 targets; 10 under $6 / the venue minimum named;
+    - 2 trades (HYPE −2.59 and SOL +3.92 fell under $6), both inside
+      Binance's 00:05–00:07 UTC range.
+  - **Tournament:**
+    - 9 books held; day 2 (2 Oct) recomputed by hand for all 7 scored
+      rules to 4 decimals (base +0.2652%, traded GK +0.1363%);
+    - the two round-14 rules score from 3 Oct.
+  - **Delta:**
+    - the 00:00 UTC exchange: 9/9 positions at the settled record × the
+      mark;
+    - its rebalance sold HYPE inside Delta's mark minute;
+    - the $6-floor names appear (ADA, ENA).
+  - **Cross-venue:** the first daily run booked no funding (none settled
+    between the 20:12 UTC entry and midnight) and +$0.09 of prices. It
+    holds 10 pairs, spreads 65–134%/yr. Its next run is the first the C524
+    bug would touch: **deploy C525 first**.
+  - **Shadow:** 21:00–00:00 UTC on the research universe, replayed on
+    Binance's candles within $0.01–0.07 an hour (M1 $502.00 vs $502.07).
+    The gate opened at 21:00: its threshold is now 2 × 0.07% (C524's venue
+    cost).
+  - BFUSD $0.0782 = 7.66% × $499.5 × 0.746 d exactly; Savings idle $312.05.
+  - Carry 00:10 UTC (UNI in, 8 held); spot pot 00:20 UTC (ETH and SOL
+    sold, BTC held).
 - **C524 deployed 3 Oct 01:42 IST** (20:12 UTC 2 Oct). The 01:44 IST screens
   were verified: book 11/11 inside Binance's 20:11–20:16 UTC range, open −$0.55
   = −$0.40 − $0.16 exit fee. The cross-venue ledger ran at boot (it was due:
