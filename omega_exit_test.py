@@ -69,6 +69,12 @@ def sim(rows, i0, side, R, atr_pct, giveback=False, min_hold=0):
     return sg*(rows[j][4]/e-1)*100.0-FEE
 
 data=load(); syms=sorted(data); A=set(syms[::2])
+if not syms:
+    print("needs corpusL/ (15-minute Bitget candles, 32 pairs, about 108 days). It is not kept in git\n"
+          "(.gitignore), so a fresh checkout has none. Rebuild it in about 90 seconds:\n"
+          "    python3 omega_fetch_corpus_32.py\n"
+          "This is missing data, not a code failure: the script measures the old intraday engine, not the book.")
+    raise SystemExit(2)
 print(f"corpus {len(syms)} pairs, {sum(len(v) for v in data.values()):,} bars\n")
 CONFIGS=[('barrier only (hold to 2R / 0.75R)', dict(giveback=False)),
          ('+ peak-giveback exit (the bot today)', dict(giveback=True, min_hold=0)),

@@ -4,6 +4,7 @@ DOTUSDT LTCUSDT ATOMUSDT NEARUSDT APTUSDT ARBUSDT OPUSDT INJUSDT SUIUSDT
 FILUSDT UNIUSDT AAVEUSDT ZECUSDT ENAUSDT PEPEUSDT WIFUSDT TIAUSDT SEIUSDT
 JUPUSDT PYTHUSDT LDOUSDT RUNEUSDT ORDIUSDT 1000BONKUSDT""".split()
 OUT = 'corpusL'
+os.makedirs(OUT, exist_ok=True)          # a fresh checkout has no corpusL/ (.gitignore)
 def fetch(sym, pages=52):
     rows, end = [], None
     for _ in range(pages):

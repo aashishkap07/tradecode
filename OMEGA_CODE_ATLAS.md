@@ -455,7 +455,39 @@
      windows and call counts; the Savings tier and fallbacks; the TOTAL row;
      the page (Chromium).
    - `omega_c524_test.py`: the tick-tuple pin relaxed (`self.c527p` added).
-   - **Battery 48/49** (exit: `corpusL/` missing, as before).
+   - **Battery 48/49** (exit: `corpusL/` missing, as before). **Resolved the
+     same day: 49/49** (below).
+
+**The "exit test needs corpusL/" failure, resolved (operator's question):**
+- **What it is:** `omega_exit_test.py` and `omega_funding_test.py` are
+  research scripts from C463 (17 Sep). They measure the OLD intraday
+  engine's exit and funding rules, assert nothing, and never import the
+  bot. They read `corpusL/` (Bitget 15-minute candles, 32 pairs, about 108
+  days) and `corpusF/` (their funding history).
+- **Why it failed:** both folders are in `.gitignore` (about 16 MB), so
+  every fresh checkout lacks them.
+  - The exit script crashed on an empty list.
+  - **The funding script "passed" on 0 pairs**: a pass that measured
+    nothing, in every battery since.
+- **Fixed:**
+  - Both scripts now stop with "needs corpusL/ … rebuild it with …" and
+    exit 2 (missing data, not a code failure).
+  - Both fetchers create their folder (`omega_fetch_corpus_32.py` crashed on
+    a fresh checkout).
+- **Rebuild:** `python3 omega_fetch_corpus_32.py && python3
+  omega_fetch_funding.py`, about 2 minutes, public Bitget endpoints. The 3 Oct
+  fetch had 332,400 bars, 16 Jun → 3 Oct 2026, no gaps or duplicates. XRP
+  and SUI are 200 bars short at the old end: a page retried inside the
+  52-page budget.
+- **Results on the fresh data (they confirm C463's verdict on a window
+  that runs 16 days past it):**
+  - exit geometry: every variant loses after fees (barrier −0.074%/trade,
+    t −7.5; with the giveback −0.058%; giveback vs barrier +0.016, t 1.8,
+    4/4 splits; C463 had +0.002, t 0.2);
+  - funding (5 Jul → 2 Oct): fading both tails −0.050%/trade, t −1.5,
+    0/4 splits. No edge.
+  - The old engine stays retired (shadow only).
+
 
 **Audit findings (no new ledger bug):**
 - 2–4% "every month" vs on average: monthly sd ≈ 7.7% at 26.7% vol, so
