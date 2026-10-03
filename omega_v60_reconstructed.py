@@ -1463,7 +1463,7 @@ class _C462Report:
                 self._pack('MONTH', [f"dial {float(g.get('pct', 0)):.0f}% = "
                                      f"{_c462_money(float(g['month_budget']))} this month",
                                      f"used {_c462_money(float(g.get('month_used', 0)))}"
-                                     + (" realised" if _book495 else "")])
+                                     + (" realised (the guard counts MARKED equity once prices load)" if _book495 else "")])
                 if not _book495:
                     self._pack('DAY', [f"limit {_c462_money(float(g.get('day_cap', 0)))}",
                                        "25% of what the month has left, fixed at midnight"])
@@ -1806,12 +1806,12 @@ class _C462Report:
             try:
                 _t527 = _c527_total(bot)
                 _p527, _a527 = _t527['plan'], _t527['all']
-                if _a527['n']:
-                    self._pack('TOTAL', [f"planned {_c462_money(_p527['eq'])} of {_c462_money(_p527['start'])} "
-                                         f"({_c462_money(_p527['pnl'], sign=True)})",
-                                         f"all {_a527['n']} accounts {_c462_money(_a527['eq'])} of {_c462_money(_a527['start'])} "
-                                         f"({_c462_money(_a527['pnl'], sign=True)})",
-                                         'paper' if _t527['paper'] else 'book LIVE, the rest paper'])
+                if _p527['n']:
+                    _x527 = _t527.get('tax') or {}
+                    self._pack('PLAN', [f"{_c462_money(_p527['eq'])} of {_c462_money(_p527['start'])} "
+                                        f"({_c462_money(_p527['pnl'], sign=True)})",
+                                        f"after tax on net profit {_c462_money(_x527.get('eq_after', _p527['eq']))}",
+                                        'paper' if _t527['paper'] else 'book LIVE, the rest paper'])
             except Exception:
                 pass
             # C488: the portfolio engine's book, one line
@@ -2378,7 +2378,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C528'
+_OMEGA_VERSION = 'C529'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3139,6 +3139,8 @@ class Config:
                                                 # rules Binance's futures business income too. The rest stay paper.
         self.C528_BUDGET = 1000.0               # C528: the most the operator will invest ...
         self.C528_RESERVE = 200.0               # ... and a reserve, only to top up the cross-venue margin (max $1,200)
+        self.C529_XV_WARN_AT = 0.65             # C529: a cross-venue side (one venue's account) at 65% of its start: warn
+        self.C529_XV_RESERVE_AT = 0.50          # C529: ... at 50%: live, the reserve tops that side up
         self.C528_TAX_RATE = 0.312              # C528: tax on the plan's NET profit only (business income: your slab
                                                 # + 4% cess; 0.312 = the top slab). A loss is not taxed. Set your own slab.
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
@@ -21946,7 +21948,16 @@ class C490Carry:
                         positions=[dict(coin=r[:-4], f3=round(100 * p.get('f3', 0.0), 1),
                                         days=round((now_ms - p['opened']) / _C488_DAY, 1), pnl=round(p['pnl'], 2))
                                    for r, p in sorted(self.pos.items())],
-                        info=self.info, record=_c490_record(x))
+                        info=self.info, record=_c490_record(x), pending=self._pending529())
+
+    def _pending529(self):
+        """C529: the funding settled since its run, not yet booked (C527Pending)"""
+        try:
+            pend = getattr(self.bot, 'c527p', None)
+            v = pend.for_total()[0] if pend is not None and pend.active() else None
+            return round(v, 4) if v is not None else None
+        except Exception:
+            return None
 
 
 
@@ -22711,6 +22722,8 @@ class C521Delta(_C501Store):
             self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
             self.eq_last = float(d.get('eq_last') or 0.0)
             self.cmp0 = dict(d.get('cmp0') or {})
+            self.month = dict(d.get('month') or {})                  # C529
+            self.halt = str(d.get('halt') or '')                     # C529
 
     def active(self):
         return bool(getattr(self.cfg, 'C521_DELTA', True))
@@ -22722,6 +22735,7 @@ class C521Delta(_C501Store):
             self.fees = self.funding = self.realized = 0.0
             self.trades, self.last_run, self.eq_last = 0, '', 0.0
             self.cmp0 = {}
+            self.month, self.halt, self._guard_view = {}, '', {}     # C529: its own month guard
         if save:
             self.save()
 
@@ -22730,7 +22744,7 @@ class C521Delta(_C501Store):
             d = dict(start_equity=self.start_equity, cash=self.cash, pos=self.pos, fees=self.fees, cmp0=self.cmp0,
                      funding=self.funding, realized=self.realized, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
-                     eq_last=self.eq_last)
+                     eq_last=self.eq_last, month=self.month, halt=self.halt)
         self._write(d)
 
     # ── Delta's tables ───────────────────────────────────────────────────────
@@ -22839,6 +22853,9 @@ class C521Delta(_C501Store):
         """the book's raw weights (before Binance's minimums) on Delta's contracts"""
         if not self.active():
             return
+        if self.halt:                                   # C529: its own month guard closed it; nothing new this month
+            logger.info(f"   🇮🇳 C521 Delta book: no new positions ({self.halt}); it resumes when the guard clears")
+            return
         t0 = time.time()
         with self._lock:
             if not self.refresh_products() or not self.refresh_marks(force=True):
@@ -22904,6 +22921,59 @@ class C521Delta(_C501Store):
                     f"${planned:.2f} planned ({100 * gross / planned if planned else 0:.0f}%), {n} trades ${traded:.2f} | equity "
                     f"${self.equity():.2f}" + (f" | not on Delta: {', '.join(missing[:8])}" if missing else '')
                     + (f" | not held (under one contract or the $6 floor): {', '.join(zero[:6])}" if zero else '') + f" [{time.time() - t0:.0f}s]")
+
+    def flatten(self, why):
+        """C529: close every position at Delta's bid/ask"""
+        n = 0
+        for sym in list(self.pos):
+            prod = next((p for p in self.prods.values() if p['sym'] == sym), None)
+            if prod is None:
+                prod = dict(sym=sym, cv=self.pos[sym]['cv'], taker=0.0005)
+            if self._fill(sym, prod, -self.pos[sym]['qty'], why) > 0:
+                n += 1
+        return n
+
+    def guard(self):
+        """C529: the plan's book needed its own exit. Until now the Delta copy only
+        followed the main book's rebalances: when the main book's month guard closed
+        IT, `flatten()` left these positions open, and with no rebalance until the
+        next month they had no exit at all. Two rules, both on this book's own marked
+        equity and the same dial (the operator's 20%):
+          * the month guard: if marked equity falls `dial`% below this month's
+            anchor (marked, fixed at the month's first check), close everything and
+            open nothing until next month;
+          * no fresh plan, no positions: if the main book is halted (its own guard
+            or a dial at 0%), no new weights arrive, so close too."""
+        e = getattr(self.bot, 'c488', None)
+        key = datetime.now().strftime('%Y-%m')
+        eq = float(self.equity())
+        try:
+            pct = float(e.dial()) if e is not None else float(getattr(self.cfg, 'C380_MAX_MONTHLY_DD_PCT', 20.0))
+        except Exception:
+            pct = 20.0
+        if self.month.get('key') != key or float(self.month.get('eq0', 0) or 0) <= 0:
+            self.month = dict(key=key, eq0=round(eq, 4))
+            logger.info(f"   🇮🇳 C529 Delta book month anchor {key}: ${eq:.2f} marked (budget {pct:.0f}% = ${eq * pct / 100:.2f})")
+        eq0 = float(self.month['eq0'])
+        self._guard_view = dict(key=key, pct=pct, eq0=round(eq0, 2), marked=round(eq, 2),
+                                budget=round(eq0 * pct / 100.0, 2), used=round(max(0.0, eq0 - eq), 2))
+        main_halt = str(getattr(e, 'halt', '') or '') if e is not None else ''
+        why = ''
+        if pct <= 0:
+            why = 'dial'
+        elif eq0 > 0 and eq0 - eq >= eq0 * pct / 100.0:
+            why = 'month:' + key
+        elif main_halt:
+            why = 'main book halted (' + main_halt + '): no fresh plan'
+        if why and why != self.halt:
+            self.halt = why
+            n = self.flatten('guard ' + why)
+            logger.warning(f"🛑 C529 Delta book ({'paper' if self.cfg.PAPER_MODE else 'LIVE'}): {why} -- {n} positions "
+                           f"closed at ${self.equity():.2f}; nothing new until it clears")
+        elif not why and self.halt:
+            logger.info(f"   🇮🇳 C529 Delta book: {self.halt} cleared -- it rebuilds at the next rebalance")
+            self.halt = ''
+        return self.halt
 
     def _cmp_start(self):
         """C522: one snapshot -- the time, this book's equity and the Binance book's
@@ -22992,6 +23062,8 @@ class C521Delta(_C501Store):
                 if self.start_equity and not self.cmp0:
                     self._cmp_start()                          # C522: a book begun before the snapshot existed
                 self.accrue_funding(now)
+                if self.start_equity:
+                    self.guard()                               # C529: the plan's book has its own exit
             self.save()
         except Exception as e:
             logger.warning(f"⚠️ C521 Delta tick: {type(e).__name__}: {e}")
@@ -23024,7 +23096,7 @@ class C521Delta(_C501Store):
                         fees=round(self.fees, 4), funding=round(self.funding, 4), realized=round(self.realized, 4),
                         trades=self.trades, n=len(self.pos), positions=rows, last_run=self.last_run,
                         info=self.info, gst=float(getattr(self.cfg, 'C521_DELTA_GST', 0.18)),
-                        listed=len(self.prods))
+                        listed=len(self.prods), guard=dict(getattr(self, '_guard_view', {}) or {}), halt=self.halt)
 
 
 class C501Spot(_C501Store):
@@ -23377,6 +23449,15 @@ class C524CrossVenue(_C501Store):
             self.last_run = str(d.get('last_run') or '')
             self.info = dict(d.get('info') or {})
             self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
+            sd = d.get('side')
+            if sd:
+                self.side = {'d': float(sd.get('d') or 0.0), 'b': float(sd.get('b') or 0.0)}
+            elif self.start_equity:
+                # C529: a ledger begun before the sides were kept -- its fees split by each venue's cost,
+                # its price P&L in half (no funding had been booked); the two sides sum to its P&L exactly
+                fb = self.fees * _C524_COST_B / (_C524_COST_B + _C524_COST_D)
+                rest = (self.eq - self.start_equity) + self.fees
+                self.side = {'b': -fb + rest / 2.0, 'd': -(self.fees - fb) + rest / 2.0}
 
     def active(self):
         return bool(getattr(self.cfg, 'C524_XVENUE', True)) and _c516_venue(self.cfg) == 'binance'
@@ -23387,6 +23468,8 @@ class C524CrossVenue(_C501Store):
             self.pairs, self.closed, self.info, self.daily = {}, [], {}, {}
             self.fees = self.funding = self.price_pnl = 0.0
             self.trades, self.last_run = 0, ''
+            self.side = {'d': 0.0, 'b': 0.0}                     # C529: each venue's own P&L since the start
+            self._warned = {}
         if save:
             self.save()
 
@@ -23394,7 +23477,8 @@ class C524CrossVenue(_C501Store):
         with self._lock:
             d = dict(start_equity=self.start_equity, eq=self.eq, pairs=self.pairs, fees=self.fees,
                      funding=self.funding, price_pnl=self.price_pnl, trades=self.trades, closed=self.closed[-200:],
-                     last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()})
+                     last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
+                     side=self.side)
         self._write(d)
 
     def due(self, now=None):
@@ -23473,6 +23557,8 @@ class C524CrossVenue(_C501Store):
             else:
                 p['fund_from'] = today
                 n_fund += 1
+            self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d     # C529: each venue's own side
+            self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b
             p.update(d_px=dpx, b_px=bpx, pnl=p['pnl'] + pr + fu_d + fu_b, funding=p['funding'] + fu_d + fu_b,
                      s_now=sig.get(c))
             self.price_pnl += pr
@@ -23496,6 +23582,7 @@ class C524CrossVenue(_C501Store):
             if why:
                 n = abs(p['d_qty']) * p['cv'] * p['d_px']
                 cost = n * (_C524_COST_B + _C524_COST_D)
+                self.side['b'] -= n * _C524_COST_B; self.side['d'] -= n * _C524_COST_D
                 self.fees += cost; self.eq -= cost; day_pnl -= cost
                 p['pnl'] -= cost
                 self.closed = (self.closed + [dict(coin=c, why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
@@ -23522,6 +23609,7 @@ class C524CrossVenue(_C501Store):
             nd = k * p_['cv'] * dpx
             side = 1 if sig[c] > 0 else -1                         # +1: Delta dearer for longs -> short Delta
             cost = nd * (_C524_COST_B + _C524_COST_D)
+            self.side['b'] -= nd * _C524_COST_B; self.side['d'] -= nd * _C524_COST_D
             self.fees += cost; self.eq -= cost; day_pnl -= cost
             self.pairs[c] = dict(side=side, d_sym=p_['sym'], cv=p_['cv'], d_qty=float(-side * k), b_qty=side * nd / bpx,
                                  d_px=dpx, b_px=bpx, notional=round(nd, 2), s_entry=sig[c], s_now=sig[c],
@@ -23560,6 +23648,52 @@ class C524CrossVenue(_C501Store):
             self._fail_at = time.time()
             logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
 
+    def margins(self):
+        """C529: each venue's side on its own. Live, the trade is two accounts --
+        half the capital on Delta, half on Binance -- and money cannot move between
+        them by itself, so a rally in the coins hurts the short side's account
+        before the long side's gain can be moved across. Each side: its half of the
+        start + its own P&L since (`side`, at the daily marks) + the move since the
+        last mark, at prices the bot holds; its notional; its leverage."""
+        e = getattr(self.bot, 'c488', None)
+        de = getattr(self.bot, 'c521d', None)
+        dm = {s_: float(x.get('mark') or 0.0) for s_, x in (getattr(de, 'marks', None) or {}).items()}
+        half = self.start_equity / 2.0
+        out = {}
+        for v in ('d', 'b'):
+            mv = notional = 0.0
+            for c, p in self.pairs.items():
+                if v == 'd':
+                    px = dm.get(p['d_sym']) or p['d_px']
+                    mv += p['d_qty'] * p['cv'] * (px - p['d_px']); notional += abs(p['d_qty']) * p['cv'] * px
+                else:
+                    px = (e.mark(C488Engine._ccxt(c + 'USDT')) if e is not None else 0.0) or p['b_px']
+                    mv += p['b_qty'] * (px - p['b_px']); notional += abs(p['b_qty']) * px
+            eqv = half + float(self.side.get(v, 0.0)) + mv
+            out[v] = dict(eq=round(eqv, 2), start=round(half, 2), notional=round(notional, 2),
+                          lev=round(notional / eqv, 2) if eqv > 0 else None,
+                          frac=round(eqv / half, 3) if half > 0 else None)
+        return out
+
+    def margin_watch(self):
+        """C529: log once a day per level when a side runs low. Live, 65% is the
+        warning and 50% is when the reserve tops that side up (C528_RESERVE)."""
+        if not self.start_equity or not self.pairs:
+            return {}
+        m = self.margins()
+        day = datetime.utcnow().strftime('%Y-%m-%d')
+        for v, name in (('d', 'Delta'), ('b', 'Binance')):
+            f = m[v]['frac'] or 1.0
+            lvl = 'reserve' if f < float(getattr(self.cfg, 'C529_XV_RESERVE_AT', 0.50)) else (
+                'warn' if f < float(getattr(self.cfg, 'C529_XV_WARN_AT', 0.65)) else '')
+            if lvl and self._warned.get(v + lvl) != day:
+                self._warned[v + lvl] = day
+                logger.warning(f"{'🛑' if lvl == 'reserve' else '⚠️'} C529 cross-venue (paper): the {name} side is at "
+                               f"${m[v]['eq']:.2f}, {100 * f:.0f}% of its ${m[v]['start']:.2f} (leverage {m[v]['lev']}x)"
+                               + (" -- live, this is when the reserve tops it up" if lvl == 'reserve' else
+                                  " -- watch it; at 50% the reserve tops it up"))
+        return m
+
     def status(self):
         with self._lock:
             base = self.start_equity
@@ -23576,7 +23710,29 @@ class C524CrossVenue(_C501Store):
                         n=len(self.pairs), pairs=pairs, fees=round(self.fees, 4), funding=round(self.funding, 4),
                         price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
                         last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
-                        record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)))
+                        record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)),
+                        margins=self._margins_safe(), pending=self._pending_safe())
+
+    def _margins_safe(self):
+        try:
+            return self.margins() if self.start_equity else {}
+        except Exception:
+            return {}
+
+    def _pending_safe(self):
+        """C529: the funding settled since the last run (C527Pending), so this panel no
+        longer reads 'funding +$0.00' while the total counts what has settled since"""
+        try:
+            pend = getattr(self.bot, 'c527p', None)
+            if pend is None or not pend.active():
+                return None
+            tot = pend.for_total()[1]
+            if tot is None:
+                return None
+            return dict(total=round(tot, 4), by={c: round(v, 4) for c, v in (pend.xv_by or {}).items()},
+                        at=pend.at)
+        except Exception:
+            return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -23623,6 +23779,7 @@ class C527Pending:
         self.n_carry = self.n_xvenue = 0
         self.sig = (None, None)         # what each ledger held when read: a run, reset or new entry voids it
         self._bh = {}                   # settlement hour (ms) -> {raw symbol: rate}
+        self.xv_by, self.ca_by = {}, {}  # C529: the same, per pair / per position, for the panels
 
     def active(self):
         return bool(getattr(self.cfg, 'C527_PENDING', True)) and _c516_venue(self.cfg) == 'binance'
@@ -23681,14 +23838,15 @@ class C527Pending:
                 with self._lock:
                     self.carry = self.xvenue = 0.0
                     self.n_carry = self.n_xvenue = 0
-                    self.at, self.sig = now, sig
+                    self.at, self.sig, self.xv_by, self.ca_by = now, sig, {}, {}
                 return
             # the reads happen outside the lock the page waits on
             bf = self._binance(min(since), now_ms)
-            c_sum = 0.0
+            c_sum, c_by, x_by = 0.0, {}, {}
             for r, p in cpos.items():
                 p1 = e.mark(C488Engine._ccxt(r)) or p['p']
-                c_sum += sum(x for t, x in bf.get(r, []) if p['marked'] < t <= now_ms) * p['qp'] * p1
+                c_by[r] = sum(x for t, x in bf.get(r, []) if p['marked'] < t <= now_ms) * p['qp'] * p1
+                c_sum += c_by[r]
             dm = {s: float(x.get('mark') or 0.0) for s, x in (getattr(de, 'marks', None) or {}).items()}
 
             def one(c):
@@ -23710,12 +23868,16 @@ class C527Pending:
                     raise RuntimeError(f'no Delta product for {c} yet')
                 hrs = max(1, int(pr.get('iv') or 28800) // 3600)
                 st = int(p['fund_from']) // 1000
-                x_sum += sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in rec
-                             if (int(x['time']) // 3600) % hrs == 0 and st <= int(x['time']) <= now)
-                x_sum += sum(-p['b_qty'] * bpx * r for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
+                xc = sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in rec
+                         if (int(x['time']) // 3600) % hrs == 0 and st <= int(x['time']) <= now)
+                xc += sum(-p['b_qty'] * bpx * r for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
+                x_by[c] = xc
+                x_sum += xc
             with self._lock:
                 self.carry, self.xvenue, self.n_carry, self.n_xvenue, self.at = c_sum, x_sum, len(cpos), len(xpairs), now
-                self.sig = sig
+                self.sig, self.xv_by, self.ca_by = sig, x_by, c_by
+            if xv is not None and xv.active():
+                xv.margin_watch()                                # C529: each venue's side, once an hour
         except Exception as ex:
             self._fail_at = now
             logger.warning(f"⚠️ C527 funding since the daily runs not read ({type(ex).__name__}: {ex}) -- again in 10 min")
@@ -24452,8 +24614,10 @@ class TradingBot:
                            f"spot minimum ${float(getattr(c, 'C502_SPOT_MIN_ORDER', 1.0)):.0f}, "
                            f"{h:02d}:{m:02d} UTC")
             if bool(getattr(c, 'C501_SAVINGS', True)):
-                led.append(f"idle cash -> Savings at {100 * float(getattr(c, 'C501_SAVINGS_APR', 0.0763)):.2f}% "
-                           f"every minute")
+                led.append((f"idle cash -> Savings at Binance's own rate (read every 6 h; "
+                            f"{100 * float(getattr(c, 'C501_SAVINGS_APR', 0.0763)):.2f}% until the first read) every minute")
+                           if _c516_venue(c) == 'binance' and getattr(c, 'C527_SAVINGS_LIVE', True) else
+                           f"idle cash -> Savings at {100 * float(getattr(c, 'C501_SAVINGS_APR', 0.0763)):.2f}% every minute")
             _k4511 = getattr(self, 'c501k', None)       # C511: off when the tournament's K4 row covers it
             if (_k4511.active() if _k4511 is not None else
                     (bool(getattr(c, 'C501_K4', True)) and getattr(self, 'c510t', None) is None)):
@@ -42941,8 +43105,15 @@ class RemoteControl:
                         # in the log files, so the panel showed five lines while
                         # the interesting numbers sat in a file nobody could
                         # reach from a phone. All of it travels now.
+                        _sm529 = None                    # C529: the log's SESSION row (C498), for the tile
+                        try:
+                            _e529 = getattr(bot_ref, 'c488', None)
+                            if _e529 is not None and _e529.active() and _ss486 > 0 and _e529.marked_ok():
+                                _sm529 = round(float(_e529.live_equity()) - (_ss486 + _e529.carried_open()), 2)
+                        except Exception:
+                            _sm529 = None
                         _out469 = {
-                            'equity': round(eq, 2), 'mode': mode, 'pnl': pnl,
+                            'equity': round(eq, 2), 'mode': mode, 'pnl': pnl, 'session_marked': _sm529,
                             'positions': n_pos, 'win_rate': wr,
                             'scan_age_s': scan_age, 'market_R': round(r, 3),
                             'version': _OMEGA_VERSION,
@@ -43432,8 +43603,11 @@ async function pull(){
     q('eq').innerHTML=money(d.equity);
     /* C486: "this run" resets on every restart (the server's nightly updates
        restart the bot); "today" is anchored at midnight and survives it. */
-    q('eqs').innerHTML='this run <span class="'+cls(d.pnl)+'">'+sgn(d.pnl)+'</span>'+
-      (d.day?' \u00b7 today <span class="'+cls(d.day.realised)+'">'+sgn(d.day.realised)+'</span>':'');
+    /* C529: while the book trades, "this run" is MARKED now minus marked at the first mark -- the log's
+       SESSION row (C498). Realised alone read +$0.00 beside a log reading -$0.34 (3 Oct 22:54 IST). */
+    var srun=(d.session_marked!==undefined&&d.session_marked!==null)?d.session_marked:d.pnl;
+    q('eqs').innerHTML='this run <span class="'+cls(srun)+'">'+sgn(srun)+'</span>'+
+      (d.day?' \u00b7 today realised <span class="'+cls(d.day.realised)+'">'+sgn(d.day.realised)+'</span>':'');
     /* C495: the book holds its P&L open for days to weeks, so the realised
        figure above can sit dollars away from what the account is worth. */
     var bk=d.c488;
@@ -43533,7 +43707,8 @@ async function pull(){
         var rc=cy.record||{},ch='<div class="s muted">buy the coin, short its perpetual, collect the funding \u00b7 paper ledger from '+
           money(cy.start_equity)+' \u2014 never touches the account \u00b7 runs daily '+cy.next_run_utc+' UTC'+(cy.last_run?' \u00b7 last '+cy.last_run:' \u00b7 first run pending')+'</div>'+
           '<div style="margin:4px 0"><b>'+money(cy.usd)+'</b> <span class="'+cls(cy.pnl_usd)+'">'+sgn(cy.pnl_usd)+' ('+(cy.pct>=0?'+':'')+Number(cy.pct).toFixed(2)+'%)</span>'+
-          ' <span class="muted">'+cy.n+' of '+cy.cap+' held \u00b7 funding '+sgn(cy.funding)+' \u00b7 fees '+money(cy.fees)+' \u00b7 '+(rc.days||0)+'d'+(rc.t!==undefined?' \u00b7 t '+rc.t+' \u00b7 '+rc.npos+'/4':'')+'</span></div>';
+          ' <span class="muted">'+cy.n+' of '+cy.cap+' held \u00b7 funding '+sgn(cy.funding)+(cy.pending!==null&&cy.pending!==undefined?' booked, '+sgn(cy.pending)+' settled since (booked at the next run)':'')+
+          ' \u00b7 fees '+money(cy.fees)+' \u00b7 '+(rc.days||0)+'d'+(rc.t!==undefined?' \u00b7 t '+rc.t+' \u00b7 '+rc.npos+'/4':'')+'</span></div>';
         (cy.positions||[]).forEach(function(p){ch+='<div class="s">'+p.coin+' <span class="muted">funding '+p.f3+'%/yr \u00b7 '+p.days+'d</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span></div>'});
         q('carry').innerHTML=ch;
       }
@@ -43597,6 +43772,9 @@ async function pull(){
                 Number(dl.delta_cmp_pct).toFixed(2)+'% vs the Binance book '+(dl.book_pct>=0?'+':'')+Number(dl.book_pct).toFixed(2)+'%</span>':'')+
               ' <span class="muted">\u00b7 '+dl.n+' held \u00b7 gross '+money(inf.gross||0)+' of '+money(inf.planned||0)+' planned \u00b7 fees '+money(dl.fees)+
               ' \u00b7 funding '+sgn(dl.funding)+'</span></div>';
+            var gd=dl.guard||{};
+            if(gd.budget)dh+='<div class="s'+(dl.halt?' bad':' muted')+'">its own month guard (C529): '+money(gd.used)+' of '+money(gd.budget)+' used on marked equity from '+money(gd.eq0)+
+              (dl.halt?' \u00b7 CLOSED: '+dl.halt:' \u00b7 at the limit it closes everything; it also closes if the main book halts (no fresh plan)')+'</div>';
             (dl.positions||[]).forEach(function(p){dh+='<div class="s">'+p.coin+' '+p.side+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+
               '</span> <span class="muted">'+Math.abs(p.contracts)+' contracts \u00b7 funding '+sgn(p.funding)+'</span></div>'});
             if((inf.missing||[]).length)dh+='<div class="s muted">not on Delta: '+inf.missing.join(', ')+'</div>';
@@ -43615,11 +43793,19 @@ async function pull(){
       else{
         var xi=xv.info||{},xh='<div class="s muted">the same coin long on the venue where longs pay less funding, short on the other: prices cancel, the funding difference is collected · '+
           'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · marked, funded and traded once a day at '+xv.next_run_utc+' UTC (a new pair shows only its costs until then) · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';
+        var xp=xv.pending||null, xby=(xp&&xp.by)||{};   /* C529: what has settled since the daily run, so "+$0.00" no longer stands alone */
         xh+='<div style="margin:4px 0"><b>'+money(xv.eq)+'</b> <span class="'+cls(xv.pnl)+'">'+sgn(xv.pnl)+' ('+(xv.pct>=0?'+':'')+Number(xv.pct).toFixed(2)+'%)</span>'+
-          ' <span class="muted">· '+xv.n+' pairs · funding '+sgn(xv.funding)+' · prices '+sgn(xv.price_pnl)+' · fees '+money(xv.fees)+
+          ' <span class="muted">· '+xv.n+' pairs · funding '+sgn(xv.funding)+' booked'+(xp?', <span class="'+cls(xp.total)+'">'+sgn(xp.total)+'</span> settled since (booked at the next run)':'')+' · prices '+sgn(xv.price_pnl)+' · fees '+money(xv.fees)+
           (xi.scored!==undefined?' · '+xi.wide+' of '+xi.scored+' coins at 20%/yr+':'')+'</span></div>';
-        (xv.pairs||[]).forEach(function(p){xh+='<div class="s">'+p.coin+' <span class="muted">'+p.how+' '+money(p.notional)+' a leg · spread '+
-          (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+' · '+p.days+'d</span></div>'});
+        var mg=xv.margins||{};
+        if(mg.d&&mg.b){var side=function(nm,m){return nm+' side <b>'+money(m.eq)+'</b> of '+money(m.start)+' ('+(m.lev!==null?m.lev+'x':'\u2014')+')'};
+          var lo=Math.min(mg.d.frac||1,mg.b.frac||1);
+          xh+='<div class="s '+(lo<0.5?'bad':(lo<0.65?'warn':'muted'))+'">live this is two accounts: '+side('Delta',mg.d)+' \u00b7 '+side('Binance',mg.b)+
+            ' \u00b7 warn at 65%, the reserve tops a side up at 50% (C529)</div>';}
+        (xv.pairs||[]).forEach(function(p){var pb=xby[p.coin];
+          xh+='<div class="s">'+p.coin+' <span class="muted">'+p.how+' '+money(p.notional)+' a leg · spread '+
+          (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+
+          (pb!==undefined?' (+'+(pb>=0?'':'-')+'$'+Math.abs(pb).toFixed(2)+' settled since)':'')+' · '+p.days+'d</span></div>'});
         if((xi.under_one_contract||[]).length)xh+='<div class="s muted">skipped (one Delta contract is more than a leg): '+xi.under_one_contract.join(', ')+'</div>';
         q('xvenue').innerHTML=xh;
       }
@@ -43633,11 +43819,14 @@ async function pull(){
         var pc7=function(v){return v===null||v===undefined?'':' ('+(v>=0?'+':'')+Number(v).toFixed(2)+'%)'};
         var th7='<div class="s muted">'+(tt7.paper?'every account here is paper: what it would be worth if each were real money, at prices now':
           'the book is LIVE money; the rest are paper')+'</div>';
-        [['your plan ('+(tt7.plan_names||[]).join(' + ')+')',tt7.plan],['every paper account, as if each were funded',tt7.all]].forEach(function(z){
+        [['your plan ('+(tt7.plan_names||[]).join(' + ')+')',tt7.plan]].forEach(function(z){   /* C529: no "every account" sum: it read as money needed */
           th7+='<div style="margin:4px 0"><b>'+money(z[1].eq)+'</b> <span class="muted">of '+money(z[1].start)+'</span> <span class="'+cls(z[1].pnl)+'">'+sgn(z[1].pnl)+pc7(z[1].pct)+
             '</span> <span class="muted">· '+z[0]+'</span></div>'});
-        tt7.rows.forEach(function(r){th7+='<div class="s">'+r.label+' <b>'+money(r.eq)+'</b> <span class="'+cls(r.pnl)+'">'+sgn(r.pnl)+pc7(r.pct)+'</span> <span class="muted">· '+
-          (r.plan?'in your plan · ':'experiment · ')+r.how+'</span></div>'});
+        var row7=function(r){return '<div class="s">'+r.label+' <b>'+money(r.eq)+'</b> <span class="'+cls(r.pnl)+'">'+sgn(r.pnl)+pc7(r.pct)+'</span> <span class="muted">· '+r.how+'</span></div>'};
+        tt7.rows.filter(function(r){return r.plan}).forEach(function(r){th7+=row7(r)});
+        var ex7r=tt7.rows.filter(function(r){return !r.plan});
+        if(ex7r.length){th7+='<div class="s muted" style="margin-top:6px">experiments — paper only, not part of your money, never added up:</div>';
+          ex7r.forEach(function(r){th7+=row7(r)});}
         if(tt7.tax)th7+='<div class="s">your plan after tax on its net profit <b>'+money(tt7.tax.eq_after)+'</b> <span class="'+cls(tt7.tax.after)+'">'+sgn(tt7.tax.after)+
           '</span> <span class="muted">· tax '+money(tt7.tax.tax)+' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess) · a loss is not taxed</span></div>';
         if(tt7.budget)th7+='<div class="s muted">budget: at most '+money(tt7.budget.invest)+' invested + '+money(tt7.budget.reserve)+
@@ -43670,6 +43859,10 @@ async function pull(){
       var c52r=d.c521||{};
       if(c52r.bfusd&&c52r.bfusd.mode==='paper')pp.push('BFUSD wallet');
       if(c52r.delta&&c52r.delta.mode==='paper')pp.push('Delta Exchange India book $'+Math.round(c52r.delta.start_equity||500));
+      if(d.c524&&d.c524.mode==='paper')pp.push('Delta vs Binance funding $'+Math.round(d.c524.start_equity||500));   /* C529: it ran but was not listed */
+      var pl7=d.c527||{};   /* C529: say which paper accounts are the operator's plan */
+      if(pl7.plan_names&&pl7.plan_names.length)rn.push('<div style="margin:4px 0"><b>YOUR PLAN</b> (paper until you go live): '+
+        pl7.plan_names.join(' + ')+' = '+money((pl7.plan||{}).start||0)+'</div>');
       if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
       var sh5=d.scanner_hist||{};
       if(bk.mode==='portfolio')rn.push('<div style="margin:4px 0"><b>OFF</b> the old intraday scanner'+

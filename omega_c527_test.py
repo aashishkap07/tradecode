@@ -291,7 +291,7 @@ om.requests.get = real_get
 
 print("\n6. WIRED")
 ok("in the API, the status block and the page", all(t in SRC for t in ("_out469['c527'] = _c527_total(bot_ref)",
-                                                                      "self._pack('TOTAL'", 'id="alltotal"', "var tt7=d.c527;")))
+                                                                      "self._pack('PLAN'", 'id="alltotal"', "var tt7=d.c527;")))
 
 
 def free_port():
@@ -316,11 +316,11 @@ NOW = time.time(); set_prices()
 rep = om._C462Report(os.path.join(BASE, 'r.log')); rows = []
 rep._emit = lambda line: rows.append(str(line))
 rep.status(fbot)
-ix = [i for i, r in enumerate(rows) if 'TOTAL' in r]
+ix = [i for i, r in enumerate(rows) if r.strip().startswith('PLAN')]
 tot = ' '.join(r.strip() for r in rows[ix[0]:ix[0] + 3]) if len(ix) == 1 else ''   # a row wraps to the phone's width
-ok("the log's status block has a TOTAL row: the plan and every account, with their starts",
-   f"planned ${T['plan']['eq']:,.2f} of ${T['plan']['start']:,.2f}" in tot and 'all 6 accounts' in tot and 'paper' in tot,
-   tot or '\n'.join(rows[-12:]))
+ok("the log's status block has a PLAN row: the plan, from its start, and after tax on net profit (C529: no 'all accounts' sum)",
+   f"${T['plan']['eq']:,.2f} of ${T['plan']['start']:,.2f}" in tot and 'after tax on net profit' in tot and 'paper' in tot
+   and 'all 6 accounts' not in tot, tot or '\n'.join(rows[-12:]))
 print('     ' + '\n     '.join(r.rstrip() for r in rows[ix[0]:ix[0] + 3]) if ix else '')
 port = free_port(); om.RemoteControl(fbot, port=port).start(); time.sleep(0.6)
 try:
@@ -335,7 +335,8 @@ try:
         svt = pg.inner_text('#savings')
         br.close()
     ok("the panel: both totals, every account's row, BFUSD and TDS notes, what is left out",
-       'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' in txt and 'Main book' in txt
+       'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' not in txt
+       and 'experiments — paper only, not part of your money, never added up' in txt and 'Main book' in txt
        and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: at most $1000.00 invested + $200.00 reserve' in txt
        and 'after tax on its net profit' in txt and 'a loss is not taxed' in txt
        and 'BFUSD' in txt and 'TDS' in txt and 'left out' in txt and 'paper' in txt, txt[:700])

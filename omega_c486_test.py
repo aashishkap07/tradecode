@@ -153,7 +153,8 @@ r = render(port)
 if r is None:
     ok("Chromium/playwright available for the page check", False)
 else:
-    ok("equity tile: this run -$1.40 · today -$2.49", 'this run -$1.40' in r['eqs'] and 'today -$2.49' in r['eqs'], r['eqs'])
+    ok("equity tile: this run -$1.40 · today realised -$2.49 (C529: says it is realised)",
+       'this run -$1.40' in r['eqs'] and 'today realised -$2.49' in r['eqs'], r['eqs'])
     ok("record tile: all-time 40W 86L · +$1.54", 'all-time 40W 86L' in r['recs'] and '+$1.54' in r['recs'], r['recs'].replace('\n', ' | '))
     ok("no JavaScript errors", not r['errs'], f"{r['errs']}")
 

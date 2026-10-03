@@ -217,8 +217,11 @@ ok("out when the spread changes sign (COLD: Delta became the dearer side) -- and
 st = x.status()
 ok("status: equity, pairs, funding, price P&L, fees, the record", all(k in st for k in ('eq', 'pairs', 'funding', 'price_pnl',
                                                                                      'fees', 'record', 'next_run_utc')))
+ok("C529: after entries, exits, funding and marks, the two venues' sides sum to the ledger's P&L exactly",
+   abs(x.side['d'] + x.side['b'] - (x.eq - x.start_equity)) < 1e-9 and x.side['d'] != 0 and x.side['b'] != 0,
+   f"{x.side} vs {x.eq - x.start_equity:+.6f}")
 x.save(); x2 = om.C524CrossVenue(xb)
-ok("saved and loaded", x2.eq == x.eq and set(x2.pairs) == set(x.pairs) and x2.trades == x.trades)
+ok("saved and loaded", x2.eq == x.eq and set(x2.pairs) == set(x.pairs) and x2.trades == x.trades and x2.side == x.side)
 ok("wired: created, ticked with the paper ledgers, reset on a fresh start, in the API, the status block, the boot line, "
    "the hourly log push", all(t in SRC for t in ("self.c524x = C524CrossVenue(self)", "self.c521d, self.c524x",
                                                  "bot.c524x.reset()", "_out469['c524']", "self._pack('XVENUE'",
