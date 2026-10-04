@@ -16,6 +16,9 @@ Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`;
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
 `trig_01657znZVsvZxzQZrunVxz5H`.
 
+**Plain-English guide for the operator** (funding as "rent", legs and pairs, the two piggy banks, why
+Binance was left -- the VDA tax on the winning leg, the LRS, TDS): `reports/2026-10-04_plain_english_guide.md`.
+
 **Standing rules from the operator (4 Oct 2026):**
 - **Every reply explains, in plain English with analogies, what was done and how the bot works.**
 - Explain as an expert futures trader; verify against real data; keep this Atlas current; commit and push
