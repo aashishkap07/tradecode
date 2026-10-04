@@ -14,6 +14,18 @@
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
+- **C533 deployed 4 Oct ~21:44 IST** (the cross-venue ledger rebased $500 -> $1000 at 16:14 UTC).
+  The 21:50 IST screens were checked against real prices (`reports/2026-10-04_c533_screens.md`):
+  - the trade: $1001.12 shown; on 1-minute marks at 16:19-16:21 UTC $1000.2-1000.3 + $0.34
+    pending funding (within ~$0.6, timing; C529's error was ~$6);
+  - the sides: Delta $334.80 (screen) vs $334.82 at 16:19 UTC; AIN +24.6% and AIO +14.8% since the
+    00:30 UTC mark, every pair short on Delta, so rallies drain the Delta account;
+  - the Binance book's 9 positions match Binance's marks to the cent.
+  **C534 pushed 4 Oct** (not deployed): Pi42's coin list loads soon after a start (`pi42_boot`,
+  a log line or one warning); PLAN SO FAR shows each part's live figure; the Delta book is "a
+  paper experiment, the same book".
+  **Next:** the first Delta-vs-Pi42 daily run 5 Oct 06:00 IST (monthly even-out, 7 "not on
+  Pi42" exits); a check-in is scheduled after the 06:17 IST logs push.
 - **C529 deployed 4 Oct 00:25 IST** (`OMEGA C529`; detail log to 13:14 IST, 3,898
   lines, 0 Traceback; one warning, the new margin watch doing its job at 11:33:48:
   "the Delta side is at $150.22, 60% of its $250.00 (leverage 4.05x)"; the C529
@@ -496,6 +508,49 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔎 2026-10-04 — C534: THE C533 SCREENS (21:50 IST) CHECKED; THREE SMALL FIXES
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator** (5 screenshots of C533, 21:50 IST): "please analyse everything .. any pending tasks
+remaining? or we straight review now in nov end?". Report: `reports/2026-10-04_c533_screens.md`.
+
+**Checked against real data** (`research` not needed; 1-minute marks of Delta and Binance):
+- the plan $1001.12 (+0.11%): the trade's legs at 16:19-16:21 UTC give $1000.16-1000.33 before
+  the $0.34 of funding settled since the daily run -> $1000.5-1000.7; the screen is within ~$0.6
+  (AIN moved ~1% a minute; the bot's snapshot is not a minute close);
+- Delta side $334.80 / Pi42 side $665.98 (screen) vs $334.82 / $665.34 at 16:19 UTC;
+- AIN +24.6%, AIO +14.8%, IO +4.2% since the 00:30 UTC mark: all 10 pairs are short on Delta (Delta's
+  funding runs higher), so a rally drains the Delta account and fills Pi42's;
+- the Binance book (an experiment): 9 positions, each within a cent of Binance's marks.
+
+**What the next run (5 Oct 00:30 UTC = 06:00 IST) will do** (code read, `run`/`even_out`):
+- the monthly even-out fires (`reb_month` is '' on the server): Pi42 sends ~half the gap (~$165)
+  to Delta, $1 fee;
+- if Pi42's list loads: 7 pairs exit "not on Pi42" (ORDER, AIN, EDEN, AIO, MON, CROSS, STBL), new
+  Pi42 coins enter; if it does not load, nothing exits for that reason and nothing new opens.
+
+**C534 (code):**
+1. `C524CrossVenue.pi42_boot()` from `tick()` before the daily-run check: Pi42's list soon after a
+   start; one line "C534 Pi42's coin list loaded: N rupee perps … held pairs Pi42 does not list,
+   closed at the next daily run: …", or one warning with the curl check; retries every 10 min.
+2. Page: the cross-venue panel says "Pi42's coin list not loaded yet" in amber until it loads;
+   PLAN SO FAR shows each part's live % (the plan row's) and "funding … booked".
+3. The Delta book: section "(paper experiment, the same book)", "the Binance book's own targets
+   held on Delta's whole contracts", log "C521 Delta Exchange India (paper experiment, the same book)".
+4. Version C534; `omega_c534_test.py` 16 checks; `omega_c521_test.py` reads the new log wording.
+
+**Pending (the operator asked):**
+1. 5 Oct ~06:35 IST: a scheduled check of the first Pi42 run (send_later).
+2. 1 Nov 09:56 IST: the monthly review routine (now led by the plan); 2 Dec: the research refresh.
+3. Pi42 = Binance funding check: in each check-in and review (`research/c532_pi42_check.py`, now
+   honouring `OMEGA_BN_FAPI`). 4 Oct 16:30 UTC: 246 twins, 216 same settlement, **91%** within
+   0.002%, median gap 0.0004% (`research/c532_pi42/pi42_vs_binance_20261004_1630.json`).
+4. Before any live money: the Delta India and Pi42 order paths (none built), API keys
+   (trade-only, withdrawals off, IP-locked, in `data/api_keys.json`), and a few months of paper.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 💰 2026-10-04 — C533: THE OPERATOR'S $1000, NO RESERVE -- ALL IN DELTA vs PI42 ($500 A VENUE)

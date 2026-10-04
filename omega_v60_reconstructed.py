@@ -2393,7 +2393,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C533'
+_OMEGA_VERSION = 'C534'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23051,7 +23051,7 @@ class C521Delta(_C501Store):
             self.info = dict(at=time.time(), why=why, n_trades=n, traded=round(traded, 2), held=len(self.pos),
                              planned=round(planned, 2), gross=round(gross, 2), missing=missing[:20], zero=zero[:20])
         self.save()
-        logger.info(f"   🇮🇳 C521 Delta Exchange India (paper, same plan): {len(self.pos)} held, gross ${gross:.2f} of "
+        logger.info(f"   🇮🇳 C521 Delta Exchange India (paper experiment, the same book): {len(self.pos)} held, gross ${gross:.2f} of "
                     f"${planned:.2f} planned ({100 * gross / planned if planned else 0:.0f}%), {n} trades ${traded:.2f} | equity "
                     f"${self.equity():.2f}" + (f" | not on Delta: {', '.join(missing[:8])}" if missing else '')
                     + (f" | not held (under one contract or the $6 floor): {', '.join(zero[:6])}" if zero else '') + f" [{time.time() - t0:.0f}s]")
@@ -23588,6 +23588,7 @@ class C524CrossVenue(_C501Store):
         self._prod_at = 0.0
         self.prods = {}
         self.pi42, self._pi42_at = set(), 0.0                   # C532: the coins Pi42 lists (rupee perps)
+        self._pi42_try, self._pi42_warned = 0.0, False          # C534: loaded soon after a start (pi42_boot)
         self.reset(save=False)
         d = self._read()
         if d:
@@ -23871,6 +23872,7 @@ class C524CrossVenue(_C501Store):
         self._tick_at = time.time()
         if not bool(getattr(self.bot, '_c462_state_settled', False)) or getattr(self.bot, 'c488', None) is None:
             return
+        self.pi42_boot()                                         # C534: Pi42's list before the daily run, not only at it
         if not self.due() or time.time() - self._fail_at < 300:
             return
         try:
@@ -23890,6 +23892,24 @@ class C524CrossVenue(_C501Store):
         except Exception as ex:
             self._fail_at = time.time()
             logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def pi42_boot(self):
+        """C534: load Pi42's coin list soon after a start (then every 6 h, as before), so the page
+        and the log say at once whether the server reaches api.pi42.com -- C533 showed "loads at
+        the next run" for up to 24 hours, and a server that cannot reach it would only have said
+        so at the daily run. A failure retries every 10 minutes and warns once."""
+        if not self.on_pi42() or self.pi42 or time.time() - getattr(self, '_pi42_try', 0.0) < 600:
+            return
+        self._pi42_try = time.time()
+        if self.pi42_refresh(force=True):
+            gone = sorted(c for c in self.pairs if c not in self.pi42)
+            logger.info(f"   \U0001f1ee\U0001f1f3 C534 Pi42's coin list loaded: {len(self.pi42)} rupee perps (api.pi42.com); "
+                        f"held pairs Pi42 does not list, closed at the next daily run: {', '.join(gone) or 'none'}")
+        elif not getattr(self, '_pi42_warned', False):
+            self._pi42_warned = True
+            logger.warning("⚠️ C534 Pi42's coin list did not load (api.pi42.com) -- retrying every 10 min; until it "
+                           "loads the daily run opens no new pair (check: curl -s -o /dev/null -w '%{http_code}' "
+                           "https://api.pi42.com/v1/exchange/exchangeInfo)")
 
     def even_out(self, when):
         """C531: NO RESERVE -- the two accounts top each other up. At the daily run, when a
@@ -44038,7 +44058,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <section><h2>Spot pot <span class="muted">(paper, second $250)</span></h2><div id="spotpot" class="muted">&mdash;</div></section>
 <section><h2>Idle cash &rarr; Savings <span class="muted">(paper)</span></h2><div id="savings" class="muted">&mdash;</div></section>
 <section><h2>BFUSD <span class="muted">(paper, Binance margin asset)</span></h2><div id="bfusd" class="muted">&mdash;</div></section>
-<section><h2>Delta Exchange India <span class="muted">(paper, same plan)</span></h2><div id="delta" class="muted">&mdash;</div></section>
+<section><h2>Delta Exchange India <span class="muted">(paper experiment, the same book)</span></h2><div id="delta" class="muted">&mdash;</div></section>
 <section><h2>Cross-venue funding <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
 <section><h2>Pendle fixed yield <span class="muted">(paper, at most $100)</span></h2><div id="pendle" class="muted">&mdash;</div></section>
 
@@ -44305,8 +44325,9 @@ async function pull(){
       var rx7=[],dl7=(d.c521||{}).delta||{},xv7=d.c524||{},pn7=d.c530||{};
       q('reck').textContent='Plan so far';
       q('rec').innerHTML='<span class="'+cls(P7.plan.pnl)+'">'+pct7(P7.plan.pct)+'</span>';
-      if(dl7.start_equity&&inPlan7('delta'))rx7.push('Delta book '+pct7(dl7.pct)+' \u00b7 '+(dl7.n||0)+' held');
-      if(xv7.start_equity)rx7.push('Delta vs '+(xv7.v2||'Binance')+' '+pct7(xv7.pct)+' \u00b7 '+(xv7.n||0)+' pairs \u00b7 funding '+sgn(xv7.funding));
+      var pr7=function(k){var r=(P7.rows||[]).filter(function(x){return x.key===k})[0];return r&&r.pct!=null?r.pct:null};   /* C534: live, as the headline */
+      if(dl7.start_equity&&inPlan7('delta'))rx7.push('Delta book '+pct7(pr7('delta')!=null?pr7('delta'):dl7.pct)+' \u00b7 '+(dl7.n||0)+' held');
+      if(xv7.start_equity)rx7.push('Delta vs '+(xv7.v2||'Binance')+' '+pct7(pr7('xvenue')!=null?pr7('xvenue'):xv7.pct)+' \u00b7 '+(xv7.n||0)+' pairs \u00b7 funding '+sgn(xv7.funding)+' booked');
       if(inPlan7('reserve'))rx7.push('<span class="muted">reserve '+money((P7.budget||{}).reserve)+' held</span>');
       if(pn7.start_equity)rx7.push('Pendle '+pct7(pn7.pct)+(pn7.hold?' \u00b7 '+(100*pn7.hold.apy_entry).toFixed(2)+'% fixed':' \u00b7 cash'));
       q('recs').innerHTML=rx7.join('<br>')+'<br><span class="muted">target 2\u20134% a month, after tax</span>';
@@ -44408,7 +44429,7 @@ async function pull(){
           if(dl.mode!=='paper'){q('delta').innerHTML='<span class="muted">off</span>'}
           else if(!dl.start_equity){q('delta').innerHTML='<span class="muted">starts within a minute of the book\u2019s rebalance (Delta\u2019s public API)</span>'}
           else{
-            var inf=dl.info||{},dh='<div class="s muted">the book\u2019s own plan held on Delta\u2019s whole contracts \u00b7 Delta\u2019s prices and funding, 0.05% taker + '+
+            var inf=dl.info||{},dh='<div class="s muted">the Binance book\u2019s own targets held on Delta\u2019s whole contracts \u00b7 Delta\u2019s prices and funding, 0.05% taker + '+
               Math.round(100*dl.gst)+'% GST \u00b7 paper account of '+money(dl.start_equity)+' \u2014 never touches money \u00b7 last '+(dl.last_run||'\u2014')+
               (dl.marks_age_min!==null&&dl.marks_age_min!==undefined?' \u00b7 Delta prices '+Math.round(dl.marks_age_min)+' min old (refreshed every 5)':'')+'</div>';
             dh+='<div style="margin:4px 0"><b>'+money(dl.eq)+'</b> <span class="'+cls(dl.pnl)+'">'+sgn(dl.pnl)+' ('+(dl.pct>=0?'+':'')+Number(dl.pct).toFixed(2)+'%)</span>'+
@@ -44439,7 +44460,7 @@ async function pull(){
       else{
         var xi=xv.info||{},v2=xv.v2||'Binance',xh='<div class="s"><b>Delta vs '+v2+'</b>'+(v2==='Pi42'?' <span class="muted">\u00b7 both Indian and settled in rupees: one business income, no 1% TDS, no money abroad (C532) \u00b7 '+
           'Pi42\'s funding and prices are read from Binance, its source (4 Oct: 87% of 246 rates within 0.002%) \u00b7 '+
-          (xv.pi42?'Pi42\'s '+xv.pi42+' coins only':'Pi42\'s coin list loads at the next run (until then nothing new opens)')+' \u00b7 its fee 0.10% + GST \u00b7 '+
+          (xv.pi42?'Pi42\'s '+xv.pi42+' coins only':'<span class="warn">Pi42\'s coin list not loaded yet (tried every 10 min; without it nothing new opens)</span>')+' \u00b7 its fee 0.10% + GST \u00b7 '+
           Math.round(100*(xv.funding_gst||0))+'% GST on funding paid</span>':'')+'</div>'+
           '<div class="s muted">the same coin long on the venue where longs pay less funding, short on the other: prices cancel, the funding difference is collected · '+
           'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · marked, funded and traded once a day at '+xv.next_run_utc+' UTC (a new pair shows only its costs until then) · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';

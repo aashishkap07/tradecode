@@ -167,8 +167,8 @@ ok("buys fill at the ask, sells at the bid; fee = notional x 0.05% x 1.18 (GST)"
 tot_fee = sum(p['fees'] for p in d.pos.values())
 ok("equity = $500 - fees + open P&L at the marks", abs(d.equity() - (500 - tot_fee + d.unrealized())) < 1e-9
    and abs(d.cash - (500 - tot_fee)) < 1e-9, f"equity {d.equity():.4f}")
-ok("one log line says what was held of what was planned", any('C521 Delta Exchange India (paper, same plan)' in m and 'not on Delta: FET' in m
-                                                              for lv, m in LOG), next((m for lv, m in LOG if 'same plan' in m), '')[:200])
+ok("one log line says what was held of what was planned", any('C521 Delta Exchange India (paper experiment, the same book)' in m and 'not on Delta: FET' in m
+                                                              for lv, m in LOG), next((m for lv, m in LOG if 'the same book' in m), '')[:200])
 
 print("\n4. DELTA: REDUCTIONS, FLIPS, THE BAND, FUNDING")
 fd.px['BTC'] = 86000.0; fd.px['ETH'] = 2600.0; d.refresh_marks(force=True)

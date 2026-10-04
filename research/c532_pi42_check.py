@@ -4,13 +4,14 @@ Binance, Pi42's own price source.) Run it any time -- weekly is enough:
 
     pip install "python-socketio[client]" websocket-client     # once
     python3 research/c532_pi42_check.py [OUT.json]
+    (OMEGA_BN_FAPI=https://www.binance.com where fapi.binance.com is blocked, as in the bot)
 
 It reads every Pi42 rupee perp's current and next funding from Pi42's public websocket (markPriceArr, no
 key) and Binance's from its public premiumIndex, and prints how many settle at the same moment and how close
 the next rates are. On 4 Oct 2026: 246 compared, 216 at the same moment, 87% within 0.002% a settlement,
 median gap 0.0005% (research/c532_pi42/). If that falls well below ~80%, the proxy needs a rethink.
 """
-import sys, json, time
+import os, sys, json, time
 import requests
 import numpy as np
 import socketio
@@ -37,7 +38,7 @@ t0 = time.time()
 while time.time() - t0 < 20:
     time.sleep(1)
 sio.disconnect()
-bn = {x['symbol']: x for x in requests.get('https://fapi.binance.com/fapi/v1/premiumIndex', timeout=30).json()}
+bn = {x['symbol']: x for x in requests.get(os.environ.get('OMEGA_BN_FAPI', 'https://fapi.binance.com') + '/fapi/v1/premiumIndex', timeout=30).json()}
 rows = []
 for s, d in got.items():
     if not s.endswith('INR'):
