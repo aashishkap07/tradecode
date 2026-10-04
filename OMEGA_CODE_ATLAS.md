@@ -4,6 +4,18 @@
 # 📌 PENDING TASKS — the operator asked for these to be remembered (25 Sep 2026)
 # ═══════════════════════════════════════════════════════════════════════════
 
+**🎯 LIVE TARGET (the operator, 4 Oct 2026): live money on the Delta India vs Pi42 trade in MARCH 2027,
+not later, if the gates pass** -- `reports/2026-10-04_live_march_roadmap.md` (gates G1-G5 written
+before any result; build steps B1 read-only 8 Oct, B2 order path 15 Nov, B3 dry run 15 Dec, B4 pilot
+1 Feb; go/no-go 20 Feb). **Pending tasks run automatically in ultracode** (this session's
+`flag_settings.ultracode` is true); every routine first checks it and, if off, pushes a prompt to switch
+and waits. Routines (all fire into this session): first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
+(5 Oct 01:05 UTC); B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
+(1st, 09:56 IST); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
+Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
+`trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
+`trig_01657znZVsvZxzQZrunVxz5H`.
+
 **Standing rules from the operator (4 Oct 2026):**
 - **Every reply explains, in plain English with analogies, what was done and how the bot works.**
 - Explain as an expert futures trader; verify against real data; keep this Atlas current; commit and push
@@ -14,6 +26,14 @@
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
+- **C534 deployed 4 Oct 23:21:23 IST**, verified in the 00:17 IST logs push: `OMEGA C534`, "C534 Pi42's
+  coin list loaded: 182 rupee perps (api.pi42.com); held pairs Pi42 does not list, closed at the next
+  daily run: AIN, AIO, CROSS, EDEN, MON, ORDER, STBL", 0 Traceback, 0 warnings. The 23:59 IST screens, checked on both venues' 1-minute marks at
+  18:27-18:30 UTC: plan $1000.46 (real $1000.06-1000.20 + $0.38 pending = within ~$0.15); Delta side
+  $327.42 (real $327.8-328.1), Pi42 $672.65 (real $672.1-672.4); PLAN SO FAR now +0.05% on both lines;
+  "Pi42's 182 coins only" (the server reaches api.pi42.com); the Delta book retitled. Live feasibility
+  (4 Oct): Pi42 trading API (fapi.pi42.com, HMAC-SHA256, IP allow-list), minimum order Rs 546 on 178
+  of 205 rupee perps (ETH Rs 2,200, BTC Rs 10,994); Delta India trading keys need an IP whitelist.
 - **C533 deployed 4 Oct 21:44:52 IST**, verified in the 22:17 IST logs push: `OMEGA C533`, "C530
   cross-venue (paper) rebased $500.00 -> $1000.00 (x2.0000)", "YOUR PLAN … $1000 = $1000 of your
   $1000", 0 Traceback, 0 warnings; the ledger's `reb_month` is '' (the monthly even-out fires at
