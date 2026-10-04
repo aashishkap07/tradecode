@@ -2386,7 +2386,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C530'
+_OMEGA_VERSION = 'C531'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3131,30 +3131,33 @@ class Config:
         self.C521_BFUSD_BOOST = 0.0951          # C521: the boosted APY shown beside it (not booked)
         self.C521_BFUSD_TDS = 0.01              # C521: India's 1% TDS, once, on converting USDT to BFUSD (creditable)
         self.C521_DELTA = True                  # C521: the same book on Delta Exchange India (paper)
-        self.C521_DELTA_EQUITY = 500.0          # C521: its own paper capital (whole contracts hold 93% of the plan at $500)
+        self.C521_DELTA_EQUITY = 200.0          # C531: the operator's $600 -- $200 here, $400 cross-venue (research/
+                                                # c531_split_600.txt); a ledger begun at another size is rebased at start
         self.C521_DELTA_GST = 0.18              # C521: GST on Delta's fees
         self.C521_DELTA_MARK_S = 300            # C521: Delta's tickers for the panel every 5 min (forced at trades/funding)
         self.C524_XVENUE = True                 # C524: Delta vs Binance funding spread, both legs (paper, round 15)
-        self.C524_XVENUE_EQUITY = 250.0         # C530: its paper account ($125 Delta + $125 Binance); a ledger
+        self.C524_XVENUE_EQUITY = 400.0         # C531: its paper account ($200 Delta + $200 Binance); a ledger
                                                 # begun at another size is rebased to this at start (x to/from)
+        self.C531_XV_REBALANCE = True           # C531: no reserve -- the two accounts are evened out at the daily run
+                                                # when a side is under C529_XV_WARN_AT of their mean, and once a month
+        self.C531_XV_TRANSFER_FEE = 1.0         # C531: a transfer between the venues, paid by the side that sends
         self.C524_XVENUE_RUN_UTC = (0, 30)      # C524: once a day, after the book (00:05), carry (00:10), spot (00:20)
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
-        self.C530_PENDLE = True                 # C530: Pendle fixed yield on a stablecoin (paper, pre-registered rule)
+        self.C530_PENDLE = False                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
         self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
         self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
         self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
-        self.C527_PLAN = ('delta', 'xvenue', 'pendle')   # C530: the operator's plan -- the $500 book on Delta India
-                                                # (INR-settled: tax on net profit, no USDT premium, no TDS), $250
-                                                # cross-venue ($125 Delta + $125 Binance) and $100 Pendle fixed yield.
-                                                # ('book', 'savings', ...) if the CA rules Binance's futures business
-                                                # income too. The rest stay paper experiments.
-        self.C528_BUDGET = 1000.0               # C528: the most the operator will invest: $850 in the plan ...
-        self.C528_RESERVE = 100.0               # C530: ... and $100 kept back, only to top up a cross-venue side
+        self.C527_PLAN = ('delta', 'xvenue', 'pendle')   # C531: the operator's plan -- the $200 book on Delta India
+                                                # (INR-settled: tax on net profit) and $400 cross-venue ($200 Delta +
+                                                # $200 Binance); Pendle counts only while C530_PENDLE is on.
+                                                # The rest stay paper experiments.
+        self.C528_BUDGET = 600.0                # C531: the operator's whole equity, all in the plan ...
+        self.C528_RESERVE = 0.0                 # ... with no reserve: the two cross-venue accounts top each other up
         self.C529_XV_WARN_AT = 0.65             # C529: a cross-venue side (one venue's account) at 65% of its start: warn
-        self.C529_XV_RESERVE_AT = 0.50          # C529: ... at 50%: live, the reserve tops that side up
+        self.C529_XV_RESERVE_AT = 0.50          # C529: ... at 50%: live, the reserve (C531: or the other venue) tops it up
         self.C528_TAX_RATE = 0.312              # C528: tax on the plan's NET profit only (business income: your slab
                                                 # + 4% cess; 0.312 = the top slab). A loss is not taxed. Set your own slab.
         self.C488_VOL_PER_DIAL = 4.0 / 3.0      # risk dial 15% -> 20% annual volatility
@@ -22738,6 +22741,76 @@ class C521Delta(_C501Store):
             self.cmp0 = dict(d.get('cmp0') or {})
             self.month = dict(d.get('month') or {})                  # C529
             self.halt = str(d.get('halt') or '')                     # C529
+            self.rebased = list(d.get('rebased') or [])              # C531
+            self.round_pending = bool(d.get('round_pending'))
+            want = float(getattr(self.cfg, 'C521_DELTA_EQUITY', 200.0) or 0.0)
+            if self.start_equity and want > 0 and abs(want - self.start_equity) > 0.005:
+                self.rebase(want)
+
+    def rebase(self, to):
+        """C531: the operator's allocation changed (C521_DELTA_EQUITY). The book is made
+        what it would be had it begun with `to`: every money figure and every position x f
+        (f = to / its start) EXACTLY, so its value is x f at any price. At Delta's next
+        prices (`_round_contracts`) each position goes to the nearest whole contract (at
+        least 1); a cut is booked at that price, an addition averaged in -- the value does
+        not move. Its percentages and month guard (anchor x f) are unchanged; the next
+        rebalance sizes every position on the new equity."""
+        with self._lock:
+            f = float(to) / self.start_equity
+            for k in ('start_equity', 'cash', 'fees', 'funding', 'realized', 'eq_last'):
+                setattr(self, k, getattr(self, k) * f)
+            legs = []
+            for s_, p in self.pos.items():
+                k0 = abs(float(p['qty']))
+                p['qty'] = float(p['qty']) * f
+                for k in ('fees', 'funding'):
+                    p[k] = float(p.get(k) or 0.0) * f
+                legs.append(f"{s_} {k0:g}->{abs(p['qty']):g}")
+            self.round_pending = bool(self.pos)
+            for x in self.closed:
+                for k in ('pnl', 'fees', 'funding'):
+                    if isinstance(x.get(k), (int, float)):
+                        x[k] = round(float(x[k]) * f, 4)
+            if self.month.get('eq0'):
+                self.month['eq0'] = round(float(self.month['eq0']) * f, 4)
+            if self.cmp0.get('delta'):
+                self.cmp0['delta'] = float(self.cmp0['delta']) * f
+            self.rebased = (self.rebased + [dict(at=datetime.utcnow().strftime('%Y-%m-%d %H:%M'),
+                                                 frm=round(float(to) / f, 2), to=round(float(to), 2),
+                                                 f=round(f, 6))])[-10:]
+        self.save()
+        logger.info(f"   \U0001f1ee\U0001f1f3 C531 Delta book (paper) rebased ${float(to) / f:.2f} -> ${float(to):.2f} (x{f:.4f}): cash "
+                    f"${self.cash:.2f}, month anchor ${float(self.month.get('eq0') or 0):.2f}; contracts {', '.join(legs) or 'none held'}"
+                    " (to whole contracts at Delta's next prices; the next rebalance sizes every position on the new equity)")
+
+    def _round_contracts(self):
+        """C531: after a rebase, each position to whole contracts at Delta's mark without
+        changing the book's value: a cut realises its share of the open P&L at the mark, an
+        addition is averaged in at the mark (an accounting step, no fee: nothing is traded)."""
+        done, booked = [], 0.0
+        for s_, p in self.pos.items():
+            mk = (self.marks.get(s_) or {}).get('mark') or 0.0
+            if mk <= 0:
+                return False                                      # wait until every position has a price
+        for s_, p in self.pos.items():
+            mk = self.marks[s_]['mark']
+            q = float(p['qty']); a = abs(q)
+            k1 = float(max(1, int(a + 0.5)) if a >= 0.5 else 0)
+            k1 = k1 if q > 0 else -k1
+            if k1 == q:
+                continue
+            if abs(k1) < a or k1 == 0 or (k1 > 0) != (q > 0):     # a cut: realise that part at the mark
+                r = (q - k1) * p['cv'] * (mk - p['avg'])
+                self.cash += r; self.realized += r; booked += r
+            else:                                                 # an addition: averaged in at the mark
+                p['avg'] = (q * p['avg'] + (k1 - q) * mk) / k1
+            done.append(f"{s_} {a:g}->{abs(k1):g}")
+            p['qty'] = k1
+        self.pos = {k: v for k, v in self.pos.items() if v['qty'] != 0}
+        self.round_pending = False
+        logger.info(f"   \U0001f1ee\U0001f1f3 C531 Delta book (paper): contracts made whole at Delta's prices "
+                    f"({', '.join(done) or 'all already whole'}); ${booked:+.2f} of open P&L booked; its value unchanged")
+        return True
 
     def active(self):
         return bool(getattr(self.cfg, 'C521_DELTA', True))
@@ -22750,6 +22823,8 @@ class C521Delta(_C501Store):
             self.trades, self.last_run, self.eq_last = 0, '', 0.0
             self.cmp0 = {}
             self.month, self.halt, self._guard_view = {}, '', {}     # C529: its own month guard
+            self.rebased = []                                        # C531
+            self.round_pending = False
         if save:
             self.save()
 
@@ -22758,7 +22833,8 @@ class C521Delta(_C501Store):
             d = dict(start_equity=self.start_equity, cash=self.cash, pos=self.pos, fees=self.fees, cmp0=self.cmp0,
                      funding=self.funding, realized=self.realized, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
-                     eq_last=self.eq_last, month=self.month, halt=self.halt)
+                     eq_last=self.eq_last, month=self.month, halt=self.halt, rebased=self.rebased,
+                     round_pending=self.round_pending)
         self._write(d)
 
     # ── Delta's tables ───────────────────────────────────────────────────────
@@ -22805,6 +22881,10 @@ class C521Delta(_C501Store):
                 continue
         if len(m) >= 20:
             self.marks, self._marks_at = m, time.time()
+            if getattr(self, 'round_pending', False):              # C531: after a rebase, whole contracts at these prices
+                with self._lock:
+                    if self._round_contracts():
+                        self.save()
             # C530: Binance's prices AT THE SAME MOMENT, for the cross-venue pairs. Their two legs were
             # priced at different times (Delta's tickers every 5 min, Binance's every 30 s), so a fast coin
             # moved one leg and not the other: on 4 Oct AIN moved up to 5.6% in 5 minutes and the plan
@@ -22894,7 +22974,7 @@ class C521Delta(_C501Store):
                 logger.warning("⚠️ C521 Delta Exchange India did not answer -- its paper book waits for the next rebalance")
                 return
             if not self.start_equity:
-                self.start_equity = float(getattr(self.cfg, 'C521_DELTA_EQUITY', 500.0))
+                self.start_equity = float(getattr(self.cfg, 'C521_DELTA_EQUITY', 200.0))
                 self.cash = self.start_equity
                 self.eq_last = self.start_equity
                 why = 'first'
@@ -23128,7 +23208,8 @@ class C521Delta(_C501Store):
                         fees=round(self.fees, 4), funding=round(self.funding, 4), realized=round(self.realized, 4),
                         trades=self.trades, n=len(self.pos), positions=rows, last_run=self.last_run,
                         info=self.info, gst=float(getattr(self.cfg, 'C521_DELTA_GST', 0.18)),
-                        listed=len(self.prods), guard=dict(getattr(self, '_guard_view', {}) or {}), halt=self.halt)
+                        listed=len(self.prods), guard=dict(getattr(self, '_guard_view', {}) or {}), halt=self.halt,
+                        rebased=self.rebased[-1:])
 
 
 class C501Spot(_C501Store):
@@ -23491,7 +23572,10 @@ class C524CrossVenue(_C501Store):
                 rest = (self.eq - self.start_equity) + self.fees
                 self.side = {'b': -fb + rest / 2.0, 'd': -(self.fees - fb) + rest / 2.0}
             self.rebased = list(d.get('rebased') or [])
-            want = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 250.0) or 0.0)
+            self.transfers = list(d.get('transfers') or [])[-50:]                 # C531
+            self.transfer_fees = float(d.get('transfer_fees') or 0.0)
+            self.reb_month = str(d.get('reb_month') or '')
+            want = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 400.0) or 0.0)
             if self.start_equity and want > 0 and abs(want - self.start_equity) > 0.005:
                 self.rebase(want)
 
@@ -23506,6 +23590,7 @@ class C524CrossVenue(_C501Store):
             f = float(to) / self.start_equity
             for k in ('start_equity', 'eq', 'fees', 'funding', 'price_pnl'):
                 setattr(self, k, getattr(self, k) * f)
+            self.transfer_fees = float(getattr(self, 'transfer_fees', 0.0) or 0.0) * f
             self.side = {v: float(x) * f for v, x in self.side.items()}
             legs = []
             for c, p in self.pairs.items():
@@ -23542,6 +23627,7 @@ class C524CrossVenue(_C501Store):
             self.side = {'d': 0.0, 'b': 0.0}                     # C529: each venue's own P&L since the start
             self._warned = {}
             self.rebased = []                                    # C530: each change of its allocation
+            self.transfers, self.transfer_fees, self.reb_month = [], 0.0, ''   # C531: between the two venues
         if save:
             self.save()
 
@@ -23550,7 +23636,8 @@ class C524CrossVenue(_C501Store):
             d = dict(start_equity=self.start_equity, eq=self.eq, pairs=self.pairs, fees=self.fees,
                      funding=self.funding, price_pnl=self.price_pnl, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
-                     side=self.side, rebased=self.rebased)
+                     side=self.side, rebased=self.rebased, transfers=self.transfers[-50:],
+                     transfer_fees=self.transfer_fees, reb_month=self.reb_month)
         self._write(d)
 
     def due(self, now=None):
@@ -23591,7 +23678,7 @@ class C524CrossVenue(_C501Store):
         now_ms = int(now_ms or time.time() * 1000)
         today = now_ms // _C488_DAY * _C488_DAY
         if not self.start_equity:
-            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 250.0))
+            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 400.0))
         if not self.refresh_products(force=True):
             raise RuntimeError("Delta's product list did not load")
         e.refresh_marks(force=True)
@@ -23638,6 +23725,10 @@ class C524CrossVenue(_C501Store):
             day_pnl += pr + fu_d + fu_b
         eq0 = self.eq
         self.eq += day_pnl
+        # 1b. C531: no reserve -- the two venues' accounts even each other out
+        tr = self.even_out(datetime.utcfromtimestamp(now_ms / 1000))
+        if tr:
+            day_pnl -= tr['fee']
         # 2. exits
         out = []
         for c in list(self.pairs):
@@ -23720,6 +23811,47 @@ class C524CrossVenue(_C501Store):
             self._fail_at = time.time()
             logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
 
+    def even_out(self, when):
+        """C531: NO RESERVE -- the two accounts top each other up. At the daily run, when a
+        side is under C529_XV_WARN_AT (65%) of the two sides' mean, or at the first run of a
+        month when they differ by more than 2%, the richer side sends half the difference
+        (a transfer between the venues; the sender pays C531_XV_TRANSFER_FEE). Round 17's
+        history (research/c531_split_600.txt, $400, whole contracts): monthly only, a side
+        fell to 24.5% of its half and below 50% in 21% of months; with this rule its lowest
+        was 57.3% and below 50% in 4% of months, ~8 transfers a year. Live, the operator
+        makes the transfer; the log says how much and which way. Returns the transfer or None."""
+        if not getattr(self.cfg, 'C531_XV_REBALANCE', True) or not self.start_equity:
+            return None
+        half0 = self.start_equity / 2.0
+        ed, eb = half0 + float(self.side.get('d', 0.0)), half0 + float(self.side.get('b', 0.0))
+        mean = (ed + eb) / 2.0
+        if mean <= 0:
+            return None
+        lo = min(ed, eb) / mean
+        month = when.strftime('%Y-%m')
+        fee = float(getattr(self.cfg, 'C531_XV_TRANSFER_FEE', 1.0))
+        amt = abs(eb - ed) / 2.0
+        why = None
+        if lo < float(getattr(self.cfg, 'C529_XV_WARN_AT', 0.65)):
+            why = f"the {'Delta' if ed < eb else 'Binance'} side at {100 * lo:.0f}% of the two sides' mean"
+        elif self.reb_month != month and lo < 0.98:
+            why = 'the monthly re-balance'
+        self.reb_month = month
+        if why is None or amt <= fee:
+            return None
+        src, dst = ('b', 'd') if eb > ed else ('d', 'b')
+        self.side[src] -= amt + fee
+        self.side[dst] += amt
+        self.eq -= fee
+        self.transfer_fees += fee
+        t = dict(at=when.strftime('%Y-%m-%d %H:%M'), frm='Binance' if src == 'b' else 'Delta',
+                 to='Delta' if dst == 'd' else 'Binance', amt=round(amt, 2), fee=fee, why=why,
+                 d=round(half0 + self.side['d'], 2), b=round(half0 + self.side['b'], 2))
+        self.transfers = (self.transfers + [t])[-50:]
+        logger.info(f"   \U0001f500 C531 cross-venue (paper): {why} -> {t['frm']} sends ${amt:.2f} to {t['to']} "
+                    f"(fee ${fee:.2f}); now Delta ${t['d']:.2f}, Binance ${t['b']:.2f}. LIVE: make this transfer")
+        return t
+
     def margins(self):
         """C529: each venue's side on its own. Live, the trade is two accounts --
         half the capital on Delta, half on Binance -- and money cannot move between
@@ -23761,10 +23893,18 @@ class C524CrossVenue(_C501Store):
                 'warn' if f < float(getattr(self.cfg, 'C529_XV_WARN_AT', 0.65)) else '')
             if lvl and self._warned.get(v + lvl) != day:
                 self._warned[v + lvl] = day
+                o = 'b' if v == 'd' else 'd'
+                give = max(0.0, (m[o]['eq'] - m[v]['eq']) / 2.0)
+                other = 'Binance' if v == 'd' else 'Delta'
+                if float(getattr(self.cfg, 'C528_RESERVE', 0.0) or 0.0) > 0:
+                    tail = (" -- live, this is when the reserve tops it up" if lvl == 'reserve' else
+                            " -- watch it; at 50% the reserve tops it up")
+                else:                                            # C531: no reserve -- the other venue tops it up
+                    tail = (f" -- no reserve: LIVE, move ${give:.2f} from {other} to {name} NOW (do not wait for the daily run)"
+                            if lvl == 'reserve' else
+                            f" -- no reserve: the daily run (00:30 UTC) moves ${give:.2f} from {other}; live, make that transfer")
                 logger.warning(f"{'🛑' if lvl == 'reserve' else '⚠️'} C529 cross-venue (paper): the {name} side is at "
-                               f"${m[v]['eq']:.2f}, {100 * f:.0f}% of its ${m[v]['start']:.2f} (leverage {m[v]['lev']}x)"
-                               + (" -- live, this is when the reserve tops it up" if lvl == 'reserve' else
-                                  " -- watch it; at 50% the reserve tops it up"))
+                               f"${m[v]['eq']:.2f}, {100 * f:.0f}% of its ${m[v]['start']:.2f} (leverage {m[v]['lev']}x)" + tail)
         return m
 
     def status(self):
@@ -23784,7 +23924,10 @@ class C524CrossVenue(_C501Store):
                         price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
                         last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
                         record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)),
-                        margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:])
+                        margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:],
+                        transfers=self.transfers[-5:], n_transfers=len(self.transfers),
+                        transfer_fees=round(self.transfer_fees, 2),
+                        rebalance=bool(getattr(self.cfg, 'C531_XV_REBALANCE', True)))
 
     def _margins_safe(self):
         try:
@@ -24063,9 +24206,9 @@ class C530Pendle(_C501Store):
 #     and not yet booked (C527Pending reads it once an hour; each ledger still
 #     books it itself at its next run, and the reading is dropped when it does).
 #   * Pendle (C530): cash + the PT at its last-read implied APY.
-# Two totals: the operator's plan (C530, `C527_PLAN`: the book's $500 on Delta,
-# the cross-venue trade's $250 and Pendle's $100) and every paper account as if
-# each were funded. BFUSD is an
+# Two totals: the operator's plan (C531, `C527_PLAN`: the operator's $600 -- the
+# book's $200 on Delta and the cross-venue trade's $400, no reserve; Pendle only
+# while C530_PENDLE is on) and every paper account as if each were funded. BFUSD is an
 # alternative to Savings (the same wallet), so it is shown, not added. The
 # intraday shadow and the tournament are experiments on the book's own
 # prices and are left out. TDS withheld is creditable tax, shown separately.
@@ -24956,9 +25099,9 @@ class TradingBot:
             if getattr(self, 'c521b', None) is not None and self.c521b.active():
                 led.append(f"BFUSD wallet at {100 * float(getattr(c, 'C521_BFUSD_APY', 0.0766)):.2f}% (C521)")
             if getattr(self, 'c521d', None) is not None and self.c521d.active():
-                led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 500.0)):.0f} (C521)")
+                led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 200.0)):.0f} (C521)")
             if getattr(self, 'c524x', None) is not None and self.c524x.active():
-                led.append(f"Delta vs Binance funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 250.0)):.0f} (C524)")
+                led.append(f"Delta vs Binance funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 400.0)):.0f} (C524)")
             if getattr(self, 'c530p', None) is not None and self.c530p.active():
                 led.append(f"Pendle fixed yield on a stablecoin, ${float(getattr(c, 'C530_PENDLE_EQUITY', 100.0)):.0f} (C530)")
             if led:
@@ -44013,7 +44156,8 @@ async function pull(){
           (dg7.halt?' \u00b7 <span class="bad">CLOSED: '+dg7.halt+'</span>':''));}
       if(mg7.d&&mg7.b){var lo7=Math.min(mg7.d.frac||1,mg7.b.frac||1);
         rr7.push('<span class="'+(lo7<0.5?'bad':(lo7<0.65?'warn':''))+'">cross-venue: Delta side '+Math.round(100*(mg7.d.frac||0))+
-          '% \u00b7 Binance side '+Math.round(100*(mg7.b.frac||0))+'%</span> <span class="muted">(warn 65%, reserve 50%)</span>');
+          '% \u00b7 Binance side '+Math.round(100*(mg7.b.frac||0))+'%</span> <span class="muted">'+
+          (((P7.budget||{}).reserve||0)>0?'(warn 65%, reserve 50%)':'(no reserve: evened out from the other venue below 65%)')+'</span>');
         fr7=Math.max(fr7,Math.max(0,Math.min(1,(1-lo7)/0.5)));}
       if(d.c530&&d.c530.hold)rr7.push('<span class="muted">Pendle: fixed to '+d.c530.hold.matures+'</span>');
       if(d.c488&&d.c488.halt)rr7.push('<span class="muted">Binance book (experiment) HALTED: '+d.c488.halt+'</span>');
@@ -44161,6 +44305,8 @@ async function pull(){
             (dl.positions||[]).forEach(function(p){dh+='<div class="s">'+p.coin+' '+p.side+' '+money(p.usd)+' <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+
               '</span> <span class="muted">'+Math.abs(p.contracts)+' contracts \u00b7 funding '+sgn(p.funding)+'</span></div>'});
             if((inf.missing||[]).length)dh+='<div class="s muted">not on Delta: '+inf.missing.join(', ')+'</div>';
+            (dl.rebased||[]).forEach(function(r){dh+='<div class="s muted">rebased '+money(r.frm)+' \u2192 '+money(r.to)+' on '+r.at+
+              ' UTC (C531: every figure \u00d7'+Number(r.f).toFixed(2)+'; the next rebalance sizes every position on the new equity)</div>'});
             if((inf.zero||[]).length)dh+='<div class="s muted">not held (under one contract or the $6 floor): '+inf.zero.join(', ')+'</div>';
             q('delta').innerHTML=dh;
           }
@@ -44184,13 +44330,16 @@ async function pull(){
         if(mg.d&&mg.b){var side=function(nm,m){return nm+' side <b>'+money(m.eq)+'</b> of '+money(m.start)+' ('+(m.lev!==null?m.lev+'x':'\u2014')+')'};
           var lo=Math.min(mg.d.frac||1,mg.b.frac||1);
           xh+='<div class="s '+(lo<0.5?'bad':(lo<0.65?'warn':'muted'))+'">live this is two accounts: '+side('Delta',mg.d)+' \u00b7 '+side('Binance',mg.b)+
-            ' \u00b7 warn at 65%, the reserve tops a side up at 50% (C529)</div>';}
+            (xv.rebalance?' \u00b7 no reserve: below 65% of their mean (and monthly) the richer side sends half the difference at the daily run (C531)':
+              ' \u00b7 warn at 65%, the reserve tops a side up at 50% (C529)')+'</div>';}
+        if(xv.n_transfers)xh+='<div class="s muted">transfers between the venues: '+xv.n_transfers+' (fees '+money(xv.transfer_fees)+') \u00b7 last: '+
+          (xv.transfers||[]).slice(-2).map(function(t){return t.at+' '+t.frm+' \u2192 '+t.to+' '+money(t.amt)+' ('+t.why+')'}).join(' \u00b7 ')+'</div>';
         (xv.pairs||[]).forEach(function(p){var pb=xby[p.coin];
           xh+='<div class="s">'+p.coin+' <span class="muted">'+p.how+' '+money(p.notional)+' a leg · spread '+
           (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+
           (pb!==undefined?' ('+sgn(pb)+' settled since)':'')+' · '+p.days+'d</span></div>'});   /* C530: sgn, not "+-$0.01" */
         if((xi.under_one_contract||[]).length)xh+='<div class="s muted">skipped (one Delta contract is more than a leg): '+xi.under_one_contract.join(', ')+'</div>';
-        (xv.rebased||[]).forEach(function(r){xh+='<div class="s muted">rebased '+money(r.frm)+' → '+money(r.to)+' on '+r.at+' UTC (C530: every figure ×'+
+        (xv.rebased||[]).forEach(function(r){xh+='<div class="s muted">rebased '+money(r.frm)+' → '+money(r.to)+' on '+r.at+' UTC (every figure ×'+
           Number(r.f).toFixed(2)+', Delta legs to whole contracts; the percentages are unchanged)</div>'});
         q('xvenue').innerHTML=xh;
       }
@@ -44199,7 +44348,8 @@ async function pull(){
     var pn=d.c530;
     if(pn){
       if(pn.error){q('pendle').innerHTML='<span class="'+cls(-1)+'">unavailable: '+pn.error+'</span>'}
-      else if(pn.mode!=='paper'){q('pendle').innerHTML='<span class="muted">off (needs the Binance venue)</span>'}
+      else if(pn.mode!=='paper'){q('pendle').innerHTML='<span class="muted">off (C530_PENDLE = False since C531: at $100, after gas, Binance Savings paid more; '+
+        'its last figures stay below if it ran)</span>'+(pn.start_equity?'<div class="s muted">last: '+money(pn.eq)+' ('+sgn(pn.pnl)+')</div>':'')}
       else if(!pn.start_equity){q('pendle').innerHTML='<span class="muted">first run at '+pn.next_run_utc+' UTC</span>'}
       else{
         var ph=pn.hold,pi=pn.info||{},pc=function(v){return (100*Number(v||0)).toFixed(2)+'%'};
@@ -44246,8 +44396,9 @@ async function pull(){
             ' = '+(100*tt7.tax.rate).toFixed(1)+'% of the trades\' net '+sgn(tt7.tax.business)+' (C528_TAX_RATE: your slab + cess) + '+
             (100*tt7.tax.vda_rate).toFixed(1)+'% of Pendle\'s gain '+sgn(tt7.tax.vda)+' (a VDA) · a loss is not taxed and does not offset the other':
             ' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess) · a loss is not taxed')+'</span></div>';
-        if(tt7.budget)th7+='<div class="s muted">budget: '+money(tt7.plan.start)+' in the plan + '+money(tt7.budget.reserve)+
-          ' reserve, only to top up a cross-venue side · at most '+money(tt7.budget.invest)+' (reports/2026-10-04_c530_plan.md)</div>';
+        if(tt7.budget)th7+='<div class="s muted">budget: '+money(tt7.plan.start)+' in the plan'+(tt7.budget.reserve>0?' + '+money(tt7.budget.reserve)+
+          ' reserve, only to top up a cross-venue side':', no reserve: a cross-venue side below 65% is topped up from the other venue')+
+          ' · your equity '+money(tt7.budget.invest)+' (reports/2026-10-04_c531_600.md)</div>';
         var ex7=[];
         if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
         if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');

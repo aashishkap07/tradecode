@@ -40,6 +40,7 @@ ok("version C522 or later", int(om._OMEGA_VERSION[1:]) >= 522)
 
 def cfg_bn():
     c = om.Config(); c.PAPER_MODE = True; c.VENUE = 'binance'
+    c.C521_DELTA_EQUITY = 500.0          # C531 moved the default to $200; this test checks C522 at the size it was written for
     for k, v in om._C516_VENUE_DEFAULTS['binance'].items():
         setattr(c, k, v)
     om._c467_cfg_ref[0] = c

@@ -45,7 +45,7 @@ print("\n1. SETTINGS")
 c0 = om.Config()
 ok("BFUSD on (7.66% base APY, 9.51% boosted shown, 1% TDS once); Delta on at $500 with 18% GST",
    c0.C521_BFUSD and c0.C521_BFUSD_APY == 0.0766 and c0.C521_BFUSD_BOOST == 0.0951 and c0.C521_BFUSD_TDS == 0.01
-   and c0.C521_DELTA and c0.C521_DELTA_EQUITY == 500.0 and c0.C521_DELTA_GST == 0.18)
+   and c0.C521_DELTA and c0.C521_DELTA_EQUITY in (500.0, 200.0) and c0.C521_DELTA_GST == 0.18)   # C531: $200 of the $600
 ok("version C521 or later", int(om._OMEGA_VERSION[1:]) >= 521)
 ok("the bot builds both, ticks both every pass, resets both on a fresh start",
    'self.c521b = C521Bfusd(self)' in SRC and 'self.c521d = C521Delta(self)' in SRC
@@ -54,6 +54,7 @@ ok("the bot builds both, ticks both every pass, resets both on a fresh start",
 
 def bn_cfg(venue='binance'):
     c = om.Config(); c.PAPER_MODE = True; c.C380_MAX_MONTHLY_DD_PCT = 20.0; c.C488_ENGINE = 'portfolio'; c.VENUE = venue
+    c.C521_DELTA_EQUITY = 500.0          # C531 moved the default to $200; this test checks C521 at the size it was written for
     for k, v in om._C516_VENUE_DEFAULTS.get(venue, {}).items():
         setattr(c, k, v)
     return c

@@ -46,15 +46,18 @@ print("=" * 66); print("C530: $500 DELTA BOOK + $250 CROSS-VENUE + $100 PENDLE")
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C530 or later", int(om._OMEGA_VERSION[1:]) >= 530)
 c0 = om.Config()
-ok("the allocation: cross-venue $250, Pendle $100 (on), the plan = Delta + cross-venue + Pendle, $100 reserve",
-   c0.C524_XVENUE_EQUITY == 250.0 and c0.C530_PENDLE is True and c0.C530_PENDLE_EQUITY == 100.0
-   and tuple(c0.C527_PLAN) == ('delta', 'xvenue', 'pendle') and c0.C528_RESERVE == 100.0 and c0.C528_BUDGET == 1000.0)
-ok("  $500 + $250 + $100 + $100 reserve = $950, inside the $1,000",
-   c0.C521_DELTA_EQUITY + c0.C524_XVENUE_EQUITY + c0.C530_PENDLE_EQUITY + c0.C528_RESERVE <= c0.C528_BUDGET)
+# C531 changed the operator's allocation ($600: Delta $200 + cross-venue $400, no reserve, Pendle off; omega_c531_test.py
+# checks it). This test checks C530's mechanics at the allocation C530 set, pinned below.
+C530 = dict(C521_DELTA_EQUITY=500.0, C524_XVENUE_EQUITY=250.0, C530_PENDLE=True, C530_PENDLE_EQUITY=100.0,
+            C527_PLAN=('delta', 'xvenue', 'pendle'), C528_RESERVE=100.0, C528_BUDGET=1000.0, C531_XV_REBALANCE=False)
+ok("C530's allocation: $500 + $250 + $100 + $100 reserve = $950, inside its $1,000",
+   C530['C521_DELTA_EQUITY'] + C530['C524_XVENUE_EQUITY'] + C530['C530_PENDLE_EQUITY'] + C530['C528_RESERVE'] <= C530['C528_BUDGET'])
 ok("  untouched: live locked, the cross-venue rule (10 pairs, 10% a leg)", c0.C488_LIVE_OK is False
    and c0.C524_XVENUE_PAIRS == 10 and c0.C524_XVENUE_SIZE == 0.10)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
+    setattr(cfg, _k, _v)
+for _k, _v in C530.items():
     setattr(cfg, _k, _v)
 
 # ── 1. the rebase, on the server's 4 Oct ledger ──────────────────────────────
@@ -62,7 +65,7 @@ print("\n1. THE CROSS-VENUE LEDGER, $500 -> $250 (THE SERVER'S 4 OCT LEDGER)")
 x0 = json.load(open(os.path.join(SNAP30, 'c524_xvenue.json')))
 shutil.copy(os.path.join(SNAP30, 'c524_xvenue.json'), BASE)
 bx = types.SimpleNamespace(cfg=cfg, _c462_state_settled=True, c488=None, c521d=None)
-cfgx = om.Config(); cfgx.VENUE = 'binance'; cfgx.C524_XVENUE_EQUITY = 500.0
+cfgx = om.Config(); cfgx.VENUE = 'binance'; cfgx.C524_XVENUE_EQUITY = 500.0; cfgx.C531_XV_REBALANCE = False
 x500 = om.C524CrossVenue(types.SimpleNamespace(cfg=cfgx, c488=None, c521d=None))
 m500 = x500.margins()
 LOG.clear()
