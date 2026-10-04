@@ -17,7 +17,9 @@ Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`;
 `trig_01657znZVsvZxzQZrunVxz5H`.
 
 **Plain-English guide for the operator** (funding as "rent", legs and pairs, the two piggy banks, why
-Binance was left -- the VDA tax on the winning leg, the LRS, TDS): `reports/2026-10-04_plain_english_guide.md`.
+Binance was left -- the VDA tax on the winning leg, the LRS, TDS): `reports/2026-10-04_plain_english_guide.md`;
+the same with colour diagrams and an imaginary coin ABC in whole numbers ("The Rent Gap Trade", artifact
+https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_rent_gap_trade.html`).
 
 **Standing rules from the operator (4 Oct 2026):**
 - **Every reply explains, in plain English with analogies, what was done and how the bot works.**

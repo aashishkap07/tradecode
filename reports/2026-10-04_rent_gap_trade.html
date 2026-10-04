@@ -1,0 +1,513 @@
+<title>The Rent Gap Trade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one phone-first column read top to bottom like a story; each step = a few plain lines + one picture.
+   Colour code used everywhere: Delta = amber, Pi42 = teal, money in = green, money out = red, fees & tax = slate. */
+:root{
+  --bg:#F2F5F3; --surface:#FFFFFF; --fg:#16201B; --muted:#56645D; --line:#D3DBD6;
+  --delta:#B85A08; --delta-soft:#FCE8D2;
+  --pi42:#0A6B86; --pi42-soft:#D3ECF4;
+  --gain:#1C7A42; --gain-soft:#DBF1E3;
+  --loss:#B3261E; --loss-soft:#FADFDB;
+  --cost:#555B72; --cost-soft:#E4E6EE;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", Roboto, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111614; --surface:#1A201E; --fg:#E7EEEA; --muted:#9AA8A1; --line:#2D3632;
+    --delta:#F5A04F; --delta-soft:#3A2715;
+    --pi42:#53C6E3; --pi42-soft:#10303A;
+    --gain:#5BD98B; --gain-soft:#11301F;
+    --loss:#F47C74; --loss-soft:#3A1715;
+    --cost:#A9AEC4; --cost-soft:#272A37;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#1A201E; --fg:#E7EEEA; --muted:#9AA8A1; --line:#2D3632;
+  --delta:#F5A04F; --delta-soft:#3A2715;
+  --pi42:#53C6E3; --pi42-soft:#10303A;
+  --gain:#5BD98B; --gain-soft:#11301F;
+  --loss:#F47C74; --loss-soft:#3A1715;
+  --cost:#A9AEC4; --cost-soft:#272A37;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:700px;margin:0 auto;padding-inline:18px;padding-block:28px 64px;display:flex;flex-direction:column;gap:44px}
+header{display:flex;flex-direction:column;gap:12px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,8vw,52px);line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,5.6vw,31px);line-height:1.1;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:19px;margin:0}
+p{margin:0;max-width:65ch}
+section{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;align-items:baseline;gap:12px}
+.step .n{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--muted);min-width:2ch}
+ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px;max-width:65ch}
+.lede{font-size:18px;color:var(--fg)}
+.note{font-size:15px;color:var(--muted)}
+b.d,.d{color:var(--delta)} b.p,.p{color:var(--pi42)} .g{color:var(--gain)} .r{color:var(--loss)} .c{color:var(--cost)}
+.money{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* colour key */
+.key{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.dot.d{background:var(--delta)} .dot.p{background:var(--pi42)} .dot.g{background:var(--gain)} .dot.r{background:var(--loss)} .dot.c{background:var(--cost)}
+
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;overflow-x:auto}
+.fig svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
+figcaption{font-size:14px;color:var(--muted);max-width:65ch}
+
+/* svg classes, coloured from the page tokens */
+.tx{fill:var(--fg);font-family:var(--body);font-size:13px}
+.tm{fill:var(--muted);font-family:var(--body);font-size:12px}
+.tb{font-weight:700}
+.num{font-family:var(--mono);font-weight:600}
+.big{font-size:20px}
+.fd{fill:var(--delta-soft)} .sd{stroke:var(--delta)} .td{fill:var(--delta)}
+.fp{fill:var(--pi42-soft)} .sp{stroke:var(--pi42)} .tp{fill:var(--pi42)}
+.fg{fill:var(--gain-soft)} .sg{stroke:var(--gain)} .tg{fill:var(--gain)} .bg{fill:var(--gain)}
+.fl{fill:var(--loss-soft)} .sl{stroke:var(--loss)} .tl{fill:var(--loss)} .bl{fill:var(--loss)}
+.fc{fill:var(--cost-soft)} .sc{stroke:var(--cost)} .tc{fill:var(--cost)} .bc{fill:var(--cost)}
+.fs{fill:var(--surface)} .sf{stroke:var(--fg)} .sm{stroke:var(--muted)} .sx{stroke:var(--line)}
+.w2{stroke-width:2} .w3{stroke-width:3} .nf{fill:none}
+.dash{stroke-dasharray:5 4}
+
+/* 2x2 bet grid */
+.grid2{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.grid2 .h{font-size:14px;color:var(--muted);padding:4px 6px}
+.grid2 .lab{display:flex;flex-direction:column;justify-content:center;font-size:15px;padding-right:4px}
+.cell{border-radius:10px;padding:12px 10px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cell .money{font-size:22px}
+.cell.win{background:var(--gain-soft);color:var(--gain)} .cell.lose{background:var(--loss-soft);color:var(--loss)}
+.cell small{font-size:13px;color:var(--fg);opacity:.8}
+
+/* day cards */
+.days{display:flex;flex-direction:column;gap:12px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.day .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.day .top .money{font-size:15px;color:var(--muted)}
+.jars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jar{border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.jar.dj{background:var(--delta-soft)} .jar.pj{background:var(--pi42-soft)}
+.jar .name{font-size:13px;font-weight:700}
+.jar.dj .name{color:var(--delta)} .jar.pj .name{color:var(--pi42)}
+.jar .money{font-size:20px}
+.jar .why{font-size:13px;color:var(--muted)}
+.total{font-size:15px}
+
+/* ten pairs */
+.pairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (min-width:560px){.pairs{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.pair{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);font-size:13px}
+.pair .nm{padding:4px 8px;font-weight:700;border-bottom:1px solid var(--line)}
+.pair .lg{display:flex}
+.pair .lg span{flex:1;padding:5px 6px;text-align:center;font-family:var(--mono);font-size:12px}
+.pair .lg .a{background:var(--delta-soft);color:var(--delta)} .pair .lg .b{background:var(--pi42-soft);color:var(--pi42)}
+
+/* compare */
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;gap:8px;border:2px solid var(--line);background:var(--surface);min-width:0}
+.opt.bad{border-color:var(--loss)} .opt.good{border-color:var(--gain)}
+.opt h3{font-size:17px}
+.row{display:flex;justify-content:space-between;gap:6px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.row:last-of-type{border-bottom:none}
+.res{border-radius:10px;padding:10px;text-align:center}
+.res .money{font-size:26px;display:block}
+.opt.bad .res{background:var(--loss-soft);color:var(--loss)} .opt.good .res{background:var(--gain-soft);color:var(--gain)}
+.res span.small{font-size:13px;color:var(--fg)}
+
+/* glossary */
+.gloss{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.gloss{grid-template-columns:1fr 1fr}}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.term b{font-family:var(--display);font-size:17px;display:flex;align-items:center;gap:8px}
+.term span{font-size:15px;color:var(--muted)}
+
+.callout{border-left:4px solid var(--pi42);background:var(--surface);padding:12px 14px;border-radius:0 12px 12px 0;font-size:15px}
+footer{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+a{color:var(--pi42)}
+:focus-visible{outline:3px solid var(--pi42);outline-offset:2px}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">Your $1,000 plan · explained with pictures</div>
+  <h1>The Rent Gap Trade</h1>
+  <p class="lede">How your money is meant to grow, step by step, using an <b>imaginary coin called ABC</b> and easy round numbers. Real numbers are smaller and change every day; your dashboard shows the real ones.</p>
+  <div class="key" aria-label="Colour key">
+    <span class="chip"><span class="dot d"></span>Delta India</span>
+    <span class="chip"><span class="dot p"></span>Pi42</span>
+    <span class="chip"><span class="dot g"></span>money coming in</span>
+    <span class="chip"><span class="dot r"></span>money going out</span>
+    <span class="chip"><span class="dot c"></span>fees &amp; tax</span>
+  </div>
+</header>
+
+<!-- 1 -->
+<section>
+  <div class="step"><span class="n">1</span><h2>Your money sits in two jars</h2></div>
+  <p>Your $1,000 is split between two Indian exchanges. Think of each as a separate jar. Money can't jump from one jar to the other by itself.</p>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 200" role="img" aria-label="$1,000 split into a $500 jar on Delta India and a $500 jar on Pi42">
+        <defs>
+          <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="tc"/></marker>
+        </defs>
+        <rect x="115" y="8" width="130" height="44" rx="10" class="fs sf w2"/>
+        <text x="180" y="27" text-anchor="middle" class="tx tb">You</text>
+        <text x="180" y="45" text-anchor="middle" class="tx num">$1,000</text>
+        <line x1="150" y1="54" x2="96" y2="96" class="sc w2" marker-end="url(#m1)"/>
+        <line x1="210" y1="54" x2="264" y2="96" class="sc w2" marker-end="url(#m1)"/>
+        <text x="106" y="76" text-anchor="end" class="tm num">$500</text>
+        <text x="254" y="76" class="tm num">$500</text>
+        <path d="M30,100 h120 v72 a16,16 0 0 1 -16,16 h-88 a16,16 0 0 1 -16,-16 z" class="fd sd w2"/>
+        <text x="90" y="124" text-anchor="middle" class="td tb" style="font-size:14px;font-family:var(--body)">Delta India jar</text>
+        <text x="90" y="158" text-anchor="middle" class="tx num big">$500</text>
+        <text x="90" y="178" text-anchor="middle" class="tm">in rupees</text>
+        <path d="M210,100 h120 v72 a16,16 0 0 1 -16,16 h-88 a16,16 0 0 1 -16,-16 z" class="fp sp w2"/>
+        <text x="270" y="124" text-anchor="middle" class="tp tb" style="font-size:14px;font-family:var(--body)">Pi42 jar</text>
+        <text x="270" y="158" text-anchor="middle" class="tx num big">$500</text>
+        <text x="270" y="178" text-anchor="middle" class="tm">in rupees</text>
+      </svg>
+    </div>
+    <figcaption>Today both jars are <b>paper</b>: a simulation at real prices, so no real money moves. The plan is to make them real in March 2027, if the tests pass.</figcaption>
+  </figure>
+</section>
+
+<!-- 2 -->
+<section>
+  <div class="step"><span class="n">2</span><h2>A bet on a price: “up” or “down”</h2></div>
+  <p>The coin ABC costs <span class="money">$10</span>. You can bet <span class="money">$100</span> on it, the value of 10 coins, without owning any.</p>
+  <ul>
+    <li>A <b>“bet up”</b> (traders say <i>long</i>) wins when the price rises.</li>
+    <li>A <b>“bet down”</b> (traders say <i>short</i>) wins when the price falls.</li>
+  </ul>
+  <figure>
+    <div class="fig">
+      <div class="grid2" role="img" aria-label="A $100 bet up gains $20 if ABC rises to $12 and loses $20 if it falls to $8; a bet down does the opposite">
+        <div></div><div class="h">ABC rises to <b class="money">$12</b></div><div class="h">ABC falls to <b class="money">$8</b></div>
+        <div class="lab"><b>Bet up</b><span class="note">$100</span></div>
+        <div class="cell win"><span class="money">+$20</span><small>you win</small></div>
+        <div class="cell lose"><span class="money">−$20</span><small>you lose</small></div>
+        <div class="lab"><b>Bet down</b><span class="note">$100</span></div>
+        <div class="cell lose"><span class="money">−$20</span><small>you lose</small></div>
+        <div class="cell win"><span class="money">+$20</span><small>you win</small></div>
+      </div>
+    </div>
+    <figcaption>Look at the cross shape: a “bet up” and a “bet down” of the same size always end with opposite results. That's the heart of the plan.</figcaption>
+  </figure>
+  <p class="note">The exchange keeps some of your jar as a <b>deposit</b> (margin) while a bet is open, like a security deposit on a flat. In our plan each $500 jar holds about $1,000 of bets. That's called <b>2× leverage</b>.</p>
+</section>
+
+<!-- 3 -->
+<section>
+  <div class="step"><span class="n">3</span><h2>Funding is rent</h2></div>
+  <p>These bets never expire, so the exchange needs a way to keep their price honest. Every 8 hours, <b>the crowded side pays the quiet side</b> a small amount. That payment is called <b>funding</b>. Think of it as <b>rent</b>.</p>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 210" role="img" aria-label="On one exchange, many traders bet up and few bet down, so the up-bettors pay rent to the down-bettors every 8 hours">
+        <defs>
+          <marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bg"/></marker>
+        </defs>
+        <rect x="8" y="30" width="150" height="122" rx="12" class="fs sx w2"/>
+        <text x="83" y="22" text-anchor="middle" class="tx tb">Crowded side</text>
+        <g class="sm w2">
+          <circle cx="40" cy="62" r="13" class="fs"/><circle cx="83" cy="62" r="13" class="fs"/><circle cx="126" cy="62" r="13" class="fs"/>
+          <circle cx="40" cy="104" r="13" class="fs"/><circle cx="83" cy="104" r="13" class="fs"/><circle cx="126" cy="104" r="13" class="fs"/>
+        </g>
+        <g class="tx tb" text-anchor="middle" style="font-size:14px">
+          <text x="40" y="67">↑</text><text x="83" y="67">↑</text><text x="126" y="67">↑</text>
+          <text x="40" y="109">↑</text><text x="83" y="109">↑</text><text x="126" y="109">↑</text>
+        </g>
+        <text x="83" y="140" text-anchor="middle" class="tm">6 people bet up</text>
+        <rect x="232" y="30" width="120" height="122" rx="12" class="fs sx w2"/>
+        <text x="292" y="22" text-anchor="middle" class="tx tb">Quiet side</text>
+        <g class="sm w2"><circle cx="268" cy="83" r="13" class="fs"/><circle cx="316" cy="83" r="13" class="fs"/></g>
+        <g class="tx tb" text-anchor="middle" style="font-size:14px"><text x="268" y="88">↓</text><text x="316" y="88">↓</text></g>
+        <text x="292" y="140" text-anchor="middle" class="tm">2 people bet down</text>
+        <line x1="162" y1="91" x2="226" y2="91" class="sg w3" marker-end="url(#m3)"/>
+        <text x="195" y="80" text-anchor="middle" class="tg tb" style="font-size:12px;font-family:var(--body)">rent</text>
+        <text x="180" y="180" text-anchor="middle" class="tx">The crowded side pays rent to the quiet side</text>
+        <text x="180" y="198" text-anchor="middle" class="tm">every 8 hours, a small % of each bet</text>
+      </svg>
+    </div>
+    <figcaption>If most people bet <b>up</b>, the up-bettors pay the down-bettors. If most bet <b>down</b>, it's the other way round. Holding the quiet side means <b>you collect rent just for holding the bet</b>.</figcaption>
+  </figure>
+  <div class="callout">The key fact: <b class="d">Delta India's</b> crowd mostly bets coins <b>up</b>, so on Delta the rent for being a down-bettor is high. <b class="p">Pi42</b> follows Binance's worldwide crowd, where the same coin's rent is usually much lower. The difference between the two rents is the <b>rent gap</b>, and it's what the bot earns.</div>
+</section>
+
+<!-- 4 -->
+<section>
+  <div class="step"><span class="n">4</span><h2>One coin, two bets: “legs” and a “pair”</h2></div>
+  <p>The bot makes <b>two opposite bets on the same coin, of the same size</b>, one on each exchange. Each bet is called a <b>leg</b>, and the two legs together make a <b>pair</b>, like the two legs of a pair of trousers.</p>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 300" role="img" aria-label="One pair: bet down $100 of ABC on Delta collects $8 a month in rent; bet up $100 of ABC on Pi42 pays $2 a month; the price moves cancel and you keep $6 a month">
+        <defs>
+          <marker id="m4g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bg"/></marker>
+          <marker id="m4r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bl"/></marker>
+        </defs>
+        <rect x="14" y="6" width="150" height="40" rx="8" class="fs sx w2"/>
+        <text x="89" y="23" text-anchor="middle" class="tx" style="font-size:12px">Delta's crowd</text>
+        <text x="89" y="39" text-anchor="middle" class="tm">(mostly betting up)</text>
+        <rect x="196" y="6" width="150" height="40" rx="8" class="fs sx w2"/>
+        <text x="271" y="23" text-anchor="middle" class="tx" style="font-size:12px">Pi42's crowd</text>
+        <text x="271" y="39" text-anchor="middle" class="tm">(rent is low here)</text>
+        <line x1="89" y1="48" x2="89" y2="92" class="sg w3" marker-end="url(#m4g)"/>
+        <text x="81" y="74" text-anchor="end" class="tg tb num" style="font-size:12px">+$8/month</text>
+        <line x1="271" y1="92" x2="271" y2="48" class="sl w3" marker-end="url(#m4r)"/>
+        <text x="279" y="74" class="tl tb num" style="font-size:12px">−$2/month</text>
+        <rect x="14" y="96" width="150" height="92" rx="12" class="fd sd w2"/>
+        <text x="89" y="118" text-anchor="middle" class="td tb" style="font-size:12px;font-family:var(--mono)">LEG 1 · DELTA</text>
+        <text x="89" y="146" text-anchor="middle" class="tx tb" style="font-size:16px">Bet DOWN</text>
+        <text x="89" y="170" text-anchor="middle" class="tx num" style="font-size:15px">$100 of ABC</text>
+        <rect x="196" y="96" width="150" height="92" rx="12" class="fp sp w2"/>
+        <text x="271" y="118" text-anchor="middle" class="tp tb" style="font-size:12px;font-family:var(--mono)">LEG 2 · PI42</text>
+        <text x="271" y="146" text-anchor="middle" class="tx tb" style="font-size:16px">Bet UP</text>
+        <text x="271" y="170" text-anchor="middle" class="tx num" style="font-size:15px">$100 of ABC</text>
+        <path d="M22,198 v10 h316 v-10" class="nf sm w2"/>
+        <line x1="180" y1="208" x2="180" y2="218" class="sm w2"/>
+        <text x="180" y="234" text-anchor="middle" class="tx tb">= one PAIR (same coin, same size)</text>
+        <rect x="40" y="246" width="280" height="46" rx="10" class="fg sg w2"/>
+        <text x="180" y="265" text-anchor="middle" class="tx">Price moves cancel. You keep</text>
+        <text x="180" y="284" text-anchor="middle" class="tg tb num" style="font-size:15px">$8 − $2 = $6 a month</text>
+      </svg>
+    </div>
+    <figcaption>Green arrow: rent coming <b>to</b> you on Delta. Red arrow: a little rent going <b>from</b> you on Pi42. Whatever ABC's price does, one leg gains what the other loses (step 2), so the <b>rent gap</b> is what's left.</figcaption>
+  </figure>
+</section>
+
+<!-- 5 -->
+<section>
+  <div class="step"><span class="n">5</span><h2>An imaginary trade, start to finish</h2></div>
+  <p>One pair on ABC for 30 days. Watch the two jars, and the total.</p>
+  <div class="days">
+    <div class="day">
+      <div class="top"><h3>Day 1 · open the pair</h3><span class="money">ABC = $10</span></div>
+      <div class="jars">
+        <div class="jar dj"><span class="name">Delta jar</span><span class="money">$500</span><span class="why">bet down $100 of ABC</span></div>
+        <div class="jar pj"><span class="name">Pi42 jar</span><span class="money">$500</span><span class="why">bet up $100 of ABC</span></div>
+      </div>
+      <div class="total">Total <b class="money">$1,000</b></div>
+    </div>
+    <div class="day">
+      <div class="top"><h3>Day 15 · ABC jumps 20%</h3><span class="money">ABC = $12</span></div>
+      <div class="jars">
+        <div class="jar dj"><span class="name">Delta jar</span><span class="money">$484</span><span class="why"><span class="r">−$20</span> bet lost · <span class="g">+$4</span> rent in</span></div>
+        <div class="jar pj"><span class="name">Pi42 jar</span><span class="money">$519</span><span class="why"><span class="g">+$20</span> bet won · <span class="r">−$1</span> rent out</span></div>
+      </div>
+      <div class="total">Total <b class="money">$1,003</b>. The $20 jump cancelled out; the $3 is rent.</div>
+    </div>
+    <div class="day">
+      <div class="top"><h3>Day 30 · close the pair</h3><span class="money">ABC = $11</span></div>
+      <div class="jars">
+        <div class="jar dj"><span class="name">Delta jar</span><span class="money">$498</span><span class="why"><span class="r">−$10</span> bet · <span class="g">+$8</span> rent in</span></div>
+        <div class="jar pj"><span class="name">Pi42 jar</span><span class="money">$507</span><span class="why"><span class="g">+$10</span> bet · <span class="r">−$2</span> rent · <span class="c">−$1</span> fees</span></div>
+      </div>
+      <div class="total">Total <b class="money g">$1,005</b>. Profit <b class="money g">+$5</b></div>
+    </div>
+  </div>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 236" role="img" aria-label="Where the $5 came from: the two bets' price results of minus $10 and plus $10 cancel; rent in $8, rent out $2 and fees $1 leave $5">
+        <line x1="230" y1="8" x2="230" y2="206" class="sm w2"/>
+        <text x="230" y="226" text-anchor="middle" class="tm">$0</text>
+        <!-- scale: $1 = 6px, zero at x=230 -->
+        <text x="8" y="28" class="tx">Delta bet (price)</text>
+        <rect x="170" y="14" width="60" height="22" rx="3" class="bl"/>
+        <text x="352" y="30" text-anchor="end" class="tl num">−$10</text>
+        <text x="8" y="60" class="tx">Pi42 bet (price)</text>
+        <rect x="230" y="46" width="60" height="22" rx="3" class="bg"/>
+        <text x="352" y="62" text-anchor="end" class="tg num">+$10</text>
+        <text x="8" y="92" class="tx">Rent in (Delta)</text>
+        <rect x="230" y="78" width="48" height="22" rx="3" class="bg"/>
+        <text x="352" y="94" text-anchor="end" class="tg num">+$8</text>
+        <text x="8" y="124" class="tx">Rent out (Pi42)</text>
+        <rect x="218" y="110" width="12" height="22" rx="3" class="bl"/>
+        <text x="352" y="126" text-anchor="end" class="tl num">−$2</text>
+        <text x="8" y="156" class="tx">Fees (open + close)</text>
+        <rect x="224" y="142" width="6" height="22" rx="2" class="bc"/>
+        <text x="352" y="158" text-anchor="end" class="tc num">−$1</text>
+        <line x1="8" y1="174" x2="352" y2="174" class="sx w2"/>
+        <text x="8" y="196" class="tx tb">Profit</text>
+        <rect x="230" y="182" width="30" height="22" rx="3" class="bg"/>
+        <text x="352" y="198" text-anchor="end" class="tg num tb">+$5</text>
+      </svg>
+    </div>
+    <figcaption>The top two bars are equal and opposite, so the price move adds nothing. The profit is rent in, minus rent out, minus fees.</figcaption>
+  </figure>
+</section>
+
+<!-- 6 -->
+<section>
+  <div class="step"><span class="n">6</span><h2>Ten pairs: the whole plan</h2></div>
+  <p>The bot does this with up to <b>10 different coins at once</b>, about <span class="money">$100</span> a leg. It picks coins whose rent gap has been big over the last week, and swaps a pair out when its gap shrinks.</p>
+  <figure>
+    <div class="fig">
+      <div class="pairs" role="img" aria-label="Ten pairs, each a $100 bet down on Delta and a $100 bet up on Pi42">
+        <div class="pair"><div class="nm">Coin 1</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 2</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 3</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 4</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 5</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 6</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 7</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 8</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 9</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+        <div class="pair"><div class="nm">Coin 10</div><div class="lg"><span class="a">↓$100</span><span class="b">↑$100</span></div></div>
+      </div>
+    </div>
+    <figcaption><b class="d">Amber</b> = the Delta leg (bet down), <b class="p">teal</b> = the Pi42 leg (bet up). The Delta jar's $500 holds $1,000 of down-bets, and the Pi42 jar's $500 holds $1,000 of up-bets.</figcaption>
+  </figure>
+  <p>A typical month for the whole $1,000, with imaginary round numbers that match the research's average:</p>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 236" role="img" aria-label="A typical month: rent in $52, rent out $4, fees $5, giving $43 before tax; tax $13; you keep $30">
+        <line x1="190" y1="8" x2="190" y2="206" class="sm w2"/>
+        <text x="190" y="226" text-anchor="middle" class="tm">$0</text>
+        <!-- scale: $1 = 2.5px, zero at x=190 -->
+        <text x="8" y="28" class="tx">Rent in</text>
+        <rect x="190" y="14" width="130" height="22" rx="3" class="bg"/>
+        <text x="352" y="30" text-anchor="end" class="tg num">+$52</text>
+        <text x="8" y="60" class="tx">Rent out</text>
+        <rect x="180" y="46" width="10" height="22" rx="3" class="bl"/>
+        <text x="352" y="62" text-anchor="end" class="tl num">−$4</text>
+        <text x="8" y="92" class="tx">Fees + GST</text>
+        <rect x="177.5" y="78" width="12.5" height="22" rx="3" class="bc"/>
+        <text x="352" y="94" text-anchor="end" class="tc num">−$5</text>
+        <text x="8" y="124" class="tx tb">Before tax</text>
+        <rect x="190" y="110" width="107.5" height="22" rx="3" class="bg"/>
+        <text x="352" y="126" text-anchor="end" class="tg num tb">+$43</text>
+        <text x="8" y="156" class="tx">Tax (31.2%)</text>
+        <rect x="157.5" y="142" width="32.5" height="22" rx="3" class="bc"/>
+        <text x="352" y="158" text-anchor="end" class="tc num">−$13</text>
+        <line x1="8" y1="174" x2="352" y2="174" class="sx w2"/>
+        <text x="8" y="196" class="tx tb">You keep</text>
+        <rect x="190" y="182" width="75" height="22" rx="3" class="bg"/>
+        <text x="352" y="198" text-anchor="end" class="tg num tb">+$30</text>
+      </svg>
+    </div>
+    <figcaption>Why not 10 × $6 = $60? Gaps shrink after a pair opens, and pairs get swapped, so a real month collects less than ten fresh pairs would. The research expects about <b>$30 a month after tax</b> on $1,000 (about ₹3,000). Some months are better, some worse, and a few lose.</figcaption>
+  </figure>
+</section>
+
+<!-- 7 -->
+<section>
+  <div class="step"><span class="n">7</span><h2>The two-jar problem, and the fix</h2></div>
+  <p>All 10 pairs lean the same way: <b class="d">bet down on Delta</b>, <b class="p">bet up on Pi42</b>. Imagine all 10 coins jump <b>20%</b> in one day:</p>
+  <ul>
+    <li>Each Delta bet loses $20, so the Delta jar drops by <span class="money r">$200</span>.</li>
+    <li>Each Pi42 bet gains $20, so the Pi42 jar grows by <span class="money g">$200</span>.</li>
+    <li>The total is still $1,000, but the money is in the wrong jar.</li>
+  </ul>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 300" role="img" aria-label="Before: both jars $500. After a 20% jump: Delta $300, Pi42 $700. After the move: Pi42 sends $200, both jars back near $500">
+        <defs>
+          <marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bg"/></marker>
+        </defs>
+        <!-- base y=200; $1 = 0.2px; $500 -> 100, $300 -> 60, $700 -> 140 -->
+        <!-- panel 1 -->
+        <rect x="16" y="100" width="40" height="100" rx="4" class="fd sd w2"/>
+        <rect x="64" y="100" width="40" height="100" rx="4" class="fp sp w2"/>
+        <text x="36" y="94" text-anchor="middle" class="tx num" style="font-size:11px">$500</text>
+        <text x="84" y="94" text-anchor="middle" class="tx num" style="font-size:11px">$500</text>
+        <text x="60" y="238" text-anchor="middle" class="tx tb" style="font-size:12px">Start</text>
+        <!-- panel 2 -->
+        <rect x="136" y="140" width="40" height="60" rx="4" class="fl sl w2"/>
+        <rect x="184" y="60" width="40" height="140" rx="4" class="fp sp w2"/>
+        <text x="156" y="184" text-anchor="middle" class="tl num tb" style="font-size:11px">$300</text>
+        <text x="204" y="54" text-anchor="middle" class="tx num" style="font-size:11px">$700</text>
+        <text x="180" y="238" text-anchor="middle" class="tx tb" style="font-size:12px">After 20% jump</text>
+        <!-- panel 3 -->
+        <rect x="256" y="100" width="40" height="100" rx="4" class="fd sd w2"/>
+        <rect x="304" y="100" width="40" height="100" rx="4" class="fp sp w2"/>
+        <text x="276" y="94" text-anchor="middle" class="tx num" style="font-size:11px">$500</text>
+        <text x="324" y="94" text-anchor="middle" class="tx num" style="font-size:11px">$499</text>
+        <path d="M324,46 C324,26 276,26 276,62" class="nf sg w3" marker-end="url(#m7)"/>
+        <text x="300" y="22" text-anchor="middle" class="tg tb num" style="font-size:12px">$200</text>
+        <text x="300" y="238" text-anchor="middle" class="tx tb" style="font-size:12px">After moving</text>
+        <line x1="6" y1="135" x2="354" y2="135" class="sl dash w2"/>
+        <line x1="6" y1="150" x2="354" y2="150" class="sl w2"/>
+        <line x1="6" y1="200" x2="354" y2="200" class="sm w2"/>
+        <g class="tm" text-anchor="middle"><text x="36" y="214">Delta</text><text x="84" y="214">Pi42</text><text x="156" y="214">Delta</text><text x="204" y="214">Pi42</text><text x="276" y="214">Delta</text><text x="324" y="214">Pi42</text></g>
+        <line x1="16" y1="266" x2="46" y2="266" class="sl dash w2"/>
+        <text x="54" y="270" class="tx" style="font-size:12px">warning line: a jar at $325 (65%)</text>
+        <line x1="16" y1="286" x2="46" y2="286" class="sl w2"/>
+        <text x="54" y="290" class="tx tb" style="font-size:12px">“move NOW” line: a jar at $250 (50%)</text>
+      </svg>
+    </div>
+    <figcaption>If a jar ever ran empty, the exchange would close its bets by force (<b>liquidation</b>), and the other leg would be left unprotected. So when a jar falls below <b>65%</b> of the average, the bot moves half the difference across ($1 fee). At <b>50%</b> the log says <b>“move it NOW”</b>.</figcaption>
+  </figure>
+  <div class="callout">In paper the bot moves the money itself. <b>When it's live, you'll do it as a bank transfer</b>: withdraw rupees from one exchange and deposit them on the other. The bot will tell you how much and which way. This happened for real last night: the Delta jar was $328 and the Pi42 jar $672, so this morning's run moves about $170 across.</div>
+</section>
+
+<!-- 8 -->
+<section>
+  <div class="step"><span class="n">8</span><h2>Why we left Binance</h2></div>
+  <p>Same imaginary pair, one month. A coin jumps: the Delta bet loses <span class="money">$50</span>, the other bet gains <span class="money">$50</span>, and the rent gap adds <span class="money">$6</span>. Your real profit is <span class="money g">$6</span>. Now see what tax does, depending on where the second leg sits:</p>
+  <figure>
+    <div class="fig">
+      <div class="compare">
+        <div class="opt bad">
+          <h3>Second leg on Binance</h3>
+          <div class="row"><span>Delta bet</span><span class="money r">−$50</span></div>
+          <div class="row"><span>Binance bet</span><span class="money g">+$50</span></div>
+          <div class="row"><span>Rent gap</span><span class="money g">+$6</span></div>
+          <div class="row"><span>Tax</span><span class="money c">−$16</span></div>
+          <p class="note">Crypto rules (the safe reading): 31.2% on the <b>+$50 gain</b>. The −$50 loss can't be subtracted.</p>
+          <div class="res"><span class="money">−$10</span><span class="small">you end up losing</span></div>
+        </div>
+        <div class="opt good">
+          <h3>Second leg on Pi42</h3>
+          <div class="row"><span>Delta bet</span><span class="money r">−$50</span></div>
+          <div class="row"><span>Pi42 bet</span><span class="money g">+$50</span></div>
+          <div class="row"><span>Rent gap</span><span class="money g">+$6</span></div>
+          <div class="row"><span>Tax</span><span class="money c">−$2</span></div>
+          <p class="note">Indian business income: both legs count together, so it's 31.2% of the <b>$6 net</b> only.</p>
+          <div class="res"><span class="money">+$4</span><span class="small">you keep</span></div>
+        </div>
+      </div>
+    </div>
+    <figcaption>Binance could tax the winning leg and throw away the losing leg's loss. Over a year that can eat the whole profit. On two Indian rupee exchanges you're taxed only on what you actually made.</figcaption>
+  </figure>
+  <ul>
+    <li><b>The law on sending money abroad:</b> under RBI's remittance rules, an Indian resident can't send money abroad to use as a deposit for these bets on a foreign exchange. Delta India and Pi42 take rupees from your Indian bank, so nothing leaves India.</li>
+    <li><b>Simpler paperwork:</b> no 1% TDS on rupee bets. The profit goes on your ITR-3 as business income.</li>
+    <li><b>What we gave up:</b> Pi42 lists fewer coins, so the expected return before tax fell from about 72% to about 50% a year. You still keep much more after tax, and it's legal.</li>
+    <li><b>Binance still helps, without your money:</b> Pi42 copies Binance's prices, so the bot reads prices and rent from Binance. Binance also runs the paper “book” experiment.</li>
+  </ul>
+  <p class="note">This is the safe tax reading from your stand-in CA. I'm not a registered CA, and the rules on crypto futures aren't fully settled.</p>
+</section>
+
+<!-- 9 -->
+<section>
+  <div class="step"><span class="n">9</span><h2>The words, in one place</h2></div>
+  <div class="gloss">
+    <div class="term"><b><span class="dot c"></span>Bet up / bet down</b><span>“Long” / “short”: you win if the price rises / falls. You don't own the coin.</span></div>
+    <div class="term"><b><span class="dot g"></span>Funding = rent</b><span>Every 8 hours the crowded side pays the quiet side a small % of its bet.</span></div>
+    <div class="term"><b><span class="dot g"></span>Rent gap (spread)</b><span>How much more rent Delta pays than Pi42 for the same coin. This is the profit.</span></div>
+    <div class="term"><b><span class="dot d"></span>Leg</b><span>One of the two bets: the Delta bet down, or the Pi42 bet up.</span></div>
+    <div class="term"><b><span class="dot p"></span>Pair</b><span>The two legs on the same coin, same size. The bot holds up to 10.</span></div>
+    <div class="term"><b><span class="dot c"></span>Jar (side / account)</b><span>Your money on one exchange: $500 on Delta, $500 on Pi42.</span></div>
+    <div class="term"><b><span class="dot c"></span>Deposit (margin) and 2×</b><span>The part of your jar held while bets are open. $500 holds about $1,000 of bets.</span></div>
+    <div class="term"><b><span class="dot r"></span>Liquidation</b><span>The exchange closing your bets by force when a jar runs out. The 65% and 50% alarms are there to prevent it.</span></div>
+    <div class="term"><b><span class="dot g"></span>Even-out</b><span>Moving money from the full jar to the thin one. You'll do it by bank transfer when it's live.</span></div>
+    <div class="term"><b><span class="dot c"></span>Paper / live</b><span>A simulation at real prices / real money. Paper now; live is planned for March 2027.</span></div>
+  </div>
+</section>
+
+<footer>
+  <span>All trades on this page are imaginary, with round numbers to make the maths easy. Real figures are on your OMEGA dashboard.</span>
+  <span>The plan and its tests: <span class="money" style="font-size:13px">reports/2026-10-04_live_march_roadmap.md</span></span>
+</footer>
+
+</div>
