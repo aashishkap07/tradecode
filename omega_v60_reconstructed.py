@@ -1800,6 +1800,14 @@ class _C462Report:
                     self._pack('XVENUE', [f"{_c462_money(_z524['eq'])} ({_z524['pct']:+.2f}%)",
                                           f"{_z524['n']} pairs", f"funding {_c462_money(_z524['funding'], sign=True)}",
                                           f"fees {_c462_money(_z524['fees'])}", 'paper, Delta vs Binance'])
+                _p530 = getattr(bot, 'c530p', None)
+                if _p530 is not None and _p530.active() and _p530.last_run:
+                    _q530 = _p530.status()
+                    _h530 = _q530.get('hold') or {}
+                    self._pack('PENDLE', [f"{_c462_money(_q530['eq'])} ({_q530['pct']:+.2f}%)",
+                                          (f"{_h530['name']} {100 * _h530['apy_now']:.2f}% to {_h530['matures']}"
+                                           if _h530 else f"cash {_c462_money(_q530['cash'])}, no market qualifies"),
+                                          f"Savings {100 * _q530['savings_apr']:.2f}%", 'paper, fixed yield'])
             except Exception:
                 pass
             # C527: every account in one total
@@ -2378,7 +2386,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C529'
+_OMEGA_VERSION = 'C530'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3127,18 +3135,24 @@ class Config:
         self.C521_DELTA_GST = 0.18              # C521: GST on Delta's fees
         self.C521_DELTA_MARK_S = 300            # C521: Delta's tickers for the panel every 5 min (forced at trades/funding)
         self.C524_XVENUE = True                 # C524: Delta vs Binance funding spread, both legs (paper, round 15)
-        self.C524_XVENUE_EQUITY = 500.0         # C524: its paper account
+        self.C524_XVENUE_EQUITY = 250.0         # C530: its paper account ($125 Delta + $125 Binance); a ledger
+                                                # begun at another size is rebased to this at start (x to/from)
         self.C524_XVENUE_RUN_UTC = (0, 30)      # C524: once a day, after the book (00:05), carry (00:10), spot (00:20)
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
-        self.C527_PLAN = ('delta', 'xvenue')    # C528: the operator's plan -- the $500 book on Delta India (INR-settled:
-                                                # tax on net profit, no USDT premium, no TDS) and $500 cross-venue
-                                                # ($250 Delta + $250 Binance). ('book', 'savings', 'xvenue') if the CA
-                                                # rules Binance's futures business income too. The rest stay paper.
-        self.C528_BUDGET = 1000.0               # C528: the most the operator will invest ...
-        self.C528_RESERVE = 200.0               # ... and a reserve, only to top up the cross-venue margin (max $1,200)
+        self.C530_PENDLE = True                 # C530: Pendle fixed yield on a stablecoin (paper, pre-registered rule)
+        self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
+        self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
+        self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
+        self.C527_PLAN = ('delta', 'xvenue', 'pendle')   # C530: the operator's plan -- the $500 book on Delta India
+                                                # (INR-settled: tax on net profit, no USDT premium, no TDS), $250
+                                                # cross-venue ($125 Delta + $125 Binance) and $100 Pendle fixed yield.
+                                                # ('book', 'savings', ...) if the CA rules Binance's futures business
+                                                # income too. The rest stay paper experiments.
+        self.C528_BUDGET = 1000.0               # C528: the most the operator will invest: $850 in the plan ...
+        self.C528_RESERVE = 100.0               # C530: ... and $100 kept back, only to top up a cross-venue side
         self.C529_XV_WARN_AT = 0.65             # C529: a cross-venue side (one venue's account) at 65% of its start: warn
         self.C529_XV_RESERVE_AT = 0.50          # C529: ... at 50%: live, the reserve tops that side up
         self.C528_TAX_RATE = 0.312              # C528: tax on the plan's NET profit only (business income: your slab
@@ -22791,7 +22805,25 @@ class C521Delta(_C501Store):
                 continue
         if len(m) >= 20:
             self.marks, self._marks_at = m, time.time()
+            # C530: Binance's prices AT THE SAME MOMENT, for the cross-venue pairs. Their two legs were
+            # priced at different times (Delta's tickers every 5 min, Binance's every 30 s), so a fast coin
+            # moved one leg and not the other: on 4 Oct AIN moved up to 5.6% in 5 minutes and the plan
+            # total swung +$4.83 -> +$0.42 in 24 minutes with no trade (the log's PLAN rows, 12:50-13:14 IST).
+            e = getattr(self.bot, 'c488', None)
+            try:
+                if e is not None and e.refresh_marks():
+                    self.bn_snap = {C488Engine._raw(k): e.mark(k) for k in list(e.marks)}
+                    self.bn_snap_at = float(getattr(e, '_marks_at', 0.0) or 0.0)
+            except Exception:
+                pass
         return bool(self.marks)
+
+    def bn_at_marks(self, raw):
+        """C530: Binance's mid for `raw` (e.g. 'AINUSDT') read with Delta's current tickers, or 0"""
+        snap = getattr(self, 'bn_snap', None) or {}
+        if snap and abs(float(getattr(self, 'bn_snap_at', 0.0) or 0.0) - self._marks_at) <= 120.0:
+            return float(snap.get(raw) or 0.0)
+        return 0.0
 
     def _sym(self, ccxt_sym):
         """the book's 'BTC/USDT:USDT' -> Delta's product for BTC, or None"""
@@ -23458,6 +23490,45 @@ class C524CrossVenue(_C501Store):
                 fb = self.fees * _C524_COST_B / (_C524_COST_B + _C524_COST_D)
                 rest = (self.eq - self.start_equity) + self.fees
                 self.side = {'b': -fb + rest / 2.0, 'd': -(self.fees - fb) + rest / 2.0}
+            self.rebased = list(d.get('rebased') or [])
+            want = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 250.0) or 0.0)
+            if self.start_equity and want > 0 and abs(want - self.start_equity) > 0.005:
+                self.rebase(want)
+
+    def rebase(self, to):
+        """C530: the operator's allocation changed (C524_XVENUE_EQUITY). The ledger
+        is made what it would be had it begun with `to`: every money figure x f
+        (f = to / its start), each Delta leg to the nearest whole contract (at
+        least 1) and its Binance leg re-matched to it. Its percentages, daily
+        returns and record are unchanged; a leg rounded to whole contracts carries
+        the rounding from now on (its pair's P&L to date is x f)."""
+        with self._lock:
+            f = float(to) / self.start_equity
+            for k in ('start_equity', 'eq', 'fees', 'funding', 'price_pnl'):
+                setattr(self, k, getattr(self, k) * f)
+            self.side = {v: float(x) * f for v, x in self.side.items()}
+            legs = []
+            for c, p in self.pairs.items():
+                k0 = abs(float(p['d_qty']))
+                k1 = max(1, int(k0 * f + 0.5)) if k0 >= 1 else k0
+                r = k1 / k0 if k0 else f
+                p['d_qty'] = float(k1 if p['d_qty'] > 0 else -k1)
+                p['b_qty'] = float(p['b_qty']) * r
+                p['notional'] = round(float(p.get('notional') or 0.0) * r, 2)
+                p['pnl'] = float(p['pnl']) * f
+                p['funding'] = float(p['funding']) * f
+                legs.append(f"{c} {int(k0)}->{int(k1)}")
+            for x in self.closed:
+                for k in ('pnl', 'funding'):
+                    if x.get(k) is not None:
+                        x[k] = round(float(x[k]) * f, 4)
+            self.rebased = (self.rebased + [dict(at=datetime.utcnow().strftime('%Y-%m-%d %H:%M'),
+                                                 frm=round(float(to) / f, 2), to=round(float(to), 2),
+                                                 f=round(f, 6))])[-10:]
+        self.save()
+        logger.info(f"   \U0001f500 C530 cross-venue (paper) rebased ${float(to) / f:.2f} -> ${float(to):.2f} (x{f:.4f}): "
+                    f"equity ${self.eq:.2f}, Delta side ${self.start_equity / 2 + self.side['d']:.2f}, Binance side "
+                    f"${self.start_equity / 2 + self.side['b']:.2f}; Delta contracts {', '.join(legs) or 'none held'}")
 
     def active(self):
         return bool(getattr(self.cfg, 'C524_XVENUE', True)) and _c516_venue(self.cfg) == 'binance'
@@ -23470,6 +23541,7 @@ class C524CrossVenue(_C501Store):
             self.trades, self.last_run = 0, ''
             self.side = {'d': 0.0, 'b': 0.0}                     # C529: each venue's own P&L since the start
             self._warned = {}
+            self.rebased = []                                    # C530: each change of its allocation
         if save:
             self.save()
 
@@ -23478,7 +23550,7 @@ class C524CrossVenue(_C501Store):
             d = dict(start_equity=self.start_equity, eq=self.eq, pairs=self.pairs, fees=self.fees,
                      funding=self.funding, price_pnl=self.price_pnl, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
-                     side=self.side)
+                     side=self.side, rebased=self.rebased)
         self._write(d)
 
     def due(self, now=None):
@@ -23519,7 +23591,7 @@ class C524CrossVenue(_C501Store):
         now_ms = int(now_ms or time.time() * 1000)
         today = now_ms // _C488_DAY * _C488_DAY
         if not self.start_equity:
-            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 500.0))
+            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 250.0))
         if not self.refresh_products(force=True):
             raise RuntimeError("Delta's product list did not load")
         e.refresh_marks(force=True)
@@ -23667,7 +23739,8 @@ class C524CrossVenue(_C501Store):
                     px = dm.get(p['d_sym']) or p['d_px']
                     mv += p['d_qty'] * p['cv'] * (px - p['d_px']); notional += abs(p['d_qty']) * p['cv'] * px
                 else:
-                    px = (e.mark(C488Engine._ccxt(c + 'USDT')) if e is not None else 0.0) or p['b_px']
+                    px = ((de.bn_at_marks(c + 'USDT') if dm and hasattr(de, 'bn_at_marks') else 0.0)   # C530: synchronous
+                          or (e.mark(C488Engine._ccxt(c + 'USDT')) if e is not None else 0.0) or p['b_px'])
                     mv += p['b_qty'] * (px - p['b_px']); notional += abs(p['b_qty']) * px
             eqv = half + float(self.side.get(v, 0.0)) + mv
             out[v] = dict(eq=round(eqv, 2), start=round(half, 2), notional=round(notional, 2),
@@ -23711,7 +23784,7 @@ class C524CrossVenue(_C501Store):
                         price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
                         last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
                         record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)),
-                        margins=self._margins_safe(), pending=self._pending_safe())
+                        margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:])
 
     def _margins_safe(self):
         try:
@@ -23736,6 +23809,246 @@ class C524CrossVenue(_C501Store):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# C530: PENDLE FIXED YIELD, A PAPER LEDGER (AT MOST $100)
+# ═══════════════════════════════════════════════════════════════════════════
+# A Pendle "PT" is a stablecoin's yield sold in advance: it is bought below 1
+# and redeems at exactly 1 of its accounting asset on its expiry date, so the
+# yield to that date is fixed at purchase (the "implied APY"). Its risks are
+# the issuer's (the stablecoin, the protocol) and the smart contracts', not the
+# market's. The rule, pre-registered in research/c530_preregistration.md before
+# any of it was built:
+#   universe  active stablecoin markets on Ethereum (1) or Arbitrum (42161) whose
+#             issuer is established (Ethena, Sky, Liquity, Agora, Spark, Aave,
+#             Frax) or that Pendle flags "prime"; liquidity >= $3M; 21-200 days
+#   choice    the highest implied APY
+#   hold      to maturity, then roll into the best market then
+#   value     PT = (1 + implied APY)^(-days/365), marked from the market's own
+#             implied APY (read every 6 hours; between reads it accrues at it)
+#   costs     the market's fee rate x years to expiry + 0.05% + gas ($1 on
+#             Ethereum, $0.05 on Arbitrum) at each purchase (in, and each roll)
+#   tax       a VDA: 31.2% of the gain, a loss offsets nothing
+# Cash with no qualifying market waits and earns nothing (stated, not hidden).
+# IT NEVER TOUCHES MONEY. Live it would need the USDT withdrawn from Binance to
+# a wallet (a withdrawal fee each way, not modelled) and a wallet key -- which
+# the bot will never hold.
+_C530_PENDLE_URL = 'https://api-v2.pendle.finance/core/v2/markets/all'
+_C530_ISSUERS = ('ethena', 'sky', 'liquity', 'agora', 'spark', 'aave', 'frax')
+_C530_CHAINS = {1: 'Ethereum', 42161: 'Arbitrum'}
+_C530_GAS = {1: 1.0, 42161: 0.05}
+_C530_SLIP = 0.0005
+
+
+def _c530_pt_price(apy, days):
+    """a PT's value now per 1 it redeems for at expiry: (1 + implied APY)^(-days/365)"""
+    return 1.0 if days <= 0 else (1.0 + max(-0.99, float(apy))) ** (-float(days) / 365.0)
+
+
+def _c530_markets():
+    """Pendle's active markets (public, no key), normalised; None if the read failed"""
+    out, skip = [], 0
+    for _ in range(5):
+        r = requests.get(_C530_PENDLE_URL, params={'isActive': 'true', 'limit': 100, 'skip': skip}, timeout=15)
+        d = r.json() if r.status_code == 200 else None
+        if not isinstance(d, dict) or not isinstance(d.get('results'), list):
+            return None
+        for x in d['results']:
+            try:
+                de = x.get('details') or {}
+                out.append(dict(addr=str(x['address']).lower(), chain=int(x['chainId']), name=str(x.get('name') or '?'),
+                                protocol=str(x.get('protocol') or ''), prime=bool(x.get('isPrime')),
+                                stable='stables' in (x.get('categoryIds') or []),
+                                expiry=datetime.strptime(str(x['expiry'])[:19], '%Y-%m-%dT%H:%M:%S').replace(
+                                    tzinfo=timezone.utc).timestamp(),
+                                apy=float(de.get('impliedApy') or 0.0), liq=float(de.get('liquidity') or 0.0),
+                                fee=float(de.get('feeRate') or 0.0)))
+            except Exception:
+                continue
+        skip += len(d['results'])
+        if not d['results'] or skip >= int(d.get('total') or 0):
+            break
+    return out
+
+
+def _c530_pick(mk, now):
+    """the pre-registered universe, best first"""
+    ok = [m for m in mk if m['stable'] and m['chain'] in _C530_CHAINS and m['liq'] >= 3e6
+          and 21 <= (m['expiry'] - now) / 86400.0 <= 200 and m['apy'] > 0
+          and (m['prime'] or any(a in m['protocol'].lower() for a in _C530_ISSUERS))]
+    return sorted(ok, key=lambda m: -m['apy'])
+
+
+class C530Pendle(_C501Store):
+    """C530 (paper): Pendle fixed yield on a stablecoin, at most $100 (see above)."""
+
+    STATE_FILE = 'c530_pendle.json'
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = self._fail_at = 0.0
+        self.reset(save=False)
+        d = self._read()
+        if d:
+            for k in ('start_equity', 'cash', 'costs', 'marked_at'):
+                setattr(self, k, float(d.get(k) or 0.0))
+            self.hold = dict(d['hold']) if d.get('hold') else None
+            self.rolls = int(d.get('rolls') or 0)
+            self.closed = list(d.get('closed') or [])[-50:]
+            self.last_run = str(d.get('last_run') or '')
+            self.info = dict(d.get('info') or {})
+            self.daily = {int(k): float(v) for k, v in (d.get('daily') or {}).items()}
+            self.eq_run = float(d.get('eq_run') or 0.0)
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C530_PENDLE', True)) and _c516_venue(self.cfg) == 'binance'
+
+    def reset(self, save=True):
+        with getattr(self, '_lock', threading.RLock()):
+            self.start_equity = self.cash = self.costs = self.marked_at = self.eq_run = 0.0
+            self.hold, self.rolls, self.closed, self.last_run, self.info, self.daily = None, 0, [], '', {}, {}
+        if save:
+            self.save()
+
+    def save(self):
+        with self._lock:
+            d = dict(start_equity=self.start_equity, cash=self.cash, costs=self.costs, marked_at=self.marked_at,
+                     hold=self.hold, rolls=self.rolls, closed=self.closed[-50:], last_run=self.last_run, info=self.info,
+                     daily={str(k): v for k, v in self.daily.items()}, eq_run=self.eq_run)
+        self._write(d)
+
+    def value(self, now=None):
+        """the PT at its last-read implied APY, accruing toward 1 at expiry"""
+        h = self.hold
+        if not h:
+            return 0.0
+        now = now or time.time()
+        return h['qty'] * _c530_pt_price(h['apy_now'], (h['expiry'] - now) / 86400.0)
+
+    def equity(self, now=None):
+        return self.cash + self.value(now)
+
+    def due(self, now=None):
+        now = now or datetime.utcnow()
+        h, m = getattr(self.cfg, 'C530_PENDLE_RUN_UTC', (0, 40))
+        return (now.hour, now.minute) >= (h, m) and self.last_run != now.strftime('%Y-%m-%d')
+
+    def _mark(self, mk, now):
+        h = self.hold
+        if h:
+            m = next((x for x in mk if x['addr'] == h['addr'] and x['chain'] == h['chain']), None)
+            if m is not None:
+                h['apy_now'], h['apy_at'] = m['apy'], now
+        best = _c530_pick(mk, now)
+        self.info = dict(at=now, markets=len(mk), qualify=len(best),
+                         best=[dict(name=m['name'], protocol=m['protocol'], chain=_C530_CHAINS[m['chain']],
+                                    apy=round(m['apy'], 4), liq=round(m['liq']), days=round((m['expiry'] - now) / 86400.0))
+                               for m in best[:3]])
+        self.marked_at = now
+        return best
+
+    def run(self, now=None):
+        """the day: mark, redeem at expiry, buy the best market with the cash"""
+        now = now or time.time()
+        if not self.start_equity:
+            self.start_equity = self.cash = float(getattr(self.cfg, 'C530_PENDLE_EQUITY', 100.0))
+            self.eq_run = self.start_equity
+        mk = _c530_markets()
+        if mk is None:
+            raise RuntimeError("Pendle's market list did not load")
+        best = self._mark(mk, now)
+        did = []
+        h = self.hold
+        if h and h['expiry'] <= now:                       # matured: it redeems at exactly 1
+            got = h['qty']
+            self.closed = (self.closed + [dict(name=h['name'], chain=_C530_CHAINS.get(h['chain'], h['chain']),
+                                               days=round((h['expiry'] - h['bought']) / 86400.0, 1),
+                                               apy=round(h['apy_entry'], 4), paid=round(h['paid'], 4),
+                                               got=round(got, 4), pnl=round(got - h['paid'], 4))])[-50:]
+            self.cash += got
+            self.hold = None
+            did.append(f"{h['name']} matured: ${got:.2f} for ${h['paid']:.2f}")
+        if self.hold is None and self.cash >= 1.0:
+            if best:
+                m = best[0]
+                days = (m['expiry'] - now) / 86400.0
+                gas = _C530_GAS[m['chain']]
+                spend = self.cash
+                cost = gas + (spend - gas) * (_C530_SLIP + m['fee'] * days / 365.0)
+                px = _c530_pt_price(m['apy'], days)
+                qty = (spend - cost) / px
+                self.hold = dict(addr=m['addr'], chain=m['chain'], name=m['name'], protocol=m['protocol'],
+                                 expiry=m['expiry'], qty=qty, apy_entry=m['apy'], apy_now=m['apy'], apy_at=now,
+                                 px_entry=px, paid=spend, cost=cost, bought=now)
+                self.cash = 0.0
+                self.costs += cost
+                self.rolls += 1
+                did.append(f"bought {m['name']} ({m['protocol']}, {_C530_CHAINS[m['chain']]}) at "
+                           f"{100 * m['apy']:.2f}% to {datetime.utcfromtimestamp(m['expiry']).strftime('%d %b %Y')}"
+                           f" ({days:.0f} d), costs ${cost:.2f}")
+            else:
+                did.append(f"no market qualifies (of {len(mk)}): ${self.cash:.2f} waits")
+        eq = self.equity(now)
+        day = int(now // 86400 * 86400 * 1000)
+        if self.eq_run > 0:
+            self.daily[day] = self.daily.get(day, 0.0) + eq / self.eq_run - 1
+        self.eq_run = eq
+        self.last_run = datetime.utcfromtimestamp(now).strftime('%Y-%m-%d')
+        self.info['did'] = did
+        return eq
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < 60:
+            return
+        self._tick_at = now
+        if not bool(getattr(self.bot, '_c462_state_settled', False)) or now - self._fail_at < 300:
+            return
+        try:
+            if self.due(datetime.utcfromtimestamp(now)):
+                with self._lock:
+                    eq = self.run(now)
+                self.save()
+                logger.info(f"   \U0001f4dc C530 Pendle fixed yield (paper) {self.last_run}: ${eq:.2f} "
+                            f"({100 * (eq / (self.start_equity or 1) - 1):+.2f}%) | " + '; '.join(self.info.get('did') or [])
+                            + f" | {self.info.get('qualify', 0)} of {self.info.get('markets', 0)} markets qualify")
+            elif now - self.marked_at >= 6 * 3600:
+                mk = _c530_markets()
+                if mk is None:
+                    raise RuntimeError("Pendle's market list did not load")
+                with self._lock:
+                    self._mark(mk, now)
+                self.save()
+        except Exception as ex:
+            self._fail_at = now
+            logger.warning(f"⚠️ C530 Pendle read failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def status(self):
+        with self._lock:
+            now = time.time()
+            base, eq = self.start_equity, self.equity(now)
+            h, hd = self.hold, None
+            if h:
+                left = (h['expiry'] - now) / 86400.0
+                tot = max(1e-9, (h['expiry'] - h['bought']) / 86400.0)
+                net = (h['qty'] / h['paid']) ** (365.0 / tot) - 1 if h['paid'] > 0 else None
+                hd = dict(name=h['name'], protocol=h['protocol'], chain=_C530_CHAINS.get(h['chain'], h['chain']),
+                          days_left=round(left, 1), matures=datetime.utcfromtimestamp(h['expiry']).strftime('%d %b %Y'),
+                          apy_entry=round(h['apy_entry'], 4), apy_now=round(h['apy_now'], 4),
+                          value=round(self.value(now), 2), at_expiry=round(h['qty'], 2), paid=round(h['paid'], 2),
+                          cost=round(h['cost'], 2), net_apy=round(net, 4) if net is not None else None)
+            gain = eq - base if base else 0.0
+            vda = float(getattr(self.cfg, 'C530_PENDLE_TAX', 0.312))
+            h_, m_ = getattr(self.cfg, 'C530_PENDLE_RUN_UTC', (0, 40))
+            return dict(mode='paper' if self.active() else 'off', start_equity=round(base, 2), eq=round(eq, 2),
+                        pnl=round(gain, 2), pct=round(100 * (eq / base - 1), 2) if base else 0.0,
+                        cash=round(self.cash, 2), hold=hd, costs=round(self.costs, 2), rolls=self.rolls,
+                        closed=self.closed[-5:], last_run=self.last_run, next_run_utc=f"{h_:02d}:{m_:02d}",
+                        info=self.info, savings_apr=round(_c527_savings_apr(self.bot, self.cfg), 4),
+                        tax_rate=vda, tax=round(max(0.0, gain) * vda, 2),
+                        record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # C527: EVERY ACCOUNT IN ONE TOTAL, AS IF IT WERE LIVE
 # ═══════════════════════════════════════════════════════════════════════════
 # The operator asked for the total equity and net P&L of everything, now. Each
@@ -23749,8 +24062,9 @@ class C524CrossVenue(_C501Store):
 #     only when under 15 minutes old), plus the funding SETTLED since their run
 #     and not yet booked (C527Pending reads it once an hour; each ledger still
 #     books it itself at its next run, and the reading is dropped when it does).
-# Two totals: the operator's plan (C528, `C527_PLAN`: the book's $500 with
-# Savings, and the cross-venue trade's $500) and every paper account as if
+#   * Pendle (C530): cash + the PT at its last-read implied APY.
+# Two totals: the operator's plan (C530, `C527_PLAN`: the book's $500 on Delta,
+# the cross-venue trade's $250 and Pendle's $100) and every paper account as if
 # each were funded. BFUSD is an
 # alternative to Savings (the same wallet), so it is shown, not added. The
 # intraday shadow and the tournament are experiments on the book's own
@@ -23895,7 +24209,7 @@ def _c527_total(bot, now=None):
     now = now or time.time()
     rows = []
 
-    plan_keys = set(getattr(bot.cfg, 'C527_PLAN', None) or ('delta', 'xvenue'))   # C528
+    plan_keys = set(getattr(bot.cfg, 'C527_PLAN', None) or ('delta', 'xvenue', 'pendle'))   # C528/C530
 
     def add(key, label, start, eq, plan, how):
         plan = key in plan_keys                                  # C528: the operator's plan decides, not the caller
@@ -23951,7 +24265,9 @@ def _c527_total(bot, now=None):
         with xv._lock:
             for c, p in xv.pairs.items():
                 dpx = dm.get(p['d_sym'], 0.0)
-                bpx = e.mark(C488Engine._ccxt(c + 'USDT')) if perp_ok else 0.0
+                # C530: both legs at the same moment -- Binance's price read with Delta's tickers
+                bpx = (de.bn_at_marks(c + 'USDT') if dm and hasattr(de, 'bn_at_marks') else 0.0) or (
+                    e.mark(C488Engine._ccxt(c + 'USDT')) if perp_ok else 0.0)
                 if dpx > 0 and bpx > 0:
                     mv += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
                     n += 1
@@ -23960,6 +24276,12 @@ def _c527_total(bot, now=None):
             f"daily mark + prices since ({n} of {len(xv.pairs)})"
             + (f" + funding settled since, not yet booked {'+' if px >= 0 else '-'}${abs(px):.2f}" if px is not None
                else "; funding since the daily run joins at the next hour"))
+    pe = getattr(bot, 'c530p', None)
+    if pe is not None and pe.active() and pe.start_equity:
+        with pe._lock:
+            h = pe.hold
+            add('pendle', 'Pendle fixed yield', pe.start_equity, pe.equity(now), False,
+                (f"{h['name']} PT at {100 * h['apy_now']:.2f}%, accruing to 1 at expiry" if h else 'cash, no market held'))
 
     def total(sel):
         s0 = sum(r['start'] for r in sel)
@@ -23970,12 +24292,18 @@ def _c527_total(bot, now=None):
                paper=bool(getattr(bot.cfg, 'PAPER_MODE', True)),
                plan_names=[r['label'] for r in rows if r['plan']],
                budget=dict(invest=float(getattr(bot.cfg, 'C528_BUDGET', 1000.0)),
-                           reserve=float(getattr(bot.cfg, 'C528_RESERVE', 200.0))))
-    # C528: tax on the plan's NET profit only (the business-income treatment), never on a loss
+                           reserve=float(getattr(bot.cfg, 'C528_RESERVE', 100.0))))
+    # C528: tax on the plan's NET profit only (the business-income treatment), never on a loss.
+    # C530: Pendle is a VDA, taxed apart -- 31.2% of its own gain, and neither side's loss offsets the other
     rate = float(getattr(bot.cfg, 'C528_TAX_RATE', 0.312))
+    vrate = float(getattr(bot.cfg, 'C530_PENDLE_TAX', 0.312))
     pp = out['plan']['pnl']
-    tx = round(max(0.0, pp) * rate, 2)
-    out['tax'] = dict(rate=rate, pnl=pp, tax=tx, after=round(pp - tx, 2), eq_after=round(out['plan']['eq'] - tx, 2))
+    bus = sum(r['pnl'] for r in rows if r['plan'] and r['key'] != 'pendle')
+    vda = sum(r['pnl'] for r in rows if r['plan'] and r['key'] == 'pendle')
+    tb, tv = round(max(0.0, bus) * rate, 2), round(max(0.0, vda) * vrate, 2)
+    tx = round(tb + tv, 2)
+    out['tax'] = dict(rate=rate, pnl=pp, tax=tx, after=round(pp - tx, 2), eq_after=round(out['plan']['eq'] - tx, 2),
+                      business=round(bus, 2), tax_business=tb, vda=round(vda, 2), tax_vda=tv, vda_rate=vrate)
     bf = getattr(bot, 'c521b', None)
     if bf is not None and bf.active() and bf.last_ts:
         out['bfusd'] = dict(interest=round(bf.interest, 4), tds=round(bf.tds, 2))
@@ -24001,6 +24329,7 @@ class TradingBot:
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance funding spread, both legs (paper)
+        self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
         self.news = NewsAnalyzer(cfg)
         self.ta = TechnicalAnalysis(cfg, self.news)
@@ -24629,7 +24958,9 @@ class TradingBot:
             if getattr(self, 'c521d', None) is not None and self.c521d.active():
                 led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 500.0)):.0f} (C521)")
             if getattr(self, 'c524x', None) is not None and self.c524x.active():
-                led.append(f"Delta vs Binance funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 500.0)):.0f} (C524)")
+                led.append(f"Delta vs Binance funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 250.0)):.0f} (C524)")
+            if getattr(self, 'c530p', None) is not None and self.c530p.active():
+                led.append(f"Pendle fixed yield on a stablecoin, ${float(getattr(c, 'C530_PENDLE_EQUITY', 100.0)):.0f} (C530)")
             if led:
                 logger.info("   PAPER  never touches the account: " + " · ".join(led))
             _lt511 = int(self.portfolio.lifetime_trades or 0)
@@ -25000,8 +25331,8 @@ class TradingBot:
                         self.c490.tick()
                     except Exception as _e490:
                         logger.warning(f"⚠️ C490 tick failed: {type(_e490).__name__}: {_e490}")
-                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d, self.c524x,
-                                  self.c527p):  # C501/C521/C524: paper; C527: their unbooked funding
+                    for _c501 in (self.c501s, self.c501v, self.c521b, self.c521d, self.c524x, self.c530p,
+                                  self.c527p):  # C501/C521/C524/C530: paper; C527: their unbooked funding
                         try:
                             _c501.tick()
                         except Exception as _e501:
@@ -42484,6 +42815,8 @@ def startup():
         bot.c521b.reset(); bot.c521d.reset() # C521: and fresh BFUSD and Delta ledgers
         if getattr(bot, 'c524x', None) is not None:
             bot.c524x.reset()                # C524: and a fresh cross-venue ledger
+        if getattr(bot, 'c530p', None) is not None:
+            bot.c530p.reset()                # C530: and a fresh Pendle ledger
 
     # Connect exchange
     if not bot.exchange.connect():
@@ -43205,6 +43538,11 @@ class RemoteControl:
                                 _out469['c524'] = bot_ref.c524x.status()
                         except Exception as _x524:
                             _out469['c524'] = {'error': f"{type(_x524).__name__}: {_x524}"}
+                        try:      # C530: Pendle fixed yield
+                            if getattr(bot_ref, 'c530p', None) is not None:
+                                _out469['c530'] = bot_ref.c530p.status()
+                        except Exception as _x530:
+                            _out469['c530'] = {'error': f"{type(_x530).__name__}: {_x530}"}
                         try:      # C527: every account in one total
                             _out469['c527'] = _c527_total(bot_ref)
                         except Exception as _x527:
@@ -43414,12 +43752,12 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 </header>
 
 <div class="grid">
-  <div class="tile"><div class="k">Equity</div>
+  <div class="tile"><div class="k" id="eqk">Equity</div>
     <div class="v" id="eq">&mdash;</div><div class="s" id="eqs"></div></div>
   <div class="tile"><div class="k">Risk &middot; monthly dial</div>
     <div class="v" id="day">&mdash;</div><div class="s" id="days"></div>
     <div class="meter"><i id="daybar" style="width:0%"></i></div></div>
-  <div class="tile"><div class="k">Record</div>
+  <div class="tile"><div class="k" id="reck">Record</div>
     <div class="v" id="rec">&mdash;</div><div class="s" id="recs"></div></div>
   <div class="tile"><div class="k">Scanning</div>
     <div class="v" id="scan">&mdash;</div><div class="s" id="scans"></div></div>
@@ -43448,6 +43786,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 <section><h2>BFUSD <span class="muted">(paper, Binance margin asset)</span></h2><div id="bfusd" class="muted">&mdash;</div></section>
 <section><h2>Delta Exchange India <span class="muted">(paper, same plan)</span></h2><div id="delta" class="muted">&mdash;</div></section>
 <section><h2>Delta vs Binance funding <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
+<section><h2>Pendle fixed yield <span class="muted">(paper, at most $100)</span></h2><div id="pendle" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
   <h2>Equity this session</h2>
@@ -43615,6 +43954,23 @@ async function pull(){
       q('eqs').innerHTML+='<br>marked <b>'+money(bk.marked)+'</b> \u00b7 book open <span class="'+
         cls(bk.unrealized)+'">'+sgn(bk.unrealized)+'</span>';
     }
+    /* C530: the top is YOUR PLAN (C527_PLAN) -- the money you would put in -- not the $500 Binance
+       paper book, an experiment beside it (4 Oct 14:03 IST: "the top still shows equity of 500usdt") */
+    var P7=(d.c527&&!d.c527.error&&d.c527.plan&&d.c527.plan.n)?d.c527:null;
+    var pct7=function(v){return (Number(v)>=0?'+':'')+Number(v||0).toFixed(2)+'%'};
+    q('eqk').textContent='Equity';q('reck').textContent='Record';   /* the plan's labels only while it is there */
+    if(P7){
+      var pl7t=P7.plan,tx7=P7.tax||{},nm7={delta:'Delta book',xvenue:'cross-venue',pendle:'Pendle',book:'Binance book',
+        savings:'Savings',spot:'spot pot',carry:'carry'};
+      q('eqk').textContent='Your plan'+(P7.paper?' \u00b7 paper':'');
+      q('eq').innerHTML=money(pl7t.eq);
+      q('eqs').innerHTML='of '+money(pl7t.start)+' <span class="'+cls(pl7t.pnl)+'">'+sgn(pl7t.pnl)+' ('+pct7(pl7t.pct)+')</span>'+
+        ' \u00b7 after tax '+money(tx7.eq_after!==undefined?tx7.eq_after:pl7t.eq)+'<br>'+
+        (P7.rows||[]).filter(function(r){return r.plan}).map(function(r){return (nm7[r.key]||r.label)+' '+money(r.eq)}).join(' \u00b7 ')+
+        ((P7.rows||[]).some(function(r){return r.key==='book'&&r.plan})?'':
+          '<br><span class="muted">Binance book (experiment, not in your plan) '+money(bk&&bk.marked!==undefined?bk.marked:d.equity)+
+          ' \u00b7 this run '+sgn(srun)+'</span>');
+    }
 
     if(d.risk){
       /* C482-B: one guard, set by the dial. The bar is the TIGHTER of the
@@ -43647,6 +44003,23 @@ async function pull(){
       var bar=q('daybar');bar.style.width=(100*f).toFixed(1)+'%';
       bar.className=f>0.8?'b':(f>0.5?'w':'');
     }
+    /* C530: with a plan, the risk tile is the plan's own guards -- the Delta book's month guard (the
+       same dial, on its own marked equity) and the cross-venue trade's two accounts. The bar fills
+       with whichever is nearer its limit: the guard's budget used, or a side's fall toward 50%. */
+    if(P7){
+      var dg7=(d.c521||{}).delta||{},gd7=dg7.guard||{},mg7=(d.c524||{}).margins||{},rr7=[],fr7=0;
+      if(gd7.budget>0){fr7=Math.max(0,Math.min(1,gd7.used/gd7.budget));
+        rr7.push('Delta book: month '+money(gd7.used)+' of '+money(gd7.budget)+' on marked equity'+
+          (dg7.halt?' \u00b7 <span class="bad">CLOSED: '+dg7.halt+'</span>':''));}
+      if(mg7.d&&mg7.b){var lo7=Math.min(mg7.d.frac||1,mg7.b.frac||1);
+        rr7.push('<span class="'+(lo7<0.5?'bad':(lo7<0.65?'warn':''))+'">cross-venue: Delta side '+Math.round(100*(mg7.d.frac||0))+
+          '% \u00b7 Binance side '+Math.round(100*(mg7.b.frac||0))+'%</span> <span class="muted">(warn 65%, reserve 50%)</span>');
+        fr7=Math.max(fr7,Math.max(0,Math.min(1,(1-lo7)/0.5)));}
+      if(d.c530&&d.c530.hold)rr7.push('<span class="muted">Pendle: fixed to '+d.c530.hold.matures+'</span>');
+      if(d.c488&&d.c488.halt)rr7.push('<span class="muted">Binance book (experiment) HALTED: '+d.c488.halt+'</span>');
+      if(rr7.length){q('days').innerHTML=rr7.join('<br>');
+        var b7=q('daybar');b7.style.width=(100*fr7).toFixed(1)+'%';b7.className=fr7>0.8?'b':(fr7>0.5?'w':'');}
+    }
     if(d.trades!==undefined){
       q('rec').textContent=d.wins+'W '+d.losses+'L';
       q('recs').innerHTML='this run'+(d.trades?' \u00b7 '+d.wr_journal+'% win':'')+
@@ -43666,6 +44039,16 @@ async function pull(){
         (cx0&&cx0.pct!==undefined?'<br>since '+cx0.since+': <span class="'+cls(cx0.pnl)+'">'+(cx0.ret>=0?'+':'')+
           (100*cx0.ret).toFixed(2)+'%</span> ('+cx0.word+')':'')+
         (d.life&&d.life.n?'<br><span class="muted">old scanner (off): '+d.life.w+'W '+d.life.l+'L</span>':'');
+    }
+    /* C530: with a plan, the record is the plan's, and each part's own */
+    if(P7){
+      var rx7=[],dl7=(d.c521||{}).delta||{},xv7=d.c524||{},pn7=d.c530||{};
+      q('reck').textContent='Plan so far';
+      q('rec').innerHTML='<span class="'+cls(P7.plan.pnl)+'">'+pct7(P7.plan.pct)+'</span>';
+      if(dl7.start_equity)rx7.push('Delta book '+pct7(dl7.pct)+' \u00b7 '+(dl7.n||0)+' held');
+      if(xv7.start_equity)rx7.push('cross-venue '+pct7(xv7.pct)+' \u00b7 '+(xv7.n||0)+' pairs \u00b7 funding '+sgn(xv7.funding));
+      if(pn7.start_equity)rx7.push('Pendle '+pct7(pn7.pct)+(pn7.hold?' \u00b7 '+(100*pn7.hold.apy_entry).toFixed(2)+'% fixed':' \u00b7 cash'));
+      q('recs').innerHTML=rx7.join('<br>')+'<br><span class="muted">target 2\u20134% a month, after tax</span>';
     }
     q('scan').textContent=(age<90?age+'s':(age/60).toFixed(0)+'m')+' ago';
     var ls=d.last_scan||{};
@@ -43805,9 +44188,40 @@ async function pull(){
         (xv.pairs||[]).forEach(function(p){var pb=xby[p.coin];
           xh+='<div class="s">'+p.coin+' <span class="muted">'+p.how+' '+money(p.notional)+' a leg · spread '+
           (p.s_now!==null?p.s_now:p.s_entry)+'%/yr</span> <span class="'+cls(p.pnl)+'">'+sgn(p.pnl)+'</span> <span class="muted">funding '+sgn(p.funding)+
-          (pb!==undefined?' (+'+(pb>=0?'':'-')+'$'+Math.abs(pb).toFixed(2)+' settled since)':'')+' · '+p.days+'d</span></div>'});
+          (pb!==undefined?' ('+sgn(pb)+' settled since)':'')+' · '+p.days+'d</span></div>'});   /* C530: sgn, not "+-$0.01" */
         if((xi.under_one_contract||[]).length)xh+='<div class="s muted">skipped (one Delta contract is more than a leg): '+xi.under_one_contract.join(', ')+'</div>';
+        (xv.rebased||[]).forEach(function(r){xh+='<div class="s muted">rebased '+money(r.frm)+' → '+money(r.to)+' on '+r.at+' UTC (C530: every figure ×'+
+          Number(r.f).toFixed(2)+', Delta legs to whole contracts; the percentages are unchanged)</div>'});
         q('xvenue').innerHTML=xh;
+      }
+    }
+    /* C530: Pendle fixed yield -- a stablecoin's yield bought in advance, held to its date */
+    var pn=d.c530;
+    if(pn){
+      if(pn.error){q('pendle').innerHTML='<span class="'+cls(-1)+'">unavailable: '+pn.error+'</span>'}
+      else if(pn.mode!=='paper'){q('pendle').innerHTML='<span class="muted">off (needs the Binance venue)</span>'}
+      else if(!pn.start_equity){q('pendle').innerHTML='<span class="muted">first run at '+pn.next_run_utc+' UTC</span>'}
+      else{
+        var ph=pn.hold,pi=pn.info||{},pc=function(v){return (100*Number(v||0)).toFixed(2)+'%'};
+        var pt='<div class="s muted">a "PT" is bought below $1 and pays exactly $1 of its stablecoin on its date: the yield is fixed when bought · '+
+          'Ethereum or Arbitrum, an established issuer or Pendle "prime", $3M+ liquidity, 21–200 days, the highest yield, held to its date then rolled · '+
+          'risk: the stablecoin and the contracts, not prices · tax: a VDA, '+pc(pn.tax_rate)+' of the gain · paper account of '+money(pn.start_equity)+
+          ' — never touches money · last '+(pn.last_run||'—')+'</div>';
+        pt+='<div style="margin:4px 0"><b>'+money(pn.eq)+'</b> <span class="'+cls(pn.pnl)+'">'+sgn(pn.pnl)+' ('+(pn.pct>=0?'+':'')+Number(pn.pct).toFixed(2)+'%)</span>'+
+          ' <span class="muted">· costs '+money(pn.costs)+' · '+pn.rolls+(pn.rolls===1?' purchase':' purchases')+'</span></div>';
+        if(ph){
+          var beat=ph.net_apy!==null&&ph.net_apy!==undefined?(ph.net_apy>=pn.savings_apr):null;
+          pt+='<div class="s">'+ph.name+' <span class="muted">('+ph.protocol+', '+ph.chain+')</span> worth <b>'+money(ph.value)+'</b>, pays '+money(ph.at_expiry)+' on '+ph.matures+
+            ' <span class="muted">('+Math.round(ph.days_left)+' d) · bought at '+pc(ph.apy_entry)+', now '+pc(ph.apy_now)+'</span></div>';
+          if(beat!==null)pt+='<div class="s '+(beat?'muted':'warn')+'">after its costs ('+money(ph.cost)+' on '+money(ph.paid)+') it earns '+pc(ph.net_apy)+
+            ' a year to its date · Binance Savings pays '+pc(pn.savings_apr)+(beat?'':' — Savings pays more at this size')+'</div>';
+        }else{
+          pt+='<div class="s warn">'+money(pn.cash)+' in cash, no market qualifies today (it waits and earns nothing)</div>';
+        }
+        if((pi.best||[]).length)pt+='<div class="s muted">qualifying today ('+pi.qualify+' of '+pi.markets+'): '+pi.best.map(function(m){
+          return m.name+' '+m.chain+' '+pc(m.apy)+' '+m.days+'d'}).join(' · ')+'</div>';
+        (pn.closed||[]).forEach(function(c){pt+='<div class="s muted">matured: '+c.name+' '+c.days+'d at '+pc(c.apy)+': '+money(c.got)+' for '+money(c.paid)+'</div>'});
+        q('pendle').innerHTML=pt;
       }
     }
     /* C527: every account in one total, as if it were live */
@@ -43828,9 +44242,12 @@ async function pull(){
         if(ex7r.length){th7+='<div class="s muted" style="margin-top:6px">experiments — paper only, not part of your money, never added up:</div>';
           ex7r.forEach(function(r){th7+=row7(r)});}
         if(tt7.tax)th7+='<div class="s">your plan after tax on its net profit <b>'+money(tt7.tax.eq_after)+'</b> <span class="'+cls(tt7.tax.after)+'">'+sgn(tt7.tax.after)+
-          '</span> <span class="muted">· tax '+money(tt7.tax.tax)+' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess) · a loss is not taxed</span></div>';
-        if(tt7.budget)th7+='<div class="s muted">budget: at most '+money(tt7.budget.invest)+' invested + '+money(tt7.budget.reserve)+
-          ' reserve, only to top up the cross-venue margin (reports/2026-10-03_budget_plan.md)</div>';
+          '</span> <span class="muted">· tax '+money(tt7.tax.tax)+(tt7.tax.vda_rate!==undefined&&tt7.rows.some(function(r){return r.key==='pendle'&&r.plan})?   /* C530: the trades and Pendle are taxed apart */
+            ' = '+(100*tt7.tax.rate).toFixed(1)+'% of the trades\' net '+sgn(tt7.tax.business)+' (C528_TAX_RATE: your slab + cess) + '+
+            (100*tt7.tax.vda_rate).toFixed(1)+'% of Pendle\'s gain '+sgn(tt7.tax.vda)+' (a VDA) · a loss is not taxed and does not offset the other':
+            ' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess) · a loss is not taxed')+'</span></div>';
+        if(tt7.budget)th7+='<div class="s muted">budget: '+money(tt7.plan.start)+' in the plan + '+money(tt7.budget.reserve)+
+          ' reserve, only to top up a cross-venue side · at most '+money(tt7.budget.invest)+' (reports/2026-10-04_c530_plan.md)</div>';
         var ex7=[];
         if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
         if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');
@@ -43859,7 +44276,8 @@ async function pull(){
       var c52r=d.c521||{};
       if(c52r.bfusd&&c52r.bfusd.mode==='paper')pp.push('BFUSD wallet');
       if(c52r.delta&&c52r.delta.mode==='paper')pp.push('Delta Exchange India book $'+Math.round(c52r.delta.start_equity||500));
-      if(d.c524&&d.c524.mode==='paper')pp.push('Delta vs Binance funding $'+Math.round(d.c524.start_equity||500));   /* C529: it ran but was not listed */
+      if(d.c524&&d.c524.mode==='paper')pp.push('Delta vs Binance funding $'+Math.round(d.c524.start_equity||250));   /* C529: it ran but was not listed */
+      if(d.c530&&d.c530.mode==='paper')pp.push('Pendle fixed yield $'+Math.round(d.c530.start_equity||100));   /* C530 */
       var pl7=d.c527||{};   /* C529: say which paper accounts are the operator's plan */
       if(pl7.plan_names&&pl7.plan_names.length)rn.push('<div style="margin:4px 0"><b>YOUR PLAN</b> (paper until you go live): '+
         pl7.plan_names.join(' + ')+' = '+money((pl7.plan||{}).start||0)+'</div>');

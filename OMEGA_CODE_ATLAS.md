@@ -5,8 +5,22 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 **Deployed state (checked in the server's own logs):**
+- **C529 deployed 4 Oct 00:25 IST** (`OMEGA C529`; detail log to 13:14 IST, 3,898
+  lines, 0 Traceback; one warning, the new margin watch doing its job at 11:33:48:
+  "the Delta side is at $150.22, 60% of its $250.00 (leverage 4.05x)"; the C529
+  Delta month anchor $501.98, budget $100.40; Savings read 6.67%). **C530 pushed
+  4 Oct (not deployed)** (`reports/2026-10-04_c530_plan.md`):
+  - **the operator's new split:** Delta book $500 + cross-venue **$250** + Pendle
+    **$100** (paper) = $850, reserve $100;
+  - **the top tiles show the plan** (the Equity tile was the $500 Binance paper
+    book: "the top still shows equity of 500usdt");
+  - **the PLAN line's ±$4 swings with no trade** (12:50–13:14 IST) were the two
+    cross-venue legs priced at different moments (Delta 5 min, Binance 30 s;
+    AIN moved 5.6% in 5 min): both legs now priced at Delta's reading;
+  - the odds fall with the split: P(≥ 2%/month after tax) 85% → **61%** at the
+    top slab, 92% → 75% at 10.4% (`research/c530_plan_odds.txt`).
 - **C528 deployed 3 Oct 22:46 IST** (`OMEGA C528`, 0 Traceback, 0 warnings;
-  Savings read live at 6.66%). **C529 pushed 3 Oct (not deployed)**
+  Savings read live at 6.66%). **C529 pushed 3 Oct, deployed 4 Oct 00:25 IST**
   (`reports/2026-10-03_c529_deep_audit.md`):
   - **The 22:58 IST screens:** all 9 book positions are inside Binance's
     17:28 UTC minute; plan $1,002.68 = Delta $502.29 + cross-venue $500.39;
@@ -437,6 +451,111 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🪙 2026-10-04 — C530: $500 DELTA + $250 CROSS-VENUE + $100 PENDLE; THE TOP SHOWS THE PLAN; ROUND 17
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator (4 Oct, screens 14:03 IST):** "the top still shows equity of
+500usdt ... analyse all calculations ... check the entry, monitoring and exit
+processes ... everything self adjusting and relativistic ... if we have 500
+usdt in cross venue trades reduce it to 250 usdt ... pendle fixed yields
+...integrate that too with max amount of 100 usdt".
+
+**Report:** `reports/2026-10-04_c530_plan.md`. **Research:**
+`research/c530_preregistration.md` (pushed first, 5bfde5f),
+`research/c530_xvenue_sizing.py/.txt/.json`, `research/c530_plan_odds.py/.txt/.json`.
+**Data kept:** `research/c530_snapshot/` (the server's 4 Oct cross-venue ledger;
+Pendle's 4 Oct 08:46 UTC market list, the fields the rule reads).
+
+**Round 17 (pre-registered):**
+- X1v (legs × min(1, σ_med/σ_coin)) on the ALL-harder runs:
+  - worst month's weaker side 28.9% → 40.5% ✅;
+  - months < 50%: 12% → 12%;
+  - net +65.6% → +44.4%/yr = **68% of X1's (bar 70%) ❌**;
+  - t 9.23, 4/4 ✅.
+- **Not adopted.** X1's flat 10% stays; the risk is handled by the margin
+  watch + reserve + a monthly re-balance between the venues.
+- D: a side < 50% in 12% of months, < 65% in 33% (daily closes understate).
+
+**C530 (code):**
+1. **`C524CrossVenue.rebase(to)`:**
+   - at load, if `C524_XVENUE_EQUITY` (now **250**) ≠ the ledger's start,
+     every money figure × f (start, eq, fees, funding, price P&L, sides,
+     each pair's P&L/funding, closed P&L);
+   - Delta legs to whole contracts (half up, ≥ 1), Binance legs × k1/k0,
+     notional × k1/k0;
+   - saved at once with a `rebased` record, logged, shown on the panel;
+   - a restart does nothing.
+   - On the 4 Oct ledger: $499.94 → $249.97, sides 78%/122% unchanged, AIN
+     21 → 11.
+2. **`C530Pendle`** (paper, `C530_PENDLE`, `C530_PENDLE_EQUITY` 100,
+   `C530_PENDLE_RUN_UTC` (0, 40), `C530_PENDLE_TAX` 0.312, `c530_pendle.json`):
+   - **the rule:** stables on chains 1/42161, issuer in Ethena/Sky/Liquity/
+     Agora/Spark/Aave/Frax or `isPrime`, liquidity ≥ $3M, 21–200 days, the
+     highest `impliedApy`;
+   - **pricing:** PT = (1+apy)^(−days/365); costs = feeRate × years +
+     0.05% + gas ($1 ETH / $0.05 ARB) at each purchase;
+   - **holding:** held to expiry (redeems 1), then rolls; no market → the
+     cash waits (earns nothing);
+   - **marking:** every 6 h from the market's implied APY, accruing between
+     reads;
+   - status: `net_apy` to expiry vs Binance Savings' live rate.
+   - On the real list: **sUSDe (Ethena, Ethereum) 5.17%, 53 d** (sUSDS
+     5.05% second); after the registered $1 gas −2.35%/yr; at 4 Oct's real
+     gas (0.17 gwei, ~$0.20) ≈ +3.2%/yr; **Savings 6.67% beats it at
+     $100.**
+3. **The plan:**
+   - `C527_PLAN = ('delta', 'xvenue', 'pendle')` = $850;
+   - `C528_RESERVE = 100`;
+   - `_c527_total` tax = `C528_TAX_RATE` × max(0, the trades' net) +
+     `C530_PENDLE_TAX` × max(0, Pendle's gain) (neither loss offsets the
+     other).
+4. **The top tiles show the plan:**
+   - `eqk` "Your plan · paper": the plan's value, "of $850", after tax,
+     each part, and the Binance book as "experiment, not in your plan";
+   - the risk tile: the Delta book's month guard + the cross-venue sides
+     (the bar = the nearer limit);
+   - `reck` "Plan so far".
+5. **Same-moment pricing:**
+   - `C521Delta.refresh_marks` snapshots Binance's mids (`bn_snap`,
+     `bn_snap_at`) with each Delta read;
+   - `bn_at_marks(raw)` is used by `_c527_total` and
+     `C524CrossVenue.margins()` (fallback: Binance's latest).
+   - It fixes the PLAN line's ±$4 swings (AIN 5.6% in 5 min on Delta's
+     1-minute candles).
+6. **Smaller fixes:**
+   - "+-$" → `sgn()`;
+   - a `PENDLE` row in the status block and Pendle in "What is running";
+   - the logpush carries `c530_pendle.json` (**re-copy it to
+     `/usr/local/bin`**).
+7. **Version C530.**
+   - `omega_c530_test.py`: 57 checks on real data, including Chromium.
+   - The C524/C527/C529 tests are pinned to the allocation they were
+     written for.
+
+**The odds** (`research/c530_plan_odds.txt`; the book −⅓ and −3.72%/yr
+Delta funding; cross-venue ALL-harder in **whole Delta contracts** at its own
+size, $250: +59.0%/yr with 49/210 entries skipped vs $500: +69.6%, 20/182):
+
+| P(avg ≥ 2%/month after tax), planning | 0% | 10.4% | 20.8% | 31.2% |
+|---|---|---|---|---|
+| C530 $500 + $250 + Pendle $100 | 79% | 75% | 69% | 61% |
+| C528 $500 + $500 | 93% | 92% | 89% | 85% |
+
+- Pessimistic: C530 55% / 40% at 10.4% / 31.2%.
+- **Advice given:** put the cross-venue trade back to $500 if the cut was
+  about the AIN scare (size changes dollars, not percentages); keep Pendle
+  on paper at $100.
+
+**Open:**
+1. Round 18: the Delta book's carry ranked by Delta's own funding.
+2. Pendle live would need a peg check and a wallet (the bot will never
+   hold a key).
+3. The live order paths; inter-venue transfers.
+4. The 28 Nov gates.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔍 2026-10-03 — C529: THE 22:58 IST SCREENS AND LOG WORD BY WORD; THE DELTA BOOK'S MISSING EXIT

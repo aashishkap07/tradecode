@@ -45,6 +45,10 @@ SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C527 or later", int(om._OMEGA_VERSION[1:]) >= 527)
 ok("C528: the book trades 20 coins at every size (top 40 at $1,000 was weaker on the traded rule)", om.Config().C488_TOPN == 20)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+
+# C530 changed the operator's allocation ($250 cross-venue, Pendle $100 in the plan, a $100 reserve); this
+# test checks its own version's mechanics at the allocation it was written for (omega_c530_test.py checks C530's)
+cfg.C524_XVENUE_EQUITY = 500.0; cfg.C527_PLAN = ('delta', 'xvenue'); cfg.C528_RESERVE = 200.0; cfg.C530_PENDLE = False
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 L = lambda f: json.load(open(os.path.join(SNAP, f + '.json')))
@@ -231,8 +235,8 @@ om._c521_get = lambda path, params, tries=3: None
 P2 = om.C527Pending(bot); P2.tick(now=NOWP)
 ok("a venue that does not answer: nothing shown, retried in 10 minutes", P2.at == 0 and P2._fail_at == NOWP
    and not P2.due(NOWP + 300) and P2.due(NOWP + 700) and P2.for_total() == (None, None))
-ok("wired: created, ticked with the paper ledgers", all(t in SRC for t in ("self.c527p = C527Pending(self)", "self.c524x,\n"
-                                                                             "                                  self.c527p):")))
+ok("wired: created, ticked with the paper ledgers", all(t in SRC for t in ("self.c527p = C527Pending(self)", "self.c524x, self.c530p,\n"
+                                                                             "                                  self.c527p):")))   # C530: Pendle joined
 del bot.c527p
 
 print("\n5. THE SAVINGS RATE READS ITSELF (Binance's public Simple Earn listing)")
@@ -337,7 +341,7 @@ try:
     ok("the panel: both totals, every account's row, BFUSD and TDS notes, what is left out",
        'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' not in txt
        and 'experiments — paper only, not part of your money, never added up' in txt and 'Main book' in txt
-       and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: at most $1000.00 invested + $200.00 reserve' in txt
+       and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: $1000.00 in the plan + $200.00 reserve' in txt and 'at most $1000.00' in txt
        and 'after tax on its net profit' in txt and 'a loss is not taxed' in txt
        and 'BFUSD' in txt and 'TDS' in txt and 'left out' in txt and 'paper' in txt, txt[:700])
     ok("the Savings panel says its rate is Binance's own, read every 6 h", 'rate now, read every 6 h' in svt, svt[:300])

@@ -43,6 +43,10 @@ print("=" * 66); print("C529: THE SCREENS AND THE LOG, AUDITED"); print("=" * 66
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C529 or later", int(om._OMEGA_VERSION[1:]) >= 529)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+
+# C530 changed the operator's allocation ($250 cross-venue, Pendle $100 in the plan, a $100 reserve); this
+# test checks its own version's mechanics at the allocation it was written for (omega_c530_test.py checks C530's)
+cfg.C524_XVENUE_EQUITY = 500.0; cfg.C527_PLAN = ('delta', 'xvenue'); cfg.C528_RESERVE = 200.0; cfg.C530_PENDLE = False
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 L = lambda f: json.load(open(os.path.join(SNAP, f + '.json')))
