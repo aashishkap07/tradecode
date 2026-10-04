@@ -316,3 +316,77 @@ crypto swings so much.
 - It earns from the rent that eager bettors pay.
 - Prices matter in only one way: a big move empties one jar and fills the
   other (the even-out).
+
+### 6b. How betting moves a price, step by step (imaginary coin XYZ)
+
+**Every bet is a deal between two people:** one bets up, the other bets down.
+The exchange only matches them, like a broker at a property deal. The bets
+have their own list of waiting people, separate from the market for real
+coins.
+
+**Step 1, a calm day.** The real-coin market last traded at **$100**, and the
+bet market looks like this:
+
+| waiting to bet down at | waiting to bet up at |
+|---|---|
+| $103 | $99 |
+| $102 | $98 |
+| $101 | $97 |
+
+The bet's last deal was also $100, so both prices agree.
+
+**Step 2, excitement.**
+- News arrives ("a big company will use XYZ") and many people want to bet up
+  *right now*.
+- Betting is easier than buying real coins: you only need a deposit, nothing
+  to store, and it's quick.
+- They take the $101 offer, then the $102 offer, so the bet's price is now
+  **$102**.
+- Nobody bought a real coin, so the real price is still **$100**. There's a
+  **$2 gap (2%)**.
+
+**Step 3, the rent switches on.**
+- The exchange sees the bet $2 above the real price and makes up-bettors pay
+  down-bettors.
+- Example: 0.1% every 8 hours, which on a $1,000 bet up is **$3 a day**.
+- The bigger the gap, the bigger the rent.
+
+**Step 4, a careful trader ("Ravi") closes the gap.**
+- Ravi **buys 10 real XYZ coins for about $1,000** and **bets down on 10 XYZ
+  at about $102**.
+- His buying uses up the cheapest real-coin sellers, so the **real price rises
+  to $101**.
+- His betting down fills the eager up-bettors, so the **bet price falls to
+  $101**.
+- The prices meet at **$101**. Ravi's real coins gained $10 and his bet down
+  gained $10, so **+$20**, plus rent. From here on his two positions cancel,
+  so he carries almost no price risk.
+
+**Step 5, calm again.** The gap is gone, so the rent falls back to its small
+normal level.
+
+**The lesson:** the excitement started in the bet market, but through careful
+traders like Ravi it **lifted the real coin from $100 to $101**. That's how
+betting moves the real price.
+
+**The opposite (panic).** Eager down-bettors push the bet's price *below* the
+real price. Down-bettors then pay the rent, and careful traders sell real coins
+and bet up until the prices meet.
+
+**The chain reaction (forced closing).**
+- Many people bet with thin deposits.
+- Say lots of people bet *down* on a small coin and the price rises 5%. Their
+  deposits run out and the exchange **closes their bets by force**.
+- Closing a bet down means *buying*, which pushes the price up again, so the
+  next group runs out, and so on.
+- A small coin can jump 20–30% in hours this way (a "short squeeze"). It's
+  one reason AIN-style jumps happen, and why the bot uses only 2× and watches
+  both jars.
+
+**Your bot is Ravi on Delta, with a twist.**
+- Delta's crowd is mostly eager up-bettors, so Delta's bet prices tend to sit
+  a bit high and up-bettors pay rent.
+- The bot bets down on Delta to collect it.
+- Instead of buying the real coin like Ravi (in India that brings crypto tax
+  and TDS), it covers the price risk with a cheap **bet up on Pi42**.
+- Pi42 follows Binance, where many careful traders keep gaps and rents small.
