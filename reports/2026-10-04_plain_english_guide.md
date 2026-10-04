@@ -52,6 +52,29 @@ Written 5 Oct 2026 for the operator. No jargon without an explanation.
   - If most are betting it will fall, the **shorts pay the longs**.
 - That payment pushes people to the quieter side and keeps the price honest.
 
+**Why one side has to pay (the full reason):**
+- Every bet up is matched by someone betting down, so both sides always hold
+  the same total. "Crowded" really means **more eager**.
+- Eager up-bettors keep paying a little more to get in, so the bet's price
+  floats **above** the coin's real price. With no end date, nothing on the
+  calendar pulls it back.
+- The rent is a charge on the eager side, set higher the further the two
+  prices drift apart. Three things follow:
+  - betting up costs rent, so fewer people want to;
+  - betting down earns rent, so more people want to;
+  - careful traders buy the real coin and bet down the same amount. Their
+    price risk cancels and they collect the rent, and their bets down push the
+    bet's price back.
+- When the prices meet, the rent falls to a small normal level (on Binance
+  0.01% every 8 hours). If the bet's price drops below the real price, it
+  flips and down-bettors pay up-bettors.
+- **Like surge pricing on Ola or Uber:** too many riders, so rides cost extra
+  and the extra goes to the drivers, until it balances.
+- The exchange doesn't keep the rent; it passes it between traders.
+- **The bot is the careful trader on Delta.** It takes the down side to
+  collect Delta's rent, and cancels the price risk with a cheap bet up on Pi42
+  instead of buying the real coin.
+
 **Analogy: rent.**
 - When everyone wants the same flat, tenants pay rent to the landlord.
 - In a perp, the crowded side is the tenant and the quiet side is the

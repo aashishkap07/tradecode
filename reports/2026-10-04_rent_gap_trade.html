@@ -210,15 +210,15 @@ a{color:var(--pi42)}
 <!-- 3 -->
 <section>
   <div class="step"><span class="n">3</span><h2>Funding is rent</h2></div>
-  <p>These bets never expire, so the exchange needs a way to keep their price honest. Every 8 hours, <b>the crowded side pays the quiet side</b> a small amount. That payment is called <b>funding</b>. Think of it as <b>rent</b>.</p>
+  <p>These bets never expire, so the exchange needs a way to keep their price honest. Every 8 hours, <b>the more eager side pays the other side</b> a small amount. That payment is called <b>funding</b>. Think of it as <b>rent</b>. Step 3b explains why it has to exist.</p>
   <figure>
     <div class="fig">
-      <svg viewBox="0 0 360 210" role="img" aria-label="On one exchange, many traders bet up and few bet down, so the up-bettors pay rent to the down-bettors every 8 hours">
+      <svg viewBox="0 0 360 210" role="img" aria-label="On one exchange, many traders are keen to bet up and few to bet down, so the up-bettors pay rent to the down-bettors every 8 hours">
         <defs>
           <marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bg"/></marker>
         </defs>
         <rect x="8" y="30" width="150" height="122" rx="12" class="fs sx w2"/>
-        <text x="83" y="22" text-anchor="middle" class="tx tb">Crowded side</text>
+        <text x="83" y="22" text-anchor="middle" class="tx tb">Eager side</text>
         <g class="sm w2">
           <circle cx="40" cy="62" r="13" class="fs"/><circle cx="83" cy="62" r="13" class="fs"/><circle cx="126" cy="62" r="13" class="fs"/>
           <circle cx="40" cy="104" r="13" class="fs"/><circle cx="83" cy="104" r="13" class="fs"/><circle cx="126" cy="104" r="13" class="fs"/>
@@ -227,21 +227,74 @@ a{color:var(--pi42)}
           <text x="40" y="67">↑</text><text x="83" y="67">↑</text><text x="126" y="67">↑</text>
           <text x="40" y="109">↑</text><text x="83" y="109">↑</text><text x="126" y="109">↑</text>
         </g>
-        <text x="83" y="140" text-anchor="middle" class="tm">6 people bet up</text>
+        <text x="83" y="140" text-anchor="middle" class="tm">many keen to bet up</text>
         <rect x="232" y="30" width="120" height="122" rx="12" class="fs sx w2"/>
-        <text x="292" y="22" text-anchor="middle" class="tx tb">Quiet side</text>
+        <text x="292" y="22" text-anchor="middle" class="tx tb">Other side</text>
         <g class="sm w2"><circle cx="268" cy="83" r="13" class="fs"/><circle cx="316" cy="83" r="13" class="fs"/></g>
         <g class="tx tb" text-anchor="middle" style="font-size:14px"><text x="268" y="88">↓</text><text x="316" y="88">↓</text></g>
-        <text x="292" y="140" text-anchor="middle" class="tm">2 people bet down</text>
+        <text x="292" y="140" text-anchor="middle" class="tm">few keen to bet down</text>
         <line x1="162" y1="91" x2="226" y2="91" class="sg w3" marker-end="url(#m3)"/>
         <text x="195" y="80" text-anchor="middle" class="tg tb" style="font-size:12px;font-family:var(--body)">rent</text>
-        <text x="180" y="180" text-anchor="middle" class="tx">The crowded side pays rent to the quiet side</text>
+        <text x="180" y="180" text-anchor="middle" class="tx">The eager side pays rent to the other side</text>
         <text x="180" y="198" text-anchor="middle" class="tm">every 8 hours, a small % of each bet</text>
       </svg>
     </div>
-    <figcaption>If most people bet <b>up</b>, the up-bettors pay the down-bettors. If most bet <b>down</b>, it's the other way round. Holding the quiet side means <b>you collect rent just for holding the bet</b>.</figcaption>
+    <figcaption>Every bet up is matched by someone betting down, so both sides always hold the same total. “Eager” means one side wants in so badly that it pushes the bet's price away from the coin's real price. When the up side is eager, up-bettors pay down-bettors; when the down side is, it's the other way round. Holding the other side means <b>you collect rent just for holding the bet</b>.</figcaption>
   </figure>
   <div class="callout">The key fact: <b class="d">Delta India's</b> crowd mostly bets coins <b>up</b>, so on Delta the rent for being a down-bettor is high. <b class="p">Pi42</b> follows Binance's worldwide crowd, where the same coin's rent is usually much lower. The difference between the two rents is the <b>rent gap</b>, and it's what the bot earns.</div>
+</section>
+
+<!-- 3b -->
+<section>
+  <div class="step"><span class="n">3b</span><h2>Why one side has to pay the other</h2></div>
+  <p>A normal futures bet has an <b>end date</b>. On that day it is settled at the coin's real price, so before then its price can't wander far from the real one. Everyone knows the gap closes on the last day.</p>
+  <p>A perp has <b>no end date</b>, so nothing on the calendar pulls its price back. If lots of people are eager to bet up, they keep paying a little more to get in, and the bet's price floats <b>above</b> the coin's real price. The bet would stop following the coin, which is the one thing it exists to do.</p>
+  <figure>
+    <div class="fig">
+      <svg viewBox="0 0 360 230" role="img" aria-label="Eager up-bettors push the bet price of $101 above the real price of $100; the rent they pay pulls it back down">
+        <defs>
+          <marker id="m3bu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="tc"/></marker>
+          <marker id="m3bd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="bg"/></marker>
+        </defs>
+        <line x1="130" y1="40" x2="352" y2="40" class="sl dash w2"/>
+        <text x="8" y="36" class="tx tb">Bet price</text>
+        <text x="8" y="52" class="tl num">$101</text>
+        <line x1="130" y1="160" x2="352" y2="160" class="sf w2"/>
+        <text x="8" y="156" class="tx tb">Real price</text>
+        <text x="8" y="172" class="tx num">$100</text>
+        <line x1="200" y1="154" x2="200" y2="48" class="sc w3" marker-end="url(#m3bu)"/>
+        <text x="192" y="96" text-anchor="end" class="tc" style="font-size:12px;font-family:var(--body)">eager bets</text>
+        <text x="192" y="112" text-anchor="end" class="tc" style="font-size:12px;font-family:var(--body)">push it up</text>
+        <line x1="270" y1="46" x2="270" y2="152" class="sg w3" marker-end="url(#m3bd)"/>
+        <text x="278" y="96" class="tg tb" style="font-size:12px;font-family:var(--body)">rent pulls</text>
+        <text x="278" y="112" class="tg tb" style="font-size:12px;font-family:var(--body)">it back</text>
+        <text x="180" y="200" text-anchor="middle" class="tx">The rent keeps the bet glued to the real price</text>
+        <text x="180" y="218" text-anchor="middle" class="tm">If the bet price drops below, the rent flips direction</text>
+      </svg>
+    </div>
+    <figcaption>The further the bet's price drifts from the real price, the higher the rent the exchange sets. When the two prices meet again, the rent drops back to a small normal level.</figcaption>
+  </figure>
+  <p><b>The rent is a charge on the eager side.</b> While the bet's price sits above the real price, up-bettors pay down-bettors every 8 hours. Three things follow:</p>
+  <ul>
+    <li>Betting up now costs rent, so fewer people want to.</li>
+    <li>Betting down now earns rent, so more people want to.</li>
+    <li>Careful traders <b>buy the real coin and bet down the same amount</b>. Their price risk cancels and they simply collect the rent. Their bets down push the bet's price back toward the real price.</li>
+  </ul>
+  <div class="callout"><b>Like surge pricing on Ola or Uber.</b> When too many riders want cars, a ride costs extra, and the extra goes to the drivers. Fewer people book and more drivers come out until it balances. Funding is surge pricing on the eager side of a bet, paid to whoever takes the other side.</div>
+  <figure>
+    <div class="fig">
+      <div class="days" role="img" aria-label="Imaginary coin XYZ: real price $100, bet price $101; up-bettors pay $3 a day on a $1,000 bet; a careful trader collects it with no price risk; the gap closes and the rent falls to about 30 cents a day">
+        <div class="row"><span>Imaginary coin XYZ: real price</span><span class="money">$100</span></div>
+        <div class="row"><span>Eager up-bettors push the bet's price to</span><span class="money r">$101</span></div>
+        <div class="row"><span>Hot-market rent: 0.1% every 8 hours. On a $1,000 bet up that's</span><span class="money r">$3 a day</span></div>
+        <div class="row"><span>A careful trader buys $1,000 of real XYZ and bets down $1,000: price moves cancel, and they collect</span><span class="money g">$3 a day</span></div>
+        <div class="row"><span>Many do the same, the bet's price sinks back to</span><span class="money">$100</span></div>
+        <div class="row"><span>The rent falls to a normal level (Binance: 0.01% every 8 hours, on $1,000 about)</span><span class="money">30¢ a day</span></div>
+      </div>
+    </div>
+    <figcaption>The exchange doesn't keep the rent. It passes it from one group of traders to the other, like a referee handing over the ball.</figcaption>
+  </figure>
+  <div class="callout">Your bot plays the careful trader on <b class="d">Delta</b>: Delta's eager up-bettors pay rent, and the bot takes the down side to collect it. Instead of buying the real coin to cancel the price risk, it bets up on <b class="p">Pi42</b>, where the rent is low and everything stays in rupees.</div>
 </section>
 
 <!-- 4 -->
@@ -493,7 +546,7 @@ a{color:var(--pi42)}
   <div class="step"><span class="n">9</span><h2>The words, in one place</h2></div>
   <div class="gloss">
     <div class="term"><b><span class="dot c"></span>Bet up / bet down</b><span>“Long” / “short”: you win if the price rises / falls. You don't own the coin.</span></div>
-    <div class="term"><b><span class="dot g"></span>Funding = rent</b><span>Every 8 hours the crowded side pays the quiet side a small % of its bet.</span></div>
+    <div class="term"><b><span class="dot g"></span>Funding = rent</b><span>Every 8 hours the more eager side pays the other side a small % of its bet, to pull the bet's price back to the coin's real price.</span></div>
     <div class="term"><b><span class="dot g"></span>Rent gap (spread)</b><span>How much more rent Delta pays than Pi42 for the same coin. This is the profit.</span></div>
     <div class="term"><b><span class="dot d"></span>Leg</b><span>One of the two bets: the Delta bet down, or the Pi42 bet up.</span></div>
     <div class="term"><b><span class="dot p"></span>Pair</b><span>The two legs on the same coin, same size. The bot holds up to 10.</span></div>
