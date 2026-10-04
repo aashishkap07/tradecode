@@ -14,7 +14,10 @@
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
-- **C533 deployed 4 Oct ~21:44 IST** (the cross-venue ledger rebased $500 -> $1000 at 16:14 UTC).
+- **C533 deployed 4 Oct 21:44:52 IST**, verified in the 22:17 IST logs push: `OMEGA C533`, "C530
+  cross-venue (paper) rebased $500.00 -> $1000.00 (x2.0000)", "YOUR PLAN … $1000 = $1000 of your
+  $1000", 0 Traceback, 0 warnings; the ledger's `reb_month` is '' (the monthly even-out fires at
+  the first run).
   The 21:50 IST screens were checked against real prices (`reports/2026-10-04_c533_screens.md`):
   - the trade: $1001.12 shown; on 1-minute marks at 16:19-16:21 UTC $1000.2-1000.3 + $0.34
     pending funding (within ~$0.6, timing; C529's error was ~$6);
