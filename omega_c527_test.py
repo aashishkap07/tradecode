@@ -50,6 +50,7 @@ cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_re
 # test checks its own version's mechanics at the allocation it was written for (omega_c530_test.py checks C530's)
 cfg.C524_XVENUE_EQUITY = 500.0; cfg.C527_PLAN = ('delta', 'xvenue'); cfg.C528_RESERVE = 200.0; cfg.C530_PENDLE = False
 cfg.C521_DELTA_EQUITY = 500.0; cfg.C528_BUDGET = 1000.0; cfg.C531_XV_REBALANCE = False   # and C531's ($600, no reserve)
+cfg.C532_XV_VENUE = 'binance'   # and C532's (the second venue Pi42, the plan cross-venue + reserve)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 L = lambda f: json.load(open(os.path.join(SNAP, f + '.json')))
@@ -322,7 +323,7 @@ rep = om._C462Report(os.path.join(BASE, 'r.log')); rows = []
 rep._emit = lambda line: rows.append(str(line))
 rep.status(fbot)
 ix = [i for i, r in enumerate(rows) if r.strip().startswith('PLAN')]
-tot = ' '.join(r.strip() for r in rows[ix[0]:ix[0] + 3]) if len(ix) == 1 else ''   # a row wraps to the phone's width
+tot = ' '.join(r.strip() for r in rows[ix[0]:ix[0] + 5]) if len(ix) == 1 else ''   # a row wraps to the phone's width (C532: it names its parts)
 ok("the log's status block has a PLAN row: the plan, from its start, and after tax on net profit (C529: no 'all accounts' sum)",
    f"${T['plan']['eq']:,.2f} of ${T['plan']['start']:,.2f}" in tot and 'after tax on net profit' in tot and 'paper' in tot
    and 'all 6 accounts' not in tot, tot or '\n'.join(rows[-12:]))
@@ -342,7 +343,7 @@ try:
     ok("the panel: both totals, every account's row, BFUSD and TDS notes, what is left out",
        'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' not in txt
        and 'experiments — paper only, not part of your money, never added up' in txt and 'Main book' in txt
-       and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: $1000.00 in the plan + $200.00 reserve' in txt and 'your equity $1000.00' in txt
+       and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: your equity $1000.00 = $1000.00 trading + $200.00 reserve' in txt
        and 'after tax on its net profit' in txt and 'a loss is not taxed' in txt
        and 'BFUSD' in txt and 'TDS' in txt and 'left out' in txt and 'paper' in txt, txt[:700])
     ok("the Savings panel says its rate is Binance's own, read every 6 h", 'rate now, read every 6 h' in svt, svt[:300])

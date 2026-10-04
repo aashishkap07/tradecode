@@ -43,17 +43,21 @@ ok("version C531 or later", int(om._OMEGA_VERSION[1:]) >= 531)
 
 print("\n1. THE ALLOCATION")
 c0 = om.Config()
-ok("Delta book $200 + cross-venue $400 = the whole $600; no reserve; Pendle off; the venues re-balance, $1 a transfer",
-   c0.C521_DELTA_EQUITY == 200.0 and c0.C524_XVENUE_EQUITY == 400.0 and c0.C528_BUDGET == 600.0
-   and c0.C528_RESERVE == 0.0 and c0.C530_PENDLE is False and c0.C531_XV_REBALANCE is True
-   and c0.C531_XV_TRANSFER_FEE == 1.0 and c0.C521_DELTA_EQUITY + c0.C524_XVENUE_EQUITY == c0.C528_BUDGET)
+# C532 changed the operator's plan (the second venue Pi42, $550 + a $50 reserve; omega_c532_test.py checks it).
+# This test checks C531's mechanics at the allocation C531 set, pinned below.
+C531 = dict(C521_DELTA_EQUITY=200.0, C524_XVENUE_EQUITY=400.0, C528_BUDGET=600.0, C528_RESERVE=0.0, C530_PENDLE=False,
+            C531_XV_REBALANCE=True, C531_XV_TRANSFER_FEE=1.0, C527_PLAN=('delta', 'xvenue', 'pendle'), C532_XV_VENUE='binance')
+ok("C531's allocation: Delta book $200 + cross-venue $400 = the whole $600; no reserve; the venues re-balance, $1 a transfer",
+   C531['C521_DELTA_EQUITY'] + C531['C524_XVENUE_EQUITY'] == C531['C528_BUDGET'] and C531['C528_RESERVE'] == 0.0)
 ok("  untouched: live locked; the cross-venue rule (10 pairs, 10% a leg, in at 20%/yr); warn at 65%",
    c0.C488_LIVE_OK is False and c0.C524_XVENUE_PAIRS == 10 and c0.C524_XVENUE_SIZE == 0.10 and c0.C529_XV_WARN_AT == 0.65)
 r531 = open(os.path.join(REPO, 'research', 'c531_split_600.txt')).read()
-ok("  the choice is the research's: $200/$400 has the best four-case average at the 10.4% slab and stays positive in the worst",
+ok("  the choice was the research's: $200/$400 had the best four-case average at the 10.4% slab and stayed positive in the worst",
    '$200  $400  |           +2.28%     +0.12%' in r531)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
+    setattr(cfg, _k, _v)
+for _k, _v in C531.items():
     setattr(cfg, _k, _v)
 
 print("\n2. THE DELTA BOOK, $500 -> $200 (THE SERVER'S 3 OCT LEDGER)")
@@ -224,13 +228,13 @@ try:
         G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eq', 'eqs', 'days', 'pendle', 'xvenue', 'delta', 'alltotal', 'running')}
         br.close()
     ok("the top tile: your plan, of $600, the Delta book and cross-venue; no Pendle", G['eqk'].lower() == 'your plan · paper'
-       and 'of $600.00' in G['eqs'] and 'Delta book $' in G['eqs'] and 'cross-venue $' in G['eqs'] and 'Pendle' not in G['eqs'], G['eqs'])
+       and 'of $600.00' in G['eqs'] and 'Delta book $' in G['eqs'] and 'Delta vs Binance $' in G['eqs'] and 'Pendle' not in G['eqs'], G['eqs'])
     ok("the risk tile: no reserve, evened out from the other venue", 'no reserve: evened out from the other venue below 65%' in G['days'], G['days'])
-    ok("the cross-venue panel: the no-reserve rule; the Delta panel: its rebase", 'no reserve: below 65% of their mean' in G['xvenue']
+    ok("the cross-venue panel: the no-reserve rule; the Delta panel: its rebase", 'below 65% of their mean' in G['xvenue'] and '(no reserve, C531)' in G['xvenue']
        and 'rebased $500.00 → $200.00' in G['delta'], G['xvenue'][-300:])
     ok("the Pendle panel says why it is off", 'off (C530_PENDLE = False since C531' in G['pendle'], G['pendle'][:200])
     ok("the totals: from $600, no reserve; Pendle not running", 'of $600.00' in G['alltotal']
-       and '$600.00 in the plan, no reserve' in G['alltotal'] and 'your equity $600.00' in G['alltotal']
+       and 'your equity $600.00 = $600.00 trading, no reserve' in G['alltotal']
        and 'Pendle' not in G['running'], G['alltotal'][-300:])
     ok("no JavaScript errors", not errs, str(errs))
     for k in ('eqk', 'eq', 'eqs', 'days'):

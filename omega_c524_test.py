@@ -45,6 +45,7 @@ cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_re
 # test checks its own version's mechanics at the allocation it was written for (omega_c530_test.py checks C530's)
 cfg.C524_XVENUE_EQUITY = 500.0; cfg.C527_PLAN = ('delta', 'xvenue'); cfg.C528_RESERVE = 200.0; cfg.C530_PENDLE = False
 cfg.C521_DELTA_EQUITY = 500.0; cfg.C528_BUDGET = 1000.0; cfg.C531_XV_REBALANCE = False   # and C531's ($600, no reserve)
+cfg.C532_XV_VENUE = 'binance'   # and C532's (the second venue Pi42, the plan cross-venue + reserve)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():      # the venue's own fees, as main() sets them
     setattr(cfg, _k, _v)
 DAY = 86400000

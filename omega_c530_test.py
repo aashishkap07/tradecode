@@ -49,7 +49,8 @@ c0 = om.Config()
 # C531 changed the operator's allocation ($600: Delta $200 + cross-venue $400, no reserve, Pendle off; omega_c531_test.py
 # checks it). This test checks C530's mechanics at the allocation C530 set, pinned below.
 C530 = dict(C521_DELTA_EQUITY=500.0, C524_XVENUE_EQUITY=250.0, C530_PENDLE=True, C530_PENDLE_EQUITY=100.0,
-            C527_PLAN=('delta', 'xvenue', 'pendle'), C528_RESERVE=100.0, C528_BUDGET=1000.0, C531_XV_REBALANCE=False)
+            C527_PLAN=('delta', 'xvenue', 'pendle'), C528_RESERVE=100.0, C528_BUDGET=1000.0, C531_XV_REBALANCE=False,
+            C532_XV_VENUE='binance')
 ok("C530's allocation: $500 + $250 + $100 + $100 reserve = $950, inside its $1,000",
    C530['C521_DELTA_EQUITY'] + C530['C524_XVENUE_EQUITY'] + C530['C530_PENDLE_EQUITY'] + C530['C528_RESERVE'] <= C530['C528_BUDGET'])
 ok("  untouched: live locked, the cross-venue rule (10 pairs, 10% a leg)", c0.C488_LIVE_OK is False
@@ -65,7 +66,7 @@ print("\n1. THE CROSS-VENUE LEDGER, $500 -> $250 (THE SERVER'S 4 OCT LEDGER)")
 x0 = json.load(open(os.path.join(SNAP30, 'c524_xvenue.json')))
 shutil.copy(os.path.join(SNAP30, 'c524_xvenue.json'), BASE)
 bx = types.SimpleNamespace(cfg=cfg, _c462_state_settled=True, c488=None, c521d=None)
-cfgx = om.Config(); cfgx.VENUE = 'binance'; cfgx.C524_XVENUE_EQUITY = 500.0; cfgx.C531_XV_REBALANCE = False
+cfgx = om.Config(); cfgx.VENUE = 'binance'; cfgx.C524_XVENUE_EQUITY = 500.0; cfgx.C531_XV_REBALANCE = False; cfgx.C532_XV_VENUE = 'binance'
 x500 = om.C524CrossVenue(types.SimpleNamespace(cfg=cfgx, c488=None, c521d=None))
 m500 = x500.margins()
 LOG.clear()
@@ -333,13 +334,13 @@ try:
     ok("the top tile: 'Your plan · paper' and the plan's equity (was the $500 Binance book)",
        G['eqk'].lower() == 'your plan · paper' and G['eq'] == f"${T['plan']['eq']:.2f}", f"{G['eqk']} {G['eq']}")
     ok("  under it: of $850, after tax, each part, and the Binance book named as an experiment",
-       'of $850.00' in G['eqs'] and 'after tax' in G['eqs'] and 'Delta book $' in G['eqs'] and 'cross-venue $' in G['eqs']
-       and 'Pendle $' in G['eqs'] and 'Binance book (experiment, not in your plan)' in G['eqs'], G['eqs'])
+       'of $850.00' in G['eqs'] and 'after tax' in G['eqs'] and 'Delta book $' in G['eqs'] and 'Delta vs Binance $' in G['eqs']
+       and 'Pendle $' in G['eqs'] and 'experiments, not in your plan: Binance book' in G['eqs'], G['eqs'])
     ok("the risk tile: the Delta book's own month guard and the cross-venue sides (the plan's exits)",
        'Delta book: month' in G['days'] and 'cross-venue: Delta side' in G['days'] and 'Binance side' in G['days']
        and 'Pendle: fixed to' in G['days'] and G['day'].startswith('20%'), G['days'])
     ok("the record tile: the plan so far, each part's, the target", G['reck'].lower() == 'plan so far' and '%' in G['rec']
-       and 'Delta book' in G['recs'] and 'cross-venue' in G['recs'] and 'Pendle' in G['recs'] and '2–4% a month' in G['recs'],
+       and 'Delta book' in G['recs'] and 'Delta vs Binance' in G['recs'] and 'Pendle' in G['recs'] and '2–4% a month' in G['recs'],
        G['recs'])
     ok("the Pendle panel: the PT, its date, its yield after costs against Savings, what qualifies",
        'sUSDe' in G['pendle'] and 'Ethereum' in G['pendle'] and 'Binance Savings pays' in G['pendle']
@@ -348,7 +349,7 @@ try:
        and '+-$' not in G['xvenue'], G['xvenue'][:300])
     ok("what is running and the totals: Pendle listed, the plan from $850, the tax split, $100 reserve",
        'Pendle fixed yield $100' in G['running'] and '= $850.00' in G['running'] and 'of $850.00' in G['alltotal']
-       and "of Pendle's gain" in G['alltotal'] and '$850.00 in the plan + $100.00 reserve' in G['alltotal'], G['alltotal'][-500:])
+       and "of Pendle's gain" in G['alltotal'] and 'your equity $1000.00 = $850.00 trading + $100.00 reserve' in G['alltotal'], G['alltotal'][-500:])
     ok("no JavaScript errors", not errs, str(errs))
     for k in ('eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs'):
         print(f"     [{k}] " + G[k].replace('\n', ' | '))

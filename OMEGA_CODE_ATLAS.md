@@ -8,8 +8,21 @@
 - **C529 deployed 4 Oct 00:25 IST** (`OMEGA C529`; detail log to 13:14 IST, 3,898
   lines, 0 Traceback; one warning, the new margin watch doing its job at 11:33:48:
   "the Delta side is at $150.22, 60% of its $250.00 (leverage 4.05x)"; the C529
-  Delta month anchor $501.98, budget $100.40; Savings read 6.67%). **C531 pushed
-  4 Oct (not deployed; C530 rides with it)** (`reports/2026-10-04_c531_600.md`):
+  Delta month anchor $501.98, budget $100.40; Savings read 6.67%). **C532 pushed
+  4 Oct (not deployed; C530/C531 ride with it)** (`reports/2026-10-04_c532_india.md`):
+  - **acting as the operator's tax adviser** (they have no CA): rupee-settled perps on
+    Delta India / Pi42 = speculative business income (s.43(5)), slab + cess on the
+    year's net, s.87A rebate under Rs 12 lakh, no TDS; Binance USDT perps = a VDA
+    (s.115BBH) and outside the LRS (FEMA) -> **no real money on Binance**;
+  - **the plan: Delta vs Pi42 $550 + a $50 reserve = $600** (the operator's minimum
+    reserve); both books paper experiments; Pi42's funding read from Binance (4 Oct:
+    87% of 246 rates within 0.002%, Pi42 quotes Binance's pair);
+  - Delta-vs-Pi42 stress-tested +40–49%/yr; median month after tax 3.79% (income
+    < Rs 12 L) / 2.76% (31.2%), P(>= 2%) 83% / 70%;
+  - previewed on the server's 4 Oct state with live prices
+    (`reports/2026-10-04_c532_preview/`): 7 pairs exit "not on Pi42", 7 enter.
+- **C531 pushed 4 Oct (not deployed; its allocation superseded by C532)**
+  (`reports/2026-10-04_c531_600.md`):
   - **the operator's whole equity is $600, no reserve** (C530 misread the budget):
     **Delta book $200 + cross-venue $400** ($200 a venue), Pendle off;
   - corrected: the book on Delta in whole Delta contracts, with no Savings on its
@@ -461,6 +474,108 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🇮🇳 2026-10-04 — C532: ALL IN RUPEES -- DELTA vs PI42 $550 + A $50 RESERVE; THE TAX POSITION
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator:** "i dont have a CA, you can act as a CA & adjust accordingly ..also
+in the 600, i want atleast a 50usdt or whatever combination reaches the best target
+.. check everything & all logic including dashboard & detailed logs".
+
+**Report:** `reports/2026-10-04_c532_india.md`. **Research:**
+- `research/c532_india_only.py/.txt/.json` (splits);
+- `research/c532_pi42/` (4 Oct Pi42 evidence);
+- `research/c532_preview.py` and `reports/2026-10-04_c532_preview/` (logs
+  and the page after the update, on the server's state and live prices);
+- `research/c532_pi42_check.py` (re-check Pi42 = Binance funding; weekly).
+
+**The tax position** (sources in the report):
+- **Delta India / Pi42 rupee perps:** speculative business income
+  (s.43(5): not a recognised exchange, no delivery):
+  - slab + 4% cess on the year's net profit;
+  - s.87A rebate (new regime) → 0 under Rs 12 lakh total income;
+  - losses only against speculative gains, carried 4 years;
+  - no s.194S TDS; ITR-3.
+- **Binance USDT perps:** a VDA (s.115BBH, the conservative reading: USDT
+  received at settlement): 31.2% per gain, no set-off, no 87A. And **outside
+  the LRS** (no remittance for overseas derivatives or margin, FEMA).
+  → no real money on Binance; it stays paper and the data source.
+- **`C528_TAX_RATE` stays 0.312** until the operator sets their slab (0.0
+  under Rs 12 L).
+
+**Pi42 (checked live 4 Oct):**
+- `api.pi42.com/v1/exchange/exchangeInfo`: 205 INR perps, taker 0.10%, maker
+  0.05%, 8-h funding.
+- `fawss.pi42.com` socket.io `markPriceArr`: funding `r` (next) and `lr`
+  (last).
+- vs Binance's premiumIndex: 246 with a twin, 216 at the same settlement
+  time, **87% within 0.002%**, median gap 0.0005% (Binance median
+  |rate| 0.005%).
+- Its tickers carry `"ps": "BTCUSDT"`.
+- 113 coins on both Delta and Pi42 (Binance: 190).
+- Pi42 market REST (`fapi.pi42.com`) is 403 from the sandbox;
+  `api.pi42.com` answers.
+
+**Splits** ($600, ALL harder, whole contracts, Pi42's fee ×1.18, GST on
+funding paid on both legs; one speculative business):
+- **$50 / $0 / $550: 3.79 / 3.29 / 2.76% a month** at 0 / 15.6 / 31.2%;
+  P2 83 / 78 / 70%; bad year +1.46%; halved 1.93 / 1.37%.
+- **Book alone $550:** 2.26 / 1.94 / 1.61%, 14% losing years.
+- **No reserve, $600:** 4.19 / 3.65 / 3.08%.
+- **Sides at $550:** monthly only, lowest 34.7%; with the 65% even-out,
+  48.2%, < 50% in 4% of months, 9.6 transfers a year.
+- **"$50 a month"** (8.3%): ~5% of years.
+
+**C532 (code):**
+1. **Config:**
+   - `C532_XV_VENUE` 'pi42', `C532_PI42_FEE` 0.0010, `C532_GST` 0.18,
+     `C532_FUNDING_GST` 0.18;
+   - `C524_XVENUE_EQUITY` 550, `C528_RESERVE` 50, `C527_PLAN`
+     ('xvenue', 'reserve');
+   - `C521_DELTA_EQUITY` back to 500 (an experiment).
+2. **`C524CrossVenue`:**
+   - `on_pi42` / `v2` / `cost_b` / `fgst` / `pi42_refresh`
+     (`_c532_pi42_coins`, every 6 h);
+   - entries only on Pi42's coins; "not on Pi42" exit; no list → nothing
+     new (`pi42_missing`);
+   - GST on paid funding, also in `C527Pending` (`xv.fgst`);
+   - the second venue's name everywhere;
+   - status `v2`, `pi42`, `cost_b`, `funding_gst`, `reserve`.
+3. **`_c527_total`:** a `reserve` plan row (only beside a running trading
+   part).
+4. **The status block:**
+   - PLAN first (with its parts), then `BELOW experiments, not your money`,
+     then EQUITY/OPEN;
+   - DELTA "paper experiment: the book on Delta".
+5. **The boot:** "C532 YOUR PLAN … = $600 of your $600"; the Binance book
+   "an experiment, not your plan".
+6. **Page:**
+   - the risk tile "Risk · your two accounts: N% weaker side";
+   - the record and running panels, plan first;
+   - the cross-venue panel says Delta vs Pi42, rupees, the Binance read,
+     the reserve rule;
+   - the budget "your equity $600 = $550 trading + $50 reserve";
+   - the tax note (Rs 12 lakh, 4-year carry).
+7. **Version C532.**
+   - `omega_c532_test.py`: 33 checks.
+   - The C521/C524/C527/C529/C530/C531 tests are pinned to their
+     allocations (`C532_XV_VENUE='binance'`).
+   - **Two bugs caught by the battery, fixed:** (C486/C495) the reserve
+     alone made a "plan" off the Binance venue; (C510) the Binance book was
+     labelled an experiment with no plan running.
+   - **Battery 53/53.**
+
+**Open:**
+1. The 28 Nov paper review (Delta vs Pi42 now).
+2. Weekly `c532_pi42_check.py` (the proxy).
+3. The operator's slab → `C528_TAX_RATE`.
+4. The live order paths for Delta India and Pi42 (none built); INR
+   transfers between them.
+5. Round 18 (the Delta book's carry by Delta's own funding) only matters if
+   the book re-enters the plan.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 💵 2026-10-04 — C531: THE OPERATOR'S $600, NO RESERVE -- DELTA BOOK $200 + CROSS-VENUE $400

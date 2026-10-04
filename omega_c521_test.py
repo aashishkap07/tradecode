@@ -359,7 +359,7 @@ r_bf, r_dl = row9('BFUSD'), row9('DELTA')
 ok("BFUSD: 'wallet $510.00 at 7.66% | +$0.21 so far | ~$3.26/month | vs Savings $1.72 | paper'",
    'wallet $510.00 at 7.66%' in r_bf and '/month' in r_bf and 'vs Savings' in r_bf, r_bf)
 ok("DELTA: '$499.xx (-0.xx%) | 12 held | fees | funding | paper, same plan'",
-   'held' in r_dl and 'fees' in r_dl and 'funding' in r_dl and 'paper, same plan' in r_dl, r_dl)
+   'held' in r_dl and 'fees' in r_dl and 'funding' in r_dl and 'the book on Delta' in r_dl, r_dl)   # C532: plan or experiment, said
 
 print("\n7. THE PAGE (Chromium)")
 

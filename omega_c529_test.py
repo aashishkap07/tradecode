@@ -48,6 +48,7 @@ cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_re
 # test checks its own version's mechanics at the allocation it was written for (omega_c530_test.py checks C530's)
 cfg.C524_XVENUE_EQUITY = 500.0; cfg.C527_PLAN = ('delta', 'xvenue'); cfg.C528_RESERVE = 200.0; cfg.C530_PENDLE = False
 cfg.C521_DELTA_EQUITY = 500.0; cfg.C528_BUDGET = 1000.0; cfg.C531_XV_REBALANCE = False   # and C531's ($600, no reserve)
+cfg.C532_XV_VENUE = 'binance'   # and C532's (the second venue Pi42, the plan cross-venue + reserve)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 L = lambda f: json.load(open(os.path.join(SNAP, f + '.json')))
@@ -139,8 +140,8 @@ ok("  at ~40%: the reserve line (live, the reserve tops that side up)", len(w) =
 xv.side = {'d': 0.0, 'b': 0.0}
 ok("run() keeps the sides: each leg's price move and funding, each venue's own costs in and out",
    "self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d" in SRC and "self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b" in SRC
-   and SRC.count("self.side['b'] -= n * _C524_COST_B; self.side['d'] -= n * _C524_COST_D") == 1
-   and SRC.count("self.side['b'] -= nd * _C524_COST_B; self.side['d'] -= nd * _C524_COST_D") == 1)
+   and SRC.count("self.side['b'] -= n * cb; self.side['d'] -= n * _C524_COST_D") == 1          # C532: cb = the second
+   and SRC.count("self.side['b'] -= nd * cb; self.side['d'] -= nd * _C524_COST_D") == 1)      # venue's own cost
 
 H = 3600000
 f0 = min(p['fund_from'] for p in xv.pairs.values())
