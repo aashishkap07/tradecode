@@ -7,9 +7,10 @@
 **🎯 LIVE TARGET (the operator, 4 Oct 2026): live money on the Delta India vs Pi42 trade in MARCH 2027,
 not later, if the gates pass** -- `reports/2026-10-04_live_march_roadmap.md` (gates G1-G5 written
 before any result; build steps B1 read-only 8 Oct, B2 order path 15 Nov, B3 dry run 15 Dec, B4 pilot
-1 Feb; go/no-go 20 Feb). **Pending tasks run automatically in ultracode** (this session's
-`flag_settings.ultracode` is true); every routine first checks it and, if off, pushes a prompt to switch
-and waits. Routines (all fire into this session): first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
+1 Feb; go/no-go 20 Feb). **Pending tasks run automatically on Opus 5.5 in ultracode** (the operator, 4-5 Oct: "Opus 5.5 or
+whichever is the latest model with ultracode"): every routine has `model: claude-opus-5-5` and first
+checks get_session (`flag_settings.ultracode` true AND `session_context.model` / `last_served_model`
+claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. Routines (all fire into this session): first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
 (5 Oct 01:05 UTC); B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
 (1st, 09:56 IST); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
