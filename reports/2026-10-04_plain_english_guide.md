@@ -244,3 +244,75 @@ isn't fully settled. This is the safe reading.
 | mark price | the exchange's fair price used to value bets |
 | liquidation | the exchange force-closing bets when a deposit runs out |
 | paper / live | simulation at real prices / real money |
+
+## 6. How prices move, and what sets a coin's real price
+
+**A price is the last deal between a buyer and a seller.**
+- Picture a **vegetable market**. Sellers call out what they want, buyers
+  what they'll pay. The "price" is wherever the last deal happened.
+- An exchange is the same market on a screen. It keeps a list of waiting
+  sellers and waiting buyers:
+
+  | waiting sellers want | waiting buyers offer |
+  |---|---|
+  | $103 | $99 |
+  | $102 | $98 |
+  | $101 | $97 |
+
+- The last deal was at **$100**.
+
+**How eagerness pushes the price.**
+- Ten eager buyers arrive and say "I'll take it now". They use up the $101
+  seller, then the $102 seller.
+- The last deal is now **$102**, so the price went **up**.
+- Eager sellers do the opposite and push it **down**.
+- More eager buying than selling means the price rises; more eager selling
+  means it falls.
+
+**The bets have their own market.**
+- A perp (the bet) trades in its **own** list of buyers and sellers, separate
+  from the market for the real coin.
+- If many people want to bet up, they have to outbid each other to get in, so
+  the **bet's** price climbs above the **coin's** price.
+- **IPL ticket resale** works the same way. Face value is ₹1,000 (the real
+  price), but eager fans pay ₹1,200 on resale.
+- Funding, the rent, is what pulls the two prices back together.
+- The careful traders who collect that rent also buy the real coin, which
+  nudges the real price up a little. The two prices meet in the middle.
+
+**What sets the coin's real price.** It's the same market logic, on the
+exchanges where real coins are bought and sold. The exchanges' "real price"
+(the index) is an average of the coin's price on several big markets.
+People buy or sell because of:
+1. **Supply.** How many coins exist and how many new ones are released.
+   - Bitcoin is capped at 21 million.
+   - Many small coins release more coins to their founders every month, which
+     adds sellers.
+2. **Usefulness.** Some coins are needed to use a network (ETH pays the fees
+   on Ethereum).
+3. **Belief and hype.** Most of a coin's price is what people expect it to be
+   worth later: news, social media, celebrity posts.
+4. **Big buyers.** Funds and companies (for example the Bitcoin funds on US
+   stock markets) can buy a lot at once.
+5. **Rules.** A country banning or approving crypto moves prices quickly.
+6. **The world's money mood.** When interest rates fall and people feel rich,
+   they buy risky things; in a panic they sell. Crypto often moves with stock
+   markets.
+7. **Bitcoin leads.** Most coins follow Bitcoin's direction.
+
+Unlike a company's share, most coins have no profits or factory behind them.
+The price is mostly what people believe others will pay later, which is why
+crypto swings so much.
+
+**Why small coins jump so much.**
+- Coins like AIN or KAITO have few buyers and sellers. It's like a village
+  market where one big buyer can empty every stall.
+- A little extra demand moves the price a lot. That's how AIN rose 25% in one
+  day on 4 Oct.
+
+**What it means for your bot.**
+- The bot **doesn't guess** where prices go. Its two bets cancel, so whether a
+  coin rises or falls hardly matters.
+- It earns from the rent that eager bettors pay.
+- Prices matter in only one way: a big move empties one jar and fills the
+  other (the even-out).
