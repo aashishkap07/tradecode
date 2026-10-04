@@ -4,6 +4,15 @@
 # 📌 PENDING TASKS — the operator asked for these to be remembered (25 Sep 2026)
 # ═══════════════════════════════════════════════════════════════════════════
 
+**Standing rules from the operator (4 Oct 2026):**
+- **Every reply explains, in plain English with analogies, what was done and how the bot works.**
+- Explain as an expert futures trader; verify against real data; keep this Atlas current; commit and push
+  to the session branch (no PRs unless asked); give Termius commands without the ssh line.
+- **Tax:** the operator's income is in the **top slab** (30% + 4% cess = 31.2% on trading profit; no
+  s.87A rebate; no surcharge). `C528_TAX_RATE = 0.312` is their rate. Trading profit is filed on ITR-3
+  as speculative business income; advance tax only once the extra tax tops Rs 10,000 a year.
+  (Their salary figures are deliberately not written here.)
+
 **Deployed state (checked in the server's own logs):**
 - **C529 deployed 4 Oct 00:25 IST** (`OMEGA C529`; detail log to 13:14 IST, 3,898
   lines, 0 Traceback; one warning, the new margin watch doing its job at 11:33:48:
