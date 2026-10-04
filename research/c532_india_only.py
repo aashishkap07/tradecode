@@ -2,6 +2,7 @@
 """C532 (descriptive planning, no new rule): the operator's $600 entirely on Indian, rupee-settled venues.
 
     python3 research/c532_india_only.py BNC_DIR XV_CACHE PI42_DIR
+    C532_TOTAL=1000 C532_RESERVES=100,50,0 python3 research/c532_india_only.py ...   # C533: research/c533_india_1000.txt
 
 Why: acting as the operator's tax adviser (C532 report), USDT-settled futures on Binance are treated as
 VDA income (s.115BBH: 31.2% of each gain, losses ignored; the conservative, defensible reading -- the USDT
@@ -32,7 +33,8 @@ import c528_budget_plan as P
 import c524_xvenue as X
 import c531_split_600 as S
 
-TOTAL = 600
+TOTAL = int(os.environ.get('C532_TOTAL', '600'))                     # C533: the same study at another total
+RESERVES = tuple(int(x) for x in os.environ.get('C532_RESERVES', '50,0').split(','))
 COST_PI42 = 0.0010 * 1.18 + 0.0002
 GST = 0.18
 OUT = {}
@@ -99,7 +101,7 @@ def xv_pi42(D, names, fD, fB, pD, pB, cv, cap, allow, cost_mult=5.0, gst=GST):
 
 
 def main(bdir, cache, pdir):
-    print("C532: THE $600 ON INDIAN RUPEE-SETTLED VENUES ONLY -- THE BOOK ON DELTA + DELTA vs PI42\n")
+    print(f"C532: THE ${TOTAL} ON INDIAN RUPEE-SETTLED VENUES ONLY -- THE BOOK ON DELTA + DELTA vs PI42\n")
     uni = json.load(open(os.path.join(pdir, 'pi42_universe.json')))
     pi42 = set(uni['both'])
     cmp_ = json.load(open(os.path.join(pdir, 'pi42_vs_binance.json')))
@@ -157,7 +159,7 @@ def main(bdir, cache, pdir):
     print(f"   (the same at $550 with Binance's coins and fees: {100 * rb['net']:+.1f}%/yr)")
 
     print(f"\n3. EVERY SPLIT OF ${TOTAL} (book + Delta-vs-Pi42 + reserve), 20,000 YEARS, AFTER TAX (one speculative business)")
-    print("   avg = the median year's monthly average on the whole $600 after tax; P2/P4 = P(a year averages >= 2%/4% a month)")
+    print(f"   avg = the median year's monthly average on the whole ${TOTAL} after tax; P2/P4 = P(a year averages >= 2%/4% a month)")
     n = 20000
     rng = np.random.default_rng(11)
 
@@ -180,7 +182,7 @@ def main(bdir, cache, pdir):
         print(f"\n   {scen.upper()}" + (" (the cross-venue edge halved again)" if scen == 'pessimistic' else ''))
         print("   reserve  book  xvenue |  0% (<= Rs 12L): avg   P2   P4 | 15.6%: avg   P2   P4 | 31.2%: avg   P2   P4 |"
               " bad year  losing yr  worst month  P($50+/month)")
-        for R in (50, 0):
+        for R in RESERVES:
             for b in [0] + list(range(100, TOTAL - R + 1, 50)):        # under $100 the book holds almost nothing
                 x_ = TOTAL - R - b
                 hb = BK[b] - BK[b].mean() / 3.0 if b else np.zeros(len(BK[600]))
@@ -209,14 +211,14 @@ def main(bdir, cache, pdir):
                           + f"| {100 * r_['bad']:+5.2f}%    {100 * r_['plose']:3.0f}%      {100 * r_['w5']:+5.1f}%"
                           f"        {100 * cells[1][3]:3.0f}%")
     OUT['splits'] = rows
-    print("\n   P($50+/month) = P(a year's after-tax gain >= $600 = 8.3% a month), at the 15.6% slab")
+    print(f"\n   P($50+/month) = P(a year's after-tax gain >= $600 = {100 * 50 / TOTAL:.1f}% a month on ${TOTAL}), at the 15.6% slab")
 
     print("\n4. THE TWO RUPEE ACCOUNTS (Delta / Pi42), whole contracts, ALL harder, daily closes")
     print("   capital  re-balance                     lowest side ever  months a side < 65%  < 50%   transfers/yr")
     old = X.COST_B
     X.COST_B = COST_PI42
     try:
-        for cap in (400, 450, 550):
+        for cap in sorted({TOTAL - R for R in RESERVES} | {400}):
             for trig, lab in ((None, 'monthly only'), (0.65, 'monthly + when a side < 65%')):
                 r = S.sides(allm, float(cap), cv, trigger=trig, allow=allow)
                 OUT[f'sides_{cap}_{trig}'] = r
@@ -224,7 +226,8 @@ def main(bdir, cache, pdir):
                       f"{100 * r['months_lt50']:3.0f}%       {r['transfers_yr']:5.1f}")
     finally:
         X.COST_B = old
-    json.dump(OUT, open(os.path.join(HERE, 'c532_india_only.json'), 'w'), indent=1, default=float)
+    json.dump(OUT, open(os.path.join(HERE, 'c532_india_only.json' if TOTAL == 600 else f'c533_india_{TOTAL}.json'), 'w'),
+              indent=1, default=float)
 
 
 if __name__ == '__main__':

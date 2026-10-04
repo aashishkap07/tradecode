@@ -17,8 +17,21 @@
 - **C529 deployed 4 Oct 00:25 IST** (`OMEGA C529`; detail log to 13:14 IST, 3,898
   lines, 0 Traceback; one warning, the new margin watch doing its job at 11:33:48:
   "the Delta side is at $150.22, 60% of its $250.00 (leverage 4.05x)"; the C529
-  Delta month anchor $501.98, budget $100.40; Savings read 6.67%). **C532 pushed
-  4 Oct (not deployed; C530/C531 ride with it)** (`reports/2026-10-04_c532_india.md`):
+  Delta month anchor $501.98, budget $100.40; Savings read 6.67%; still running at
+  the 20:17 IST logs push). **C533 pushed 4 Oct (not deployed; C530-C532 ride with
+  it)** (`reports/2026-10-04_c533_1000.md`):
+  - **the operator's $1000, no reserve: all of it in Delta vs Pi42 ($500 a venue)**:
+    the best average of every split at their slab (3.14%/month after tax, P2 76%,
+    P4 30%; with a $100 / $50 reserve 2.93 / 3.03%; the $600 without one 3.08%;
+    pessimistic 1.56%); the steadier near-tie $200 book + $800 trade (3.03%, P2 77%,
+    pessimistic 1.67%) is noted, not set;
+  - the screenshot (17:33 IST, C529) checked on 1-minute marks of both venues: the
+    cross-venue $506.84 was $500.67 (AIN's legs read minutes apart; C530 fixes it),
+    so the plan was ~$1003.55 (+0.36%), not $1009.72;
+  - previewed on the 20:17 IST state with live prices
+    (`reports/2026-10-04_c533_preview/`): rebased $500 -> $1000; 7 pairs exit "not
+    on Pi42", 7 enter; the Delta side at 64% -> Pi42 sends $179.48; day -$3.59.
+- **C532 (its allocation superseded by C533)** (`reports/2026-10-04_c532_india.md`):
   - **acting as the operator's tax adviser** (they have no CA): rupee-settled perps on
     Delta India / Pi42 = speculative business income (s.43(5)), slab + cess on the
     year's net, s.87A rebate under Rs 12 lakh, no TDS; Binance USDT perps = a VDA
@@ -483,6 +496,78 @@
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 💰 2026-10-04 — C533: THE OPERATOR'S $1000, NO RESERVE -- ALL IN DELTA vs PI42 ($500 A VENUE)
+# ═══════════════════════════════════════════════════════════════════════════
+
+## ⏩ RESUME STATE
+
+**The operator** (with a screenshot of C529 at 17:33 IST): "currently running c529
+with 1000 usdt which is showing promising profits ... analyse if investing a total
+of 1000 usdt with or without reserve would be more profitable than 600 usdt without
+reserve ...please drop the reserve if that seems more profitable on average .. please
+again explain everything".
+
+**Report:** `reports/2026-10-04_c533_1000.md` (the comparison, the screenshot check,
+and the whole trade explained in plain English with analogies). **Research:**
+`research/c533_india_1000.txt/.json` (`C532_TOTAL=1000 C532_RESERVES=100,50,0
+python3 research/c532_india_only.py ...`; the script now takes the total and the
+reserves as settings, and its labels follow the total).
+
+**The screenshot, checked:**
+- the cross-venue ledger's daily mark $499.94;
+- price move to 12:03 UTC on 1-minute marks: Delta legs -$29.94, Binance legs
+  +$30.42 (AIN -27.48 / +28.03);
+- = $500.41, + $0.26 pending funding = **$500.67**, against $506.84 shown;
+- C529 priced the two legs minutes apart (fixed in C530: both at Delta's refresh,
+  `bn_snap`).
+
+**Splits of $1000** (ALL harder, whole contracts, Pi42's costs, one business, 31.2%):
+
+| reserve / book / trade | typical month | P2 | P4 | pessimistic |
+|---|---|---|---|---|
+| **$0 / $0 / $1000** | **3.14%** | 76% | 30% | 1.56% |
+| $0 / $200 / $800 | 3.03% | 77% | 26% | 1.67% |
+| $50 / $0 / $950 | 3.03% | 75% | 27% | 1.50% |
+| $100 / $0 / $900 | 2.93% | 73% | 25% | 1.45% |
+| ($600: $0 / $0 / $600) | 3.08% | 75% | 28% | 1.52% |
+
+- Delta vs Pi42 by capital: $600 +51.3%/yr (t 5.50), $800 +53.5%, $1000 +50.3%
+  (t 6.07, 8 entries skipped for a contract bigger than a leg vs 24 at $600).
+- **Sides at $1000** with the 65% even-out: lowest 47.8%, < 50% in 17% of months,
+  10.6 transfers a year (monthly only: lowest 13.8%).
+- Pi42 values margin at **Rs 102 per USDT** (`conversionRates`, 4 Oct; market
+  Rs 96.35): $500 there is about Rs 51,000; returns in % unchanged.
+
+**C533 (code):**
+1. **Config:** `C524_XVENUE_EQUITY` 1000, `C528_BUDGET` 1000, `C528_RESERVE` 0;
+   `C527_PLAN` unchanged ('xvenue', 'reserve': the reserve row only when > 0);
+   `C521_DELTA_EQUITY` 500 (an experiment).
+2. **The server's ledger** (begun at $500) is rebased x2 at start (C530 `rebase`).
+3. **Page:**
+   - the cross-venue panel: "no reserve: below 50% the log says move it NOW";
+   - the budget line names this report.
+4. **Boot:** "the same book on Delta Exchange India, $500 (C521), an experiment"
+   (not "the same plan").
+5. **Version C533.**
+   - `omega_c533_test.py`: 32 checks.
+   - `omega_c532_test.py` pinned to C532's $550 + $50.
+   - `omega_c531_test.py` reads the new no-reserve wording.
+   - **Battery 54/54.**
+
+**Not changed (audited, left):**
+- the running panel's PAPER row also names the plan's ledger (true: all paper;
+  C529's test asks for it);
+- the 8-minute rows print "$-3.67" (the log's money format since C462).
+
+**Open:**
+1. The 28 Nov paper review (Delta vs Pi42, $1000).
+2. Weekly `c532_pi42_check.py`.
+3. The live order paths for Delta India and Pi42 (none built; the cross-venue
+   class has no order code) and the INR transfers between them.
+4. If the operator wants steadier: $200 book + $800 trade (add 'delta' to the
+   plan).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🇮🇳 2026-10-04 — C532: ALL IN RUPEES -- DELTA vs PI42 $550 + A $50 RESERVE; THE TAX POSITION

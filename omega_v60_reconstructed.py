@@ -2393,7 +2393,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C532'
+_OMEGA_VERSION = 'C533'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3143,8 +3143,11 @@ class Config:
         self.C521_DELTA_GST = 0.18              # C521: GST on Delta's fees
         self.C521_DELTA_MARK_S = 300            # C521: Delta's tickers for the panel every 5 min (forced at trades/funding)
         self.C524_XVENUE = True                 # C524: Delta vs Binance funding spread, both legs (paper, round 15)
-        self.C524_XVENUE_EQUITY = 550.0         # C532: the operator's $600 less the $50 reserve ($275 Delta + $275 Pi42);
-                                                # a ledger begun at another size is rebased to this at start (x to/from)
+        self.C524_XVENUE_EQUITY = 1000.0        # C533: the operator's whole $1000 ($500 Delta + $500 Pi42), no reserve:
+                                                # at their slab (31.2%) the best average of every split -- 3.14% a month
+                                                # after tax, a 2%+ year 76% (with a $100 reserve 2.93%/73%; the $600
+                                                # without one 3.08%/75%; research/c533_india_1000.txt); a ledger begun
+                                                # at another size is rebased to this at start (x to/from)
         self.C532_XV_VENUE = 'pi42'             # C532: the second venue -- 'pi42' (Indian, rupee-settled: business income,
                                                 # no TDS, no money abroad) or 'binance' (USDT: a VDA, and outside the LRS).
                                                 # Pi42's rupee perps quote Binance's pair; its funding is read from
@@ -3165,13 +3168,14 @@ class Config:
         self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
         self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
         self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
-        self.C527_PLAN = ('xvenue', 'reserve')  # C532: the operator's plan -- $550 in Delta vs Pi42 (both rupee-settled:
-                                                # one speculative business, taxed on its net profit at the slab) and the
-                                                # $50 reserve. The book on Delta, the Binance book and the rest are paper
-                                                # experiments ('delta' back in if wanted: research/c532_india_only.txt).
-        self.C528_BUDGET = 600.0                # C531: the operator's whole equity ...
-        self.C528_RESERVE = 50.0                # C532: ... of which $50 is kept back (the operator's minimum), held as
-                                                # unused rupee margin, $25 on each venue, for a side that runs low
+        self.C527_PLAN = ('xvenue', 'reserve')  # C532: the operator's plan -- Delta vs Pi42 (both rupee-settled: one
+                                                # speculative business, taxed on its net profit at the slab); 'reserve'
+                                                # shows only when C528_RESERVE > 0. The book on Delta, the Binance book and
+                                                # the rest are paper experiments ('delta' back in if wanted: $200 book +
+                                                # $800 cross-venue was the steadier near-tie, research/c533_india_1000.txt)
+        self.C528_BUDGET = 1000.0               # C533: the operator's whole equity ...
+        self.C528_RESERVE = 0.0                 # C533: no reserve (the operator's choice: the higher average); a side
+                                                # that runs low is topped up from the other venue (C531_XV_REBALANCE)
         self.C529_XV_WARN_AT = 0.65             # C529: a cross-venue side (one venue's account) at 65% of its start: warn
         self.C529_XV_RESERVE_AT = 0.50          # C529: ... at 50%: live, the reserve (C531: or the other venue) tops it up
         self.C528_TAX_RATE = 0.312              # C528: tax on the plan's NET profit only (speculative business income
@@ -25204,7 +25208,8 @@ class TradingBot:
             if getattr(self, 'c521b', None) is not None and self.c521b.active():
                 led.append(f"BFUSD wallet at {100 * float(getattr(c, 'C521_BFUSD_APY', 0.0766)):.2f}% (C521)")
             if getattr(self, 'c521d', None) is not None and self.c521d.active():
-                led.append(f"the same plan on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 200.0)):.0f} (C521)")
+                led.append(f"the same book on Delta Exchange India, ${float(getattr(c, 'C521_DELTA_EQUITY', 200.0)):.0f} (C521)"
+                           + ("" if 'delta' in set(getattr(c, 'C527_PLAN', ()) or ()) else ", an experiment"))
             if getattr(self, 'c524x', None) is not None and self.c524x.active():
                 led.append(f"Delta vs {self.c524x.v2()} funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 550.0)):.0f}"
                            + (" (C532: both in rupees; Pi42's rates read from Binance, its source)" if self.c524x.on_pi42() else " (C524)"))
@@ -44447,7 +44452,7 @@ async function pull(){
           var lo=Math.min(mg.d.frac||1,mg.b.frac||1);
           xh+='<div class="s '+(lo<0.5?'bad':(lo<0.65?'warn':'muted'))+'">live this is two accounts: '+side('Delta',mg.d)+' \u00b7 '+side(v2,mg.b)+
             (xv.rebalance?' \u00b7 below 65% of their mean (and monthly) the richer side sends half the difference at the daily run'+
-              (xv.reserve>0?'; below 50% the '+money(xv.reserve)+' reserve (half on each venue) tops it up at once (C532)':' (no reserve, C531)'):
+              (xv.reserve>0?'; below 50% the '+money(xv.reserve)+' reserve (half on each venue) tops it up at once (C532)':'; no reserve: below 50% the log says move it NOW'):
               ' \u00b7 warn at 65%, the reserve tops a side up at 50% (C529)')+'</div>';}
         if(xv.n_transfers)xh+='<div class="s muted">transfers between the venues: '+xv.n_transfers+' (fees '+money(xv.transfer_fees)+') \u00b7 last: '+
           (xv.transfers||[]).slice(-2).map(function(t){return t.at+' '+t.frm+' \u2192 '+t.to+' '+money(t.amt)+' ('+t.why+')'}).join(' \u00b7 ')+'</div>';
@@ -44516,7 +44521,7 @@ async function pull(){
         if(tt7.budget){var rin7=tt7.rows.some(function(r){return r.key==='reserve'&&r.plan});
           th7+='<div class="s muted">budget: your equity '+money(tt7.budget.invest)+' = '+money(tt7.plan.start-(rin7?tt7.budget.reserve:0))+' trading'+
           (tt7.budget.reserve>0?' + '+money(tt7.budget.reserve)+' reserve (unused rupee margin, half on each venue), only to top up a cross-venue side':
-            ', no reserve: a cross-venue side below 65% is topped up from the other venue')+' (reports/2026-10-04_c532_india.md)</div>';}
+            ', no reserve: a cross-venue side below 65% is topped up from the other venue')+' (reports/2026-10-04_c533_1000.md)</div>';}
         var ex7=[];
         if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
         if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');

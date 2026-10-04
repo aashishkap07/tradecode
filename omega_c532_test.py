@@ -38,9 +38,12 @@ ok("version C532 or later", int(om._OMEGA_VERSION[1:]) >= 532)
 
 print("\n1. THE ALLOCATION AND THE TAX SETTINGS")
 c0 = om.Config()
+# C533 changed the operator's plan ($1000 in Delta vs Pi42, no reserve; omega_c533_test.py checks it).
+# This test checks C532's mechanics at the allocation C532 set, pinned below.
+C532 = dict(C524_XVENUE_EQUITY=550.0, C528_RESERVE=50.0, C528_BUDGET=600.0, C527_PLAN=('xvenue', 'reserve'))
 ok("Delta vs Pi42 $550 + a $50 reserve = the operator's $600; the plan is those two",
-   c0.C532_XV_VENUE == 'pi42' and c0.C524_XVENUE_EQUITY == 550.0 and c0.C528_RESERVE == 50.0 and c0.C528_BUDGET == 600.0
-   and tuple(c0.C527_PLAN) == ('xvenue', 'reserve') and c0.C524_XVENUE_EQUITY + c0.C528_RESERVE == c0.C528_BUDGET)
+   c0.C532_XV_VENUE == 'pi42' and tuple(c0.C527_PLAN) == C532['C527_PLAN']
+   and C532['C524_XVENUE_EQUITY'] + C532['C528_RESERVE'] == C532['C528_BUDGET'])
 ok("  the book on Delta and the Binance book are paper experiments; Pendle off; live locked",
    c0.C521_DELTA_EQUITY == 500.0 and c0.C530_PENDLE is False and c0.C488_LIVE_OK is False)
 ok("  Pi42's fee 0.10% + 18% GST; 18% GST on funding paid; the transfers between the venues on",
@@ -56,6 +59,8 @@ ok("  the evidence for reading Pi42's funding from Binance is kept (246 rupee pe
 print("\n2. THE CROSS-VENUE LEDGER WITH PI42 AS ITS SECOND VENUE")
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
+    setattr(cfg, _k, _v)
+for _k, _v in C532.items():
     setattr(cfg, _k, _v)
 cfg.C524_XVENUE_EQUITY = 500.0; cfg.C531_XV_REBALANCE = False          # round numbers for the arithmetic below
 DAY = 86400000

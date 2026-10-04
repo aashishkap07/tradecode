@@ -230,7 +230,7 @@ try:
     ok("the top tile: your plan, of $600, the Delta book and cross-venue; no Pendle", G['eqk'].lower() == 'your plan · paper'
        and 'of $600.00' in G['eqs'] and 'Delta book $' in G['eqs'] and 'Delta vs Binance $' in G['eqs'] and 'Pendle' not in G['eqs'], G['eqs'])
     ok("the risk tile: no reserve, evened out from the other venue", 'no reserve: evened out from the other venue below 65%' in G['days'], G['days'])
-    ok("the cross-venue panel: the no-reserve rule; the Delta panel: its rebase", 'below 65% of their mean' in G['xvenue'] and '(no reserve, C531)' in G['xvenue']
+    ok("the cross-venue panel: the no-reserve rule; the Delta panel: its rebase", 'below 65% of their mean' in G['xvenue'] and 'no reserve: below 50% the log says move it NOW' in G['xvenue']
        and 'rebased $500.00 → $200.00' in G['delta'], G['xvenue'][-300:])
     ok("the Pendle panel says why it is off", 'off (C530_PENDLE = False since C531' in G['pendle'], G['pendle'][:200])
     ok("the totals: from $600, no reserve; Pendle not running", 'of $600.00' in G['alltotal']
