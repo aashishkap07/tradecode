@@ -196,7 +196,7 @@ try:
         br = pw.chromium.launch(executable_path=exe) if exe else pw.chromium.launch()
         pg = br.new_page(viewport={'width': 412, 'height': 900}); errs = []
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
-        pg.goto(f'http://127.0.0.1:{P_}/?t={TOKEN}'); pg.wait_for_timeout(3000)
+        pg.goto(f'http://127.0.0.1:{P_}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
         T = {k: pg.inner_text('#' + k) for k in ('running', 'alltotal', 'xvenue', 'delta', 'eqs', 'carry')}
         br.close()
     ok("what is running: YOUR PLAN named, and the cross-venue ledger listed (it ran but was missing)",

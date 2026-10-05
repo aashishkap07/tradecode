@@ -2393,7 +2393,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C534'
+_OMEGA_VERSION = 'C535'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -44015,6 +44015,32 @@ pre#log.wrap{white-space:pre-wrap;word-break:break-word}
 table{width:100%;border-collapse:collapse;font-size:11px}
 td{padding:3px 0;border-bottom:1px solid var(--line)}
 td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+/* C535: the plain-English top -- your money first, the experiments folded away below */
+#simple{display:flex;flex-direction:column;gap:10px}
+#simple section{margin-top:0}
+#simple h2{font-size:11px}
+.plain{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5}
+.plain .s{font-size:14px;margin-top:4px;color:var(--ink)}
+.plain .s.muted{color:var(--muted)}
+.big{font-size:30px;font-variant-numeric:tabular-nums;font-family:var(--mono);line-height:1.1}
+.acc{display:grid;grid-template-columns:5.5em 5.5em 3.5em 1fr;gap:6px;align-items:center;margin:6px 0;font-variant-numeric:tabular-nums}
+.acc .am{font-family:var(--mono)} .acc .ap{text-align:right;font-family:var(--mono)}
+.ab{position:relative;height:9px;background:#21262d;border-radius:5px;overflow:hidden}
+.ab i{position:absolute;left:0;top:0;bottom:0;background:var(--good);border-radius:5px}
+.ab i.w{background:var(--warn)} .ab i.b{background:var(--bad)}
+.ab .mk{position:absolute;top:0;bottom:0;width:2px;background:var(--bad);opacity:.8}
+table.pairs{font-size:13px;font-family:var(--mono)}
+table.pairs th{text-align:left;color:var(--muted);font-weight:400;font-size:11px;padding:0 4px 4px 0;border-bottom:1px solid var(--line)}
+table.pairs td{padding:5px 8px 5px 0} table.pairs td:last-child,table.pairs th:last-child{text-align:right}
+.bdn{color:#f0883e} .bup{color:var(--accent)}
+details.fold{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:10px}
+details.fold>summary{cursor:pointer;padding:12px 11px;list-style:none;font-size:12px;color:var(--ink)}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:'\25B8';display:inline-block;width:1.2em;color:var(--muted)}
+details.fold[open]>summary::before{content:'\25BE'}
+details.fold>summary .muted{font-size:11px}
+details.fold>.inner{padding:0 11px 11px}
+details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{margin-top:0}
 </style></head><body>
 
 <header>
@@ -44025,6 +44051,17 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
   <div class="sub" id="sub">connecting&hellip;</div>
 </header>
 
+<!-- C535: the operator, 5 Oct 18:19 IST: "analyse word by word and simplify the layout in layman English
+     ... its too confusing .. redundant information can be removed". Your money first, in plain words; every
+     experiment and technical panel below, folded away (all of it still there, one tap to open). -->
+<div id="simple" class="plain" hidden>
+  <section><h2>Your money (your plan)</h2><div id="s-money">&mdash;</div></section>
+  <section><h2>Your two accounts</h2><div id="s-acc">&mdash;</div></section>
+  <section><h2>Your pairs (one coin, two opposite bets)</h2><div id="s-pairs">&mdash;</div></section>
+  <section><h2>What happens next</h2><div id="s-next">&mdash;</div></section>
+</div>
+
+<details class="fold" id="more"><summary><b>Experiments and details</b> <span class="muted" id="moresum">(not your money)</span></summary><div class="inner">
 <div class="grid">
   <div class="tile"><div class="k" id="eqk">Equity</div>
     <div class="v" id="eq">&mdash;</div><div class="s" id="eqs"></div></div>
@@ -44068,7 +44105,9 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
        role="img" aria-label="Equity over this session"></svg>
   <div class="s muted" id="curvelab"></div>
 </section>
+</div></details>
 
+<details class="fold" id="ctl"><summary><b>Controls</b> <span class="muted">(pause, restart, stop, the book's risk dial)</span></summary><div class="inner">
 <section><h2>Controls</h2>
   <div class="row">
     <button onclick="cmd('pause')">Pause</button>
@@ -44089,9 +44128,11 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
   <div class="row" style="margin-top:9px;border-top:1px solid var(--line);padding-top:9px">
     <button class="danger" onclick="cmd('fresh')">Start fresh (wipes ledger)</button>
   </div>
-  <div id="err"></div>
 </section>
+</div></details>
+<div id="err"></div>
 
+<details class="fold" id="logd"><summary><b>Log</b> <span class="muted">(what the bot writes, live)</span></summary><div class="inner">
 <section>
   <h2>Log</h2>
   <div class="tabs" id="tabs"></div>
@@ -44105,6 +44146,7 @@ td:last-child{text-align:right;font-variant-numeric:tabular-nums}
   </div>
   <pre id="log">loading&hellip;</pre>
 </section>
+</div></details>
 
 <script>
 var PAGEVER='__PAGEVER__';   /* C473: stamped when this page was served */
@@ -44212,6 +44254,10 @@ async function pull(){
     q('sub').textContent=d.mode+' · up '+d.uptime_min+' min · '+
       ((d.c488&&d.c488.mode==='portfolio'&&!d.c488.error)?('daily book, next rebalance '+
         String(d.c488.next_rebal_utc||'').slice(11)+' UTC'):((d.scans||0)+' scans · '+(d.analyses||0)+' pair looks'));
+    if(d.c527&&!d.c527.error&&d.c527.plan&&d.c527.plan.n&&d.c524&&d.c524.start_equity){   /* C535: plain words with a plan */
+      var um=Math.round(Number(d.uptime_min)||0);
+      q('sub').textContent=(d.paper?'no real money moves':'REAL MONEY')+' · running '+(um>=60?Math.floor(um/60)+' h ':'')+(um%60)+' min · '+
+        (d.data?(d.data.ok?'prices up to date':'PRICES LATE'):'')}
 
     q('eq').innerHTML=money(d.equity);
     /* C486: "this run" resets on every restart (the server's nightly updates
@@ -44660,6 +44706,7 @@ async function pull(){
       }
     }
 
+    try{renderSimple(d)}catch(e5){q('err').textContent='simple view: '+e5}   /* C535 */
     var p=await (await fetch('/api/positions'+Q)).json();
     /* C483: two lines per position, the same facts as the report's table.
        An error is SHOWN, never rendered as "flat" -- that is how the panel
@@ -44684,6 +44731,78 @@ async function pull(){
       q('pos').innerHTML='<span class="muted">'+(nb?'no intraday positions \u2014 the portfolio book holds '+nb+
         ' position'+(nb>1?'s':'')+' (below)':'none \u2014 flat')+'</span>'}
   }catch(e){q('err').textContent='connection error: '+e}
+}
+
+/* C535: the plain-English top. Times in India time (IST = UTC + 5:30), whole words, no codes. */
+function istHM(hhmm){var a=String(hhmm||'00:30').split(':'),m=((+a[0])*60+(+a[1])+330)%1440;
+  return ('0'+Math.floor(m/60)).slice(-2)+':'+('0'+(m%60)).slice(-2)}
+function untilUTC(hhmm){var a=String(hhmm||'00:30').split(':'),n=new Date(),
+  t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate(),+a[0],+a[1]);if(t<=n.getTime())t+=86400000;
+  var mn=Math.round((t-n.getTime())/60000);return (mn>=60?Math.floor(mn/60)+' h ':'')+(mn%60)+' min'}
+function istDay(utc){   /* "2026-10-05 00:30" (UTC) -> "5 Oct, 06:00" (IST) */
+  var t=Date.parse(String(utc||'').replace(' ','T')+':00Z');if(isNaN(t))return String(utc||'');
+  var d=new Date(t+330*60000),mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getUTCDate()+' '+mo[d.getUTCMonth()]+', '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)}
+function m2(v){var n=Number(v)||0;return (n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function renderSimple(d){
+  var money=m2;   /* C535: $1,000.00 here */
+  var P=(d.c527&&!d.c527.error&&d.c527.plan&&d.c527.plan.n)?d.c527:null,xv=d.c524||{},box=q('simple');
+  if(!P){box.hidden=true;if(!window._c535open){q('more').open=true;window._c535open=1}return}
+  box.hidden=false;window._c535open=1;
+  var pl=P.plan,tx=P.tax||{},v2=xv.v2||'Binance',parts=(P.rows||[]).filter(function(r){return r.plan});
+  var nm={xvenue:'the rent-gap trade (Delta vs '+v2+')',delta:'the book on Delta',pendle:'Pendle',book:'the Binance book',
+          savings:'Savings',spot:'the spot pot',carry:'carry',reserve:'reserve kept aside'};
+  var after=tx.eq_after!==undefined?tx.eq_after:pl.eq;
+  q('s-money').innerHTML='<div class="big">'+money(pl.eq)+'</div>'+
+    '<div class="s"><span class="'+cls(pl.pnl)+'">'+sgn(pl.pnl)+' ('+(pl.pct>=0?'+':'')+Number(pl.pct).toFixed(2)+'%)</span> since you started with '+money(pl.start)+'</div>'+
+    '<div class="s">after tax: <b>'+money(after)+'</b> '+(pl.pnl>0?'<span class="muted">(tax '+money(tx.tax)+' at '+(100*(tx.rate||0)).toFixed(1)+'%)</span>':
+      '<span class="muted">(no tax on a loss)</span>')+'</div>'+
+    (parts.length>1?'<div class="s muted">made of: '+parts.map(function(r){return (nm[r.key]||r.label)+' '+money(r.eq)}).join(' · ')+'</div>':
+      '<div class="s muted">all of it in '+(nm[(parts[0]||{}).key]||'the plan')+'</div>')+
+    '<div class="s muted">goal: +2% to +4% a month, after tax · '+(P.paper?'paper: no real money moves':'<b class="bad">LIVE money</b>')+'</div>';
+  var mg=xv.margins||{};
+  if(xv.start_equity&&mg.d&&mg.b){
+    var row=function(name,m){var f=Number(m.frac)||0,c=f<0.5?'b':(f<0.65?'w':''),w=Math.max(2,Math.min(100,50*f));
+      return '<div class="acc"><span>'+name+'</span><span class="am">'+money(m.eq)+'</span><span class="ap '+(f<0.5?'bad':(f<0.65?'warn':'muted'))+'">'+
+        Math.round(100*f)+'%</span><span class="ab"><i class="'+c+'" style="width:'+w+'%"></i><span class="mk" style="left:25%"></span>'+
+        '<span class="mk" style="left:32.5%;opacity:.45"></span></span></div>'};
+    var lo=Math.min(Number(mg.d.frac)||1,Number(mg.b.frac)||1),weak=(Number(mg.d.frac)||1)<=(Number(mg.b.frac)||1)?'Delta':v2;
+    var ah='<div class="s muted">each started with '+money(mg.d.start)+'; the % is what each holds now</div>'+row('Delta India',mg.d)+row(v2,mg.b);
+    ah+=lo<0.5?'<div class="s"><b class="bad">Move money now:</b> the '+weak+' account is below half. In paper the bot moves it at the next daily run; when live, move it yourself by bank transfer straight away.</div>':
+       lo<0.65?'<div class="s"><b class="warn">Getting low:</b> the '+weak+' account is below 65%. At the next daily run the bot moves money across from the fuller one.</div>':
+       '<div class="s"><b class="good">Healthy.</b> <span class="muted">If one falls below 65% (the faint line), the bot moves money across at the daily run. Below 50% (the red line) it asks you to move money now.</span></div>';
+    var tl=(xv.transfers||[]).slice(-1)[0];
+    if(tl)ah+='<div class="s muted">last move: '+istDay(tl.at)+' IST, '+money(tl.amt)+' from '+tl.frm+' to '+tl.to+' ($'+Number(tl.fee||0).toFixed(0)+' fee)'+
+      (P.paper?' · when live, this will be your bank transfer':'')+'</div>';
+    q('s-acc').innerHTML=ah;
+  }else{q('s-acc').innerHTML='<span class="muted">appears after the first daily run</span>'}
+  var by=(xv.pending&&xv.pending.by)||{},pr=xv.pairs||[];
+  if(pr.length){
+    var h='<table class="pairs"><tr><th>coin</th><th>Delta</th><th>'+v2+'</th><th>gap/yr</th><th>rent</th><th>days</th></tr>';
+    pr.forEach(function(p){var dn=String(p.how||'').indexOf('short Delta')===0,rent=(Number(p.funding)||0)+(Number(by[p.coin])||0),
+      g=(p.s_now!==null&&p.s_now!==undefined)?p.s_now:p.s_entry;
+      h+='<tr><td>'+p.coin+'</td><td class="'+(dn?'bdn':'bup')+'">'+(dn?'\u2193 down':'\u2191 up')+'</td><td class="'+(dn?'bup':'bdn')+'">'+(dn?'\u2191 up':'\u2193 down')+
+        '</td><td>'+Math.abs(Number(g)||0).toFixed(0)+'%</td><td class="'+cls(rent)+'">'+sgn(rent)+'</td><td>'+Number(p.days||0).toFixed(1)+'</td></tr>'});
+    h+='</table>';
+    var pend=xv.pending?Number(xv.pending.total)||0:0;
+    h+='<div class="s">rent collected <b class="'+cls(xv.funding)+'">'+sgn(xv.funding)+'</b>'+(pend?', plus <span class="'+cls(pend)+'">'+sgn(pend)+
+      '</span> waiting to be added at the next daily run':'')+'</div>'+
+      '<div class="s muted">fees paid '+money(xv.fees)+(xv.transfer_fees?', plus '+money(xv.transfer_fees)+' for moving money':'')+
+      ' · price moves '+sgn(xv.price_pnl)+' (small, because each pair’s two bets cancel)</div>'+
+      '<div class="s muted">\u2193 down = a bet that the price falls, \u2191 up = a bet that it rises; each bet is about $'+Math.round(Number((pr[0]||{}).notional)||0)+
+      '. Rent includes what has settled since the last daily run. A new pair shows its rent from its first settlement.</div>';
+    q('s-pairs').innerHTML=h;
+  }else{q('s-pairs').innerHTML='<span class="muted">no pairs open yet</span>'}
+  var nx=xv.next_run_utc||'00:30';
+  q('s-next').innerHTML='<div class="s"><b>Next daily run: '+istHM(nx)+' IST</b> <span class="muted">(in '+untilUTC(nx)+')</span>. '+
+    'The bot adds up the rent, closes pairs whose gap has faded, opens new ones, and evens out the two accounts.</div>'+
+    '<div class="s">Every hour it checks both accounts and warns if one runs low.</div>'+
+    '<div class="s">'+(P.paper?'<b>Live trading is locked.</b> Real money is planned for March 2027, only if the tests in the plan pass.':
+      '<b class="bad">Live trading is ON.</b>')+'</div>';
+  var ex=(P.rows||[]).filter(function(r){return !r.plan&&r.start>0}).map(function(r){
+    var n={book:'Binance book',delta:'Delta book',spot:'spot pot',carry:'carry',savings:'Savings',pendle:'Pendle'}[r.key]||r.label;
+    return n+' '+(r.pct===null||r.pct===undefined?money(r.eq):((r.pct>=0?'+':'')+Number(r.pct).toFixed(2)+'%'))});
+  q('moresum').textContent='(not your money'+(ex.length?': '+ex.join(' · '):'')+')';
 }
 
 function fillDial(){

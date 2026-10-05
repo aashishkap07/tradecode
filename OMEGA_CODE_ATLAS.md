@@ -32,6 +32,17 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
+- **C535 pushed 5 Oct (not deployed): the dashboard in plain English** (`reports/2026-10-05_c535_simple_dashboard.md`):
+  the operator, 18:19 IST: "analyse word by word and simplify the layout in layman English ... too confusing ..
+  redundant information can be removed". The top is now four plain sections: `#simple` with `s-money`,
+  `s-acc` (both accounts, % of start, a bar with the 65%/50% lines, healthy / getting low / move money now),
+  `s-pairs` (a table: coin, Delta ↓/↑, Pi42 ↓/↑, gap/yr, rent incl. settled-since, days) and `s-next`
+  (06:00 IST + countdown, the hourly check, live locked). Everything else sits in folded `<details>`:
+  `#more` "Experiments and details" (the old tiles and every panel, summary line `#moresum`), `#ctl`
+  Controls, `#logd` Log. No plan -> `#simple` hidden and `#more` opened (the pre-C535 page). Header in words
+  ("no real money moves · running … · prices up to date"). The 18:19 IST screens checked: plan $996.00 vs
+  $995.92 on real marks; ledger $995.21 = 1000 + 2.27 − 4.87 − 1.19 − 1.00 exactly. `omega_c535_test.py`
+  15 checks; the 8 older page tests open the folds first; battery 56/56.
 - **The first Delta-vs-Pi42 daily run (5 Oct 06:00 IST), verified** from the 06:17 IST logs push and real
   1-minute marks:
   - 05:33 IST the margin watch warned (Delta side $324.59, 65%);

@@ -326,7 +326,7 @@ try:
         br = pw.chromium.launch(executable_path=exe) if exe else pw.chromium.launch()
         pg = br.new_page(viewport={'width': 412, 'height': 900}); errs = []
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
-        pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000)
+        pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
         G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs', 'pendle',
                                                  'xvenue', 'running', 'alltotal')}
         br.close()
