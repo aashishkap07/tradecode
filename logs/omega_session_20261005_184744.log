@@ -1630,3 +1630,269 @@
  
 01:12:02 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.00 | rule C2 N2+N3 + range
     vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.54% (normal)
+ 
+  01:20  up 6h32m  daily book --------------------------------------------------------------------
+  PLAN      $996.37 of $1,000.00 ($-3.63)  after tax on net profit $996.37
+            Delta vs Pi42 funding gap $996.37  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.68  unreal $+3.00
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $439.98 after open P&L
+  SHADOW    intraday M1 $509.38 (+1.93%)  M1g $514.45 (+2.95%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $249.90 (-0.04%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.31 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $502.72 at 7.66%  +$0.37 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.49 (+0.70%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $316.80 (0.63x)  open $+3.00  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+2.68 (+0.54%) in 4.7d  normal -2.5% to +4.4%  top 45%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 32s  funding booked  book today  shadow 19:00  carry today
+            spot pot today
+  SESSION   $+0.61 +0.12%  peak $503.03  dd 0.07%
+  CURVE     =======+++=========================+++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:20:02 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.00 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.54% (normal)
+ 
+  01:28  up 6h40m  daily book --------------------------------------------------------------------
+  PLAN      $996.48 of $1,000.00 ($-3.52)  after tax on net profit $996.48
+            Delta vs Pi42 funding gap $996.48  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.60  unreal $+2.92
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $439.90 after open P&L
+  SHADOW    intraday M1 $509.38 (+1.93%)  M1g $514.45 (+2.95%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $249.91 (-0.04%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.26 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $502.62 at 7.66%  +$0.37 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.40 (+0.68%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $317.04 (0.63x)  open $+2.92  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+2.60 (+0.52%) in 4.7d  normal -2.5% to +4.4%  top 45%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 26s  funding booked  book today  shadow 19:00  carry today
+            spot pot today
+  SESSION   $+0.53 +0.11%  peak $503.03  dd 0.09%
+  CURVE     =======+++=========================++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:28:03 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+2.92 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.52% (normal)
+01:32:05 |    👻 C489 shadow hour 20:00 UTC: 39 coins scored (full (16 features)), gate shut | M1
+    $510.27 (+2.11%) M1g $514.89 (+3.04%) over 4d [4s]
+ 
+  01:36  up 6h48m  daily book --------------------------------------------------------------------
+  PLAN      $996.70 of $1,000.00 ($-3.30)  after tax on net profit $996.70
+            Delta vs Pi42 funding gap $996.70  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.89  unreal $+3.21
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.19 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $249.94 (-0.02%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.50 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $502.93 at 7.66%  +$0.37 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.71 (+0.74%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $317.81 (0.63x)  open $+3.21  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+2.89 (+0.58%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 21s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+0.82 +0.16%  peak $503.03  dd 0.03%
+  CURVE     =======+++=========================+++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:36:03 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.21 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.58% (normal)
+ 
+  01:44  up 6h56m  daily book --------------------------------------------------------------------
+  PLAN      $996.69 of $1,000.00 ($-3.31)  after tax on net profit $996.69
+            Delta vs Pi42 funding gap $996.69  paper
+  BELOW     experiments, not your money
+  EQUITY    $503.00  unreal $+3.32
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.30 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $249.96 (-0.02%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.57 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $503.03 at 7.66%  +$0.37 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.80 (+0.76%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $318.15 (0.63x)  open $+3.32  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+3.00 (+0.60%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 15s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+0.93 +0.19%  peak $503.03  dd 0.01%
+  CURVE     =======+++=========================++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:44:03 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.32 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.60% (normal)
+ 
+  01:52  up 7h04m  daily book --------------------------------------------------------------------
+  PLAN      $996.57 of $1,000.00 ($-3.43)  after tax on net profit $996.57
+            Delta vs Pi42 funding gap $996.57  paper
+  BELOW     experiments, not your money
+  EQUITY    $503.09  unreal $+3.41
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.39 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $250.04 (+0.02%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.62 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $503.09 at 7.66%  +$0.37 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.91 (+0.78%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $318.78 (0.63x)  open $+3.40  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+3.09 (+0.62%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 9s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+1.02 +0.20%
+  CURVE     =======+++=========================+++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+01:52:04 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.40 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.62% (normal)
+ 
+  02:00  up 7h12m  daily book --------------------------------------------------------------------
+  PLAN      $996.43 of $1,000.00 ($-3.57)  after tax on net profit $996.43
+            Delta vs Pi42 funding gap $996.43  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.98  unreal $+3.30
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.28 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $250.02 (+0.01%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.53 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $502.97 at 7.66%  +$0.38 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.80 (+0.76%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $318.43 (0.63x)  open $+3.30  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+2.98 (+0.60%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 2s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+0.91 +0.18%  peak $503.09  dd 0.02%
+  CURVE     =======+++=========================++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+02:00:04 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.30 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.60% (normal)
+ 
+  02:08  up 7h20m  daily book --------------------------------------------------------------------
+  PLAN      $996.61 of $1,000.00 ($-3.39)  after tax on net profit $996.61
+            Delta vs Pi42 funding gap $996.61  paper
+  BELOW     experiments, not your money
+  EQUITY    $503.16  unreal $+3.48
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.46 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $250.06 (+0.02%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.75 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $503.27 at 7.66%  +$0.38 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $503.87 (+0.77%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $318.97 (0.63x)  open $+3.48  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+3.16 (+0.63%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 35s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+1.09 +0.22%
+  CURVE     =======+++=========================+++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+02:08:05 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.48 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.63% (normal)
+ 
+  02:16  up 7h28m  daily book --------------------------------------------------------------------
+  PLAN      $996.22 of $1,000.00 ($-3.78)  after tax on net profit $996.22
+            Delta vs Pi42 funding gap $996.22  paper
+  BELOW     experiments, not your money
+  EQUITY    $503.23  unreal $+3.55
+  OPEN      no intraday positions  book holds 9 (BOOK row)  free $440.53 after open P&L
+  SHADOW    intraday M1 $510.27 (+2.11%)  M1g $514.89 (+3.04%)  4d paper only
+  CARRY     $499.01 (-0.16%)  8 held  paper only
+  SPOT      $250.04 (+0.02%)  5 held  18% invested  cash earns 6.88%  paper pot
+  SAVINGS   idle $314.74 (62%)  at 6.88% +$0.27 so far  ~$1.80/month  paper
+  BFUSD     wallet $503.25 at 7.66%  +$0.38 so far  ~$3.21/month  vs Savings $1.80  paper
+  DELTA     $504.07 (+0.81%)  9 held  fees $0.20  funding $+0.16
+            paper experiment: the book on Delta
+  XVENUE    $995.21 (-0.48%)  10 pairs  funding $+2.27  fees $4.87  paper, Delta vs Pi42
+  BOOK      9 pos gross $319.09 (0.63x)  open $+3.55  funding $-0.08  vol 27% top 20
+            rebal 2026-10-05
+  CONTEXT   since 01 Oct $+3.23 (+0.65%) in 4.7d  normal -2.5% to +4.4%  top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   4d from 2026-10-01  base -0.52%  N2 -0.66%  N3 +0.20%  N2+N3 +0.11%  +K4 +0.41%
+            +GK* +0.27%  +K4+GK +0.60%  +GK+DD +0.53%  +GK+XA +1.53%
+  DATA      on time  prices 35s  funding booked  book today  shadow 20:00  carry today
+            spot pot today
+  SESSION   $+1.16 +0.23%
+  CURVE     =======+++=========================++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+02:16:06 | 🎯 C510 Book (what trades): 9 positions, gross 0.63x, open $+3.55 | rule C2 N2+N3 + range
+    vol (GK) | closed 3: 2W/1L $-0.09 | since 01 Oct +0.65% (normal)
