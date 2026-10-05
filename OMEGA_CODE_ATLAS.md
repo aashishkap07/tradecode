@@ -32,6 +32,19 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
+- **The first Delta-vs-Pi42 daily run (5 Oct 06:00 IST), verified** from the 06:17 IST logs push and real
+  1-minute marks:
+  - 05:33 IST the margin watch warned (Delta side $324.59, 65%);
+  - 06:00:48 "the monthly re-balance -> Pi42 sends $163.07 to Delta (fee $1.00); now Delta $499.80,
+    Pi42 $498.80";
+  - out (not on Pi42): ORDER, AIN, EDEN, AIO, MON, CROSS, STBL; in: TST, BEAT, LIT, H (short Delta) and
+    STRK, NOT, AIXBT (**long Delta / short Pi42** -- Delta's rent lower there), so the jars no longer all
+    lean one way; day -$4.66 = fees -$3.39 (14 legs) - $1 transfer + funding +$0.55 - price -$0.83;
+    ledger $995.21 (-0.48%);
+  - every new entry price within cents of both venues' 00:30 UTC 1-minute marks; value at 01:05 UTC
+    $994.78; 0 Traceback;
+  - G2 check 01:07 UTC: 246 twins, 216 same settlement, 87% within 0.002%, median gap 0.0005%
+    (`research/c532_pi42/pi42_vs_binance_20261005_0107.json`).
 - **C534 deployed 4 Oct 23:21:23 IST**, verified in the 00:17 IST logs push: `OMEGA C534`, "C534 Pi42's
   coin list loaded: 182 rupee perps (api.pi42.com); held pairs Pi42 does not list, closed at the next
   daily run: AIN, AIO, CROSS, EDEN, MON, ORDER, STBL", 0 Traceback, 0 warnings. The 23:59 IST screens, checked on both venues' 1-minute marks at
