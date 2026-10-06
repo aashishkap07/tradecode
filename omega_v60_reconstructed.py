@@ -1818,6 +1818,13 @@ class _C462Report:
                     self._pack('XVENUE', [f"{_c462_money(_z524['eq'])} ({_z524['pct']:+.2f}%)",
                                           f"{_z524['n']} pairs", f"funding {_c462_money(_z524['funding'], sign=True)}",
                                           f"fees {_c462_money(_z524['fees'])}", f"paper, Delta vs {_x524.v2()}"])
+                    _t538 = [t.test_status() for t in getattr(bot, 'c538', None) or [] if t.active()]
+                    if _t538:      # C538: the two test rules, against the daily rule since they were copied
+                        self._pack('TESTS', [f"{t['short']}: " + (            # short facts: a phone is 46 wide
+                            f"{'ahead' if t['diff'] > 0 else 'behind' if t['diff'] < 0 else 'level'} "
+                            f"{_c462_money(abs(t['diff']))}, {t['days']} day{'s' if t['days'] != 1 else ''}"
+                            if t['diff'] is not None else 'scored from 06:00 IST') for t in _t538]
+                                   + ['paper, vs your daily rule'])
                 _p530 = getattr(bot, 'c530p', None)
                 if _p530 is not None and _p530.active() and _p530.last_run:
                     _q530 = _p530.status()
@@ -2393,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C536'
+_OMEGA_VERSION = 'C538'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3162,6 +3169,8 @@ class Config:
         self.C524_XVENUE_RUN_UTC = (0, 30)      # C524: once a day, after the book (00:05), carry (00:10), spot (00:20)
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
+        self.C538_TESTS = True                  # C538: round 19's two near-misses (decide every 8 h; a 3-day average)
+                                                # run beside the daily rule as paper copies, scored daily at 06:00 IST
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
         self.C530_PENDLE = False                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
@@ -23589,6 +23598,7 @@ class C524CrossVenue(_C501Store):
         self.prods = {}
         self.pi42, self._pi42_at = set(), 0.0                   # C532: the coins Pi42 lists (rupee perps)
         self._pi42_try, self._pi42_warned = 0.0, False          # C534: loaded soon after a start (pi42_boot)
+        self._got = None                                        # C538: the last run's inputs, for the test rules
         self.reset(save=False)
         d = self._read()
         if d:
@@ -23705,7 +23715,11 @@ class C524CrossVenue(_C501Store):
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
                      side=self.side, rebased=self.rebased, transfers=self.transfers[-50:],
                      transfer_fees=self.transfer_fees, reb_month=self.reb_month)
+            d.update(self._extra())                             # C538
         self._write(d)
+
+    def _extra(self):
+        return {}
 
     def due(self, now=None):
         now = now or datetime.utcnow()
@@ -23739,13 +23753,20 @@ class C524CrossVenue(_C501Store):
                 fB[t // 86400 * 86400] = fB.get(t // 86400 * 86400, 0.0) + float(x['fundingRate'])
         return fD, fB, d, b
 
-    # ── the day ──────────────────────────────────────────────────────────────
-    def run(self, now_ms=None):
+    # ── the decision ─────────────────────────────────────────────────────────
+    WIN = 7                                                     # C538: the signal's days (a test rule may differ)
+
+    def _cut(self, now_ms):
+        """C538: settlements are counted up to here -- midnight UTC for the daily rule"""
+        return now_ms // _C488_DAY * _C488_DAY
+
+    def _signals(self, got, coins, today):
+        days = [today // 1000 - k * 86400 for k in range(7, 0, -1)]                 # the 7 completed days
+        return {c: _c524_signal(got[c][0], got[c][1], days) for c in coins}
+
+    def _inputs(self, today):
+        """the coins, their funding records, both venues' marks and whether Pi42's list loaded"""
         e = self.bot.c488
-        now_ms = int(now_ms or time.time() * 1000)
-        today = now_ms // _C488_DAY * _C488_DAY
-        if not self.start_equity:
-            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0))
         if not self.refresh_products(force=True):
             raise RuntimeError("Delta's product list did not load")
         p42 = self.pi42_refresh(force=True) if self.on_pi42() else True     # C532: without Pi42's list, no new pairs
@@ -23759,8 +23780,18 @@ class C524CrossVenue(_C501Store):
         with ThreadPoolExecutor(max_workers=4) as pool:
             got = dict(zip(coins, pool.map(lambda c: self._funding(c, today) if c in self.prods else ({}, {}, [], None),
                                            coins)))
-        days = [today // 1000 - k * 86400 for k in range(7, 0, -1)]                 # the 7 completed days
-        sig = {c: _c524_signal(got[c][0], got[c][1], days) for c in coins}
+        # C538: the test rules' midnight runs use these same records and prices (one fetch, the same marks)
+        self._got = dict(cut=today, t=time.time(), coins=coins, got=got, bm=bm, dm=dm, p42=p42, used=set())
+        return coins, got, bm, dm, p42
+
+    # ── the day ──────────────────────────────────────────────────────────────
+    def run(self, now_ms=None):
+        now_ms = int(now_ms or time.time() * 1000)
+        today = self._cut(now_ms)
+        if not self.start_equity:
+            self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0))
+        coins, got, bm, dm, p42 = self._inputs(today)
+        sig = self._signals(got, coins, today)
         day_pnl, n_fund = 0.0, 0
         d_fund = d_price = d_cost = 0.0                              # C536: the day's result in its parts, for the page
         # 1. mark what is held: each leg at its venue's mark, plus each leg's settled funding since
@@ -23810,7 +23841,7 @@ class C524CrossVenue(_C501Store):
             elif self.on_pi42() and self.pi42 and c not in self.pi42:
                 why = 'not on Pi42'                                 # C532: the second leg must be Pi42's
             elif s is None:
-                why = 'no 7-day spread'
+                why = f'no {self.WIN}-day spread'
             elif abs(s) < 0.10:
                 why = 'spread under 10%/yr'
             elif (1 if s > 0 else -1) != p['side']:
@@ -23857,7 +23888,8 @@ class C524CrossVenue(_C501Store):
             room -= 1
             inn.append(f"{c} {'short Delta/long ' + self.v2() if side > 0 else 'long Delta/short ' + self.v2()} {100 * sig[c]:+.0f}%/yr")
         if eq0 > 0:
-            self.daily[today] = self.daily.get(today, 0.0) + day_pnl / eq0
+            dk = today // _C488_DAY * _C488_DAY                     # C538: by day (a test rule decides 3 times a day)
+            self.daily[dk] = self.daily.get(dk, 0.0) + day_pnl / eq0
         self.last_run = datetime.utcfromtimestamp(now_ms / 1000).strftime('%Y-%m-%d')
         wide = sum(1 for c in coins if sig.get(c) is not None and abs(sig[c]) >= 0.20)
         self.info = dict(at=now_ms, coins=len(coins), scored=sum(1 for c in coins if sig.get(c) is not None),
@@ -23875,6 +23907,8 @@ class C524CrossVenue(_C501Store):
         if not self.active() or time.time() - self._tick_at < 30:
             return
         self._tick_at = time.time()
+        if self._got and time.time() - float(self._got.get('t') or 0) > 1800:
+            self._got = None                                     # C538: the test rules had 30 min to use it
         if not bool(getattr(self.bot, '_c462_state_settled', False)) or getattr(self.bot, 'c488', None) is None:
             return
         self.pi42_boot()                                         # C534: Pi42's list before the daily run, not only at it
@@ -24064,6 +24098,242 @@ class C524CrossVenue(_C501Store):
                         at=pend.at)
         except Exception:
             return None
+
+
+def _c538_signal(d_recs, b_recs, iv_s, cut_s, win):
+    """C538: the trailing `win`-day mean of (Delta - Binance) funding up to `cut_s`, annualised,
+    as paid by a long. Settlements in [cut - win days, cut); each venue must have at least one
+    in every 24 hours of it -- the daily rule's "every one of those days", with the days ending
+    at the cut. With the cut at midnight and win 7 it equals _c524_signal exactly."""
+    hrs = max(1, int(iv_s) // 3600)
+    lo = int(cut_s) - win * 86400
+    sd, sb = [0.0] * win, [0.0] * win
+    hd, hb = [False] * win, [False] * win
+    for x in d_recs or []:
+        t = int(x.get('time') or 0)
+        if (t // 3600) % hrs == 0 and lo <= t < cut_s:
+            k = (t - lo) // 86400
+            sd[k] += float(x['close']) / 100.0
+            hd[k] = True
+    for x in b_recs or []:
+        t = int(x['fundingTime']) // 1000
+        if lo <= t < cut_s:
+            k = (t - lo) // 86400
+            sb[k] += float(x['fundingRate'])
+            hb[k] = True
+    if not (all(hd) and all(hb)):
+        return None
+    return (sum(sd) - sum(sb)) / win * 365.0
+
+
+class C538TestRule(C524CrossVenue):
+    """C538: ONE OF ROUND 19'S TWO NEAR-MISSES, RUN BESIDE THE DAILY RULE (paper; never the plan).
+
+    Round 19 (research/c537_timing.txt, reports/2026-10-06_c537_timing.md) tried 11 changes to
+    the rent-gap trade and none passed its bar. Two came close:
+      f8  decide every 8 hours (00:30, 08:30, 16:30 UTC), the 7-day gap up to that hour:
+          +$34/yr on $1,000, t 2.14 (2.5 needed), better in 4 of 4 half-years;
+      w3  decide once a day, but on a 3-day average: +$74/yr, t 2.86, yet below the daily rule
+          at 5x fees (it trades 68% more).
+    The operator (6 Oct): "will be running parallel to the current daily call .. i want the
+    results of those too displayed at appropriate intervals in the dashboard".
+
+    Each test starts as an exact COPY of the daily ledger as of its last run (the same pairs,
+    prices, equity), then follows its own rule with everything else identical: the same coins
+    (Pi42's list), costs, GST, 10 pairs of 10%, whole Delta contracts. At midnight it uses the
+    daily rule's own records and prices (no second fetch, the same marks); at 08:30/16:30 it
+    fetches its own. It moves no money between the venues (that costs both the same $1 and is
+    left out of the comparison: each is compared as equity + transfer fees).
+    THE SCOREBOARD: once a day, after the 00:30 UTC (06:00 IST) runs, when all three ledgers
+    are counted at the same moment and the same prices -- the only fair moment. History says
+    what to expect (research/c537_timing.py, rolling windows on $1,000): f8 +$2.90 a month
+    ahead, ahead in 82% of 30-day windows; w3 +$6.40 a month ahead, ahead in only 62% (it
+    swings from -$2.70 to +$23.50). The 2 December refresh decides on history plus these
+    months, at the pre-registered bar."""
+
+    RULES = {
+        'f8': dict(name='Checks every 8 hours', short='every 8 h', win=7, hours=(0, 8, 16),
+                   plain='decides at 06:00, 14:00 and 22:00 IST instead of once a day',
+                   month=2.90, ahead=82),
+        'w3': dict(name='Uses a 3-day average', short='3-day avg', win=3, hours=(0,),
+                   plain='judges each gap on its last 3 days instead of 7',
+                   month=6.40, ahead=62),
+    }
+
+    def __init__(self, bot, key):
+        r = self.RULES[key]
+        self.key, self.NAME, self.WIN, self.HOURS = key, r['name'], int(r['win']), tuple(r['hours'])
+        self.STATE_FILE = f'c538_{key}.json'
+        self._c538_blank()
+        super().__init__(bot)
+        d = self._read()
+        if d and self.start_equity:
+            self.base = float(d.get('base') or 0.0)
+            self.base_main = float(d.get('base_main') or 0.0)
+            self.since = str(d.get('since') or '')
+            self.last_slot = int(d.get('last_slot') or 0)
+            self.snaps = dict(d.get('snaps') or {})
+            self.slots = list(d.get('slots') or [])[-30:]
+
+    def _c538_blank(self):
+        self.base = self.base_main = 0.0                     # equity + transfer fees when it was copied
+        self.since, self.last_slot = '', 0
+        self.snaps, self.slots = {}, []                      # the daily scoreboard; its last decisions
+
+    def _extra(self):
+        return dict(key=self.key, base=self.base, base_main=self.base_main, since=self.since,
+                    last_slot=self.last_slot, snaps=dict(sorted(self.snaps.items())[-400:]), slots=self.slots[-30:])
+
+    def reset(self, save=True):
+        self._c538_blank()
+        super().reset(save=save)
+
+    def rebase(self, to):
+        """the plan's allocation changed: start again from a fresh copy of the daily ledger"""
+        self.reset(save=True)
+        logger.info(f"   \U0001f9ea C538 test \"{self.NAME}\" (paper): the plan's amount changed -- it restarts as a "
+                    f"copy of the daily ledger after its next run")
+
+    @property
+    def main(self):
+        return getattr(self.bot, 'c524x', None)
+
+    def active(self):
+        m = self.main
+        return bool(getattr(self.cfg, 'C538_TESTS', True)) and m is not None and m.active()
+
+    def even_out(self, when):
+        return None                                          # a test moves no money (see the docstring)
+
+    def _slot(self, now_ms):
+        """the latest decision slot passed: the start of hour h (h in HOURS) once h:30 is reached, ms"""
+        t = int(now_ms) - 30 * 60000
+        day = t // _C488_DAY * _C488_DAY
+        hs = [h for h in self.HOURS if day + h * 3600000 <= t]
+        return day + max(hs) * 3600000 if hs else day - _C488_DAY + max(self.HOURS) * 3600000
+
+    def _cut(self, now_ms):
+        return self._slot(now_ms)
+
+    def _signals(self, got, coins, today):
+        return {c: (_c538_signal(got[c][2], got[c][3], self.prods[c]['iv'], today // 1000, self.WIN)
+                    if c in self.prods else None) for c in coins}
+
+    def _inputs(self, today):
+        m = self.main
+        g = getattr(m, '_got', None)
+        if g and g.get('cut') == today and time.time() - float(g.get('t') or 0) < 1800:
+            self.prods, self.pi42 = m.prods, m.pi42           # the daily rule's own records and prices
+            g['used'].add(self.key)
+            if g['used'] >= {t.key for t in (getattr(self.bot, 'c538', None) or []) if t.active()}:
+                m._got = None                                # every test has them: free the memory
+            return g['coins'], g['got'], g['bm'], g['dm'], g['p42']
+        e = self.bot.c488
+        if not m.refresh_products():
+            raise RuntimeError("Delta's product list did not load")
+        self.prods = m.prods
+        p42 = m.pi42_refresh() if m.on_pi42() else True
+        self.pi42 = m.pi42
+        e.refresh_marks(force=True)
+        bm = {C488Engine._raw(s): e.mark(s) for s in e.marks}
+        dm = m._delta_marks()
+        if not dm:
+            raise RuntimeError("Delta's prices did not load")
+        coins = [c for c in self.prods if bm.get(c + 'USDT', 0) > 0 and dm.get(self.prods[c]['sym'], 0) > 0]
+        if self.on_pi42() and self.pi42:
+            coins = [c for c in coins if c in self.pi42]     # only coins it may hold: half the requests
+        coins = sorted(set(coins) | set(self.pairs))
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today) if c in self.prods else ({}, {}, [], None),
+                                           coins)))
+        return coins, got, bm, dm, p42
+
+    def copy_main(self):
+        """start as an exact copy of the daily ledger as of its last run"""
+        m = self.main
+        if m is None or not m.start_equity or not m.last_run or not (m.info or {}).get('at'):
+            return False
+        with m._lock:
+            for k in ('start_equity', 'eq', 'fees', 'funding', 'price_pnl', 'transfer_fees'):
+                setattr(self, k, float(getattr(m, k) or 0.0))
+            self.pairs = json.loads(json.dumps(m.pairs))
+            self.side = dict(m.side)
+            self.reb_month, self.last_run = m.reb_month, m.last_run
+            self.trades, self.closed, self.daily, self.transfers, self.info = 0, [], {}, [], {}
+            self.base = self.base_main = float(m.eq) + float(m.transfer_fees)
+            self.last_slot = self._slot(int(m.info['at']))
+            self.since = m.last_run
+            self.snaps, self.slots = {}, []
+        self.save()
+        logger.info(f"   \U0001f9ea C538 test \"{self.NAME}\" (paper, not your plan): starts as a copy of your daily ledger "
+                    f"as of its {m.last_run} run (${self.eq:.2f}, {len(self.pairs)} pairs); from now on it "
+                    f"{self.RULES[self.key]['plain']}. The two are compared every day after the 06:00 IST run.")
+        return True
+
+    def score(self):
+        """(this rule, the daily rule) since the copy, $: equity + transfer fees"""
+        m = self.main
+        return (self.eq + self.transfer_fees - self.base, m.eq + m.transfer_fees - self.base_main)
+
+    def tick(self):
+        m = self.main
+        if m is None or not self.active() or time.time() - self._tick_at < 30:
+            return
+        self._tick_at = time.time()
+        if not bool(getattr(self.bot, '_c462_state_settled', False)) or getattr(self.bot, 'c488', None) is None:
+            return
+        if not self.start_equity and not self.copy_main():
+            return                                           # the daily ledger has not run yet
+        now_ms = int(time.time() * 1000)
+        slot = self._slot(now_ms)
+        if slot <= self.last_slot or time.time() - self._fail_at < 300:
+            return
+        day = datetime.utcfromtimestamp(slot / 1000).strftime('%Y-%m-%d')
+        if slot % _C488_DAY == 0 and m.last_run != day:
+            return                                           # the daily rule first: its data and prices are shared
+        try:
+            t0 = time.time()
+            with self._lock:
+                pnl = self.run(now_ms)
+                self.last_slot = slot
+                inf = self.info
+                self.slots = (self.slots + [dict(at=now_ms, cut=slot, day=round(pnl, 2), out=inf.get('exited') or [],
+                                                 inn=inf.get('entered') or [], n=len(self.pairs))])[-30:]
+                me, mm = self.score()
+                if slot % _C488_DAY == 0:                    # the scoreboard: all three counted at this moment
+                    self.snaps[day] = dict(me=round(me, 2), main=round(mm, 2), n=len(self.pairs),
+                                           same=len(set(self.pairs) & set(m.pairs)))
+            self.save()
+            ist = datetime.utcfromtimestamp(slot / 1000 + 1800 + 19800).strftime('%H:%M')
+            logger.info(f"   \U0001f9ea C538 test \"{self.NAME}\" (paper, not your plan) {ist} IST: {pnl:+.2f} -> "
+                        f"${self.eq:.2f} | {len(self.pairs)} pairs, {len(set(self.pairs) & set(m.pairs))} the same as "
+                        f"yours" + (f" | out {'; '.join(inf['exited'])}" if inf.get('exited') else '')
+                        + (f" | in {'; '.join(inf['entered'])}" if inf.get('entered') else '')
+                        + (f" | since {self.since}: this rule {me:+.2f}, your daily rule {mm:+.2f} "
+                           f"({'ahead' if me > mm else 'behind' if me < mm else 'level'} by ${abs(me - mm):.2f})"
+                           if slot % _C488_DAY == 0 else '') + f" [{time.time() - t0:.0f}s]")
+        except Exception as ex:
+            self._fail_at = time.time()
+            logger.warning(f"⚠️ C538 test \"{self.NAME}\" run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def test_status(self):
+        with self._lock:
+            m = self.main
+            r = self.RULES[self.key]
+            ks = sorted(self.snaps)
+            last = self.snaps[ks[-1]] if ks else None
+            wk = self.snaps[ks[-8]] if len(ks) >= 8 else None
+            nxt = [h for h in self.HOURS if (datetime.utcnow().hour, datetime.utcnow().minute) < (h, 30)]
+            h = nxt[0] if nxt else self.HOURS[0]
+            return dict(key=self.key, name=self.NAME, short=r['short'], plain=r['plain'], mode='paper' if self.active() else 'off',
+                        since=self.since, days=len(ks), at=ks[-1] if ks else None,
+                        me=last['me'] if last else None, main=last['main'] if last else None,
+                        diff=round(last['me'] - last['main'], 2) if last else None,
+                        week=(round((last['me'] - last['main']) - (wk['me'] - wk['main']), 2) if last and wk else None),
+                        eq=round(self.eq, 2), n=len(self.pairs),
+                        same=len(set(self.pairs) & set(m.pairs)) if m is not None else None,
+                        slots=self.slots[-3:], hours=list(self.HOURS), win=self.WIN, next_run_utc=f"{h:02d}:30",
+                        month=r['month'], ahead=r['ahead'])
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -24594,6 +24864,7 @@ class TradingBot:
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance/Pi42 (C532) funding spread, both legs (paper)
+        self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3')]   # C538: two test rules beside it (paper)
         self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
         self.news = NewsAnalyzer(cfg)
@@ -25616,6 +25887,11 @@ class TradingBot:
                             _c501.tick()
                         except Exception as _e501:
                             logger.warning(f"⚠️ {type(_c501).__name__} tick failed: {type(_e501).__name__}: {_e501}")
+                    for _t538 in self.c538:               # C538: the test rules, after the daily rule (they share its data)
+                        try:
+                            _t538.tick()
+                        except Exception as _e538:
+                            logger.warning(f"⚠️ C538 test {_t538.key} tick failed: {type(_e538).__name__}: {_e538}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -43099,6 +43375,8 @@ def startup():
         bot.c521b.reset(); bot.c521d.reset() # C521: and fresh BFUSD and Delta ledgers
         if getattr(bot, 'c524x', None) is not None:
             bot.c524x.reset()                # C524: and a fresh cross-venue ledger
+        for _t538 in getattr(bot, 'c538', None) or []:
+            _t538.reset()                    # C538: the test rules copy it again after its first run
         if getattr(bot, 'c530p', None) is not None:
             bot.c530p.reset()                # C530: and a fresh Pendle ledger
 
@@ -43822,6 +44100,10 @@ class RemoteControl:
                                 _out469['c524'] = bot_ref.c524x.status()
                         except Exception as _x524:
                             _out469['c524'] = {'error': f"{type(_x524).__name__}: {_x524}"}
+                        try:      # C538: the two test rules beside it
+                            _out469['c538'] = [t.test_status() for t in getattr(bot_ref, 'c538', None) or []]
+                        except Exception as _x538:
+                            _out469['c538'] = {'error': f"{type(_x538).__name__}: {_x538}"}
                         try:      # C530: Pendle fixed yield
                             if getattr(bot_ref, 'c530p', None) is not None:
                                 _out469['c530'] = bot_ref.c530p.status()
@@ -44069,6 +44351,7 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
   <section><h2>Your two accounts</h2><div id="s-acc">&mdash;</div></section>
   <section><h2>Your pairs (one coin, two opposite bets)</h2><div id="s-pairs">&mdash;</div></section>
   <section><h2>What happens next</h2><div id="s-next">&mdash;</div></section>
+  <section><h2>Two other ways, tested on paper</h2><div id="s-test">&mdash;</div></section>
 </div>
 
 <details class="fold" id="more"><summary><b>Experiments and details</b> <span class="muted" id="moresum">(not your money)</span></summary><div class="inner">
@@ -44819,10 +45102,49 @@ function renderSimple(d){
     '<div class="s">Every hour it checks both accounts and warns if one runs low.</div>'+
     '<div class="s">'+(P.paper?'<b>Live trading is locked.</b> Real money is planned for March 2027, only if the tests in the plan pass.':
       '<b class="bad">Live trading is ON.</b>')+'</div>';
+  try{renderTests(d,xv)}catch(e6){q('s-test').textContent='tests: '+e6}
   var ex=(P.rows||[]).filter(function(r){return !r.plan&&r.start>0}).map(function(r){
     var n={book:'Binance book',delta:'Delta book',spot:'spot pot',carry:'carry',savings:'Savings',pendle:'Pendle'}[r.key]||r.label;
     return n+' '+(r.pct===null||r.pct===undefined?money(r.eq):((r.pct>=0?'+':'')+Number(r.pct).toFixed(2)+'%'))});
   q('moresum').textContent='(not your money'+(ex.length?': '+ex.join(' · '):'')+')';
+}
+
+/* C538: round 19's two near-misses run beside the daily rule as paper copies. Scored once a day, after
+   the 06:00 IST runs: the one moment all three are counted together at the same prices. */
+function dayMon(ymd){var a=String(ymd||'').split('-'),mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return a.length===3?(+a[2])+' '+mo[(+a[1])-1]:String(ymd||'')}
+function renderTests(d,xv){
+  var T=Array.isArray(d.c538)?d.c538.filter(function(t){return t&&t.mode==='paper'}):[],box=q('s-test');
+  if(!T.length){box.closest('section').hidden=true;return}
+  box.closest('section').hidden=false;
+  var nx=xv.next_run_utc||'00:30';
+  if(!T[0].since){box.innerHTML='<span class="muted">Starts after your plan’s next daily run ('+istHM(nx)+' IST): two copies of your plan, '+
+    'each changing one thing, so you can see whether either would have done better.</span>';return}
+  var ahead=function(v){v=Number(v)||0;return v>0.004?'<span class="good">ahead '+m2(v)+'</span>':(v<-0.004?'<span class="bad">behind '+m2(-v)+'</span>':'<span class="muted">level</span>')};
+  var h='<div class="s muted">Since '+dayMon(T[0].since)+', two copies of your plan have each followed one different rule, on the same coins, '+
+    'prices and fees. Nothing here is your money.</div>';
+  if(T[0].diff===null||T[0].diff===undefined){
+    h+='<div class="s">First score after the next 06:00 IST run <span class="muted">(in '+untilUTC(nx)+')</span>.</div>';
+  }else{
+    h+='<table class="pairs"><tr><th>way</th><th>result</th><th>vs yours</th></tr>'+
+      '<tr><td><b>Your rule: once a day</b></td><td class="'+cls(T[0].main)+'">'+sgn(T[0].main)+'</td><td>—</td></tr>';
+    T.forEach(function(t){h+='<tr><td>'+t.name+'</td><td class="'+cls(t.me)+'">'+(t.me===null?'—':sgn(t.me))+'</td><td>'+
+      (t.diff===null?'—':ahead(t.diff))+'</td></tr>'});
+    h+='</table><div class="s muted">score as of '+dayMon(T[0].at)+', 06:00 IST ('+T[0].days+' day'+(T[0].days===1?'':'s')+'); updated every day after that run</div>';
+  }
+  T.forEach(function(t){
+    var sl=(t.slots||[]).slice(-1)[0],what='';
+    if(sl){var ch=[];(sl.out||[]).length&&ch.push('closed '+sl.out.map(function(x){return String(x).split(' ')[0]}).join(', '));
+      (sl.inn||[]).length&&ch.push('opened '+sl.inn.map(function(x){return String(x).split(' ')[0]}).join(', '));
+      what=' Last decision '+istDay(new Date(Number(sl.cut)+1800000).toISOString().slice(0,16).replace('T',' '))+' IST: '+(ch.length?ch.join('; '):'no change')+'.'}
+    h+='<div class="s"><b>'+t.name+'</b> — '+t.plain+'.'+what+' '+t.n+' pairs, '+(t.same===null?'':t.same+' the same as yours')+'.'+
+      (t.week!==null&&t.week!==undefined?' <span class="muted">Last 7 days: '+ahead(t.week)+'.</span>':'')+'</div>'});
+  var f8=T.filter(function(t){return t.key==='f8'})[0],w3=T.filter(function(t){return t.key==='w3'})[0];
+  h+='<div class="s muted">How to read it: a few days mean little. In two years of past data, '+
+    (f8?'checking every 8 hours came out ahead by about '+m2(f8.month)+' a month (ahead in '+Math.round(f8.ahead/10)+' months out of 10)':'')+
+    (f8&&w3?'; ':'')+(w3?'the 3-day average by about '+m2(w3.month)+' a month, but only in '+Math.round(w3.ahead/10)+' months out of 10, with big swings':'')+
+    '. On 2 December the research checks whether either truly beats yours. Until then your rule stays.</div>';
+  box.innerHTML=h;
 }
 
 function fillDial(){

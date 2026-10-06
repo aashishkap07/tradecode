@@ -45,6 +45,23 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   time and the changes only); the legacy 8-minute POSITION SUMMARY now prints the book's MARKED equity =
   cash + open (it printed cash as "Equity" beside the marked EQUITY row). `omega_c536_test.py` 9 checks;
   battery 57/57; parts checked on live data (preview re-run: +0.29 = 0.00 + 0.29).
+- **C538 pushed 6 Oct (not deployed): round 19's two near-misses run beside the daily rule** (`reports/2026-10-06_c538_tests.md`).
+  The operator: "will be running parallel to the current daily call .. i want the results of those too displayed at
+  appropriate intervals in the dashboard in simple lay man terms". C536 was deployed 6 Oct 09:55 IST (`OMEGA C536` in
+  omega_detail_20261006_095553.log). `C538TestRule(C524CrossVenue)` x2 (`bot.c538`; `C538_TESTS`): 'f8' decides at 00:30/08:30/16:30
+  UTC on the 7-day gap up to that hour (`_c538_signal`, = `_c524_signal` at midnight/7 days: 300 random coins), 'w3' daily on a
+  3-day gap. Each starts as an exact copy of the daily ledger as of its last run (`copy_main`; base = eq + transfer fees),
+  then follows its own rule; no transfers (`even_out` -> None). At midnight they wait for the daily run and use its records
+  and marks (`C524CrossVenue._got`, freed once both used it; no second fetch); at 08:30/16:30 f8 fetches its own (Pi42's
+  coins only). `run()` was split into `_cut` / `_inputs` / `_signals` (the daily rule's behaviour unchanged; battery).
+  Scoreboard `snaps[day]` = (copy, daily rule) since the copy, written only at the 00:30 UTC runs (all three on the same
+  marks); `slots` = f8's decisions. Page: `#s-test` "Two other ways, tested on paper" (table ahead/behind yours, score date,
+  each copy's last decision in IST and pairs in common, last 7 days, history's +$2.90 (8 of 10 months) / +$6.40 (6 of 10)
+  per month, 2 December). Log: one line per decision (06:00 IST with the score); 8-minute block `TESTS`. Logs push sends
+  `c538_f8.json`, `c538_w3.json` (re-copy the script). Real data (the 19:17 IST state, live prices): f8's 14:00 IST run
+  +$0.98 = rent +$0.61 + prices +$0.37, no change; its rent recomputed straight from Delta's/Binance's APIs +$0.6099 =
+  the bot's +$0.6099. `omega_c538_test.py` 42 checks; battery 58/58. Monthly review (item 4) and the Dec refresh (item e)
+  now read the scoreboard.
 - **C537 = Round 19 (research only; the bot stays C536)** (`reports/2026-10-06_c537_timing.md`): the operator's
   rent note (6 Oct) asked whether deciding once a day is the most profitable frequency. Pre-registered first
   (`research/c537_preregistration.md`, 7ba0b52); an hourly settlement-level simulator (`research/c537_timing.py`,
@@ -587,6 +604,43 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧪 2026-10-06 — C538: THE TWO NEAR-MISSES RUN BESIDE THE DAILY RULE (PAPER COPIES, SCORED DAILY)
+# ═══════════════════════════════════════════════════════════════════════════
+
+**Why:** the operator wanted Round 19's close calls (every 8 h: +$34/yr, t 2.14; 3-day average: +$74/yr, t 2.86 but worse
+at x5 fees) run in parallel with the daily rule and shown on the dashboard in plain words.
+
+**Design (`C538TestRule`, a subclass of `C524CrossVenue`):**
+- **Copy, then diverge.** Each test copies the daily ledger as of its last run (pairs, quantities, entry marks, equity,
+  sides, `fund_from`), so day 0 is identical and every later difference is the one changed rule.
+  - Its `last_slot` is the slot of the daily run it copied (no re-decision of that run).
+  - A plan-amount change (`rebase`) resets it to a fresh copy.
+- **Slots.** `_slot(now)` is the latest h:00 (h in HOURS) with h:30 passed. `_cut` = the slot, so rent is booked up to the
+  hour, as the daily rule books up to midnight.
+- **Shared inputs at midnight.** `C524CrossVenue._inputs` stores `_got` (cut, coins, records, both venues' marks, Pi42 flag).
+  - A test at a midnight slot waits for `last_run == today`, then reuses it.
+  - Binance's fundingRate limit (500 per 5 min, shared) would not survive three full fetches at 00:30.
+  - `_got` is freed once every active test has used it, or after 30 min.
+- **Scoreboard.** `snaps[YYYY-MM-DD] = {me, main, n, same}`.
+  - `me` = eq + transfer_fees - base.
+  - `main` = the daily rule's eq + transfer_fees - base_main.
+  - Written only at midnight slots, when all three are booked to the same cut on the same marks.
+- **Status.** `test_status()` gives diff, `week` (the change in diff over the last 7 snaps), the live pairs in common,
+  the last 3 `slots`, and history's `month`/`ahead` (from `research/c537_timing.py` rolling 30-day windows: f8 +$2.90, 82%;
+  w3 +$6.40, 62%, p10 -$2.73, p90 +$23.54).
+- **Known, shared with the daily rule (not a test artefact):** a pair closed at 00:30 does not book its 00:00 UTC settlement.
+  The booking window is [fund_from, cut) and the record lands at the cut. One settlement per exit, cents.
+  The convention is identical for all three ledgers.
+
+**Files:**
+- `omega_v60_reconstructed.py`: `_c538_signal`, `C538TestRule`, `C538_TESTS`, the tick loop (after the paper ledgers),
+  Start fresh, `/api/status` `c538`, `#s-test` + `renderTests`, the `TESTS` pack.
+- `deploy/omega-logpush.sh`.
+- `research/c532_preview.py` (now builds the tests).
+- `omega_c538_test.py`.
+- `reports/2026-10-06_c538_tests.md`, `reports/2026-10-06_c538_preview/`.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ⏱️ 2026-10-06 — C537 (ROUND 19): HOW OFTEN THE RENT-GAP TRADE DECIDES -- ONCE A DAY STAYS

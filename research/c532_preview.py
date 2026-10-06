@@ -54,6 +54,7 @@ for a, k in (('c501v', 'C501Savings'), ('c501s', 'C501Spot'), ('c490', 'C490Carr
              ('c521b', 'C521Bfusd'), ('c524x', 'C524CrossVenue'), ('c530p', 'C530Pendle'), ('c489', 'C489Shadow'),
              ('c501k', 'C501Allostatic'), ('c510t', 'C510Tournament')):
     setattr(bot, a, getattr(om, k)(bot))
+bot.c538 = [om.C538TestRule(bot, k) for k in ('f8', 'w3')] if hasattr(om, 'C538TestRule') else []   # C538
 LINES.append("--- 2. LIVE PRICES ---")
 t0 = time.time()
 ok_b = e.refresh_marks(force=True)
@@ -83,13 +84,22 @@ try:
         LINES.append(f"(preview) transfer: {xv.transfers[-1]}")
 except Exception as ex:
     LINES.append(f"(preview) the run failed: {type(ex).__name__}: {ex}")
+for t538 in bot.c538:                                         # C538: copy the daily ledger, then any decision due now
+    try:
+        t538.tick()
+        st538 = t538.test_status()
+        LINES.append(f"(preview) C538 {t538.NAME}: copied {t538.since}, last decision slot "
+                     f"{om.datetime.utcfromtimestamp(t538.last_slot / 1000):%Y-%m-%d %H:%M} UTC, {st538['n']} pairs, "
+                     f"{st538['same']} the same as the daily rule's, ${t538.eq:.2f} (daily ${xv.eq:.2f})")
+    except Exception as ex:
+        LINES.append(f"(preview) C538 {getattr(t538, 'NAME', '?')} failed: {type(ex).__name__}: {ex}")
 m = xv.margins()
 LINES.append(f"(preview) sides now: Delta ${m['d']['eq']} ({m['d']['frac']}), {xv.v2()} ${m['b']['eq']} ({m['b']['frac']})")
 xv.margin_watch()
 LINES.append("--- 5. THE 8-MINUTE STATUS BLOCK ---")
 fbot = types.SimpleNamespace(cfg=cfg, portfolio=pf, c488=e, c501s=bot.c501s, c501v=bot.c501v, c501k=bot.c501k,
                              c489=bot.c489, c490=bot.c490, c510t=bot.c510t, c521b=bot.c521b, c521d=bot.c521d, c524x=xv,
-                             c530p=bot.c530p,
+                             c530p=bot.c530p, c538=bot.c538,
                              mode_mgr=types.SimpleNamespace(mode=types.SimpleNamespace(value='normal')), exchange=bot.exchange,
                              _c467_day_barrier=lambda: {'pnl': 0.0, 'limit': 9.0, 'used': 0.0, 'frac': 0.0},
                              _c482_risk_guard=bot._c482_risk_guard, _c504_data_health=bot._c504_data_health)
@@ -121,7 +131,7 @@ with sync_playwright() as pw:
     pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3500)
     pg.screenshot(path=os.path.join(OUT, 'dashboard_top.png'))
     pg.screenshot(path=os.path.join(OUT, 'dashboard_full.jpg'), full_page=True, type='jpeg', quality=72)
-    for k in ('sub', 's-money', 's-acc', 's-pairs', 's-next', 'moresum', 'eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs',
+    for k in ('sub', 's-money', 's-acc', 's-pairs', 's-next', 's-test', 'moresum', 'eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs',
               'running', 'alltotal', 'xvenue', 'delta', 'pendle'):
         try:
             panels[k] = pg.inner_text('#' + k)
