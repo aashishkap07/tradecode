@@ -32,6 +32,19 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   (Their salary figures are deliberately not written here.)
 
 **Deployed state (checked in the server's own logs):**
+- **C535 deployed 5 Oct ~18:47 IST** (`OMEGA C535`, 0 Traceback). **The second Delta-vs-Pi42 daily run, 6 Oct
+  06:00:27 IST, verified**: "day +1.09 -> $996.30 (-0.37%) | 10 pairs, 93 of 185 coins >= 20%/yr (52 on Pi42)",
+  no exits, no entries, no transfer (both sides healthy; the monthly re-balance already done) -- rent booked
+  +$1.52 (+$2.27 -> +$3.79), prices -$0.43; ledger $996.30 = 1000 + 3.79 - 4.87 - 1.00 - 1.62. The 09:22 IST
+  screens on real marks at 03:52 UTC: Delta $493.27 (screen $493.20), Pi42 $503.37 ($503.23). The book
+  rebalanced 05:35 IST (11 positions). The operator read "no daily run today" because the page never said
+  when the last one ran or what it did.
+- **C536 pushed 6 Oct (not deployed)**: `run()` keeps the day's parts in `info` (day_pnl, day_fund, day_price,
+  day_cost, moved); "What happens next" opens with "Last daily run: 6 Oct, 06:00 IST -- done: +$1.09 (rent
+  +$1.52, price moves -$0.43). No pairs needed changing. No money needed moving." (an older record shows the
+  time and the changes only); the legacy 8-minute POSITION SUMMARY now prints the book's MARKED equity =
+  cash + open (it printed cash as "Equity" beside the marked EQUITY row). `omega_c536_test.py` 9 checks;
+  battery 57/57; parts checked on live data (preview re-run: +0.29 = 0.00 + 0.29).
 - **C535 pushed 5 Oct (not deployed): the dashboard in plain English** (`reports/2026-10-05_c535_simple_dashboard.md`):
   the operator, 18:19 IST: "analyse word by word and simplify the layout in layman English ... too confusing ..
   redundant information can be removed". The top is now four plain sections: `#simple` with `s-money`,

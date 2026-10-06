@@ -2393,7 +2393,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C535'
+_OMEGA_VERSION = 'C536'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23762,6 +23762,7 @@ class C524CrossVenue(_C501Store):
         days = [today // 1000 - k * 86400 for k in range(7, 0, -1)]                 # the 7 completed days
         sig = {c: _c524_signal(got[c][0], got[c][1], days) for c in coins}
         day_pnl, n_fund = 0.0, 0
+        d_fund = d_price = d_cost = 0.0                              # C536: the day's result in its parts, for the page
         # 1. mark what is held: each leg at its venue's mark, plus each leg's settled funding since
         for c, p in list(self.pairs.items()):
             fD_rec, b_rec = got.get(c, ({}, {}, [], None))[2], got.get(c, ({}, {}, [], None))[3]
@@ -23792,6 +23793,7 @@ class C524CrossVenue(_C501Store):
             self.price_pnl += pr
             self.funding += fu_d + fu_b
             day_pnl += pr + fu_d + fu_b
+            d_price += pr; d_fund += fu_d + fu_b
         eq0 = self.eq
         self.eq += day_pnl
         # 1b. C531: no reserve -- the two venues' accounts even each other out
@@ -23818,7 +23820,7 @@ class C524CrossVenue(_C501Store):
                 cb = self.cost_b()
                 cost = n * (cb + _C524_COST_D)
                 self.side['b'] -= n * cb; self.side['d'] -= n * _C524_COST_D
-                self.fees += cost; self.eq -= cost; day_pnl -= cost
+                self.fees += cost; self.eq -= cost; day_pnl -= cost; d_cost += cost
                 p['pnl'] -= cost
                 self.closed = (self.closed + [dict(coin=c, why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
                                                    pnl=round(p['pnl'], 4), funding=round(p['funding'], 4))])[-200:]
@@ -23847,7 +23849,7 @@ class C524CrossVenue(_C501Store):
             cb = self.cost_b()
             cost = nd * (cb + _C524_COST_D)
             self.side['b'] -= nd * cb; self.side['d'] -= nd * _C524_COST_D
-            self.fees += cost; self.eq -= cost; day_pnl -= cost
+            self.fees += cost; self.eq -= cost; day_pnl -= cost; d_cost += cost
             self.pairs[c] = dict(side=side, d_sym=p_['sym'], cv=p_['cv'], d_qty=float(-side * k), b_qty=side * nd / bpx,
                                  d_px=dpx, b_px=bpx, notional=round(nd, 2), s_entry=sig[c], s_now=sig[c],
                                  opened=now_ms, fund_from=now_ms, pnl=-cost, funding=0.0)
@@ -23863,7 +23865,10 @@ class C524CrossVenue(_C501Store):
                          venue=self.v2(), pi42=len(self.pi42) if self.on_pi42() else None,
                          wide_on=sum(1 for c in coins if sig.get(c) is not None and abs(sig[c]) >= 0.20
                                      and (not self.on_pi42() or c in self.pi42)),
-                         pi42_missing=(self.on_pi42() and not p42))
+                         pi42_missing=(self.on_pi42() and not p42),
+                         day_pnl=round(day_pnl, 2), day_fund=round(d_fund, 2), day_price=round(d_price, 2),   # C536
+                         day_cost=round(d_cost, 2), moved=(dict(amt=tr['amt'], frm=tr['frm'], to=tr['to'], fee=tr['fee'])
+                                                            if tr else None))
         return day_pnl
 
     def tick(self):
@@ -41844,8 +41849,13 @@ class TradingBot:
         logger.info("")
         logger.info("=" * 60)
         logger.info(f"📊 POSITION SUMMARY ({self.cfg.SUMMARY_INTERVAL//60}-MIN UPDATE)")
-        logger.info(f"💰 Equity: ${stats['equity']:.2f} | "
-                    f"Unrealized: ${stats['unrealized']:+.2f}")
+        if getattr(self, 'c488', None) is not None and self.c488.active():   # C536: the EQUITY row above is MARKED
+            _u536 = float(stats.get('unrealized', 0.0) or 0.0)
+            logger.info(f"💰 Equity: ${float(stats['equity']) + _u536:.2f} marked (the Binance book, an experiment) = "
+                        f"cash ${stats['equity']:.2f} + open ${_u536:+.2f}")
+        else:
+            logger.info(f"💰 Equity: ${stats['equity']:.2f} | "
+                        f"Unrealized: ${stats['unrealized']:+.2f}")
         self.portfolio._c427_reconcile('position_summary')
         # C503: with the book open, Bitget's available nets its open P&L;
         # the paper ledger's available_balance is realised - margin.
@@ -44793,8 +44803,18 @@ function renderSimple(d){
       '. Rent includes what has settled since the last daily run. A new pair shows its rent from its first settlement.</div>';
     q('s-pairs').innerHTML=h;
   }else{q('s-pairs').innerHTML='<span class="muted">no pairs open yet</span>'}
-  var nx=xv.next_run_utc||'00:30';
-  q('s-next').innerHTML='<div class="s"><b>Next daily run: '+istHM(nx)+' IST</b> <span class="muted">(in '+untilUTC(nx)+')</span>. '+
+  var nx=xv.next_run_utc||'00:30',xi=xv.info||{},last='';
+  if(xi.at){   /* C536: say that today's run happened and what it did ("there was no daily run today?") */
+    var lt=new Date(Number(xi.at)+330*60000),mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var whenL=lt.getUTCDate()+' '+mo[lt.getUTCMonth()]+', '+('0'+lt.getUTCHours()).slice(-2)+':'+('0'+lt.getUTCMinutes()).slice(-2)+' IST';
+    var ch=[];(xi.exited||[]).length&&ch.push('closed '+xi.exited.map(function(t){return String(t).split(' ')[0]}).join(', '));
+    (xi.entered||[]).length&&ch.push('opened '+xi.entered.map(function(t){return String(t).split(' ')[0]}).join(', '));
+    var res=(xi.day_pnl!==undefined)?'<span class="'+cls(xi.day_pnl)+'">'+sgn(xi.day_pnl)+'</span> <span class="muted">(rent '+sgn(xi.day_fund)+
+      ', price moves '+sgn(xi.day_price)+(xi.day_cost?', fees -'+money(xi.day_cost).replace('-','')+'':'')+(xi.moved?', moving money -$'+Number(xi.moved.fee||0).toFixed(2):'')+')</span>':'';
+    last='<div class="s"><b>Last daily run: '+whenL+'</b> \u2014 done'+(res?': '+res:'')+'. '+
+      (ch.length?(function(t){return t.charAt(0).toUpperCase()+t.slice(1)})(ch.join('; '))+'.':'No pairs needed changing.')+' '+
+      (xi.day_pnl===undefined?'':(xi.moved?'Moved '+money(xi.moved.amt)+' from '+xi.moved.frm+' to '+xi.moved.to+'.':'No money needed moving.'))+'</div>';}
+  q('s-next').innerHTML=last+'<div class="s"><b>Next daily run: '+istHM(nx)+' IST</b> <span class="muted">(in '+untilUTC(nx)+')</span>. '+
     'The bot adds up the rent, closes pairs whose gap has faded, opens new ones, and evens out the two accounts.</div>'+
     '<div class="s">Every hour it checks both accounts and warns if one runs low.</div>'+
     '<div class="s">'+(P.paper?'<b>Live trading is locked.</b> Real money is planned for March 2027, only if the tests in the plan pass.':
