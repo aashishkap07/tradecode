@@ -3357,3 +3357,58 @@
 20:12:27 | 🔵 Book guard: $0.00 of $100.00 used this month on marked equity (0%, from $500.00) · realised today +0.38% [C497]
 20:12:27 | ============================================================
 20:12:27 | 
+ 
+  20:20  up 10h24m  daily book -------------------------------------------------------------------
+  PLAN      $997.86 of $1,000.00 ($-2.14)  after tax on net profit $997.86
+            Delta vs Pi42 funding gap $997.86  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.32  unreal $+0.76
+  OPEN      no intraday positions  book holds 11 (BOOK row)  free $440.30 after open P&L
+  SHADOW    intraday M1 $503.37 (+0.73%)  M1g $514.14 (+2.89%)  5d paper only
+  CARRY     $498.94 (-0.18%)  8 held  paper only
+  SPOT      $249.73 (-0.11%)  3 held  8% invested  cash earns 6.73%  paper pot
+  SAVINGS   idle $314.72 (63%)  at 6.73% +$0.31 so far  ~$1.77/month  paper
+  BFUSD     wallet $502.32 at 7.66%  +$0.46 so far  ~$3.21/month  vs Savings $1.77  paper
+  DELTA     $503.79 (+0.76%)  9 held  fees $0.37  funding $+0.19
+            paper experiment: the book on Delta
+  XVENUE    $996.30 (-0.37%)  10 pairs  funding $+3.79  fees $4.87  paper, Delta vs Pi42
+  BOOK      11 pos gross $310.25 (0.62x)  open $+0.76  funding $-0.06  vol 27% top 20
+            rebal 2026-10-06
+  CONTEXT   since 01 Oct $+2.32 (+0.46%) in 5.5d  normal -2.6% to +5.0%  top 47%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   5d from 2026-10-01  base +0.17%  N2 +0.03%  N3 +0.36%  N2+N3 +0.32%  +K4 +0.67%
+            +GK* +0.40%  +K4+GK +0.83%  +GK+DD +0.66%  +GK+XA +1.81%
+  DATA      on time  prices 32s  funding booked  book today  shadow 14:00  carry today
+            spot pot today
+  SESSION   $-0.12 -0.02%  peak $502.93  dd 0.12%
+  CURVE     +++++++++++===+=++++====++++++++++++++=========+++++++=+++++===========+=====++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 8  5W 3L  net $+1.78  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+20:20:28 | 
+20:20:28 | ============================================================
+20:20:28 | 📊 POSITION SUMMARY (8-MIN UPDATE)
+20:20:28 | 💰 Equity: $502.32 marked (the Binance book, an experiment) = cash $501.56 + open $+0.76
+20:20:28 | 💵 Available: $440.30 after open P&L | Locked: $62.02
+20:20:28 | 📈 Session: $-0.12 (-0.0%)
+20:20:28 | 🎯 C510 Book (what trades): 11 positions, gross 0.62x, open $+0.76 | rule C2 N2+N3 + range vol (GK) | closed 8: 5W/3L $+1.78 | since 01 Oct +0.46% (normal)
+20:20:28 | ============================================================
+20:20:28 | ============================================================
+20:20:28 | 🔵 Book guard: $0.00 of $100.00 used this month on marked equity (0%, from $500.00) · realised today +0.38% [C497]
+20:20:28 | ============================================================
+20:20:28 | 
+20:22:25 | 
+============================================================
+🛑 Signal 15 — saving logs...
+============================================================
+ 
+  SESSION SUMMARY --------------------------------------------------------------------------------
+  RAN       10h26m  daily book  0 book fills this run  book closed 8 in all
+  P&L       $-0.12 (-0.02%)  $502.44 > $502.32  maxDD 0.28%
+  CURVE     **##**@*##+=-=+=*+++=-==+#*+**#*##@@@+-=====--=++++++*=*++*+==-_=__..-=+__-_-++
+  COST      fees $0.00  maker 0 / taker 0 fills
+  ------------------------------------------------------------------------------------------------
+ 
