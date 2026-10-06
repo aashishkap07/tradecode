@@ -97,7 +97,7 @@ Every step below runs in paper or dry-run until G1–G5 pass.
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, Pi42's quantity steps. If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |
 | 1–2 Dec | monthly review + the research refresh | nothing |
-| from 15 Dec | **B3: dry run on your server.** Every day the bot builds the real orders, logs them, sends none, and compares them with paper. The phone alert for "move money NOW" is set up here. | choose the alert channel (Telegram or similar) |
+| from 15 Dec | **B3: dry run on your server.** Every day the bot builds the real orders, logs them, sends none, and compares them with paper. The phone alert for "move money NOW" is set up here, and the account-health check runs **every 5 minutes** (hourly in paper; C537: deciding stays once a day, watching gets faster). | choose the alert channel (Telegram or similar) |
 | 1 Jan | monthly review | nothing |
 | 1 Feb | monthly review; **pilot setup** | deposit **$100 a side** (~₹10,200 on Pi42); turn on **trading** permission on both keys (withdrawals stay off) |
 | 2–20 Feb | **B4: the pilot**, small real money | do one rupee transfer between the exchanges when the bot asks |

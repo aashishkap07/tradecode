@@ -45,6 +45,19 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   time and the changes only); the legacy 8-minute POSITION SUMMARY now prints the book's MARKED equity =
   cash + open (it printed cash as "Equity" beside the marked EQUITY row). `omega_c536_test.py` 9 checks;
   battery 57/57; parts checked on live data (preview re-run: +0.29 = 0.00 + 0.29).
+- **C537 = Round 19 (research only; the bot stays C536)** (`reports/2026-10-06_c537_timing.md`): the operator's
+  rent note (6 Oct) asked whether deciding once a day is the most profitable frequency. Pre-registered first
+  (`research/c537_preregistration.md`, 7ba0b52); an hourly settlement-level simulator (`research/c537_timing.py`,
+  output `research/c537_timing.txt/.json`; 54 coins, the 52 busiest in `_drop2`). **Nothing passes; B0 stays**
+  (daily 00:30 UTC, 7-day window, in 20%/yr, out 10%/yr, 10 pairs). On $1,000, rent - fees: B0 +$671/yr (x5 fees
+  +$527, vs C533's +50%/yr with prices); every 8 h +$34 (t 2.14, 4/4 half-years -- near-miss); every 4 h +$22;
+  hourly +$5; 3-day window +$74 (t 2.86) but -$28 at x5 fees; exits at 0/5% lose $73/$41; 14-day -$147;
+  15 pairs -$110. Descriptive: 20% of held settlements pay (-$95/yr; hourly decisions cut it to -$74 but churn);
+  a 7-day gap keeps ~94% of itself the next week (same sign 93-95%, corr 0.58) -- the gap is a tide, not waves;
+  both venues' default rent is 0.01%/8 h (Binance's rate on 45% of settlements; Delta's commonest), so it
+  cancels; median coin Delta -3.1%/yr, Pi42 +2.3%/yr; all settlements at 00/04/08/12/16/20 UTC, so 06:00 IST
+  misses nothing. Roadmap B3: the health check every 5 min when live. The Dec refresh (`trig_01UNB1hEcBW2pKAEadGSFswm`)
+  now re-tests F8 and W3 on Oct-Nov (item e).
 - **C535 pushed 5 Oct (not deployed): the dashboard in plain English** (`reports/2026-10-05_c535_simple_dashboard.md`):
   the operator, 18:19 IST: "analyse word by word and simplify the layout in layman English ... too confusing ..
   redundant information can be removed". The top is now four plain sections: `#simple` with `s-money`,
@@ -574,6 +587,51 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ⏱️ 2026-10-06 — C537 (ROUND 19): HOW OFTEN THE RENT-GAP TRADE DECIDES -- ONCE A DAY STAYS
+# ═══════════════════════════════════════════════════════════════════════════
+
+**Why:** the operator's note on rent (funding) -- the crowd pays, surge pricing, the rubber band, the referee,
+the default interest -- and "is the frequency ... the most profitable on average? check other things too".
+
+**Method (fixed before running, `research/c537_preregistration.md`):** `research/c537_timing.py` replays every
+settlement hour by hour (Delta at its exchange hours via C524's interval detection, Binance/Pi42 at each
+fundingTime), GST on rent paid per settlement, costs per entry/exit at x1 and x5, $1,000 in whole contracts,
+price legs left out (hedged). Decision at h:30 after hour h's settlements. One change at a time vs B0. Bar:
+>= +3%/yr, paired HAC t >= 2.5, >= 3/4 half-years and the last positive, x5 >= B0.
+
+**Result (54 coins; `_drop2` = the 52 busiest, same verdict):**
+
+| variant | rent - costs /yr | vs B0 | t | halves | x5 |
+|---|---|---|---|---|---|
+| B0 daily 00:30 UTC | +67.1% | | | | +52.7% |
+| F8 / F4 / F1 | +70.5 / +69.3 / +67.6% | +3.4 / +2.2 / +0.5 | 2.14 / 2.66 / 0.64 | 4 / 3 / 3 | +55.4 / +54.0 / +53.1 |
+| E0 / E5 / E15 | +59.8 / +63.0 / +69.2% | -7.3 / -4.1 / +2.1 | -4.45 / -3.83 / 1.19 | 1 / 1 / 3 | +51.4 / +51.7 / +52.1 |
+| N15 / N30 | +67.0 / +68.8% | -0.1 / +1.7 | -0.29 / 0.93 | 1 / 2 | +51.7 / +57.4 |
+| W3 / W14 | +74.5 / +52.4% | +7.4 / -14.7 | 2.86 / -3.98 | 3 / 0 | +49.9 / +43.5 |
+| P15 | +56.0% | -11.0 | -4.67 | 0 | +43.3 |
+
+**Descriptive:**
+- 20.1% of held settlements pay; that rent is -9.5%/yr, or -7.4% if deciding hourly, which the churn eats.
+- The 7-day gap vs the next week's:
+  - correlation 0.58;
+  - the median share of the gap that remains is 94%, 94%, 96% and 88% across the four buckets (10-20, 20-40,
+    40-80 and 80+ %/yr);
+  - the same sign 93-95% of the time.
+- Median hold: 18 days.
+- Default rent:
+  - Binance/Pi42 is at 0.01%/8 h (or 0.005%/4 h) on 45% of settlements;
+  - Delta's commonest rates are +0.0100% (20%) and +0.0050% (10%), the same default, so it cancels in the gap.
+- Median coin a year: Delta -3.1%, Pi42 +2.3%, the gap -3.8%.
+- Settlements are only at 00/04/08/12/16/20 UTC on Delta. Binance also has a few hourly coins.
+
+**Kept:** the bot stays at C536.
+
+**Changed:**
+- Roadmap B3: the account-health check every 5 minutes when live (paper: hourly, in C527's funding pass).
+- The December refresh routine gained item (e): re-run with END = 2026-12-01 and report F8/W3 on Oct-Nov
+  alone; change only if a variant passes the full bar AND is positive out of sample.
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🔎 2026-10-04 — C534: THE C533 SCREENS (21:50 IST) CHECKED; THREE SMALL FIXES
