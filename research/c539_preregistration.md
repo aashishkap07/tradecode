@@ -43,12 +43,23 @@ Bigger bets earn proportionally more rent, but they also mean:
 1. Net return >= B0's + 5%/yr of capital (at costs x5).
 2. **Its worst month >= -4%.** This is the operator's own March gate G1 ("no month below -4%"); B0's is
    -3.89%.
-3. With the 65% even-out rule, its lowest account >= 50% of its half at every daily close (never a "move
-   money NOW").
+3. ~~With the 65% even-out rule, its lowest account >= 50% of its half at every daily close (never a "move
+   money NOW").~~ **Amended, see below:** with the 65% even-out rule, its lowest account >= 40% of its
+   starting half at every daily close (gate G1's "no side below 40%").
 4. Losing months no more than B0's + 1.
 
-A smaller size (S8) replaces 10% only if 2-4 fail for B0 itself. They don't on the C533 figures, so S8 is
-descriptive.
+A smaller size (S8) is descriptive, because B0 passes gate G1 on history (worst month -3.89%, lowest account
+47.8%).
+
+### Amendment (7 Oct, ~18:55 IST, before any variant was run)
+
+The first version said B0 never lets an account fall below 50%. That was wrong. C533's own saved result
+(`research/c533_india_1000.json`, `sides_1000_0.65`, computed 4 Oct) has B0's lowest account at 47.8% of its
+$500 half.
+
+Bar 3 now uses the threshold the plan itself must pass in gate G1: no account below 40%.
+
+How often an account fell below 50% (the "move money NOW" alert) is reported for every size, with no bar.
 
 ## Also reported (no bar)
 
