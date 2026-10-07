@@ -121,8 +121,8 @@ ok("  the entries and the daily log line name Pi42", 'short Delta/long Pi42' in 
    and 'C524 cross-venue (paper, Delta vs {self.v2()})' in SRC and "({inf.get('wide_on', 0)} on Pi42)" in SRC)
 x.last_run = ''
 x.run(now_ms=today + DAY + 30 * 60000)
-hD = sum(1 for t in range(today // 1000 + 3600, (today + DAY) // 1000, 3600) if (t // 3600) % 4 == 0)
-hB = sum(1 for t in range(today + 8 * 3600000, today + DAY, 8 * 3600000))
+hD = sum(1 for t in range(today // 1000 + 3600, (today + DAY) // 1000 + 1800, 3600) if (t // 3600) % 4 == 0)   # C539: to the run
+hB = sum(1 for t in range(today + 8 * 3600000, today + DAY + 1800000, 8 * 3600000))
 fu = 25 * 2.0 * 0.10 / 100 * hD - 1.18 * 25.0 * 2.0 * 0.01 / 100 * hB
 ok("the next day: HOT's short Delta collects its funding; its long Pi42 pays Binance's rate x 1.18 (GST)",
    abs(P['HOT']['funding'] - fu) < 1e-9, f"{P['HOT']['funding']:.6f} vs {fu:.6f}")
@@ -144,8 +144,8 @@ x3.run(now_ms=today + 30 * 60000)
 ok("C532_XV_VENUE = 'binance' restores the C524 trade exactly: both enter at Binance's cost",
    set(x3.pairs) == {'HOT', 'COLD'} and x3.v2() == 'Binance' and x3.cost_b() == om._C524_COST_B and x3.fgst(-1.0) == -1.0)
 cfg.C532_XV_VENUE = 'pi42'
-ok("the pending funding (C527Pending) carries the same GST as the ledger books",
-   "xc = xv.fgst(xd) + xv.fgst(xb)" in SRC)
+ok("the pending funding (C527Pending) carries the same GST as the ledger books (C539: on each payment, both)",
+   "xd = sum(xv.fgst(-p['d_qty']" in SRC and "fu_d = sum(self.fgst(-p['d_qty']" in SRC)
 ok("every label names the second venue: margins, transfers, the watch, the panel, the total, the status row, the boot line",
    "for v, name in (('d', 'Delta'), ('b', self.v2())):" in SRC and "frm=self.v2() if src == 'b' else 'Delta'" in SRC
    and "f'Delta vs {xv.v2()} funding gap'" in SRC and 'f"paper, Delta vs {_x524.v2()}"' in SRC
@@ -241,7 +241,8 @@ try:
         pg = br.new_page(viewport={'width': 412, 'height': 900}); errs = []
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
         pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
-        G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eqs', 'dayk', 'day', 'days', 'recs', 'running', 'alltotal', 'xvenue')}
+        G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eqs', 'dayk', 'day', 'days', 'recs', 'running', 'alltotal', 'xvenue', 'plantotal')}
+        G['alltotal'] = G['plantotal'] + '\n' + G['alltotal']   # C539: the plan's total, tax and budget lines moved to "Your plan in detail" (#plantotal)
         br.close()
     ok("the top tile: your plan of $600 = Delta vs Pi42 + the reserve; the books listed as experiments",
        G['eqk'].lower() == 'your plan · paper' and 'of $600.00' in G['eqs'] and 'Delta vs Pi42 $' in G['eqs']

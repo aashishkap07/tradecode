@@ -182,7 +182,8 @@ try:
         pg = br.new_page(viewport={'width': 412, 'height': 900}); errs = []
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
         pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
-        G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eqs', 'dayk', 'day', 'days', 'recs', 'running', 'alltotal', 'xvenue')}
+        G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eqs', 'dayk', 'day', 'days', 'recs', 'running', 'alltotal', 'xvenue', 'plantotal')}
+        G['alltotal'] = G['plantotal'] + '\n' + G['alltotal']   # C539: the plan's total, tax and budget lines moved to "Your plan in detail" (#plantotal)
         W = pg.evaluate('document.documentElement.scrollWidth')
         br.close()
     ok("the top tile: your plan of $1000 = Delta vs Pi42; no reserve; the books listed as experiments",

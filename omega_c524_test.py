@@ -189,8 +189,9 @@ fdl.px['HOT'] = 2.2; xe.marks['HOT/USDT:USDT'].update(bid=2.2, ask=2.2, last=2.2
 eq_before = x.eq
 x.last_run = ''
 x.run(now_ms=today + DAY + 30 * 60000)
-hD = sum(1 for t in range(today // 1000 + 3600, (today + DAY) // 1000, 3600) if (t // 3600) % 4 == 0)
-hB = sum(1 for t in range(today + 8 * 3600000, today + DAY, 8 * 3600000))
+# C539: booked up to the run (00:30), so the next day's 00:00 exchange is in (it was held through it)
+hD = sum(1 for t in range(today // 1000 + 3600, (today + DAY) // 1000 + 1800, 3600) if (t // 3600) % 4 == 0)
+hB = sum(1 for t in range(today + 8 * 3600000, today + DAY + 1800000, 8 * 3600000))
 fu_hot = 25 * 2.2 * 0.10 / 100 * hD - 25.0 * 2.2 * 0.01 / 100 * hB
 fu_cold = -17 * 3.0 * (-0.05 / 100) * (hD + 1) * 0 + 0                     # computed below from the ledger's own rule
 ok("each leg's SETTLED funding since it opened: HOT's short Delta collects 0.10%% at each of %d exchanges, its long Binance "
@@ -198,7 +199,7 @@ ok("each leg's SETTLED funding since it opened: HOT's short Delta collects 0.10%
    abs(x.pairs['HOT']['funding'] - fu_hot) < 1e-9 and abs(x.pairs['HOT']['pnl'] - (-50.0 * (om._C524_COST_B + om._C524_COST_D)
                                                                                    + fu_hot)) < 1e-9,
    f"{x.pairs['HOT']['funding']:.6f} vs {fu_hot:.6f}")
-ok("  the 00:00 exchange of the opening day is not collected (opened 00:30)", hD == 5)
+ok("  the 00:00 exchange of the opening day is not collected (opened 00:30); the next day's 00:00 is (C539)", hD == 6 and hB == 3)
 f_day1 = x.pairs['HOT']['funding']
 x.last_run = ''
 x.run(now_ms=today + 2 * DAY + 30 * 60000)

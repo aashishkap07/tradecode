@@ -45,6 +45,29 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   time and the changes only); the legacy 8-minute POSITION SUMMARY now prints the book's MARKED equity =
   cash + open (it printed cash as "Equity" beside the marked EQUITY row). `omega_c536_test.py` 9 checks;
   battery 57/57; parts checked on live data (preview re-run: +0.29 = 0.00 + 0.29).
+- **C538 deployed 6 Oct 20:22 IST** (`OMEGA C538`, omega_detail_20261006_202228.log; logs push sends c538_*.json): both copies
+  ran every slot (14:00/22:00/06:00 IST), first score 7 Oct 06:00 IST: daily +$2.10, every 8 h +$2.11 (+0.76 +0.67 +0.68), 3-day
+  +$2.10; no warnings.
+- **C539 pushed 7 Oct (not deployed): the 18:04 IST screens audited; the plan shown once; the ledger booked exactly; Round 20**
+  (`reports/2026-10-07_c539_audit.md`). The operator: "isn't the pi vs delta Cross funding in the experiments section same as 'my
+  current plan'? check all the strategies and their numbers in all dimensions and optimise wherever feasible". Verified at 12:35 UTC:
+  ledger $998.41 = 1000 + 5.55 - 1.28 - 4.87 - 1.00; rent waiting +$1.19 pair by pair = Delta/Binance records; plan $999.68 vs
+  $999.71 at the bot's prices (Delta mark + Binance last, 12:30 UTC); Pi42 account $481.80 exact. Changes: (1) `run()` books rent
+  up to the run (`< now_ms`, `fund_from = now_ms`; `_funding(coin, today, upto)` fetches Delta's records to the run; the daily
+  sums/signal still stop at midnight): a pair closed at 00:30 kept losing its 00:00 UTC payment (5 Oct: 7 exits, +$0.12);
+  (2) GST on each payment (`fgst` per record) in the ledger and in C527Pending (5-7 Oct: $0.003); (3) `margins()` adds each
+  venue's rent settled since the run (`C527Pending.xv_side` / `side_pending()`, dropped once the ledger's booked-to point
+  moves); (4) the page: the plan's detail panel `#xvenue` moved to its own fold `#plandet` "Your plan in detail" with
+  `#plantotal` (the plan as if live + tax + budget lines); with a plan, `#alltotal` is "Experiments (as if each were real money)",
+  the eq/day/rec tiles hide, "What is running" lists the plan once and the two test copies; the chart is "The Binance book this
+  session". C538 copies share the daily rule's records only within the same clock hour. Round 20 (bet size, pre-registered
+  `research/c539_preregistration.md` + an amendment before any variant ran): 12% passes on today's 53 coins but the 10%
+  baseline did not reproduce C533 (worst month -2.78% vs -3.89%): the coin list moves with Delta's daily turnover and one coin
+  shifts the worst month by up to 0.7 pt (`research/c539_size_check.py`); 12% breaks -4% one or two coins away (+PENDLE -4.06%,
+  +JTO+PENDLE -4.53%): **10% stays**; at 10% an account touches 46-50% on some lists (about one "move money now" in 2 years).
+  Corrected: the C537 report's "1x" leverage is ~2x (a 25% basket move halves an account). `omega_c539_test.py` 23 checks;
+  5 older page tests read `#plantotal`, 4 older ledger tests use the window to the run; battery 59/59. Real data: the ledger run
+  at 13:07 UTC on the 17:17 IST state booked +$1.18 = Delta/Binance records pair by pair.
 - **C538 pushed 6 Oct (not deployed): round 19's two near-misses run beside the daily rule** (`reports/2026-10-06_c538_tests.md`).
   The operator: "will be running parallel to the current daily call .. i want the results of those too displayed at
   appropriate intervals in the dashboard in simple lay man terms". C536 was deployed 6 Oct 09:55 IST (`OMEGA C536` in
@@ -604,6 +627,37 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 | 20 | **India through Groww (C508)** | **decided: no bot at this size**; revisit only above about ₹6 lakh | Possible under SEBI's retail algo rules (from 1 Apr 2026: static IP, exchange algo tag, < 10 orders/s personal use needs no registration; Groww API ₹499/month + GST ≈ ₹7,070/yr = 80% of ₹8,800). I1 (5 NSE ETFs, trend long/flat, monthly, Groww's real costs): +6.8%/yr, t 0.32, costs 5.3%/yr → not admitted; ₹50k/₹1L (descriptive) +10.4/+10.8%/yr, t 1.36/1.47. Buy-and-hold 50/50 Nifty BeES + Gold BeES +15.5%/yr (1.2%/month), DD 20.3%: suggested as a by-hand holding, no code. F&O out (a Nifty lot ≈ ₹15L). Tax: equity STCG 20%, LTCG 12.5% above ₹1.25L; the CA decides. |
 | 21 | **Venue for live money: Binance vs Bitget (India)** — C518: **the tax answer (#8) now decides between Binance and Delta Exchange India** (INR-settled, 221 perps, API open, ≥ $1,000 because of contract sizes); BFUSD margin on Binance (+0.3–0.4%/mo) | operator, before #2 | C515 (30 Sep): Binance is FIU-registered and Bitget is not (no new Indian users since 6 Feb 2026). Binance is cheaper per trade, but at $250 its $50 BTC / $20 ETH-LINK-LTC-BCH-ETC minimums cost about 0.4%/month on the tested book; at $500 it is about equal, at $1,000 ahead. The VPS reaches `fapi.binance.com` (200, 30 Sep). USDⓈ-M futures confirmed open (30 Sep). **Phase 1 built: C516** (paper on Binance behind `OMEGA_VENUE=binance`); the switch waits for the VPS check and paper check #3. Capital: $500 recommended (the 40-coin width from $1,000 was weaker, C515 addendum). Phase 2 (the live order path) after the Binance paper book checks out. (`reports/2026-09-30_binance_vs_bitget.md`, `reports/2026-09-30_c516_binance_phase1.md`) **C521: a Delta Exchange India paper book ($500, the same plan) runs beside the Binance book;** round 14 D: prices track (corr 0.994) but funding does not (median +5.7%/yr for a long, daily corr 0.44, after the C523 timing correction; first reported +5.6%, 0.40); whole contracts hold 93% of the plan at $500. **C524 (round 15):** a Delta-vs-Binance funding-spread trade passed its pre-registered bar (+97%/yr, t 12.5, 24/24 months; +57%/yr with every assumption harder) and runs as a paper ledger (`C524CrossVenue`). Live needs BOTH venues funded, the CA's answer on two-venue legs (#8), and a clean paper record. |
 | 19 | ~~Paper "free" balance ignores open P&L~~ | **display fixed in C503** | The OPEN row and the 8-minute Available now show marked equity − margin "after open P&L" while the book is open; boot lines say "before open P&L". `Portfolio.available_balance` itself is unchanged (the idle scanner's ledger); no decision used it. |
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔍 2026-10-07 — C539: THE PLAN SHOWN ONCE, BOOKED EXACTLY; ROUND 20 (BET SIZE): 10% STAYS
+# ═══════════════════════════════════════════════════════════════════════════
+
+**Ledger (C524CrossVenue.run).**
+- Booking window `[fund_from, now_ms)`: rent at the run's own hour boundary is included.
+- `fund_from` = the run time.
+- GST per payment.
+- Delta records fetched to `max(today - 1 s, now)`.
+- The 7-day signal still sums completed UTC days (`_c524_delta_daily(.., lo, today)`).
+- Existing pairs carry a midnight `fund_from`. The first C539 run books one settlement earlier than before; nothing is
+  counted twice.
+
+**Accounts (margins).**
+- `+ C527Pending.side_pending()[v]`: the rent each venue received since the run, as an exchange balance shows it.
+- None while the signature (`fund_from` per pair) has moved, i.e. right after a run, until the next hourly read.
+
+**Page.**
+- `#plandet` sits between `#simple` and `#more`, and holds `#plantotal` and `#xvenue`.
+- `renderSimple` hides the eq/day/rec tiles and names the fold "Your plan in detail".
+- With no plan: the old tiles show, the fold reads "Delta vs Pi42 rent-gap trade (paper experiment)", and `#more` opens.
+
+**Round 20.**
+- `research/c539_size.py`, `.txt`, `.json` and `research/c539_size_check.py`.
+- The engine check failed on the coin list, so the result was read with a sensitivity, not at face value.
+
+**Lessons:**
+- The cross-venue research's coin list is set by today's Delta turnover. A bar near a threshold (G1's -4%) can flip with one
+  coin. Freeze the list when a study must be repeated, or report the spread across lists.
+- **Idea for B2/B4:** a limit order at the mid before the taker fee, measured in the pilot (fills and fees, gate G4).
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 🧪 2026-10-06 — C538: THE TWO NEAR-MISSES RUN BESIDE THE DAILY RULE (PAPER COPIES, SCORED DAILY)

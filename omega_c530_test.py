@@ -328,7 +328,8 @@ try:
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
         pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
         G = {k: pg.inner_text('#' + k) for k in ('eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs', 'pendle',
-                                                 'xvenue', 'running', 'alltotal')}
+                                                 'xvenue', 'running', 'alltotal', 'plantotal')}
+        G['alltotal'] = G['plantotal'] + '\n' + G['alltotal']   # C539: the plan's total, tax and budget lines moved to "Your plan in detail" (#plantotal)
         br.close()
     T = om._c527_total(bot)
     ok("the top tile: 'Your plan · paper' and the plan's equity (was the $500 Binance book)",

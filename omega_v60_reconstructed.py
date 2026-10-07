@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C538'
+_OMEGA_VERSION = 'C539'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23734,13 +23734,15 @@ class C524CrossVenue(_C501Store):
         d = _c521_get('/v2/tickers', {'contract_types': 'perpetual_futures'})
         return {str(x['symbol']): float(x.get('mark_price') or 0) for x in d or [] if float(x.get('mark_price') or 0) > 0}
 
-    def _funding(self, coin, today):
+    def _funding(self, coin, today, upto=None):
         """(Delta {day: rate}, Binance {day: rate}, Delta records, Binance records) over the
-        last 8 days; Delta's from its exchange records, Binance's from its settlements"""
+        last 8 days; Delta's from its exchange records, Binance's from its settlements. C539:
+        Delta's records run to `upto` (the run itself), so a pair closed at 00:30 books its
+        00:00 settlement; the daily sums (the signal) still stop at midnight."""
         p = self.prods[coin]
         lo = today // 1000 - 8 * 86400
         d = _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + p['sym'],
-                                               'start': lo, 'end': today // 1000 - 1}) or []
+                                               'start': lo, 'end': max(today // 1000 - 1, int(upto or 0) // 1000)}) or []
         b = _c516_bn_get(_C516_BN_FAPI, '/fapi/v1/fundingRate',                 # C525: 1000, not 100 -- an
                          {'symbol': coin + 'USDT', 'startTime': lo * 1000, 'limit': 1000})   # hourly coin has 192 in 8 days
         if not isinstance(b, list):
@@ -23764,7 +23766,7 @@ class C524CrossVenue(_C501Store):
         days = [today // 1000 - k * 86400 for k in range(7, 0, -1)]                 # the 7 completed days
         return {c: _c524_signal(got[c][0], got[c][1], days) for c in coins}
 
-    def _inputs(self, today):
+    def _inputs(self, today, now_ms=None):
         """the coins, their funding records, both venues' marks and whether Pi42's list loaded"""
         e = self.bot.c488
         if not self.refresh_products(force=True):
@@ -23778,8 +23780,8 @@ class C524CrossVenue(_C501Store):
         coins = sorted(c for c in self.prods if bm.get(c + 'USDT', 0) > 0 and dm.get(self.prods[c]['sym'], 0) > 0)
         coins = sorted(set(coins) | set(self.pairs))
         with ThreadPoolExecutor(max_workers=4) as pool:
-            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today) if c in self.prods else ({}, {}, [], None),
-                                           coins)))
+            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today, now_ms) if c in self.prods
+                                           else ({}, {}, [], None), coins)))
         # C538: the test rules' midnight runs use these same records and prices (one fetch, the same marks)
         self._got = dict(cut=today, t=time.time(), coins=coins, got=got, bm=bm, dm=dm, p42=p42, used=set())
         return coins, got, bm, dm, p42
@@ -23790,7 +23792,7 @@ class C524CrossVenue(_C501Store):
         today = self._cut(now_ms)
         if not self.start_equity:
             self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0))
-        coins, got, bm, dm, p42 = self._inputs(today)
+        coins, got, bm, dm, p42 = self._inputs(today, now_ms)
         sig = self._signals(got, coins, today)
         day_pnl, n_fund = 0.0, 0
         d_fund = d_price = d_cost = 0.0                              # C536: the day's result in its parts, for the page
@@ -23802,20 +23804,19 @@ class C524CrossVenue(_C501Store):
                 continue
             pr = p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
             hrs = max(1, int(self.prods.get(c, {}).get('iv') or 28800) // 3600)
-            # C525: [since, today) -- the window starts AT the last cut-off. C524 had
-            # (since, today) and then moved the cut-off to midnight, so every day after
-            # the first lost its 00:00 UTC settlement (1 of 6 on a 4-hour coin, 1 of 3
-            # on an 8-hour one); the opening day's starts at the entry time, after 00:00.
+            # C525: [since, cut) -- the window starts AT the last cut-off. C539: the cut is the
+            # run itself, not midnight: a pair closed at 00:30 held the 00:00 UTC settlement and
+            # never booked it (7 exits on 5 Oct: +$0.12 lost); each payment carries its own GST
+            # (C532), not the window's net. The opening day's starts at the entry time.
             since = int(p['fund_from'])
-            fu_d = sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in fD_rec or []
-                       if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < today)
-            fu_b = sum(-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
-                       if since <= int(x['fundingTime']) < today)
-            fu_d, fu_b = self.fgst(fu_d), self.fgst(fu_b)              # C532: GST on funding paid
+            fu_d = sum(self.fgst(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0) for x in fD_rec or []
+                       if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms)
+            fu_b = sum(self.fgst(-p['b_qty'] * bpx * float(x['fundingRate'])) for x in b_rec or []
+                       if since <= int(x['fundingTime']) < now_ms)
             if b_rec is None or not fD_rec:
                 fu_d = fu_b = 0.0                                   # a venue did not answer: booked next day
             else:
-                p['fund_from'] = today
+                p['fund_from'] = now_ms                             # C539: booked up to the run
                 n_fund += 1
             self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d     # C529: each venue's own side
             self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b
@@ -23998,8 +23999,15 @@ class C524CrossVenue(_C501Store):
         them by itself, so a rally in the coins hurts the short side's account
         before the long side's gain can be moved across. Each side: its half of the
         start + its own P&L since (`side`, at the daily marks) + the move since the
-        last mark, at prices the bot holds; its notional; its leverage."""
+        last mark, at prices the bot holds; its notional; its leverage. C539: + its own
+        rent settled since the daily run (C527Pending), as the exchange's balance shows it."""
         e = getattr(self.bot, 'c488', None)
+        pend = getattr(self.bot, 'c527p', None)
+        try:
+            ps = pend.side_pending() if pend is not None and pend.active() and hasattr(pend, 'side_pending') else None
+        except Exception:
+            ps = None
+        ps = ps or {}
         de = getattr(self.bot, 'c521d', None)
         dm = {s_: float(x.get('mark') or 0.0) for s_, x in (getattr(de, 'marks', None) or {}).items()}
         half = self.start_equity / 2.0
@@ -24014,8 +24022,9 @@ class C524CrossVenue(_C501Store):
                     px = ((de.bn_at_marks(c + 'USDT') if dm and hasattr(de, 'bn_at_marks') else 0.0)   # C530: synchronous
                           or (e.mark(C488Engine._ccxt(c + 'USDT')) if e is not None else 0.0) or p['b_px'])
                     mv += p['b_qty'] * (px - p['b_px']); notional += abs(p['b_qty']) * px
-            eqv = half + float(self.side.get(v, 0.0)) + mv
-            out[v] = dict(eq=round(eqv, 2), start=round(half, 2), notional=round(notional, 2),
+            rent = float(ps.get(v, 0.0) or 0.0)
+            eqv = half + float(self.side.get(v, 0.0)) + mv + rent
+            out[v] = dict(eq=round(eqv, 2), start=round(half, 2), notional=round(notional, 2), rent=round(rent, 2),
                           lev=round(notional / eqv, 2) if eqv > 0 else None,
                           frac=round(eqv / half, 3) if half > 0 else None)
         return out
@@ -24219,10 +24228,12 @@ class C538TestRule(C524CrossVenue):
         return {c: (_c538_signal(got[c][2], got[c][3], self.prods[c]['iv'], today // 1000, self.WIN)
                     if c in self.prods else None) for c in coins}
 
-    def _inputs(self, today):
+    def _inputs(self, today, now_ms=None):
         m = self.main
         g = getattr(m, '_got', None)
-        if g and g.get('cut') == today and time.time() - float(g.get('t') or 0) < 1800:
+        # C539: within the same clock hour as the daily rule's fetch -- its records run to its own run,
+        # and a 1-hour coin settles again on the hour
+        if g and g.get('cut') == today and int(time.time()) // 3600 == int(float(g.get('t') or 0)) // 3600:
             self.prods, self.pi42 = m.prods, m.pi42           # the daily rule's own records and prices
             g['used'].add(self.key)
             if g['used'] >= {t.key for t in (getattr(self.bot, 'c538', None) or []) if t.active()}:
@@ -24244,8 +24255,8 @@ class C538TestRule(C524CrossVenue):
             coins = [c for c in coins if c in self.pi42]     # only coins it may hold: half the requests
         coins = sorted(set(coins) | set(self.pairs))
         with ThreadPoolExecutor(max_workers=4) as pool:
-            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today) if c in self.prods else ({}, {}, [], None),
-                                           coins)))
+            got = dict(zip(coins, pool.map(lambda c: self._funding(c, today, now_ms) if c in self.prods
+                                           else ({}, {}, [], None), coins)))
         return coins, got, bm, dm, p42
 
     def copy_main(self):
@@ -24622,6 +24633,7 @@ class C527Pending:
         self.sig = (None, None)         # what each ledger held when read: a run, reset or new entry voids it
         self._bh = {}                   # settlement hour (ms) -> {raw symbol: rate}
         self.xv_by, self.ca_by = {}, {}  # C529: the same, per pair / per position, for the panels
+        self.xv_side = {}               # C539: the cross-venue part per venue ('d', 'b')
 
     def active(self):
         return bool(getattr(self.cfg, 'C527_PENDING', True)) and _c516_venue(self.cfg) == 'binance'
@@ -24680,7 +24692,7 @@ class C527Pending:
                 with self._lock:
                     self.carry = self.xvenue = 0.0
                     self.n_carry = self.n_xvenue = 0
-                    self.at, self.sig, self.xv_by, self.ca_by = now, sig, {}, {}
+                    self.at, self.sig, self.xv_by, self.ca_by, self.xv_side = now, sig, {}, {}, {}
                 return
             # the reads happen outside the lock the page waits on
             bf = self._binance(min(since), now_ms)
@@ -24698,7 +24710,7 @@ class C527Pending:
                                                            'start': st, 'end': int(now)})
             with ThreadPoolExecutor(max_workers=4) as pool:
                 got = dict(pool.map(one, list(xpairs)))
-            x_sum = 0.0
+            x_sum = xs_d = xs_b = 0.0
             for c, p in xpairs.items():
                 rec = got.get(c)
                 if rec is None:
@@ -24710,20 +24722,30 @@ class C527Pending:
                     raise RuntimeError(f'no Delta product for {c} yet')
                 hrs = max(1, int(pr.get('iv') or 28800) // 3600)
                 st = int(p['fund_from']) // 1000
-                xd = sum(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in rec
+                xd = sum(xv.fgst(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0) for x in rec
                          if (int(x['time']) // 3600) % hrs == 0 and st <= int(x['time']) <= now)
-                xb = sum(-p['b_qty'] * bpx * r for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
-                xc = xv.fgst(xd) + xv.fgst(xb)                     # C532: GST on funding paid, as the ledger books it
+                xb = sum(xv.fgst(-p['b_qty'] * bpx * r) for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
+                xc = xd + xb                                       # C532/C539: GST on each payment, as the ledger books it
                 x_by[c] = xc
                 x_sum += xc
+                xs_d += xd; xs_b += xb
             with self._lock:
                 self.carry, self.xvenue, self.n_carry, self.n_xvenue, self.at = c_sum, x_sum, len(cpos), len(xpairs), now
                 self.sig, self.xv_by, self.ca_by = sig, x_by, c_by
+                self.xv_side = {'d': xs_d, 'b': xs_b}             # C539: each venue's, for its account
             if xv is not None and xv.active():
                 xv.margin_watch()                                # C529: each venue's side, once an hour
         except Exception as ex:
             self._fail_at = now
             logger.warning(f"⚠️ C527 funding since the daily runs not read ({type(ex).__name__}: {ex}) -- again in 10 min")
+
+    def side_pending(self):
+        """C539: the cross-venue rent settled since the daily run, per venue {'d', 'b'}, or None if
+        the ledger has changed since the read (a run, a new pair)"""
+        with self._lock:
+            if not self.at or self.sig[1] != self._sigs()[1]:
+                return None
+            return dict(self.xv_side)
 
     def for_total(self):
         """(carry, cross-venue) funding not yet booked; None where the ledger has changed since the read"""
@@ -44354,6 +44376,13 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
   <section><h2>Two other ways, tested on paper</h2><div id="s-test">&mdash;</div></section>
 </div>
 
+<!-- C539: the operator, 7 Oct: "isn't the pi vs delta cross funding in the experiments section same as 'my current
+     plan'?" -- it was: the plan's own panel sat inside "Experiments and details". Its detail now has its own fold. -->
+<details class="fold" id="plandet"><summary><b id="plandetk">Your plan in detail</b> <span class="muted">(each pair's numbers, both accounts, every money move)</span></summary><div class="inner">
+<section hidden><h2>Your plan, as if live</h2><div id="plantotal" class="muted">&mdash;</div></section>
+<section><h2>Delta vs Pi42 rent-gap trade <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
+</div></details>
+
 <details class="fold" id="more"><summary><b>Experiments and details</b> <span class="muted" id="moresum">(not your money)</span></summary><div class="inner">
 <div class="grid">
   <div class="tile"><div class="k" id="eqk">Equity</div>
@@ -44373,7 +44402,7 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
 <!-- C510: one place that says what trades, what is only paper, and what is off -->
 <section><h2>What is running</h2><div id="running" class="muted">&mdash;</div></section>
 <!-- C527: every account in one total, as if it were live -->
-<section><h2>All accounts <span class="muted">(as if live)</span></h2><div id="alltotal" class="muted">&mdash;</div></section>
+<section><h2 id="alltotalk">All accounts <span class="muted">(as if live)</span></h2><div id="alltotal" class="muted">&mdash;</div></section>
 <section><h2>Open positions</h2><div id="pos" class="muted">&mdash;</div></section>
 <!-- C488: the portfolio engine's book -- the daily trend + momentum + carry
      positions it holds for days to weeks, separate from any intraday position. -->
@@ -44389,11 +44418,10 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
 <section><h2>Idle cash &rarr; Savings <span class="muted">(paper)</span></h2><div id="savings" class="muted">&mdash;</div></section>
 <section><h2>BFUSD <span class="muted">(paper, Binance margin asset)</span></h2><div id="bfusd" class="muted">&mdash;</div></section>
 <section><h2>Delta Exchange India <span class="muted">(paper experiment, the same book)</span></h2><div id="delta" class="muted">&mdash;</div></section>
-<section><h2>Cross-venue funding <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
 <section><h2>Pendle fixed yield <span class="muted">(paper, at most $100)</span></h2><div id="pendle" class="muted">&mdash;</div></section>
 
 <section id="curvewrap" hidden>
-  <h2>Equity this session</h2>
+  <h2>The Binance book this session <span class="muted">(an experiment)</span></h2>
   <svg id="curve" viewBox="0 0 300 56" preserveAspectRatio="none"
        role="img" aria-label="Equity over this session"></svg>
   <div class="s muted" id="curvelab"></div>
@@ -44863,31 +44891,41 @@ async function pull(){
       else if(!(tt7.rows||[]).length){q('alltotal').innerHTML='<span class="muted">no account has started yet</span>'}
       else{
         var pc7=function(v){return v===null||v===undefined?'':' ('+(v>=0?'+':'')+Number(v).toFixed(2)+'%)'};
-        var th7='<div class="s muted">'+(tt7.paper?'every account here is paper: what it would be worth if each were real money, at prices now':
-          'the book is LIVE money; the rest are paper')+'</div>';
-        [['your plan ('+(tt7.plan_names||[]).join(' + ')+')',tt7.plan]].forEach(function(z){   /* C529: no "every account" sum: it read as money needed */
-          th7+='<div style="margin:4px 0"><b>'+money(z[1].eq)+'</b> <span class="muted">of '+money(z[1].start)+'</span> <span class="'+cls(z[1].pnl)+'">'+sgn(z[1].pnl)+pc7(z[1].pct)+
-            '</span> <span class="muted">· '+z[0]+'</span></div>'});
+        var pl9=!!(tt7.plan&&tt7.plan.n);   /* C539: the plain top shows the plan (the same test as renderSimple's) */
+        q('alltotalk').innerHTML=pl9?'Experiments <span class="muted">(as if each were real money)</span>':'All accounts <span class="muted">(as if live)</span>';
         var row7=function(r){return '<div class="s">'+r.label+' <b>'+money(r.eq)+'</b> <span class="'+cls(r.pnl)+'">'+sgn(r.pnl)+pc7(r.pct)+'</span> <span class="muted">· '+r.how+'</span></div>'};
-        tt7.rows.filter(function(r){return r.plan}).forEach(function(r){th7+=row7(r)});
-        var ex7r=tt7.rows.filter(function(r){return !r.plan});
-        if(ex7r.length){th7+='<div class="s muted" style="margin-top:6px">experiments — paper only, not part of your money, never added up:</div>';
-          ex7r.forEach(function(r){th7+=row7(r)});}
-        if(tt7.tax)th7+='<div class="s">your plan after tax on its net profit <b>'+money(tt7.tax.eq_after)+'</b> <span class="'+cls(tt7.tax.after)+'">'+sgn(tt7.tax.after)+
+        /* C539: the plan's lines (its total as if live, its rows, its tax, its budget) are built apart: with a plan they
+           go to "Your plan in detail" (#plantotal), once; the experiments stay here */
+        var pt7='';
+        [['your plan ('+(tt7.plan_names||[]).join(' + ')+')',tt7.plan]].forEach(function(z){   /* C529: no "every account" sum: it read as money needed */
+          pt7+='<div style="margin:4px 0"><b>'+money(z[1].eq)+'</b> <span class="muted">of '+money(z[1].start)+'</span> <span class="'+cls(z[1].pnl)+'">'+sgn(z[1].pnl)+pc7(z[1].pct)+
+            '</span> <span class="muted">· '+z[0]+'</span></div>'});
+        tt7.rows.filter(function(r){return r.plan}).forEach(function(r){pt7+=row7(r)});
+        var tx7='';
+        if(tt7.tax)tx7+='<div class="s">your plan after tax on its net profit <b>'+money(tt7.tax.eq_after)+'</b> <span class="'+cls(tt7.tax.after)+'">'+sgn(tt7.tax.after)+
           '</span> <span class="muted">· tax '+money(tt7.tax.tax)+(tt7.tax.vda_rate!==undefined&&tt7.rows.some(function(r){return r.key==='pendle'&&r.plan})?   /* C530: the trades and Pendle are taxed apart */
             ' = '+(100*tt7.tax.rate).toFixed(1)+'% of the trades\' net '+sgn(tt7.tax.business)+' (C528_TAX_RATE: your slab + cess) + '+
             (100*tt7.tax.vda_rate).toFixed(1)+'% of Pendle\'s gain '+sgn(tt7.tax.vda)+' (a VDA) · a loss is not taxed and does not offset the other':
             ' at '+(100*tt7.tax.rate).toFixed(1)+'% (C528_TAX_RATE: your slab + cess; 0% if your total income is under ₹12 lakh, s.87A) · speculative business income: a loss is not taxed and is carried 4 years')+'</span></div>';
         if(tt7.budget){var rin7=tt7.rows.some(function(r){return r.key==='reserve'&&r.plan});
-          th7+='<div class="s muted">budget: your equity '+money(tt7.budget.invest)+' = '+money(tt7.plan.start-(rin7?tt7.budget.reserve:0))+' trading'+
+          tx7+='<div class="s muted">budget: your equity '+money(tt7.budget.invest)+' = '+money(tt7.plan.start-(rin7?tt7.budget.reserve:0))+' trading'+
           (tt7.budget.reserve>0?' + '+money(tt7.budget.reserve)+' reserve (unused rupee margin, half on each venue), only to top up a cross-venue side':
             ', no reserve: a cross-venue side below 65% is topped up from the other venue')+' (reports/2026-10-04_c533_1000.md)</div>';}
+        var th7='<div class="s muted">'+(pl9?'paper experiments, not your money, never added up; your plan is at the top of the page':
+          tt7.paper?'every account here is paper: what it would be worth if each were real money, at prices now':
+          'the book is LIVE money; the rest are paper')+'</div>'+(pl9?'':pt7);
+        var ex7r=tt7.rows.filter(function(r){return !r.plan});
+        if(ex7r.length){if(!pl9)th7+='<div class="s muted" style="margin-top:6px">experiments — paper only, not part of your money, never added up:</div>';
+          ex7r.forEach(function(r){th7+=row7(r)});}
+        if(!pl9)th7+=tx7;
         var ex7=[];
         if(tt7.bfusd)ex7.push('BFUSD would earn '+money(tt7.bfusd.interest)+' so far instead of Savings (after '+money(tt7.bfusd.tds)+' TDS up front), not added: the same wallet');
         if(tt7.tds)ex7.push('TDS withheld '+money(tt7.tds)+' is in the spot pot\'s figure and is creditable against your tax');
         if((tt7.left_out||[]).length)ex7.push('left out (experiments on the same prices): '+tt7.left_out.join(', '));
         if(ex7.length)th7+='<div class="s muted">'+ex7.join(' · ')+'</div>';
         q('alltotal').innerHTML=th7;
+        q('plantotal').innerHTML=pl9?'<div class="s muted">your plan as if it were real money now, at prices now</div>'+pt7+tx7:'';
+        q('plantotal').closest('section').hidden=!pl9;
       }
     }
     /* C510: what is running -- one line each: what trades, what is paper, what is off */
@@ -44913,7 +44951,10 @@ async function pull(){
       var c52r=d.c521||{};
       if(c52r.bfusd&&c52r.bfusd.mode==='paper')pp.push('BFUSD wallet');
       if(c52r.delta&&c52r.delta.mode==='paper')pp.push('Delta Exchange India book $'+Math.round(c52r.delta.start_equity||500));
-      if(d.c524&&d.c524.mode==='paper')pp.push('Delta vs '+(d.c524.v2||'Binance')+' funding $'+Math.round(d.c524.start_equity||550));   /* C529/C532 */
+      var xin9=(pl0.rows||[]).some(function(r){return r.key==='xvenue'&&r.plan});   /* C539: your plan is named above, not again here */
+      if(d.c524&&d.c524.mode==='paper'&&!xin9)pp.push('Delta vs '+(d.c524.v2||'Binance')+' funding $'+Math.round(d.c524.start_equity||550));   /* C529/C532 */
+      var t9=Array.isArray(d.c538)?d.c538.filter(function(t){return t&&t.mode==='paper'}):[];
+      if(t9.length)pp.push('two test copies of your plan ('+t9.map(function(t){return t.name.toLowerCase()}).join('; ')+')');   /* C538 */
       if(d.c530&&d.c530.mode==='paper')pp.push('Pendle fixed yield $'+Math.round(d.c530.start_equity||100));   /* C530 */
       /* C529: YOUR PLAN is named -- C532: first, above the experiments */
       if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
@@ -45040,8 +45081,12 @@ function m2(v){var n=Number(v)||0;return (n<0?'-$':'$')+Math.abs(n).toLocaleStri
 function renderSimple(d){
   var money=m2;   /* C535: $1,000.00 here */
   var P=(d.c527&&!d.c527.error&&d.c527.plan&&d.c527.plan.n)?d.c527:null,xv=d.c524||{},box=q('simple');
-  if(!P){box.hidden=true;if(!window._c535open){q('more').open=true;window._c535open=1}return}
+  var tl9=function(on){['eq','day','rec'].forEach(function(k){var t=q(k).closest('.tile');if(t)t.hidden=on})};
+  if(!P){box.hidden=true;tl9(false);q('plandetk').textContent='Delta vs Pi42 rent-gap trade (paper experiment)';
+    if(!window._c535open){q('more').open=true;window._c535open=1}return}
   box.hidden=false;window._c535open=1;
+  tl9(true);   /* C539: your plan, its accounts and "plan so far" are at the top; the old tiles said it again */
+  q('plandetk').textContent=(P.rows||[]).some(function(r){return r.key==='xvenue'&&r.plan})?'Your plan in detail':'Delta vs Pi42 rent-gap trade (paper experiment)';
   var pl=P.plan,tx=P.tax||{},v2=xv.v2||'Binance',parts=(P.rows||[]).filter(function(r){return r.plan});
   var nm={xvenue:'the rent-gap trade (Delta vs '+v2+')',delta:'the book on Delta',pendle:'Pendle',book:'the Binance book',
           savings:'Savings',spot:'the spot pot',carry:'carry',reserve:'reserve kept aside'};
@@ -45060,7 +45105,7 @@ function renderSimple(d){
         Math.round(100*f)+'%</span><span class="ab"><i class="'+c+'" style="width:'+w+'%"></i><span class="mk" style="left:25%"></span>'+
         '<span class="mk" style="left:32.5%;opacity:.45"></span></span></div>'};
     var lo=Math.min(Number(mg.d.frac)||1,Number(mg.b.frac)||1),weak=(Number(mg.d.frac)||1)<=(Number(mg.b.frac)||1)?'Delta':v2;
-    var ah='<div class="s muted">each started with '+money(mg.d.start)+'; the % is what each holds now</div>'+row('Delta India',mg.d)+row(v2,mg.b);
+    var ah='<div class="s muted">each started with '+money(mg.d.start)+'; the % is what each holds now, rent paid in since the daily run included</div>'+row('Delta India',mg.d)+row(v2,mg.b);
     ah+=lo<0.5?'<div class="s"><b class="bad">Move money now:</b> the '+weak+' account is below half. In paper the bot moves it at the next daily run; when live, move it yourself by bank transfer straight away.</div>':
        lo<0.65?'<div class="s"><b class="warn">Getting low:</b> the '+weak+' account is below 65%. At the next daily run the bot moves money across from the fuller one.</div>':
        '<div class="s"><b class="good">Healthy.</b> <span class="muted">If one falls below 65% (the faint line), the bot moves money across at the daily run. Below 50% (the red line) it asks you to move money now.</span></div>';

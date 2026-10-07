@@ -337,12 +337,13 @@ try:
         pg = br.new_page(viewport={'width': 412, 'height': 900}); errs = []
         pg.on('pageerror', lambda e_: errs.append(str(e_)))
         pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
-        txt = pg.inner_text('#alltotal')
+        txt = pg.inner_text('#plantotal') + '\n' + pg.inner_text('#alltotal')   # C539: the plan's total, tax and budget lines moved to "Your plan in detail" (#plantotal)
         svt = pg.inner_text('#savings')
         br.close()
     ok("the panel: both totals, every account's row, BFUSD and TDS notes, what is left out",
        'your plan (Same book on Delta India + Delta vs Binance funding gap)' in txt and 'every paper account' not in txt
-       and 'experiments — paper only, not part of your money, never added up' in txt and 'Main book' in txt
+       and ('experiments — paper only, not part of your money, never added up' in txt or 'paper experiments, not your money, never added up' in txt)
+       and 'Main book' in txt
        and 'Delta vs Binance' in txt and 'experiment' in txt and 'budget: your equity $1000.00 = $1000.00 trading + $200.00 reserve' in txt
        and 'after tax on its net profit' in txt and 'a loss is not taxed' in txt
        and 'BFUSD' in txt and 'TDS' in txt and 'left out' in txt and 'paper' in txt, txt[:700])

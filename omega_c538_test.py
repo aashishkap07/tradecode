@@ -176,10 +176,11 @@ NOW[0] = (D0 + 8 * H + 31 * 60000) / 1000
 F8.tick(); W3.tick()
 nf8 = CALLS['d'] - c0['d']
 hot = F8.pairs['HOT']
-ok("14:00 IST: the 8-hour test decides (W3 waits for tomorrow); nothing changes, and it books the one Delta rent "
-   "since 06:00 IST (04:00 UTC): 25 contracts x $2 x 0.10% = +$0.05",
+f14 = 2 * 25 * 2.0 * 0.10 / 100 - 1.18 * 50.0 * 0.0001          # C539: booked up to the run, 08:00 UTC included
+ok("14:00 IST: the 8-hour test decides (W3 waits for tomorrow); nothing changes, and it books the rent since 06:00 IST: "
+   "HOT's Delta at 04:00 and 08:00 UTC (2 x 25 x $2 x 0.10%) less Pi42's 08:00 (0.01% x $50 x 1.18 GST) = +$0.0941",
    F8.last_slot == D0 + 8 * H and W3.last_slot == D0 and set(F8.pairs) == {'HOT', 'FADE'}
-   and abs(hot['funding'] - 0.05) < 1e-12 and abs(F8.eq - x.eq - 0.05) < 1e-9, f"{hot['funding']:.6f}")
+   and abs(hot['funding'] - f14) < 1e-12, f"{hot['funding']:.6f} vs {f14:.6f}")
 ok("  it fetches its own records then, only for coins it may hold (Pi42's list): 3 of 23",
    nf8 == 3 and CALLS['b'] - c0['b'] == 3, f"{nf8} Delta, {CALLS['b'] - c0['b']} Binance")
 NOW[0] = (D0 + 16 * H + 31 * 60000) / 1000

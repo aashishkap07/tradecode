@@ -131,7 +131,7 @@ with sync_playwright() as pw:
     pg.goto(f'http://127.0.0.1:{port}/?t={TOKEN}'); pg.wait_for_timeout(3500)
     pg.screenshot(path=os.path.join(OUT, 'dashboard_top.png'))
     pg.screenshot(path=os.path.join(OUT, 'dashboard_full.jpg'), full_page=True, type='jpeg', quality=72)
-    for k in ('sub', 's-money', 's-acc', 's-pairs', 's-next', 's-test', 'moresum', 'eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs',
+    for k in ('sub', 's-money', 's-acc', 's-pairs', 's-next', 's-test', 'plandetk', 'moresum', 'alltotalk', 'eqk', 'eq', 'eqs', 'day', 'days', 'reck', 'rec', 'recs',
               'running', 'alltotal', 'xvenue', 'delta', 'pendle'):
         try:
             panels[k] = pg.inner_text('#' + k)

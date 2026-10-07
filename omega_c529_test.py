@@ -199,9 +199,9 @@ try:
         pg.goto(f'http://127.0.0.1:{P_}/?t={TOKEN}'); pg.wait_for_timeout(3000); pg.evaluate("document.querySelectorAll('details').forEach(function(x){x.open=true})")   # C535: folded panels opened
         T = {k: pg.inner_text('#' + k) for k in ('running', 'alltotal', 'xvenue', 'delta', 'eqs', 'carry')}
         br.close()
-    ok("what is running: YOUR PLAN named, and the cross-venue ledger listed (it ran but was missing)",
+    ok("what is running: YOUR PLAN named; the cross-venue ledger is in it, so not listed again among the paper experiments (C539)",
        'YOUR PLAN' in T['running'] and 'Same book on Delta India + Delta vs Binance funding gap' in T['running']
-       and 'Delta vs Binance funding $500' in T['running'], T['running'][:400])
+       and 'Delta vs Binance funding $500' not in T['running'], T['running'][:400])
     ok("all accounts: the plan is the only total; experiments listed apart, never added up (no $2,000 figure)",
        'every paper account' not in T['alltotal'] and 'never added up' in T['alltotal'] and '$2' not in T['alltotal'].split('experiments')[0][:120],
        T['alltotal'][:300])
