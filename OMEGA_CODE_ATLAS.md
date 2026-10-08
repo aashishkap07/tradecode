@@ -49,8 +49,8 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   ran every slot (14:00/22:00/06:00 IST), first score 7 Oct 06:00 IST: daily +$2.10, every 8 h +$2.11 (+0.76 +0.67 +0.68), 3-day
   +$2.10; no warnings.
 - **C540 = build step B1, pushed 8 Oct (not deployed): read-only connections to the REAL Delta India and Pi42 accounts**
-  (`reports/2026-10-08_b1_read_only.md`; routine `trig_01QxSwbjS8XPAzoFxQgNo8V1` fired 8 Oct 04:17 UTC, guard passed: ultracode on,
-  claude-opus-5-5). `C540ReadOnly` (`bot.c540`, `C540_READ_ONLY`, `C540_POLL_S` 600): one network call `_C540_HTTP_GET`
+  (`reports/2026-10-08_b1_read_only.md`; routine `trig_01QxSwbjS8XPAzoFxQgNo8V1` fired 8 Oct 04:17 UTC, guard passed: ultracode on, the
+  configured model). `C540ReadOnly` (`bot.c540`, `C540_READ_ONLY`, `C540_POLL_S` 600): one network call `_C540_HTTP_GET`
   (= requests.get) inside `_get`, which refuses any path not in `_C540_READ_PATHS` (Delta /v2/wallet/balances,
   /v2/positions/margined, /v2/fills, /v2/wallet/transactions; Pi42 /v1/wallet/futures-wallet/details, /v1/positions/OPEN,
   /v1/user-data/trade-history, /v1/user-data/transaction-history). Signing per the official docs (read 8 Oct): Delta = hex
