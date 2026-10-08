@@ -59,6 +59,69 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   blocked; 403 page = allow-list at the gate), checks the key's allowed IP, and writes to Pi42 support (drafted). The paper plan
   is unaffected (public data). If Pi42 will not accept the server: another host Pi42 accepts (test first) or another rupee venue
   for that leg (its own pre-registered study). The B2 routine (`trig_01XjNNKCDMzqwQjXGge7753r`) now checks this first.
+  **Update 8 Oct ~16:30 IST:**
+  - The operator's phone on Indian 5G got the same `403 Forbidden openresty/1.25.3.2`. So fapi.pi42.com is an allow-list at the
+    gate (not a cloud or country block). The operator emailed Pi42 support and finds Pi42's interface "a bit dubious".
+  - Round 21 (C541, below) found **CoinDCX** as the replacement leg and it passed every pre-registered bar.
+  - **Next:** the operator runs the CoinDCX fake-key check FROM THE SERVER. `401 application/json` = the gateway answers;
+    `403 text/html` = blocked like Pi42, then ZebPay is next. Then a CoinDCX account + KYC (no money, no key yet). The B2 routine
+    checks Pi42 and CoinDCX.
+- **C541 pushed 8 Oct (not deployed): Round 21 -- CoinDCX in Pi42's place; a third paper copy of the plan**
+  (`reports/2026-10-08_c541_coindcx.md`).
+  - **Venue survey, 8 Oct, live, from the research machine:**
+    - **CoinDCX:** public 200 JSON; private `/exchange/v1/derivatives/futures/positions` with a fake key ->
+      **401 JSON "Invalid credentials"**.
+    - ZebPay: `futuresbe.zebpay.com`, fake key -> 400 JSON "signature mismatching". Its ticker carries Binance's own trade IDs.
+      It publishes no funding rate. Taker 0.06-0.10%. It has a read-only key permission (`fetch:details`).
+    - Mudrex: `trade.mudrex.com/fapi/v1`, fake key -> 401 JSON. The secret is sent raw in `X-Authentication` (unsigned), no IP
+      lock documented, no funding rate or source published. INR margin since Mar 2026.
+    - CoinSwitch: USDT-margined (VDA).
+  - **CoinDCX facts** (`research/c541_coindcx_check.py`, snapshot `research/c541_coindcx/`):
+    - instruments `B-<coin>_USDT` = Binance's pairs; the rt feed field `fr` = Binance's last settled rate and `efr` = Binance's
+      live estimate;
+    - on the 191 coins it shares with Delta India: last rate == Binance's on **191/191**, funding_frequency == Binance's
+      interval on 191/191;
+    - INR-margin instrument data: taker 0.059 (= 0.05% + GST), maker 0.0236, min_notional 6-60 USDT;
+    - support page: fixed conversion 1 USDT = Rs 102 (spot USDTINR 99.24 at 11:00 UTC).
+  - **Round 21** (pre-registration `research/c541_preregistration.md` pushed first, commit 905de3a; `research/c541_coindcx.py`,
+    `.txt`, `.json`). Round 20's engine unchanged (`xv_pi42` "ALL harder" + `sides` 65%), one coin list per run (Delta
+    turnover read 10:56 UTC):
+
+    | variant | coins | a year | t | worst month | months down | poorer side |
+    |---|---|---|---|---|---|---|
+    | P0 (Pi42) | 50 | +48.7% | 6.71 | -3.34% | 5/24 | 49.7% |
+    | D1 (Pi42 coins, CoinDCX fee 0.05%x1.18+0.02%) | 50 | +53.6% | — | -2.21% | — | 61.6% |
+    | **D2 (CoinDCX coins and fee)** | 69 | **+62.5%** | 7.79 | -2.22% | 4/24 | 51.4% |
+
+    - D2 years: +15.2% / +108.6%.
+    - Wobble (top-5 coins removed in turn; floors $75k/$150k): +54.9% to +66.4%, worst month >= -2.22%, poorer side >= 50.0%.
+    - **ALL BARS PASS.** D2-P0 = +$11.37 a month on $1,000, ahead in 22/24 months; the fee alone +$4.06, ahead in 24/24.
+    - The engine check passed (per-coin sum == xv_pi42 total). Entries 169 in all three is a coincidence: other lists give
+      185/195/190.
+  - **Code:**
+    - `_c541_coindcx_coins()`: active_instruments with INR margin; 'B-X_USDT' -> X; None if under 20 coins or a bad answer.
+      Live: 505 coins.
+    - `C538TestRule.RULES['dx']`: venue 'coindcx', win 7, hours (0,), month 11.40, ahead 92.
+      - `v2()` 'CoinDCX'; `cost_b()` = C541_DCX_FEE x (1 + C532_GST) + 0.0002; `pi42_refresh()` loads CoinDCX's list every 6 h
+        into the copy's own `pi42` set.
+      - `_inputs`: at midnight it shares the daily rule's `_got` (which holds every Delta+Binance coin) without overwriting its
+        list; otherwise it fetches only CoinDCX's coins plus held pairs.
+      - `active()` only while `C541_DCX_TEST` and the main ledger is on Pi42.
+    - Config `C541_DCX_TEST` True, `C541_DCX_FEE` 0.0005. `run()`'s exit reason is now `f'not on {self.v2()}'` (main still
+      'not on Pi42').
+    - Bot: `self.c538` = f8, w3, dx. The log line adds "<venue>'s coin list did not load: no new pairs". `test_status` adds
+      venue, coins.
+    - Page: heading "Other ways, tested on paper"; `nWord()`; "three copies"; CoinDCX's plain line (why, coins listed,
+      history's $/month, "your choice once you have an account there; nothing moves on its own"); "What is running" keeps
+      CoinDCX's capitals.
+    - Logs push: `c538_dx.json`. `research/c532_preview.py` builds dx too.
+  - **NOT built yet:** a CoinDCX read-only client. Its reads are signed POSTs (positions, transactions, trades) plus GET wallets:
+    the "GET only" guarantee of C540 would need restating. Wait until the operator has an account; check the key screen's "Bind
+    IP" (must be the server's IP).
+  - **Trust:** FIU-registered (Dec 2023 list); $44.2M stolen 19 Jul 2025 from a company operational account (treasury absorbed;
+    customer funds said untouched); Coinbase minority stake cleared by CCI Dec 2025 ($2.45bn).
+  - **Tax to confirm by a CA (Feb checklist):** INR-margin = INR in/out, USDT only inside the exchange at the fixed rate.
+  - `omega_c541_test.py` 33 checks; battery **61/61**. Unchanged: plan on Pi42, `C488_LIVE_OK` False, no keys in code.
 - **C540 = build step B1, pushed 8 Oct (not deployed): read-only connections to the REAL Delta India and Pi42 accounts**
   (`reports/2026-10-08_b1_read_only.md`; routine `trig_01QxSwbjS8XPAzoFxQgNo8V1` fired 8 Oct 04:17 UTC, guard passed: ultracode on, the
   configured model). `C540ReadOnly` (`bot.c540`, `C540_READ_ONLY`, `C540_POLL_S` 600): one network call `_C540_HTTP_GET`

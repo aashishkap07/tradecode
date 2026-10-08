@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C540'
+_OMEGA_VERSION = 'C541'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3170,10 +3170,14 @@ class Config:
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C538_TESTS = True                  # C538: round 19's two near-misses (decide every 8 h; a 3-day average)
+                                                # run beside the daily rule as paper copies, scored daily at 06:00 IST
+        self.C541_DCX_TEST = True               # C541: round 21 -- the same plan with CoinDCX in Pi42's place, a third
+                                                # paper copy (Pi42's trading gateway refuses every network, 8 Oct)
+        self.C541_DCX_FEE = 0.0005              # C541: CoinDCX's taker fee, INR-margin futures (its instrument data,
+                                                # 8 Oct 2026: 0.059% = 0.05% + 18% GST) -- the GST is C532_GST
         self.C540_READ_ONLY = True              # C540 (B1): read the REAL Delta India / Pi42 accounts when keys exist in
                                                 # data/api_keys.json -- GET only, four read paths each, never an order
         self.C540_POLL_S = 600                  # C540: every 10 minutes (logged once an hour per venue)
-                                                # run beside the daily rule as paper copies, scored daily at 06:00 IST
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
         self.C530_PENDLE = False                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
@@ -23557,6 +23561,23 @@ def _c532_pi42_coins():
         return None
 
 
+_C541_DCX_INSTR = 'https://api.coindcx.com/exchange/v1/derivatives/futures/data/active_instruments'
+
+
+def _c541_coindcx_coins():
+    """C541: the coins CoinDCX lists as rupee-margined perpetuals (its public instrument list; no key),
+    or None. Its pairs are Binance's ('B-BTC_USDT' = Binance's BTCUSDT): 8 Oct 2026, on the 191 coins it
+    shares with Delta India, its last rent rate and its rent interval were Binance's on every one."""
+    try:
+        r = requests.get(_C541_DCX_INSTR, params={'margin_currency_short_name[]': 'INR'}, timeout=15)
+        d = r.json() if r.status_code == 200 else []
+        out = {str(x)[2:-5].upper() for x in d or [] if isinstance(x, str) and x.startswith('B-') and x.endswith('_USDT')}
+        out.discard('')
+        return out if len(out) >= 20 else None
+    except Exception:
+        return None
+
+
 class C524CrossVenue(_C501Store):
     """C524 X1 (paper): THE SAME COIN ON TWO VENUES, LONG WHERE LONGS PAY LESS.
 
@@ -23843,7 +23864,7 @@ class C524CrossVenue(_C501Store):
             if c not in self.prods or bm.get(c + 'USDT', 0) <= 0 or dm.get(p['d_sym'], 0) <= 0:
                 why = 'not listed'
             elif self.on_pi42() and self.pi42 and c not in self.pi42:
-                why = 'not on Pi42'                                 # C532: the second leg must be Pi42's
+                why = f'not on {self.v2()}'                         # C532: the second leg must be Pi42's (C541: or CoinDCX's)
             elif s is None:
                 why = f'no {self.WIN}-day spread'
             elif abs(s) < 0.10:
@@ -24161,7 +24182,17 @@ class C538TestRule(C524CrossVenue):
     what to expect (research/c537_timing.py, rolling windows on $1,000): f8 +$2.90 a month
     ahead, ahead in 82% of 30-day windows; w3 +$6.40 a month ahead, ahead in only 62% (it
     swings from -$2.70 to +$23.50). The 2 December refresh decides on history plus these
-    months, at the pre-registered bar."""
+    months, at the pre-registered bar.
+
+    C541 adds a third copy, dx: the same daily rule with CoinDCX in Pi42's place (round 21,
+    research/c541_preregistration.md and c541_coindcx.txt). Pi42's trading gateway refused every
+    network on 8 Oct (a 403 page even to the operator's phone); CoinDCX's answers a fake key with a
+    401. Its pairs are Binance's and its rent is Binance's (191 of 191 coins on 8 Oct), so only two
+    things change: the coins it may hold (CoinDCX's list, from its public instrument list) and the
+    second leg's fee (C541_DCX_FEE, 0.05% + GST against Pi42's 0.10% + GST). On history it passed
+    every bar: +62.5%/yr against +48.7%, worst month -2.2% against -3.3%, ahead in 22 of 24 months.
+    Moving the plan itself is the operator's choice (an account there first); this copy only shows
+    the difference live, scored like the others."""
 
     RULES = {
         'f8': dict(name='Checks every 8 hours', short='every 8 h', win=7, hours=(0, 8, 16),
@@ -24170,11 +24201,18 @@ class C538TestRule(C524CrossVenue):
         'w3': dict(name='Uses a 3-day average', short='3-day avg', win=3, hours=(0,),
                    plain='judges each gap on its last 3 days instead of 7',
                    month=6.40, ahead=62),
+        # C541 (round 21, research/c541_coindcx.txt): the same rule with CoinDCX in Pi42's place -- its
+        # coins (69 vs 50 at today's turnover) and its fee (0.05% + GST vs 0.10% + GST). On history
+        # +62.5%/yr vs +48.7%, worst month -2.2% vs -3.3%; ahead in 22 of 24 months, +$11.40 a month.
+        'dx': dict(name='CoinDCX instead of Pi42', short='CoinDCX', win=7, hours=(0,), venue='coindcx',
+                   plain='uses CoinDCX instead of Pi42 as the second account: its coins and its lower fee',
+                   month=11.40, ahead=92),
     }
 
     def __init__(self, bot, key):
         r = self.RULES[key]
         self.key, self.NAME, self.WIN, self.HOURS = key, r['name'], int(r['win']), tuple(r['hours'])
+        self.VENUE = str(r.get('venue') or 'pi42')            # C541: the second account's exchange
         self.STATE_FILE = f'c538_{key}.json'
         self._c538_blank()
         super().__init__(bot)
@@ -24212,7 +24250,29 @@ class C538TestRule(C524CrossVenue):
 
     def active(self):
         m = self.main
+        if self.VENUE == 'coindcx' and not (bool(getattr(self.cfg, 'C541_DCX_TEST', True)) and m is not None and m.on_pi42()):
+            return False                                     # C541: a copy of the Pi42 plan, so only while it is on Pi42
         return bool(getattr(self.cfg, 'C538_TESTS', True)) and m is not None and m.active()
+
+    # ── C541: the CoinDCX copy's second account ────────────────────────────────
+    def v2(self):
+        return 'CoinDCX' if self.VENUE == 'coindcx' else super().v2()
+
+    def cost_b(self):
+        if self.VENUE == 'coindcx':                          # its taker fee + GST + the same 0.02% half-spread
+            return float(getattr(self.cfg, 'C541_DCX_FEE', 0.0005)) * (1 + float(getattr(self.cfg, 'C532_GST', 0.18))) + 0.0002
+        return super().cost_b()
+
+    def pi42_refresh(self, force=False):
+        """the second account's coin list (C541: CoinDCX's for the CoinDCX copy), every 6 hours"""
+        if self.VENUE != 'coindcx':
+            return super().pi42_refresh(force)
+        if not force and self.pi42 and time.time() - self._pi42_at < 6 * 3600:
+            return True
+        got = _c541_coindcx_coins()
+        if got:
+            self.pi42, self._pi42_at = got, time.time()
+        return bool(self.pi42)
 
     def even_out(self, when):
         return None                                          # a test moves no money (see the docstring)
@@ -24234,20 +24294,28 @@ class C538TestRule(C524CrossVenue):
     def _inputs(self, today, now_ms=None):
         m = self.main
         g = getattr(m, '_got', None)
+        dcx = self.VENUE == 'coindcx'
         # C539: within the same clock hour as the daily rule's fetch -- its records run to its own run,
         # and a 1-hour coin settles again on the hour
         if g and g.get('cut') == today and int(time.time()) // 3600 == int(float(g.get('t') or 0)) // 3600:
-            self.prods, self.pi42 = m.prods, m.pi42           # the daily rule's own records and prices
+            self.prods = m.prods                             # the daily rule's own records and prices
+            if not dcx:
+                self.pi42 = m.pi42
             g['used'].add(self.key)
             if g['used'] >= {t.key for t in (getattr(self.bot, 'c538', None) or []) if t.active()}:
                 m._got = None                                # every test has them: free the memory
-            return g['coins'], g['got'], g['bm'], g['dm'], g['p42']
+            # C541: the daily rule fetched every coin both Delta and Binance list, so CoinDCX's are in it;
+            # the CoinDCX copy filters by its own list (run() opens only coins in self.pi42)
+            return g['coins'], g['got'], g['bm'], g['dm'], (self.pi42_refresh() if dcx else g['p42'])
         e = self.bot.c488
         if not m.refresh_products():
             raise RuntimeError("Delta's product list did not load")
         self.prods = m.prods
-        p42 = m.pi42_refresh() if m.on_pi42() else True
-        self.pi42 = m.pi42
+        if dcx:
+            p42 = self.pi42_refresh()                        # C541: CoinDCX's own list
+        else:
+            p42 = m.pi42_refresh() if m.on_pi42() else True
+            self.pi42 = m.pi42
         e.refresh_marks(force=True)
         bm = {C488Engine._raw(s): e.mark(s) for s in e.marks}
         dm = m._delta_marks()
@@ -24323,6 +24391,7 @@ class C538TestRule(C524CrossVenue):
                         f"${self.eq:.2f} | {len(self.pairs)} pairs, {len(set(self.pairs) & set(m.pairs))} the same as "
                         f"yours" + (f" | out {'; '.join(inf['exited'])}" if inf.get('exited') else '')
                         + (f" | in {'; '.join(inf['entered'])}" if inf.get('entered') else '')
+                        + (f" | {self.v2()}'s coin list did not load: no new pairs" if inf.get('pi42_missing') else '')
                         + (f" | since {self.since}: this rule {me:+.2f}, your daily rule {mm:+.2f} "
                            f"({'ahead' if me > mm else 'behind' if me < mm else 'level'} by ${abs(me - mm):.2f})"
                            if slot % _C488_DAY == 0 else '') + f" [{time.time() - t0:.0f}s]")
@@ -24347,7 +24416,8 @@ class C538TestRule(C524CrossVenue):
                         eq=round(self.eq, 2), n=len(self.pairs),
                         same=len(set(self.pairs) & set(m.pairs)) if m is not None else None,
                         slots=self.slots[-3:], hours=list(self.HOURS), win=self.WIN, next_run_utc=f"{h:02d}:30",
-                        month=r['month'], ahead=r['ahead'])
+                        month=r['month'], ahead=r['ahead'], venue=self.v2(),
+                        coins=len(self.pi42) if self.VENUE == 'coindcx' else None)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -25166,7 +25236,7 @@ class TradingBot:
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance/Pi42 (C532) funding spread, both legs (paper)
-        self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3')]   # C538: two test rules beside it (paper)
+        self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3', 'dx')]   # C538: two test rules beside it (paper); C541: CoinDCX
         self.c540 = C540ReadOnly(self)           # C540 (B1): the real accounts, read-only, when keys exist
         self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
@@ -44663,7 +44733,7 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
   <section><h2>Your two accounts</h2><div id="s-acc">&mdash;</div></section>
   <section><h2>Your pairs (one coin, two opposite bets)</h2><div id="s-pairs">&mdash;</div></section>
   <section><h2>What happens next</h2><div id="s-next">&mdash;</div></section>
-  <section><h2>Two other ways, tested on paper</h2><div id="s-test">&mdash;</div></section>
+  <section><h2>Other ways, tested on paper</h2><div id="s-test">&mdash;</div></section>
 </div>
 
 <!-- C539: the operator, 7 Oct: "isn't the pi vs delta cross funding in the experiments section same as 'my current
@@ -45245,7 +45315,7 @@ async function pull(){
       var xin9=(pl0.rows||[]).some(function(r){return r.key==='xvenue'&&r.plan});   /* C539: your plan is named above, not again here */
       if(d.c524&&d.c524.mode==='paper'&&!xin9)pp.push('Delta vs '+(d.c524.v2||'Binance')+' funding $'+Math.round(d.c524.start_equity||550));   /* C529/C532 */
       var t9=Array.isArray(d.c538)?d.c538.filter(function(t){return t&&t.mode==='paper'}):[];
-      if(t9.length)pp.push('two test copies of your plan ('+t9.map(function(t){return t.name.toLowerCase()}).join('; ')+')');   /* C538 */
+      if(t9.length)pp.push(nWord(t9.length)+' test cop'+(t9.length===1?'y':'ies')+' of your plan ('+t9.map(function(t){return t.key==='dx'?t.name:t.name.toLowerCase()}).join('; ')+')');   /* C538, C541 */
       if(d.c530&&d.c530.mode==='paper')pp.push('Pendle fixed yield $'+Math.round(d.c530.start_equity||100));   /* C530 */
       /* C529: YOUR PLAN is named -- C532: first, above the experiments */
       if(pp.length)rn.push('<div style="margin:4px 0"><b>PAPER</b> never touches money: '+pp.join(' \u00b7 ')+'</div>');
@@ -45481,16 +45551,17 @@ function renderReal(d){
   box.innerHTML=det;
 }
 
+function nWord(n){return ['no','one','two','three','four','five'][n]||String(n)}   /* C541 */
 function renderTests(d,xv){
   var T=Array.isArray(d.c538)?d.c538.filter(function(t){return t&&t.mode==='paper'}):[],box=q('s-test');
   if(!T.length){box.closest('section').hidden=true;return}
   box.closest('section').hidden=false;
   var nx=xv.next_run_utc||'00:30';
-  if(!T[0].since){box.innerHTML='<span class="muted">Starts after your plan’s next daily run ('+istHM(nx)+' IST): two copies of your plan, '+
-    'each changing one thing, so you can see whether either would have done better.</span>';return}
+  if(!T[0].since){box.innerHTML='<span class="muted">Starts after your plan’s next daily run ('+istHM(nx)+' IST): '+nWord(T.length)+' copies of your plan, '+
+    'each changing one thing, so you can see whether any would have done better.</span>';return}
   var ahead=function(v){v=Number(v)||0;return v>0.004?'<span class="good">ahead '+m2(v)+'</span>':(v<-0.004?'<span class="bad">behind '+m2(-v)+'</span>':'<span class="muted">level</span>')};
-  var h='<div class="s muted">Since '+dayMon(T[0].since)+', two copies of your plan have each followed one different rule, on the same coins, '+
-    'prices and fees. Nothing here is your money.</div>';
+  var h='<div class="s muted">Since '+dayMon(T[0].since)+', '+nWord(T.length)+' copies of your plan have each changed one thing and kept '+
+    'everything else the same. Nothing here is your money.</div>';
   if(T[0].diff===null||T[0].diff===undefined){
     h+='<div class="s">First score after the next 06:00 IST run <span class="muted">(in '+untilUTC(nx)+')</span>.</div>';
   }else{
@@ -45507,11 +45578,15 @@ function renderTests(d,xv){
       what=' Last decision '+istDay(new Date(Number(sl.cut)+1800000).toISOString().slice(0,16).replace('T',' '))+' IST: '+(ch.length?ch.join('; '):'no change')+'.'}
     h+='<div class="s"><b>'+t.name+'</b> — '+t.plain+'.'+what+' '+t.n+' pairs, '+(t.same===null?'':t.same+' the same as yours')+'.'+
       (t.week!==null&&t.week!==undefined?' <span class="muted">Last 7 days: '+ahead(t.week)+'.</span>':'')+'</div>'});
-  var f8=T.filter(function(t){return t.key==='f8'})[0],w3=T.filter(function(t){return t.key==='w3'})[0];
-  h+='<div class="s muted">How to read it: a few days mean little. In two years of past data, '+
+  var f8=T.filter(function(t){return t.key==='f8'})[0],w3=T.filter(function(t){return t.key==='w3'})[0],dx=T.filter(function(t){return t.key==='dx'})[0];
+  if(f8||w3)h+='<div class="s muted">How to read it: a few days mean little. In two years of past data, '+
     (f8?'checking every 8 hours came out ahead by about '+m2(f8.month)+' a month (ahead in '+Math.round(f8.ahead/10)+' months out of 10)':'')+
     (f8&&w3?'; ':'')+(w3?'the 3-day average by about '+m2(w3.month)+' a month, but only in '+Math.round(w3.ahead/10)+' months out of 10, with big swings':'')+
     '. On 2 December the research checks whether either truly beats yours. Until then your rule stays.</div>';
+  if(dx)h+='<div class="s muted">CoinDCX: Pi42’s trading door is shut to the bot (8 Oct), so this copy runs your exact rule with CoinDCX as the '+
+    'second account'+(dx.coins?' ('+dx.coins+' coins listed there)':'')+'. In two years of past data it came out ahead by about '+m2(dx.month)+
+    ' a month (ahead in '+Math.round(dx.ahead/10)+' months out of 10): more coins to choose from and half Pi42’s fee. Moving your plan to '+
+    'CoinDCX is your choice once you have an account there; nothing moves on its own.</div>';
   box.innerHTML=h;
 }
 

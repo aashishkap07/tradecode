@@ -54,7 +54,7 @@ for a, k in (('c501v', 'C501Savings'), ('c501s', 'C501Spot'), ('c490', 'C490Carr
              ('c521b', 'C521Bfusd'), ('c524x', 'C524CrossVenue'), ('c530p', 'C530Pendle'), ('c489', 'C489Shadow'),
              ('c501k', 'C501Allostatic'), ('c510t', 'C510Tournament')):
     setattr(bot, a, getattr(om, k)(bot))
-bot.c538 = [om.C538TestRule(bot, k) for k in ('f8', 'w3')] if hasattr(om, 'C538TestRule') else []   # C538
+bot.c538 = [om.C538TestRule(bot, k) for k in ('f8', 'w3') + (('dx',) if 'dx' in getattr(getattr(om, 'C538TestRule', None), 'RULES', {}) else ())] if hasattr(om, 'C538TestRule') else []   # C538; C541: dx
 LINES.append("--- 2. LIVE PRICES ---")
 t0 = time.time()
 ok_b = e.refresh_marks(force=True)
