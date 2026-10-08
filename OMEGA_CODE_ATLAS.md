@@ -70,6 +70,42 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - C541 deployed (`OMEGA C541`, 16:56 IST). The CoinDCX server check answered `401 application/json` from 140.245.30.104.
   - The operator's CoinDCX account is active.
   - C542 moves the plan to Delta + CoinDCX (paper).
+- **C542 deployed 8 Oct 19:14 IST** (`OMEGA C542`, omega_detail_20261008_191417.log). The move ran once at load:
+  - the plan $2.08 -> $998.28;
+  - "Checks every 8 hours" $2.09 -> $999.06;
+  - "Uses a 3-day average" $2.08 -> $998.28.
+
+  Also at load:
+  - `C534 CoinDCX's coin list loaded: 505 rupee perps`, held pairs not listed: none;
+  - the "15 pairs of 12%" copy started at $998.28;
+  - Pi42's firewall warning once (daily since then);
+  - no Traceback.
+
+  **The 23:50 IST screens, checked against Delta's and Binance's records at 18:20 UTC** (scratch `v542.py`): ledger $998.28 +
+  rent waiting +$0.98 (screen +$0.97) + prices since the run -$0.33 = **$998.92 (screen $998.91)**. The split between the
+  accounts swings with prices minute by minute while the total stays put:
+  - $558.13 / $440.90 at 18:10;
+  - $556.56 / $442.26 at 18:14;
+  - $554.54 / $444.53 at 18:17;
+  - $548.72 / $450.40 at 18:23.
+
+  The screen's $555.07 / $443.84 sits between 18:14 and 18:17 (the page's Delta marks are up to 5 min old). Fees $6.95 =
+  $4.87 + the move's $2.08.
+
+  The operator saved the CoinDCX key 9 Oct ~00:05 IST (key 48, secret 64 characters). Their `journalctl --since "15 min ago" |
+  grep C540` at 00:06-00:07 was empty, and that is expected:
+  - polls run every 10 min (on this server at :04/:14/:24... IST);
+  - a venue's line prints at the first read after each UTC hour (:34 IST for Delta);
+  - so the first CoinDCX read was due ~00:14 IST.
+- **C543 (9 Oct, page only): each paper copy's start date on the scoreboard.**
+  - The 15-pair copy started 8 Oct while the others started 6 Oct. Its "vs yours" was already measured over its own days, but
+    the page did not say so.
+  - Now a later copy's row reads "15 pairs of 12% (since 8 Oct)", and the header reads "Since 6 Oct (the newest since 8 Oct)
+    ... each is compared with your rule over the same days it has run".
+  - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
+    parallel load and passed alone).
+  - Round 23 (jump protection) renumbered **C544** (routine `trig_012MbGyCcxg2dL75KpKXLzGP`; the B2 and Dec-refresh prompts
+    still say "C543" for it).
 - **C542 pushed 8 Oct (not deployed): Round 22 -- the best pair re-checked from scratch; the plan moves to Delta + CoinDCX
   (paper); CoinDCX read-only** (`reports/2026-10-08_c542_best_pair.md`).
   - **The operator:** "in your earlier studies you seemed to have missed coindcx ... research again very carefully to find

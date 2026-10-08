@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C542'
+_OMEGA_VERSION = 'C543'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -45748,14 +45748,17 @@ function renderTests(d,xv){
   if(!T[0].since){box.innerHTML='<span class="muted">Starts after your plan’s next daily run ('+istHM(nx)+' IST): '+nWord(T.length)+' copies of your plan, '+
     'each changing one thing, so you can see whether any would have done better.</span>';return}
   var ahead=function(v){v=Number(v)||0;return v>0.004?'<span class="good">ahead '+m2(v)+'</span>':(v<-0.004?'<span class="bad">behind '+m2(-v)+'</span>':'<span class="muted">level</span>')};
-  var h='<div class="s muted">Since '+dayMon(T[0].since)+', '+nWord(T.length)+' copies of your plan have each changed one thing and kept '+
-    'everything else the same. Nothing here is your money.</div>';
+  var mx=T.some(function(t){return t.since&&t.since!==T[0].since});   /* C543: copies that started on different days */
+  var h='<div class="s muted">'+(mx?'Since '+dayMon(T[0].since)+' (the newest since '+dayMon(T.map(function(t){return t.since||''}).sort().slice(-1)[0])+'), ':'Since '+dayMon(T[0].since)+', ')+
+    nWord(T.length)+' copies of your plan have each changed one thing and kept everything else the same'+
+    (mx?'; each is compared with your rule over the same days it has run':'')+'. Nothing here is your money.</div>';
   if(T[0].diff===null||T[0].diff===undefined){
     h+='<div class="s">First score after the next 06:00 IST run <span class="muted">(in '+untilUTC(nx)+')</span>.</div>';
   }else{
     h+='<table class="pairs"><tr><th>way</th><th>result</th><th>vs yours</th></tr>'+
       '<tr><td><b>Your rule: once a day</b></td><td class="'+cls(T[0].main)+'">'+sgn(T[0].main)+'</td><td>—</td></tr>';
-    T.forEach(function(t){h+='<tr><td>'+t.name+'</td><td class="'+cls(t.me)+'">'+(t.me===null?'—':sgn(t.me))+'</td><td>'+
+    T.forEach(function(t){h+='<tr><td>'+t.name+(t.since&&t.since!==T[0].since?' <span class="muted">(since '+dayMon(t.since)+')</span>':'')+
+      '</td><td class="'+cls(t.me)+'">'+(t.me===null?'—':sgn(t.me))+'</td><td>'+
       (t.diff===null?'—':ahead(t.diff))+'</td></tr>'});
     h+='</table><div class="s muted">score as of '+dayMon(T[0].at)+', 06:00 IST ('+T[0].days+' day'+(T[0].days===1?'':'s')+'); updated every day after that run</div>';
   }

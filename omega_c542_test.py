@@ -369,7 +369,17 @@ try:
     ok("no 'Pi42' left in your plan's own sections, except the move note and the copies' history lines",
        'Pi42' not in G['money'] and 'Pi42' not in G['acc'] and 'Pi42' not in G['xven'])
     ok("the page never carries a key", KX not in G['html'] and SX not in G['html'])
-    ok("412 px wide (a phone): nothing overflows", G['W'] <= 412, str(G['W']))
+    # C543: copies that started on different days -- each row says its start; the header says so
+    f8, w3, dx_, b15 = bot.c538
+    for t, sn in ((f8, '2026-10-06'), (w3, '2026-10-06'), (b15, '2026-10-08')):
+        t.since = sn
+        t.snaps = {'2026-10-09': dict(me=(1.10 if t is b15 else 4.20), main=(1.00 if t is b15 else 4.05), n=10, same=10)}
+    G3, er3 = page(); er += er3
+    T3 = G3['test']
+    ok("C543: a copy that started later says so on its row, and the header says each is compared over its own days",
+       '15 pairs of 12% (since 8 Oct)' in T3 and 'Checks every 8 hours (since' not in T3 and 'Since 6 Oct (the newest since 8 Oct)' in T3
+       and 'each is compared with your rule over the same days it has run' in T3 and 'ahead $0.10' in T3, T3[:420])
+    ok("412 px wide (a phone): nothing overflows", max(G['W'], G3['W']) <= 412, str((G['W'], G3['W'])))
     ok("no JavaScript errors", not er, '; '.join(er)[:300])
 except Exception as ex:
     import traceback; traceback.print_exc()
