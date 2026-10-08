@@ -48,6 +48,17 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 - **C538 deployed 6 Oct 20:22 IST** (`OMEGA C538`, omega_detail_20261006_202228.log; logs push sends c538_*.json): both copies
   ran every slot (14:00/22:00/06:00 IST), first score 7 Oct 06:00 IST: daily +$2.10, every 8 h +$2.11 (+0.76 +0.67 +0.68), 3-day
   +$2.10; no warnings.
+- **OPEN ITEM, "Pi42 gateway" (8 Oct, must be solved before B2 on 15 Nov):** C540 deployed 8 Oct 13:43 IST; both keys saved
+  with `deploy/omega-keys.sh` (Pi42 key 32/secret 32 chars, Delta 30/60). **Delta India works with a Read Data key** (balance
+  0.00 read: no deposit yet), so Delta's docs' "wallets need Trading" did not apply to reading. **Pi42's fapi.pi42.com refuses the
+  server at its gateway:** 403 text/html, server cloudflare, even for an UNAUTHENTICATED GET from 140.245.30.104 (Oracle Cloud,
+  Mumbai, AS31898) -- so it is the address, not the key. Ruled out: country (Mumbai), IPv6 (fapi/api.pi42.com have no AAAA),
+  User-Agent (5 variants, all 403); api.pi42.com (public) answers the same server. Pi42's docs: trade permission is needed only
+  for place/delete-order, add/reduce-margin, update/leverage, cancel-all-orders, close-all-positions -- NOT for the reads, so
+  enabling trading does not help. Next: the operator tests fapi from a phone on Indian mobile data (JSON error = cloud IPs
+  blocked; 403 page = allow-list at the gate), checks the key's allowed IP, and writes to Pi42 support (drafted). The paper plan
+  is unaffected (public data). If Pi42 will not accept the server: another host Pi42 accepts (test first) or another rupee venue
+  for that leg (its own pre-registered study). The B2 routine (`trig_01XjNNKCDMzqwQjXGge7753r`) now checks this first.
 - **C540 = build step B1, pushed 8 Oct (not deployed): read-only connections to the REAL Delta India and Pi42 accounts**
   (`reports/2026-10-08_b1_read_only.md`; routine `trig_01QxSwbjS8XPAzoFxQgNo8V1` fired 8 Oct 04:17 UTC, guard passed: ultracode on, the
   configured model). `C540ReadOnly` (`bot.c540`, `C540_READ_ONLY`, `C540_POLL_S` 600): one network call `_C540_HTTP_GET`
