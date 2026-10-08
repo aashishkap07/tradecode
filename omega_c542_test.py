@@ -265,7 +265,8 @@ ok("refusals in words: a wrong key, a key bound to another IP, CoinDCX's firewal
    'CoinDCX refused the key' in om._c540_why('coindcx', 401, {'code': 401, 'message': 'Invalid credentials', 'status': 'error'})
    and 'bound to another IP' in om._c540_why('coindcx', 401, {'message': 'IP not whitelisted / bind IP'})
    and "CoinDCX's firewall answered" in om._c540_why('coindcx', 403, None))
-ok("the key helper takes coindcx", 'delta_india|pi42|coindcx)' in open(os.path.join(REPO, 'deploy', 'omega-keys.sh')).read())
+ok("the key helper takes coindcx (and, Round 22b, mudrex and coinswitch for the server check)",
+   'delta_india|pi42|coindcx|mudrex|coinswitch)' in open(os.path.join(REPO, 'deploy', 'omega-keys.sh')).read())
 # the real CoinDCX, a fake key: its answer is a refusal in words (proves the request reached its key check)
 om._C540_HTTP_GET, om._C540_HTTP_POST = om.requests.get, om.requests.post
 ro2 = om.C540ReadOnly(bt); ro2.keys = {'coindcx': ('fakefakefakefakefake', 'fakefakefakefakefakefake')}

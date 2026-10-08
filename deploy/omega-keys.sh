@@ -5,6 +5,8 @@
 #   sudo -u omega bash /home/omega/omega/deploy/omega-keys.sh delta_india
 #   sudo -u omega bash /home/omega/omega/deploy/omega-keys.sh pi42
 #   sudo -u omega bash /home/omega/omega/deploy/omega-keys.sh coindcx     (C542)
+#   sudo -u omega bash /home/omega/omega/deploy/omega-keys.sh mudrex      (Round 22b: research/c542b_server.py only)
+#   sudo -u omega bash /home/omega/omega/deploy/omega-keys.sh coinswitch  (Round 22b: research/c542b_server.py only)
 #
 # It asks for the key and the secret with hidden typing (paste them; nothing is shown), merges them into
 # api_keys.json under that section (other sections are kept), writes the file readable by its owner only
@@ -12,8 +14,8 @@
 set -uo pipefail
 VENUE="${1:-}"
 case "$VENUE" in
-    delta_india|pi42|coindcx) ;;
-    *) echo "usage: sudo -u omega bash $0 delta_india|coindcx|pi42"; exit 2 ;;
+    delta_india|pi42|coindcx|mudrex|coinswitch) ;;
+    *) echo "usage: sudo -u omega bash $0 delta_india|coindcx|pi42|mudrex|coinswitch"; exit 2 ;;
 esac
 FILE="${OMEGA_BASE_PATH:-/home/omega/omega/data}/api_keys.json"
 umask 077

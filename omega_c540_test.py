@@ -176,7 +176,11 @@ n0 = len(CALLS)
 ro.tick(now=T0 + 60)
 ok("read every 10 minutes, not every loop", len(CALLS) == n0)
 ro.tick(now=T0 + 601)
-ok("  and logged once an hour per venue (no repeat at the 10-minute read)", len(CALLS) > n0 and len([m for _, m in LOG if 'C540 real account' in m]) == 2)
+# Round 22b fix: T0 is the real clock, so in the last 10 minutes of an hour T0 + 601 is a NEW hour and both venues
+# rightly log again. The check failed whenever the battery ran at hh:50-hh:59 (seen 8 Oct 19:51 UTC).
+_new_hour = int((T0 + 601) // 3600) != int(T0 // 3600)
+ok("  and logged once an hour per venue (no repeat at the 10-minute read)",
+   len(CALLS) > n0 and len([m for _, m in LOG if 'C540 real account' in m]) == (4 if _new_hour else 2))
 
 print("\n4. KEYS: ONLY FROM api_keys.json, NEVER SHOWN")
 blob = json.dumps(ro.status()) + ' '.join(m for _, m in LOG)

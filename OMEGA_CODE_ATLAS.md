@@ -111,6 +111,50 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
     parallel load and passed alone).
   - Round 23 (jump protection) renumbered **C544** (routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
+- **Round 22b (9 Oct, part 1: census + pre-registration + server check; `reports/2026-10-09_mudrex_coinswitch.md`).** The operator:
+  "what about testing mudrex and coinswitch and any other exchange you might have missed ? if the data is behind a key , i can
+  create an api key for you to test".
+  - **Mudrex's futures are Bybit's order book.** Its public last-price candles (`trade.mudrex.com/fapi/v1/price/kline`) on 7 Oct
+    06:00-09:00 UTC = Bybit's trades (`public.bybit.com/trading/`) 181/181 minutes for LINK and AVAX, volume ratio 1.000 (Binance
+    30 and 12/181; `research/c542b_census/`). It lists 468 coins, 180 on Delta. Its rent `funding_fee_perc` is in the keyed
+    `GET /fapi/v1/futures`. Auth is `X-Authentication: <secret>`. No read-only scope or IP binding is documented. Fee is
+    0.05% + GST (INR).
+  - **CoinSwitch PRO futures look Bybit-backed:** `exchange=EXCHANGE_2`; Bybit v5 ticker fields; `/v5` HFT with Bybit's
+    `retCode` envelope; fees 0.065/0.024% = Bybit's + GST. Everything is signed (Ed25519: message = method + unquoted
+    path?query + epoch ms; headers X-AUTH-APIKEY/-SIGNATURE/-EPOCH). One key pair at a time, no scopes documented.
+  - **Bybit writes its own rent**, so there are two untested gaps: Delta vs Bybit (M/S) and Binance vs Bybit (CM/CS, two rupee
+    venues). Bybit's API is geo-blocked from the sandbox (CloudFront, every regional host), but `public.bybit.com` archives
+    are not.
+  - **Other venues:** WazirX (futures May 2026, no API), Giottus (perps Aug 2025, no API), Cosmic/SunCrypto (none), Bitbns
+    (2022 API), KoinBX (spot API).
+  - **Pre-registration** `research/c542b_preregistration.md` (commit 337ce76 + a stricter-only clarification cb49432):
+    - source test: >= 80% within 0.002% of Bybit's or Binance's rate at one moment;
+    - pairs M, S, CM, CS at Round 22's engine/bars, costs x5;
+    - a switch needs every bar, T1 >= C + 0.50%/month (vs the HIGHER of C today and C on 8 Oct), above C at x1, a working
+      keyed read, and the operator's agreement.
+  - **Built:**
+    - `research/c542b_server.py` (run once on the server; GET-only exact-address allow-list): Bybit perps, tickers, funding
+      history since 2024-09-21 and daily closes; Binance premiumIndex; the keyed Mudrex listing and CoinSwitch
+      instruments/all-pairs ticker if keys are saved. It writes `logs/c542b_bybit.json.gz` and `logs/c542b_source.json`
+      into the logpush worktree.
+    - `research/c542b_pairs.py`: `legs_ab` = `legs` + first-leg closed gains, for both-legs-VDA T2 on CM/CS.
+    - `deploy/omega-keys.sh` takes mudrex and coinswitch.
+  - **Verified here:**
+    - fake keys get 401 from both real APIs;
+    - Bybit pagination unit-tested against a fake API (2,244 of 2,244 records);
+    - with Binance's history in Bybit's slot, M == C exactly (75 coins, +5.42% pre-tax, +3.73% T1 at today's Delta turnover
+      read; so the switch bar is +4.23% T1 at x5 and +4.34% at x1);
+    - CM == 0 (identical rents);
+    - both engine checks OK.
+  - `omega_c540_test.py`'s hourly-log check was clock-dependent: it failed whenever run at hh:50-hh:59, because T0 + 601
+    is a new hour and the bot rightly logs again. The test is now hour-aware. `omega_c542_test.py` matches the new
+    key-helper list.
+  - Battery **62/62** (59 Python + 3 shell).
+  - **Next:**
+    - the operator (optionally) makes the two keys with no money in the accounts, runs the server check, and pushes the logs;
+    - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
+    - delete the keys afterwards unless a venue wins;
+    - settle it before B2 (15 Nov).
 - **Timeline (9 Oct ~00:45 IST, `reports/2026-10-09_timeline.md`; the operator: "build an accurate time line of scheduled
   tasks for you and all the pending /remaining work").**
   - All 19 routines listed; the 9 active ones read back. Seven prompts corrected tonight (Round 23 and the monthly review
