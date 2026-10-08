@@ -92,11 +92,16 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   The screen's $555.07 / $443.84 sits between 18:14 and 18:17 (the page's Delta marks are up to 5 min old). Fees $6.95 =
   $4.87 + the move's $2.08.
 
-  The operator saved the CoinDCX key 9 Oct ~00:05 IST (key 48, secret 64 characters). Their `journalctl --since "15 min ago" |
-  grep C540` at 00:06-00:07 was empty, and that is expected:
-  - polls run every 10 min (on this server at :04/:14/:24... IST);
-  - a venue's line prints at the first read after each UTC hour (:34 IST for Delta);
-  - so the first CoinDCX read was due ~00:14 IST.
+  **The CoinDCX key works.**
+  - The operator saved it 9 Oct ~00:04 IST (key 48, secret 64 characters).
+  - The detail log (18:47 UTC push) shows at **00:04:36 IST**: `C540 real account (read-only) CoinDCX: futures no futures
+    balance; rupee wallet INR 0.00, 0 position(s), rent last 24 h 0 | nothing is traded live`. That means all four reads
+    succeeded, with no deposit yet.
+  - The operator's `journalctl --since "15 min ago" | grep C540` at 00:06-00:07 was empty because **the system journal
+    only gets the screen log** (omega_session_*: warnings and decisions). Info lines such as a successful C540 read go only
+    to `/home/omega/omega/omega_detail_<ts>.log`.
+  - So the check command in the B1 guide and in C542 report section 8 could only ever show failures (my error). Both are
+    corrected to grep the newest detail log.
 - **C543 (9 Oct, page only): each paper copy's start date on the scoreboard.**
   - The 15-pair copy started 8 Oct while the others started 6 Oct. Its "vs yours" was already measured over its own days, but
     the page did not say so.
