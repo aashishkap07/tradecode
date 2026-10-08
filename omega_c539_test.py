@@ -38,6 +38,7 @@ print("=" * 66); print("C539: THE PLAN BOOKED EXACTLY, SHOWN ONCE"); print("=" *
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C539 or later", int(om._OMEGA_VERSION[1:]) >= 539)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 cfg.C524_XVENUE_EQUITY = 500.0; cfg.C531_XV_REBALANCE = False

@@ -34,6 +34,7 @@ print("=" * 66); print("C535: THE DASHBOARD IN PLAIN ENGLISH"); print("=" * 66)
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C535 or later", int(om._OMEGA_VERSION[1:]) >= 535)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 x0 = json.load(open(os.path.join(SNAP, 'c524_xvenue.json')))

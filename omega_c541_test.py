@@ -39,6 +39,7 @@ print("=" * 66); print("C541: COINDCX IN PI42'S PLACE, A THIRD PAPER COPY"); pri
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 ok("version C541 or later", int(om._OMEGA_VERSION[1:]) >= 541)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 ok("on by default (C541_DCX_TEST), CoinDCX's fee 0.05% (+ GST); the plan itself stays on Pi42",
@@ -249,7 +250,7 @@ cfg.C532_XV_VENUE = 'pi42'
 ok("off with C541_DCX_TEST = False, and whenever your plan is not on Pi42 (it is a copy of the Pi42 plan)",
    off1 is False and off2 is False and DX.active() is True and F8.active() is True)
 ok("the bot runs three copies (every 8 h, 3-day average, CoinDCX); Start fresh resets them; the logs push carries c538_dx.json",
-   "for k in ('f8', 'w3', 'dx')]" in SRC and "for _t538 in getattr(bot, 'c538', None) or []:" in SRC
+   "for k in ('f8', 'w3', 'dx'" in SRC   # C542 adds 'b15' and "for _t538 in getattr(bot, 'c538', None) or []:" in SRC
    and 'c538_dx.json' in open(os.path.join(REPO, 'deploy', 'omega-logpush.sh')).read())
 ok("the plan's total never counts the copies, and nothing here can trade (C488_LIVE_OK stays False)",
    'c538' not in SRC[SRC.index('def _c527_total'):SRC.index('def _c527_total') + 6000] and cfg.C488_LIVE_OK is False)

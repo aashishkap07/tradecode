@@ -4,7 +4,7 @@
 # 📌 PENDING TASKS — the operator asked for these to be remembered (25 Sep 2026)
 # ═══════════════════════════════════════════════════════════════════════════
 
-**🎯 LIVE TARGET (the operator, 4 Oct 2026): live money on the Delta India vs Pi42 trade in MARCH 2027,
+**🎯 LIVE TARGET (the operator, 4 Oct 2026): live money on the Delta India vs CoinDCX trade (C542; was Pi42) in MARCH 2027,
 not later, if the gates pass** -- `reports/2026-10-04_live_march_roadmap.md` (gates G1-G5 written
 before any result; build steps B1 read-only 8 Oct, B2 order path 15 Nov, B3 dry run 15 Dec, B4 pilot
 1 Feb; go/no-go 20 Feb). **Pending tasks run automatically on Opus 5.5 in ultracode** (the operator, 4-5 Oct: "Opus 5.5 or
@@ -12,7 +12,7 @@ whichever is the latest model with ultracode"): every routine has `model: claude
 checks get_session (`flag_settings.ultracode` true AND `session_context.model` / `last_served_model`
 claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. Routines (all fire into this session): first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
 (5 Oct 01:05 UTC); B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
-(1st, 09:56 IST); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
+(1st, 09:56 IST); Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (22 Oct); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
 `trig_01657znZVsvZxzQZrunVxz5H`.
@@ -66,6 +66,85 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - **Next:** the operator runs the CoinDCX fake-key check FROM THE SERVER. `401 application/json` = the gateway answers;
     `403 text/html` = blocked like Pi42, then ZebPay is next. Then a CoinDCX account + KYC (no money, no key yet). The B2 routine
     checks Pi42 and CoinDCX.
+  **Resolved 8 Oct ~17:15 IST:**
+  - C541 deployed (`OMEGA C541`, 16:56 IST). The CoinDCX server check answered `401 application/json` from 140.245.30.104.
+  - The operator's CoinDCX account is active.
+  - C542 moves the plan to Delta + CoinDCX (paper).
+- **C542 pushed 8 Oct (not deployed): Round 22 -- the best pair re-checked from scratch; the plan moves to Delta + CoinDCX
+  (paper); CoinDCX read-only** (`reports/2026-10-08_c542_best_pair.md`).
+  - **The operator:** "in your earlier studies you seemed to have missed coindcx ... research again very carefully to find
+    the best exchange pair with best average monthly returns target 2-4% after taxation".
+  - **The miss, admitted:**
+    - On 3 Oct CoinDCX was checked only as a rent source vs Binance (identical: nothing).
+    - It was dismissed as the rupee leg in one line ("settle in USDT behind the scenes") and never run.
+  - **Census** (pre-registration `research/c542_preregistration.md`, commit 6964a28; snapshot `research/c542_census/`):
+    - Delta India is the only venue with its own rent.
+    - CoinDCX (191/191 identical), ZebPay (`futuresbe.zebpay.com/api/v1/market/marketInfo` `upcomingFundingRate`: 177/179
+      rupee contracts within 0.002% of Binance's live estimate) and Pi42 copy Binance. So pairs among them have a zero gap.
+    - Mudrex, CoinSwitch, WazirX (futures since May 2026, 0.02/0.04%), SunCrypto and Cosmic publish no rates or have no
+      API.
+    - Giottus and Bitbns are USDT-margined.
+  - **Part A** (`research/c542_pairs.py`, `.txt`, `.json`). The engine `legs` = xv_pi42 with the legs apart; check: ==
+    xv_pi42 on all four pairs. 10x10%, costs x5; after tax per month, T1 / T2; costs x1 T1:
+
+    | Delta + | coins | pre-tax | worst | after tax T1 / T2 | costs x1 T1 |
+    |---|---|---|---|---|---|
+    | P0 Pi42 | 50 | +4.02% | -3.34% | +2.77 / -0.69 | +3.59 |
+    | **C CoinDCX** | 69 | **+5.16%** | -2.22% | **+3.55 / +0.81** | **+4.15** |
+    | Zi ZebPay rupee | 44 | +3.81% | -3.34% | +2.62 / -1.18 | +3.45 |
+    | Za ZebPay all | 50 | +4.04% | -3.38% | +2.78 / -0.17 | +3.61 |
+
+    - All pass. The winner is C under T1 and under T2.
+    - The pre-registered T2 fallback compared every venue under T2. That was mis-specified: ZebPay's rupee contracts are
+      T1-like. So **if a CA rules CoinDCX VDA, the switch is ZebPay rupee (T1 +2.62%)**.
+    - CoinDCX's own help page: INR-M futures "no TDS ... no involvement of VDA ... taxed on the income slab".
+  - **Part B** (CoinDCX, 10/15/20 pairs x 8/10/12%):
+    - 15x12 passes every bar (+8.10% pre-tax, worst -2.87%, poorer 56% / wobble 49.7%, after tax T1 +5.57%, +$243/yr) and
+      is the rule's pick.
+    - 20 pairs fail (an account negative on a leave-one-out list).
+    - **Diagnosis** (`/c542_diag`, reproduced in the report):
+      - BLESS +530% on 2025-10-15 (H +148% 10-13; MUBARAK +89% 2025-05-09) took the Delta account to -$55 (20x8) /
+        -$216 (20x10) in a day.
+      - 10x10 and 15x12 passed only because they did not hold BLESS that day.
+    - `research/c542_squeeze.py/.txt`: in CoinDCX's list, a >=+100% day about once a year per 10 coins held; >=+400% about
+      once in 10 years.
+    - **SAFETY HOLD -- a deliberate, stated deviation from the pre-registered pick:**
+      - 10x10 stays in the plan;
+      - 15x12 runs as a paper copy (C538 'b15');
+      - Round 23 must first test jump protection: isolated margin per leg, the twin closed at once on a liquidation,
+        and a coin jump filter.
+  - **Part C** (info): maker fees add ~+0.26%/month (15x12 x1: 9.60 -> 9.86%).
+  - **Code:**
+    - `C532_XV_VENUE = 'coindcx'`. `_C542_V2` table (name, fee setting, default, host, rent note); `_c542_coins(venue)`;
+      `_c542_cost(cfg, venue)`.
+    - C524CrossVenue gains `venue()`, `on_pi42()` (= any rupee venue), `v2()`, `cost_b()`, `pi42_refresh()` by venue,
+      `n_pairs()`, `bet()` (run() uses them).
+    - `move_venue(was)`: each pair's second leg closed and reopened at the same price, both venues' cost a side booked on
+      side b, `venue_moves` saved. On load, when the saved `venue` (missing = `LEGACY_VENUE`, 'pi42') differs. Saved once;
+      a test copy saves after restoring its fields.
+    - On the server ledger (11:47 UTC push): 10 pairs, $956.74 of bets -> **$2.08**. All 10 coins are on CoinDCX.
+    - Status: `v2_fee`, `v2_note`, `venue_moves`. Logs and page text follow `v2()`. "Second account moved: Pi42 ->
+      CoinDCX" shows for 14 days.
+    - C538TestRule:
+      - `VENUE` 'plan' or 'coindcx' (dx; `venue()` override; active only while the plan is on Pi42 -> **retired**);
+      - **'b15'** (15 pairs x 12%, `C542_B15_TEST`, month 29.40, ahead 79 = 19/24);
+      - the bot runs f8, w3, dx, b15.
+    - C540:
+      - CoinDCX read paths: futures/wallets (GET with a body), futures/positions, positions/transactions (stage funding),
+        users/balances (POST).
+      - `_c540_dcx_body` (compact JSON, ms timestamp), `_c540_dcx_sign` (hex HMAC-SHA256 of the body).
+      - `_C540_HTTP_POST` is the second call site, only after the read-list check. The guarantee is restated, and
+        `omega_c540_test.py` updated.
+      - `_read_dcx`; refusals in words; Pi42 failures logged once a day when the plan is not on Pi42.
+      - Page: CoinDCX in "Your real accounts".
+    - `deploy/omega-keys.sh coindcx`. Logs push `c538_b15.json`.
+    - Older tests pinned to `C532_XV_VENUE = 'pi42'` (c530, c532-c535, c538-c541); wording checks updated.
+  - `omega_c542_test.py` 43 checks (one live: the real CoinDCX refuses a fake key in words); battery **62/62**.
+  - **Open:**
+    - the operator makes the CoinDCX key (report section 8; "Bind IP" only if an address can be typed);
+    - a CA confirms T1 for CoinDCX INR-M;
+    - Round 23 (jump protection) before 15x12 or any bigger setting;
+    - B2 (15 Nov) targets CoinDCX with isolated margin per leg.
 - **C541 pushed 8 Oct (not deployed): Round 21 -- CoinDCX in Pi42's place; a third paper copy of the plan**
   (`reports/2026-10-08_c541_coindcx.md`).
   - **Venue survey, 8 Oct, live, from the research machine:**

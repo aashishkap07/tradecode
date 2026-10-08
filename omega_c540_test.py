@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """C540 (build step B1): read-only connections to the operator's REAL Delta Exchange India and Pi42 accounts.
 
-1. A window, not a hand: one network call (an HTTP GET), four read paths per venue, anything else refused.
+1. A window, not a hand: one network call (an HTTP GET; C542 adds a POST for CoinDCX's reads), four read paths per venue,
+   anything else refused.
 2. Signed as each venue's official docs say (Delta: method + timestamp(s) + path + query; Pi42: the query string
    with a millisecond timestamp), tested on recorded example responses shaped like the docs'.
 3. Keys only from api_keys.json; never in a log line, the page or an error; a loose file is warned about.
@@ -37,18 +38,22 @@ print("=" * 66); print("C540 (B1): THE REAL ACCOUNTS, READ-ONLY"); print("=" * 6
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
 SEC = SRC[SRC.index('# C540 (build step B1)'):SRC.index('# C530: PENDLE FIXED YIELD')]
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 ok("version C540 or later; on by default; live trading still locked (C488_LIVE_OK False)",
    int(om._OMEGA_VERSION[1:]) >= 540 and cfg.C540_READ_ONLY is True and cfg.C488_LIVE_OK is False and cfg.C540_POLL_S == 600)
 
 print("\n1. A WINDOW, NOT A HAND")
-ok("one network call in the whole C540 section, and it is an HTTP GET", SEC.count('_C540_HTTP_GET(') == 1
-   and '_C540_HTTP_GET = requests.get' in SEC and not any(w in SEC for w in ('requests.post', 'requests.put', 'requests.delete',
-                                                                           'requests.request', '.post(', '.put(', '.delete(')))
+# C542 restated the guarantee for CoinDCX, whose reads are POSTs by its design: two call sites (an HTTP GET, an HTTP POST),
+# both inside _get after the read-list check, and nothing that puts or deletes. omega_c542_test.py checks the POST side.
+ok("two network calls in the whole C540 section (C542: GET, and POST for CoinDCX's reads), both after the read-list check",
+   SEC.count('_C540_HTTP_GET(') == 1 and SEC.count('_C540_HTTP_POST') == 2 and '_C540_HTTP_GET = requests.get' in SEC
+   and '_C540_HTTP_POST = requests.post' in SEC and SEC.count('requests.post') == 1
+   and not any(w in SEC for w in ('requests.put', 'requests.delete', 'requests.request', '.put(', '.delete(')))
 paths = [p for v in om._C540_READ_PATHS.values() for p in v]
 ok("the read list: balances, open positions, fills/trades, transactions -- no order, cancel, margin, leverage or transfer path",
-   len(paths) == 8 and not any(w in p.lower() for p in paths for w in ('order', 'cancel', 'change_margin', 'add-margin', 'reduce-margin',
+   len(paths) == 12 and not any(w in p.lower() for p in paths for w in ('order', 'cancel', 'change_margin', 'add-margin', 'reduce-margin',
                                                                        'leverage', 'transfer', 'withdraw', 'close', 'preference')),
    str(paths))
 ro = om.C540ReadOnly(types.SimpleNamespace(cfg=cfg, c524x=types.SimpleNamespace(pairs={})))
@@ -345,7 +350,7 @@ try:
        and 'Nothing is traded with real money yet' in G1['acc'], G1['acc'][-260:])
     ok("  'Your plan in detail' shows each account, its positions and whether the paper holds them, rent and its GST, fills",
        'Delta India: balance USD 512.35 (net equity 515.00)' in G1['real'] and 'KAITOUSD' in G1['real'] and 'of them in the paper ledger' in G1['real']
-       and 'GST ₹-0.10' in G1['real'] and 'GET requests only: the bot cannot place, change or cancel anything' in G1['real'], G1['real'][:400])
+       and 'GST ₹-0.10' in G1['real'] and 'read requests only' in G1['real'] and 'the bot cannot place, change or cancel anything' in G1['real'], G1['real'][:400])
     ok("  the page never carries a key or a secret", not any(k in G1['html'] for k in (KD, SD, KP, SPI)))
     ROUTES['/v2/wallet/balances'] = lambda u: R(401, {'success': False, 'error': {'code': 'UnauthorizedApiAccess'}})
     bt.c540._tick_at = 0

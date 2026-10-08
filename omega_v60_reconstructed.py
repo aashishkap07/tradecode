@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C541'
+_OMEGA_VERSION = 'C542'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3155,7 +3155,8 @@ class Config:
                                                 # after tax, a 2%+ year 76% (with a $100 reserve 2.93%/73%; the $600
                                                 # without one 3.08%/75%; research/c533_india_1000.txt); a ledger begun
                                                 # at another size is rebased to this at start (x to/from)
-        self.C532_XV_VENUE = 'pi42'             # C532: the second venue -- 'pi42' (Indian, rupee-settled: business income,
+        self.C532_XV_VENUE = 'coindcx'          # C542: CoinDCX (Round 22's winner; Pi42's trading gateway refuses every network).
+                                                # C532: the second venue -- 'pi42' (Indian, rupee-settled: business income,
                                                 # no TDS, no money abroad) or 'binance' (USDT: a VDA, and outside the LRS).
                                                 # Pi42's rupee perps quote Binance's pair; its funding is read from
                                                 # Binance's (4 Oct: 87% of 246 rates within 0.002%), its coins and fees its own
@@ -3175,6 +3176,8 @@ class Config:
                                                 # paper copy (Pi42's trading gateway refuses every network, 8 Oct)
         self.C541_DCX_FEE = 0.0005              # C541: CoinDCX's taker fee, INR-margin futures (its instrument data,
                                                 # 8 Oct 2026: 0.059% = 0.05% + 18% GST) -- the GST is C532_GST
+        self.C542_B15_TEST = True               # C542: a paper copy of the plan at 15 pairs of 12% (Round 22 Part B's pick,
+                                                # held back from the plan itself: single-coin jump risk, see the report)
         self.C540_READ_ONLY = True              # C540 (B1): read the REAL Delta India / Pi42 accounts when keys exist in
                                                 # data/api_keys.json -- GET only, four read paths each, never an order
         self.C540_POLL_S = 600                  # C540: every 10 minutes (logged once an hour per venue)
@@ -23578,6 +23581,27 @@ def _c541_coindcx_coins():
         return None
 
 
+# C542: the plan's second exchange (C532_XV_VENUE) -- name, fee setting, default fee, public host, where its rent
+# comes from. Both copy Binance's rent; they differ in coins, fee, access and (to be confirmed by a CA) tax.
+_C542_V2 = {
+    'pi42': ('Pi42', 'C532_PI42_FEE', 0.0010, 'api.pi42.com',
+             "its rent and prices are read from Binance, its source (4 Oct: 87% of 246 rates within 0.002%)"),
+    'coindcx': ('CoinDCX', 'C541_DCX_FEE', 0.0005, 'api.coindcx.com',
+                "its rent is Binance's own (8 Oct: identical on 191 of 191 coins), its pairs Binance's"),
+}
+
+
+def _c542_coins(venue):
+    """C542: the second exchange's coin list (public, no key), or None"""
+    return _c541_coindcx_coins() if venue == 'coindcx' else _c532_pi42_coins()
+
+
+def _c542_cost(cfg, venue):
+    """C542: a side's cost on a rupee venue: its taker fee + GST + a 0.02% half-spread"""
+    _n, attr, dflt, _h, _s = _C542_V2[venue]
+    return float(getattr(cfg, attr, dflt)) * (1 + float(getattr(cfg, 'C532_GST', 0.18))) + 0.0002
+
+
 class C524CrossVenue(_C501Store):
     """C524 X1 (paper): THE SAME COIN ON TWO VENUES, LONG WHERE LONGS PAY LESS.
 
@@ -23652,6 +23676,35 @@ class C524CrossVenue(_C501Store):
             want = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0) or 0.0)
             if self.start_equity and want > 0 and abs(want - self.start_equity) > 0.005:
                 self.rebase(want)
+            self.venue_moves = list(d.get('venue_moves') or [])[-10:]             # C542
+            was = str(d.get('venue') or getattr(self, 'LEGACY_VENUE', 'pi42')).lower()
+            if self.start_equity and self.on_pi42() and was in _C542_V2 and was != self.venue():
+                self.move_venue(was)
+                if type(self) is C524CrossVenue:
+                    self.save()                                  # (a test copy saves after restoring its own fields)
+
+    def move_venue(self, was):
+        """C542: the plan's second exchange changed (C532_XV_VENUE). Every pair's second leg is closed on the
+        old exchange and reopened on the new one at the same price, and both exchanges' costs a side are booked
+        on that side -- what doing it with real money would cost. The Delta legs, the pairs, the record and
+        the history are unchanged; a coin the new exchange does not list is closed at the next daily run."""
+        old, new = _c542_cost(self.cfg, was), self.cost_b()
+        tot = 0.0
+        for p in self.pairs.values():
+            c_ = abs(float(p['d_qty'])) * float(p['cv']) * float(p['d_px']) * (old + new)
+            p['pnl'] = float(p['pnl']) - c_
+            tot += c_
+        self.side['b'] -= tot
+        self.fees += tot
+        self.eq -= tot
+        self.venue_moves = (list(getattr(self, 'venue_moves', []) or []) +
+                            [dict(at=datetime.utcnow().strftime('%Y-%m-%d %H:%M'), frm=_C542_V2[was][0], to=self.v2(),
+                                  pairs=len(self.pairs), cost=round(tot, 4))])[-10:]
+        self._moved = True
+        logger.info(f"   \U0001f500 C542 {getattr(self, 'NAME', 'your plan')} (paper): the second account moves from "
+                    f"{_C542_V2[was][0]} to {self.v2()} -- {len(self.pairs)} pairs' {_C542_V2[was][0]} legs closed and "
+                    f"reopened on {self.v2()} at the same prices; costs ${tot:.2f} ({100 * old:.3f}% + {100 * new:.3f}% a "
+                    f"side); the Delta legs and the history are unchanged -> ${self.eq:.2f}")
 
     def rebase(self, to):
         """C530: the operator's allocation changed (C524_XVENUE_EQUITY). The ledger
@@ -23692,17 +23745,30 @@ class C524CrossVenue(_C501Store):
     def active(self):
         return bool(getattr(self.cfg, 'C524_XVENUE', True)) and _c516_venue(self.cfg) == 'binance'
 
+    def venue(self):
+        """C542: the second exchange's key -- 'coindcx', 'pi42' or 'binance'"""
+        return str(getattr(self.cfg, 'C532_XV_VENUE', 'pi42')).lower()
+
+    def n_pairs(self):
+        """C542: at most this many pairs (a test copy may differ)"""
+        return int(getattr(self.cfg, 'C524_XVENUE_PAIRS', 10))
+
+    def bet(self):
+        """C542: each leg as a share of the ledger's equity (a test copy may differ)"""
+        return float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10))
+
     def on_pi42(self):
-        return str(getattr(self.cfg, 'C532_XV_VENUE', 'pi42')).lower() == 'pi42'
+        """C532: the second leg is on an Indian rupee venue with its own coin list (C542: Pi42 or CoinDCX)"""
+        return self.venue() in _C542_V2
 
     def v2(self):
         """C532: the second venue's name -- the leg opposite Delta"""
-        return 'Pi42' if self.on_pi42() else 'Binance'
+        return _C542_V2[self.venue()][0] if self.on_pi42() else 'Binance'
 
     def cost_b(self):
-        """C532: the second leg's cost a side: Pi42's taker fee + GST + a 0.02% half-spread, or Binance's"""
+        """C532: the second leg's cost a side: the rupee venue's taker fee + GST + a 0.02% half-spread, or Binance's"""
         if self.on_pi42():
-            return float(getattr(self.cfg, 'C532_PI42_FEE', 0.0010)) * (1 + float(getattr(self.cfg, 'C532_GST', 0.18))) + 0.0002
+            return _c542_cost(self.cfg, self.venue())
         return _C524_COST_B
 
     def fgst(self, x):
@@ -23711,10 +23777,10 @@ class C524CrossVenue(_C501Store):
         return x * (1 + g) if x < 0 else x
 
     def pi42_refresh(self, force=False):
-        """C532: Pi42's list of rupee perps, every 6 hours (a failure keeps the last list)"""
+        """C532: the rupee venue's list of perps (C542: Pi42's or CoinDCX's), every 6 hours (a failure keeps the last list)"""
         if not force and self.pi42 and time.time() - self._pi42_at < 6 * 3600:
             return True
-        got = _c532_pi42_coins()
+        got = _c542_coins(self.venue())
         if got:
             self.pi42, self._pi42_at = got, time.time()
         return bool(self.pi42)
@@ -23729,6 +23795,7 @@ class C524CrossVenue(_C501Store):
             self._warned = {}
             self.rebased = []                                    # C530: each change of its allocation
             self.transfers, self.transfer_fees, self.reb_month = [], 0.0, ''   # C531: between the two venues
+            self.venue_moves = []                                # C542: each change of the second exchange
         if save:
             self.save()
 
@@ -23738,7 +23805,8 @@ class C524CrossVenue(_C501Store):
                      funding=self.funding, price_pnl=self.price_pnl, trades=self.trades, closed=self.closed[-200:],
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
                      side=self.side, rebased=self.rebased, transfers=self.transfers[-50:],
-                     transfer_fees=self.transfer_fees, reb_month=self.reb_month)
+                     transfer_fees=self.transfer_fees, reb_month=self.reb_month,
+                     venue=self.venue(), venue_moves=list(getattr(self, 'venue_moves', []) or [])[-10:])   # C542
             d.update(self._extra())                             # C538
         self._write(d)
 
@@ -23885,7 +23953,7 @@ class C524CrossVenue(_C501Store):
                 out.append(f"{c} ({why})")
         # 3. entries: the widest spreads first
         inn, small = [], []
-        room = int(getattr(self.cfg, 'C524_XVENUE_PAIRS', 10)) - len(self.pairs)
+        room = self.n_pairs() - len(self.pairs)
         cand = sorted((c for c in coins if c not in self.pairs and sig.get(c) is not None and abs(sig[c]) >= 0.20
                        and (not self.on_pi42() or (p42 and c in self.pi42))),          # C532: Pi42's coins only
                       key=lambda c: -abs(sig[c]))
@@ -23895,7 +23963,7 @@ class C524CrossVenue(_C501Store):
             p_, dpx, bpx = self.prods[c], dm.get(self.prods[c]['sym'], 0.0), bm.get(c + 'USDT', 0.0)
             if dpx <= 0 or bpx <= 0:
                 continue
-            n = float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10)) * self.eq
+            n = self.bet() * self.eq
             k = int(round(n / (p_['cv'] * dpx)))
             if k < 1:
                 small.append(f"{c} 1 contract ${p_['cv'] * dpx:.0f} > ${n:.0f}")
@@ -23948,8 +24016,8 @@ class C524CrossVenue(_C501Store):
             logger.info(f"   \U0001f500 C524 cross-venue (paper, Delta vs {self.v2()}) {self.last_run}: day {pnl:+.2f} -> "
                         f"${self.eq:.2f} ({100 * (self.eq / (self.start_equity or 1) - 1):+.2f}%) | {len(self.pairs)} pairs, "
                         f"{inf.get('wide', 0)} of {inf.get('scored', 0)} coins with a 7-day spread >= 20%/yr"
-                        + (f" ({inf.get('wide_on', 0)} on Pi42)" if self.on_pi42() else '')
-                        + (" | Pi42's list did not load: no new pairs today" if inf.get('pi42_missing') else '')
+                        + (f" ({inf.get('wide_on', 0)} on {self.v2()})" if self.on_pi42() else '')
+                        + (f" | {self.v2()}'s list did not load: no new pairs today" if inf.get('pi42_missing') else '')
                         + ""
                         f"{' | in ' + '; '.join(inf['entered']) if inf.get('entered') else ''}"
                         f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''} [{time.time() - t0:.0f}s]")
@@ -23965,15 +24033,15 @@ class C524CrossVenue(_C501Store):
         if not self.on_pi42() or self.pi42 or time.time() - getattr(self, '_pi42_try', 0.0) < 600:
             return
         self._pi42_try = time.time()
+        nm, host = self.v2(), _C542_V2[self.venue()][3]
         if self.pi42_refresh(force=True):
             gone = sorted(c for c in self.pairs if c not in self.pi42)
-            logger.info(f"   \U0001f1ee\U0001f1f3 C534 Pi42's coin list loaded: {len(self.pi42)} rupee perps (api.pi42.com); "
-                        f"held pairs Pi42 does not list, closed at the next daily run: {', '.join(gone) or 'none'}")
+            logger.info(f"   \U0001f1ee\U0001f1f3 C534 {nm}'s coin list loaded: {len(self.pi42)} rupee perps ({host}); "
+                        f"held pairs {nm} does not list, closed at the next daily run: {', '.join(gone) or 'none'}")
         elif not getattr(self, '_pi42_warned', False):
             self._pi42_warned = True
-            logger.warning("⚠️ C534 Pi42's coin list did not load (api.pi42.com) -- retrying every 10 min; until it "
-                           "loads the daily run opens no new pair (check: curl -s -o /dev/null -w '%{http_code}' "
-                           "https://api.pi42.com/v1/exchange/exchangeInfo)")
+            logger.warning(f"⚠️ C534 {nm}'s coin list did not load ({host}) -- retrying every 10 min; until it "
+                           f"loads the daily run opens no new pair (check from the server: curl -sI https://{host})")
 
     def even_out(self, when):
         """C531: NO RESERVE -- the two accounts top each other up. At the daily run, when a
@@ -24105,6 +24173,8 @@ class C524CrossVenue(_C501Store):
                         margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:],
                         transfers=self.transfers[-5:], n_transfers=len(self.transfers), v2=self.v2(),
                         pi42=len(self.pi42) if self.on_pi42() else None,
+                        v2_fee=float(getattr(self.cfg, _C542_V2[self.venue()][1], _C542_V2[self.venue()][2])) if self.on_pi42() else None,
+                        v2_note=_C542_V2[self.venue()][4] if self.on_pi42() else '', venue_moves=list(getattr(self, 'venue_moves', []) or [])[-1:],
                         cost_b=round(self.cost_b(), 6), funding_gst=float(getattr(self.cfg, 'C532_FUNDING_GST', 0.18))
                         if self.on_pi42() else 0.0,
                         transfer_fees=round(self.transfer_fees, 2),
@@ -24207,12 +24277,20 @@ class C538TestRule(C524CrossVenue):
         'dx': dict(name='CoinDCX instead of Pi42', short='CoinDCX', win=7, hours=(0,), venue='coindcx',
                    plain='uses CoinDCX instead of Pi42 as the second account: its coins and its lower fee',
                    month=11.40, ahead=92),
+        # C542 (Round 22 Part B, research/c542_pairs.txt): 15 pairs of 12% passed every pre-registered bar
+        # (+$243/yr after tax over 10 x 10%), but the 20-pair runs showed one coin's one-day jump (BLESS +530%,
+        # 15 Oct 2025) can empty an account, and the list checks caught it only by which coins were held.
+        # So it runs here, beside the plan, not in it: +$29.40 a month before tax on history, ahead 19 of 24.
+        'b15': dict(name='15 pairs of 12%', short='15 x 12%', win=7, hours=(0,), pairs=15, size=0.12,
+                    plain='holds up to 15 pairs at 12% a leg instead of 10 pairs at 10%',
+                    month=29.40, ahead=79),
     }
 
     def __init__(self, bot, key):
         r = self.RULES[key]
         self.key, self.NAME, self.WIN, self.HOURS = key, r['name'], int(r['win']), tuple(r['hours'])
-        self.VENUE = str(r.get('venue') or 'pi42')            # C541: the second account's exchange
+        self.VENUE = str(r.get('venue') or 'plan')            # C541: the second account's exchange ('plan': the plan's)
+        self.LEGACY_VENUE = 'coindcx' if self.VENUE == 'coindcx' else 'pi42'   # C542: a file saved before C542
         self.STATE_FILE = f'c538_{key}.json'
         self._c538_blank()
         super().__init__(bot)
@@ -24224,6 +24302,8 @@ class C538TestRule(C524CrossVenue):
             self.last_slot = int(d.get('last_slot') or 0)
             self.snaps = dict(d.get('snaps') or {})
             self.slots = list(d.get('slots') or [])[-30:]
+        if getattr(self, '_moved', False):
+            self.save()                                      # C542: the second exchange moved at load
 
     def _c538_blank(self):
         self.base = self.base_main = 0.0                     # equity + transfer fees when it was copied
@@ -24250,9 +24330,21 @@ class C538TestRule(C524CrossVenue):
 
     def active(self):
         m = self.main
-        if self.VENUE == 'coindcx' and not (bool(getattr(self.cfg, 'C541_DCX_TEST', True)) and m is not None and m.on_pi42()):
+        if self.VENUE == 'coindcx' and not (bool(getattr(self.cfg, 'C541_DCX_TEST', True)) and m is not None
+                                            and m.venue() == 'pi42'):
             return False                                     # C541: a copy of the Pi42 plan, so only while it is on Pi42
+        if self.key == 'b15' and not bool(getattr(self.cfg, 'C542_B15_TEST', True)):
+            return False
         return bool(getattr(self.cfg, 'C538_TESTS', True)) and m is not None and m.active()
+
+    def n_pairs(self):
+        return int(self.RULES[self.key].get('pairs') or super().n_pairs())     # C542
+
+    def bet(self):
+        return float(self.RULES[self.key].get('size') or super().bet())        # C542
+
+    def venue(self):
+        return 'coindcx' if self.VENUE == 'coindcx' else super().venue()      # C541/C542
 
     # ── C541: the CoinDCX copy's second account ────────────────────────────────
     def v2(self):
@@ -24446,17 +24538,30 @@ class C538TestRule(C524CrossVenue):
 #          and positions need "Trading", and a Trading key must be IP-locked.
 #   Pi42   fapi.pi42.com; headers api-key, signature = hex HMAC-SHA256(secret,
 #          the query string, which carries timestamp in MILLISECONDS).
+#   CoinDCX (C542) api.coindcx.com; headers X-AUTH-APIKEY, X-AUTH-SIGNATURE =
+#          hex HMAC-SHA256(secret, the compact JSON body, which carries timestamp
+#          in MILLISECONDS). Its READS are POSTs by its design (positions,
+#          transactions, balances) and the futures wallet a GET with a body, so
+#          C542 restates the guarantee: two call sites (GET, POST), each only to
+#          a path on the read list below; there is no order, cancel, margin,
+#          leverage, transfer or withdrawal path anywhere in this section. A key
+#          may be bound to the server's IP on CoinDCX's API dashboard.
 import hmac as _c540_hmac
 from urllib.parse import urlencode as _c540_urlencode
 
-_C540_URL = {'delta_india': 'https://api.india.delta.exchange', 'pi42': 'https://fapi.pi42.com'}
+_C540_URL = {'delta_india': 'https://api.india.delta.exchange', 'pi42': 'https://fapi.pi42.com',
+             'coindcx': 'https://api.coindcx.com'}
 _C540_READ_PATHS = {
     'delta_india': ('/v2/wallet/balances', '/v2/positions/margined', '/v2/fills', '/v2/wallet/transactions'),
     'pi42': ('/v1/wallet/futures-wallet/details', '/v1/positions/OPEN', '/v1/user-data/trade-history',
              '/v1/user-data/transaction-history'),
+    'coindcx': ('/exchange/v1/derivatives/futures/wallets', '/exchange/v1/derivatives/futures/positions',
+                '/exchange/v1/derivatives/futures/positions/transactions', '/exchange/v1/users/balances'),
 }
-_C540_NAMES = {'delta_india': 'Delta India', 'pi42': 'Pi42'}
-_C540_HTTP_GET = requests.get          # the one network call (tests replace it with recorded responses)
+_C540_DCX_GET = ('/exchange/v1/derivatives/futures/wallets',)       # C542: CoinDCX's one read that is a GET
+_C540_NAMES = {'delta_india': 'Delta India', 'pi42': 'Pi42', 'coindcx': 'CoinDCX'}
+_C540_HTTP_GET = requests.get          # a network call (tests replace it with recorded responses)
+_C540_HTTP_POST = requests.post        # C542: the other one -- CoinDCX's read paths only (see _get)
 
 
 def _c540_keys():
@@ -24489,6 +24594,19 @@ def _c540_pi42_sign(secret, query):
     return _c540_hmac.new(secret.encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
 
 
+def _c540_dcx_body(params, ts_ms):
+    """C542: CoinDCX's request body -- compact JSON (no spaces), the timestamp in milliseconds; the exact
+    bytes signed are the bytes sent"""
+    d = dict(params or {})
+    d['timestamp'] = int(ts_ms)
+    return json.dumps(d, separators=(',', ':'))
+
+
+def _c540_dcx_sign(secret, body):
+    """C542: CoinDCX: hex HMAC-SHA256 of the JSON body"""
+    return _c540_hmac.new(secret.encode('utf-8'), body.encode('utf-8'), hashlib.sha256).hexdigest()
+
+
 class C540Refused(Exception):
     """a venue said no; the message is plain words, never the key or the response body"""
 
@@ -24512,6 +24630,12 @@ def _c540_why(venue, status, body):
             return "Delta does not know this key (deleted, regenerated, a testnet key, or a typo)"
         if 'signature' in t:
             return "the signature did not match: the secret in api_keys.json is probably wrong"
+    elif venue == 'coindcx':                                     # C542
+        if 'ip' in t and ('bind' in t or 'whitelist' in t or 'allow' in t):
+            return "the key is bound to another IP address: bind it to the server's address on CoinDCX's API dashboard"
+        if status == 401 or 'invalid credentials' in t or 'signature' in t:
+            return ("CoinDCX refused the key (a typo in api_keys.json, a deleted key, or a key bound to another IP "
+                    "address than the server's)")
     else:
         if status in (401, 403) and ('ip' in t and 'allow' in t or 'whitelist' in t):
             return "the server's IP address is not on this key's allowed list"
@@ -24523,7 +24647,7 @@ def _c540_why(venue, status, body):
 
 
 class C540ReadOnly:
-    """B1: the operator's REAL Delta India and Pi42 accounts, read-only, beside the paper ledger."""
+    """B1: the operator's REAL Delta India, Pi42 and (C542) CoinDCX accounts, read-only, beside the paper ledger."""
 
     def __init__(self, bot):
         self.bot, self.cfg = bot, bot.cfg
@@ -24537,11 +24661,25 @@ class C540ReadOnly:
         return bool(getattr(self.cfg, 'C540_READ_ONLY', True))
 
     def _get(self, venue, path, params=None):
-        """THE ONLY NETWORK CALL: an HTTP GET to a path on the read list, signed as the venue's docs say"""
+        """THE ONLY NETWORK CALLS: to a path on the read list, signed as the venue's docs say -- an HTTP GET, or
+        (C542) for CoinDCX, whose reads are POSTs by design, a POST to one of its four read paths"""
         if path not in _C540_READ_PATHS.get(venue, ()):
             raise PermissionError(f'C540 is read-only: {path} is not on the read list')
         key, secret = self.keys[venue]
         params = dict(params or {})
+        if venue == 'coindcx':
+            body = _c540_dcx_body(params, time.time() * 1000)
+            headers = {'Content-Type': 'application/json', 'X-AUTH-APIKEY': key,
+                       'X-AUTH-SIGNATURE': _c540_dcx_sign(secret, body), 'User-Agent': 'omega-readonly'}
+            send = _C540_HTTP_GET if path in _C540_DCX_GET else _C540_HTTP_POST
+            r = send(_C540_URL[venue] + path, data=body, headers=headers, timeout=15)
+            try:
+                out = r.json()
+            except Exception:
+                out = None
+            if r.status_code != 200 or (isinstance(out, dict) and str(out.get('status') or '').lower() == 'error'):
+                raise C540Refused(_c540_why(venue, r.status_code, out))
+            return out
         if venue == 'delta_india':
             q = _c540_urlencode(params)
             query = ('?' + q) if q else ''
@@ -24638,13 +24776,46 @@ class C540ReadOnly:
                     positions=pos, rent_24h_inr=round(rent, 2), gst_24h_inr=round(gst, 2), by_type={k: round(a, 2) for k, a in by.items()},
                     fills_24h=len(th), fees_24h_inr=round(sum(self._f(x.get('fee')) for x in th), 2))
 
+    def _read_dcx(self):
+        """C542: CoinDCX -- the futures wallets (rupee and USDT), open positions, the last 24 h of rent, the
+        spot rupee balance"""
+        v, now = 'coindcx', time.time()
+        w = self._get(v, '/exchange/v1/derivatives/futures/wallets')
+        w = w if isinstance(w, list) else []
+        wallets = [dict(asset=str(x.get('currency_short_name') or ''), balance=round(self._f(x.get('balance')), 4),
+                        locked=round(self._f(x.get('locked_balance')), 4)) for x in w
+                   if self._f(x.get('balance')) or self._f(x.get('locked_balance'))]
+        p = self._get(v, '/exchange/v1/derivatives/futures/positions',
+                      {'page': '1', 'size': '100', 'margin_currency_short_name': ['INR', 'USDT']})
+        p = p if isinstance(p, list) else []
+        pos = [dict(symbol=str(x.get('pair') or ''), coin=str(x.get('pair') or '')[2:].split('_')[0],
+                    size=self._f(x.get('active_pos')), entry=self._f(x.get('avg_price')), liq=self._f(x.get('liquidation_price')),
+                    margin=self._f(x.get('locked_margin')), cur=str(x.get('margin_currency_short_name') or ''))
+               for x in p if self._f(x.get('active_pos'))]
+        t = self._get(v, '/exchange/v1/derivatives/futures/positions/transactions',
+                      {'stage': 'funding', 'page': '1', 'size': '100', 'margin_currency_short_name': ['INR', 'USDT']})
+        t = t if isinstance(t, list) else []
+        t0 = (now - 86400) * 1000
+        day = [x for x in t if self._f(x.get('created_at')) >= t0]
+        rent = {}
+        for x in day:
+            c_ = str(x.get('margin_currency_short_name') or '?')
+            rent[c_] = rent.get(c_, 0.0) + self._f(x.get('amount'))
+        b = self._get(v, '/exchange/v1/users/balances')
+        b = b if isinstance(b, list) else []
+        inr = sum(self._f(x.get('balance')) for x in b if str(x.get('currency') or '').upper() == 'INR')
+        return dict(ok=True, at=now, wallets=wallets, positions=pos, rent_24h={k: round(a, 4) for k, a in rent.items()},
+                    rent_n=len(day), spot_inr=round(inr, 2))
+
     def tick(self, now=None):
         now = now or time.time()
         if not self.active() or now - self._tick_at < float(getattr(self.cfg, 'C540_POLL_S', 600)):
             return
         self._tick_at = now
         self.keys, self.loose = _c540_keys()
-        for v, fn in (('delta_india', self._read_delta), ('pi42', self._read_pi42)):
+        xv = getattr(self.bot, 'c524x', None)
+        plan_v = xv.venue() if xv is not None and hasattr(xv, 'venue') else 'pi42'
+        for v, fn in (('delta_india', self._read_delta), ('pi42', self._read_pi42), ('coindcx', self._read_dcx)):
             if v not in self.keys:
                 with self._lock:
                     self.snap.pop(v, None)
@@ -24658,6 +24829,8 @@ class C540ReadOnly:
             with self._lock:
                 self.snap[v] = s
             hour = int(now // 3600)
+            if v == 'pi42' and plan_v != 'pi42' and not s.get('ok'):
+                hour = int(now // 86400)                     # C542: no longer the plan's exchange -- once a day
             if self._said.get(v) != hour:                     # once an hour per venue
                 self._said[v] = hour
                 if s.get('ok'):
@@ -24674,6 +24847,11 @@ class C540ReadOnly:
             return (f"Delta India: {w}, {len(s.get('positions') or [])} position(s), rent last 24 h {s.get('rent_24h', 0):+.4f}, "
                     f"{s.get('fills_24h', 0)} fill(s) | the paper ledger holds {len(getattr(self.bot.c524x, 'pairs', {}) or {})} "
                     f"pairs; nothing is traded live")
+        if v == 'coindcx':
+            w = ', '.join(f"{x['asset']} {x['balance']:.2f}" for x in s.get('wallets') or []) or 'no futures balance'
+            rn = ', '.join(f"{k} {a:+.4f}" for k, a in (s.get('rent_24h') or {}).items()) or '0'
+            return (f"CoinDCX: futures {w}; rupee wallet INR {s.get('spot_inr', 0):.2f}, {len(s.get('positions') or [])} "
+                    f"position(s), rent last 24 h {rn} | nothing is traded live")
         return (f"Pi42: INR {s.get('inr', 0):.2f} (margin {s.get('margin_inr', 0):.2f}), {len(s.get('positions') or [])} position(s), "
                 f"rent last 24 h INR {s.get('rent_24h_inr', 0):+.2f} (GST {s.get('gst_24h_inr', 0):+.2f}), {s.get('fills_24h', 0)} fill(s) | "
                 f"nothing is traded live")
@@ -25236,7 +25414,7 @@ class TradingBot:
         self.c521b = C521Bfusd(self)            # C521: BFUSD on the whole futures wallet (paper)
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance/Pi42 (C532) funding spread, both legs (paper)
-        self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3', 'dx')]   # C538: two test rules beside it (paper); C541: CoinDCX
+        self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3', 'dx', 'b15')]   # C538: two test rules beside it (paper); C541: CoinDCX; C542: 15 x 12%
         self.c540 = C540ReadOnly(self)           # C540 (B1): the real accounts, read-only, when keys exist
         self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
@@ -25881,7 +26059,7 @@ class TradingBot:
                            + ("" if 'delta' in set(getattr(c, 'C527_PLAN', ()) or ()) else ", an experiment"))
             if getattr(self, 'c524x', None) is not None and self.c524x.active():
                 led.append(f"Delta vs {self.c524x.v2()} funding spread, both legs, ${float(getattr(c, 'C524_XVENUE_EQUITY', 550.0)):.0f}"
-                           + (" (C532: both in rupees; Pi42's rates read from Binance, its source)" if self.c524x.on_pi42() else " (C524)"))
+                           + (f" (C532/C542: both in rupees; {self.c524x.v2()}'s rates are Binance's)" if self.c524x.on_pi42() else " (C524)"))
             if getattr(self, 'c530p', None) is not None and self.c530p.active():
                 led.append(f"Pendle fixed yield on a stablecoin, ${float(getattr(c, 'C530_PENDLE_EQUITY', 100.0)):.0f} (C530)")
             if led:
@@ -44741,7 +44919,7 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
 <details class="fold" id="plandet"><summary><b id="plandetk">Your plan in detail</b> <span class="muted">(each pair's numbers, both accounts, every money move)</span></summary><div class="inner">
 <section hidden><h2>Your plan, as if live</h2><div id="plantotal" class="muted">&mdash;</div></section>
 <section><h2>Your real exchange accounts <span class="muted">(read-only)</span></h2><div id="realacc" class="muted">&mdash;</div></section>
-<section><h2>Delta vs Pi42 rent-gap trade <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
+<section><h2>The rent-gap trade <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
 </div></details>
 
 <details class="fold" id="more"><summary><b>Experiments and details</b> <span class="muted" id="moresum">(not your money)</span></summary><div class="inner">
@@ -45186,16 +45364,17 @@ async function pull(){
       else if(xv.mode!=='paper'){q('xvenue').innerHTML='<span class="muted">off (it reads Binance\'s prices and funding: needs OMEGA_VENUE=binance)</span>'}
       else if(!xv.start_equity){q('xvenue').innerHTML='<span class="muted">first run at '+xv.next_run_utc+' UTC</span>'}
       else{
-        var xi=xv.info||{},v2=xv.v2||'Binance',xh='<div class="s"><b>Delta vs '+v2+'</b>'+(v2==='Pi42'?' <span class="muted">\u00b7 both Indian and settled in rupees: one business income, no 1% TDS, no money abroad (C532) \u00b7 '+
-          'Pi42\'s funding and prices are read from Binance, its source (4 Oct: 87% of 246 rates within 0.002%) \u00b7 '+
-          (xv.pi42?'Pi42\'s '+xv.pi42+' coins only':'<span class="warn">Pi42\'s coin list not loaded yet (tried every 10 min; without it nothing new opens)</span>')+' \u00b7 its fee 0.10% + GST \u00b7 '+
-          Math.round(100*(xv.funding_gst||0))+'% GST on funding paid</span>':'')+'</div>'+
+        var xi=xv.info||{},v2=xv.v2||'Binance',rup=(xv.v2_fee!==null&&xv.v2_fee!==undefined),   /* C542: Pi42 or CoinDCX */
+          xh='<div class="s"><b>Delta vs '+v2+'</b>'+(rup?' <span class="muted">\u00b7 both Indian, money in and out in rupees: one business income, no 1% TDS, no money abroad (C532) \u00b7 '+
+          v2+': '+(xv.v2_note||'')+' \u00b7 '+
+          (xv.pi42?v2+'\'s '+xv.pi42+' coins only':'<span class="warn">'+v2+'\'s coin list not loaded yet (tried every 10 min; without it nothing new opens)</span>')+' \u00b7 its fee '+
+          (100*xv.v2_fee).toFixed(2)+'% + GST \u00b7 '+Math.round(100*(xv.funding_gst||0))+'% GST on funding paid</span>':'')+'</div>'+
           '<div class="s muted">the same coin long on the venue where longs pay less funding, short on the other: prices cancel, the funding difference is collected · '+
           'enter at a 7-day spread of 20%/yr, out under 10% · 10 pairs, 10% a leg · marked, funded and traded once a day at '+xv.next_run_utc+' UTC (a new pair shows only its costs until then) · paper account of '+money(xv.start_equity)+' — never touches money · last '+(xv.last_run||'—')+'</div>';
         var xp=xv.pending||null, xby=(xp&&xp.by)||{};   /* C529: what has settled since the daily run, so "+$0.00" no longer stands alone */
         xh+='<div style="margin:4px 0"><b>'+money(xv.eq)+'</b> <span class="'+cls(xv.pnl)+'">'+sgn(xv.pnl)+' ('+(xv.pct>=0?'+':'')+Number(xv.pct).toFixed(2)+'%)</span>'+
           ' <span class="muted">· '+xv.n+' pairs · funding '+sgn(xv.funding)+' booked'+(xp?', <span class="'+cls(xp.total)+'">'+sgn(xp.total)+'</span> settled since (booked at the next run)':'')+' · prices '+sgn(xv.price_pnl)+' · fees '+money(xv.fees)+
-          (xi.scored!==undefined?' · '+xi.wide+' of '+xi.scored+' coins at 20%/yr+'+(xi.wide_on!==undefined&&xi.wide_on!==null&&v2==='Pi42'?' ('+xi.wide_on+' on Pi42)':''):'')+'</span></div>';
+          (xi.scored!==undefined?' · '+xi.wide+' of '+xi.scored+' coins at 20%/yr+'+(xi.wide_on!==undefined&&xi.wide_on!==null&&rup?' ('+xi.wide_on+' on '+v2+')':''):'')+'</span></div>';
         var mg=xv.margins||{};
         if(mg.d&&mg.b){var side=function(nm,m){return nm+' side <b>'+money(m.eq)+'</b> of '+money(m.start)+' ('+(m.lev!==null?m.lev+'x':'\u2014')+')'};
           var lo=Math.min(mg.d.frac||1,mg.b.frac||1);
@@ -45443,11 +45622,11 @@ function renderSimple(d){
   var money=m2;   /* C535: $1,000.00 here */
   var P=(d.c527&&!d.c527.error&&d.c527.plan&&d.c527.plan.n)?d.c527:null,xv=d.c524||{},box=q('simple');
   var tl9=function(on){['eq','day','rec'].forEach(function(k){var t=q(k).closest('.tile');if(t)t.hidden=on})};
-  if(!P){box.hidden=true;tl9(false);q('plandetk').textContent='Delta vs Pi42 rent-gap trade (paper experiment)';
+  if(!P){box.hidden=true;tl9(false);q('plandetk').textContent='Delta vs '+(xv.v2||'Pi42')+' rent-gap trade (paper experiment)';
     if(!window._c535open){q('more').open=true;window._c535open=1}return}
   box.hidden=false;window._c535open=1;
   tl9(true);   /* C539: your plan, its accounts and "plan so far" are at the top; the old tiles said it again */
-  q('plandetk').textContent=(P.rows||[]).some(function(r){return r.key==='xvenue'&&r.plan})?'Your plan in detail':'Delta vs Pi42 rent-gap trade (paper experiment)';
+  q('plandetk').textContent=(P.rows||[]).some(function(r){return r.key==='xvenue'&&r.plan})?'Your plan in detail':'Delta vs '+(xv.v2||'Pi42')+' rent-gap trade (paper experiment)';
   var pl=P.plan,tx=P.tax||{},v2=xv.v2||'Binance',parts=(P.rows||[]).filter(function(r){return r.plan});
   var nm={xvenue:'the rent-gap trade (Delta vs '+v2+')',delta:'the book on Delta',pendle:'Pendle',book:'the Binance book',
           savings:'Savings',spot:'the spot pot',carry:'carry',reserve:'reserve kept aside'};
@@ -45503,6 +45682,11 @@ function renderSimple(d){
     last='<div class="s"><b>Last daily run: '+whenL+'</b> \u2014 done'+(res?': '+res:'')+'. '+
       (ch.length?(function(t){return t.charAt(0).toUpperCase()+t.slice(1)})(ch.join('; '))+'.':'No pairs needed changing.')+' '+
       (xi.day_pnl===undefined?'':(xi.moved?'Moved '+money(xi.moved.amt)+' from '+xi.moved.frm+' to '+xi.moved.to+'.':'No money needed moving.'))+'</div>';}
+  var vm=(xv.venue_moves||[]).slice(-1)[0];   /* C542: the second account changed exchange */
+  if(vm&&vm.at&&(Date.now()-Date.parse(vm.at.replace(' ','T')+':00Z'))<14*86400000){
+    last+='<div class="s"><b>Second account moved: '+vm.frm+' \u2192 '+vm.to+'</b> <span class="muted">('+dayMon(vm.at.slice(0,10))+'): '+vm.pairs+
+      ' pairs\u2019 '+vm.frm+' bets closed and reopened on '+vm.to+' at the same prices, costing '+money(vm.cost)+' in fees, as it would with real money. '+
+      'Your Delta bets and the plan\u2019s history are unchanged.</span></div>'}
   q('s-next').innerHTML=last+'<div class="s"><b>Next daily run: '+istHM(nx)+' IST</b> <span class="muted">(in '+untilUTC(nx)+')</span>. '+
     'The bot adds up the rent, closes pairs whose gap has faded, opens new ones, and evens out the two accounts.</div>'+
     '<div class="s">Every hour it checks both accounts and warns if one runs low.</div>'+
@@ -45522,28 +45706,32 @@ function dayMon(ymd){var a=String(ymd||'').split('-'),mo=['Jan','Feb','Mar','Apr
   return a.length===3?(+a[2])+' '+mo[(+a[1])-1]:String(ymd||'')}
 /* C540 (B1): the operator's REAL Delta India and Pi42 accounts, read-only -- a window, not a hand */
 function renderReal(d){
-  var R=d.c540||{},V=R.venues||{},nm={delta_india:'Delta India',pi42:'Pi42'},box=q('realacc'),line=[],det='';
+  var R=d.c540||{},V=R.venues||{},nm={delta_india:'Delta India',coindcx:'CoinDCX',pi42:'Pi42'},box=q('realacc'),line=[],det='';
+  var pv=(d.c524||{}).v2||'';   /* C542: the plan's second exchange */
   var ks=Object.keys(nm),con=ks.filter(function(k){return (V[k]||{}).connected});
   if(R.error||R.mode==='off'||!con.length){
     line.push('<span class="muted">Your real exchange accounts: not connected yet. When you add read-only keys, their real balances show here beside the paper ones.</span>');
-    det='<div class="s muted">Not connected. The bot reads your real Delta India and Pi42 accounts only when keys are in data/api_keys.json on the server '+
-      '(read-only; it can never place an order). The step-by-step guide is in reports/2026-10-08_b1_read_only.md.</div>';
+    det='<div class="s muted">Not connected. The bot reads your real Delta India and '+(pv||'second exchange')+' accounts only when keys are in data/api_keys.json on the server '+
+      '(read-only; it can never place an order). The step-by-step guides: reports/2026-10-08_b1_read_only.md (Delta) and reports/2026-10-08_c542_best_pair.md (CoinDCX).</div>';
   }else{
     ks.forEach(function(k){var x=V[k]||{};
-      if(!x.connected){det+='<div class="s"><b>'+nm[k]+'</b>: not connected (no key in api_keys.json)</div>';return}
+      if(!x.connected){if(k!=='pi42'||pv==='Pi42')det+='<div class="s"><b>'+nm[k]+'</b>: not connected (no key in api_keys.json)</div>';return}
+      if(!x.ok&&k==='pi42'&&pv!=='Pi42'){det+='<div class="s muted"><b>Pi42</b> (no longer your plan\u2019s exchange): not read \u2014 '+x.error+'</div>';return}
       if(!x.ok){line.push('<b class="warn">'+nm[k]+'</b>: not read \u2014 '+x.error);det+='<div class="s"><b class="warn">'+nm[k]+'</b>: not read \u2014 '+x.error+'</div>';return}
       var bal=k==='pi42'?'\u20b9'+Number(x.inr||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}):
-        ((x.wallets||[]).map(function(w){return w.asset+' '+Number(w.balance).toFixed(2)}).join(', ')||'0.00');
+        ((x.wallets||[]).map(function(w){return w.asset+' '+Number(w.balance).toFixed(2)}).join(', ')||'0.00')+
+        (k==='coindcx'?' \u00b7 rupee wallet \u20b9'+Number(x.spot_inr||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}):'');
       var np=(x.positions||[]).length;
       line.push(nm[k]+' '+bal+(np?' \u00b7 '+np+' position'+(np>1?'s':''):''));
       det+='<div class="s"><b>'+nm[k]+'</b>: balance '+bal+(k==='pi42'?' (margin \u20b9'+Number(x.margin_inr||0).toFixed(2)+', free \u20b9'+Number(x.free_inr||0).toFixed(2)+')':
         (x.equity?' (net equity '+Number(x.equity).toFixed(2)+')':''))+' \u00b7 '+np+' open position'+(np===1?'':'s')+
         (np?' ('+x.positions.map(function(p){return p.symbol+' '+(p.side?p.side.toLowerCase()+' ':'')+p.size}).join(', ')+'; '+x.in_paper+' of them in the paper ledger)':'')+
-        ' \u00b7 last 24 h: rent '+(k==='pi42'?'\u20b9'+Number(x.rent_24h_inr||0).toFixed(2)+' (GST \u20b9'+Number(x.gst_24h_inr||0).toFixed(2)+')':Number(x.rent_24h||0).toFixed(4))+
-        ', '+(x.fills_24h||0)+' fill'+((x.fills_24h||0)===1?'':'s')+' \u00b7 read '+istDay(new Date(Number(x.at)*1000).toISOString().slice(0,16).replace('T',' '))+' IST</div>';
+        ' \u00b7 last 24 h: rent '+(k==='pi42'?'\u20b9'+Number(x.rent_24h_inr||0).toFixed(2)+' (GST \u20b9'+Number(x.gst_24h_inr||0).toFixed(2)+')':
+          (k==='coindcx'?(Object.keys(x.rent_24h||{}).map(function(c){return c+' '+Number(x.rent_24h[c]).toFixed(4)}).join(', ')||'0'):Number(x.rent_24h||0).toFixed(4)))+
+        (k==='coindcx'?'':', '+(x.fills_24h||0)+' fill'+((x.fills_24h||0)===1?'':'s'))+' \u00b7 read '+istDay(new Date(Number(x.at)*1000).toISOString().slice(0,16).replace('T',' '))+' IST</div>';
     });
     line=['Your real accounts (read-only): '+line.join(' \u00b7 ')+(R.live_locked?'. Nothing is traded with real money yet.':'')];
-    det+='<div class="s muted">Read every 10 minutes with GET requests only: the bot cannot place, change or cancel anything. The paper ledger holds '+
+    det+='<div class="s muted">Read every 10 minutes with read requests only (CoinDCX\u2019s reads are POSTs by its design; each is on a fixed read list): the bot cannot place, change or cancel anything. The paper ledger holds '+
       (R.paper_pairs||0)+' pairs; until the February pilot your real accounts should hold none.'+(R.loose?' <b class="bad">api_keys.json is readable by other users: chmod 600 it.</b>':'')+'</div>';
   }
   var a=q('s-acc'),old=q('realline');if(old)old.remove();
@@ -45583,6 +45771,10 @@ function renderTests(d,xv){
     (f8?'checking every 8 hours came out ahead by about '+m2(f8.month)+' a month (ahead in '+Math.round(f8.ahead/10)+' months out of 10)':'')+
     (f8&&w3?'; ':'')+(w3?'the 3-day average by about '+m2(w3.month)+' a month, but only in '+Math.round(w3.ahead/10)+' months out of 10, with big swings':'')+
     '. On 2 December the research checks whether either truly beats yours. Until then your rule stays.</div>';
+  var b15=T.filter(function(t){return t.key==='b15'})[0];   /* C542 */
+  if(b15)h+='<div class="s muted">15 pairs of 12%: the research\u2019s best setting with CoinDCX \u2014 in two years of past data about '+m2(b15.month)+
+    ' a month more than yours before tax (ahead in '+Math.round(b15.ahead/10)+' months out of 10). It is not your plan: more and bigger bets mean one coin '+
+    'that jumps several times over in a day (BLESS rose 530% on 15 Oct 2025) can empty one account. It must first pass a test with protection against that.</div>';
   if(dx)h+='<div class="s muted">CoinDCX: Pi42’s trading door is shut to the bot (8 Oct), so this copy runs your exact rule with CoinDCX as the '+
     'second account'+(dx.coins?' ('+dx.coins+' coins listed there)':'')+'. In two years of past data it came out ahead by about '+m2(dx.month)+
     ' a month (ahead in '+Math.round(dx.ahead/10)+' months out of 10): more coins to choose from and half Pi42’s fee. Moving your plan to '+

@@ -42,7 +42,7 @@ c0 = om.Config()
 # This test checks C532's mechanics at the allocation C532 set, pinned below.
 C532 = dict(C524_XVENUE_EQUITY=550.0, C528_RESERVE=50.0, C528_BUDGET=600.0, C527_PLAN=('xvenue', 'reserve'))
 ok("Delta vs Pi42 $550 + a $50 reserve = the operator's $600; the plan is those two",
-   c0.C532_XV_VENUE == 'pi42' and tuple(c0.C527_PLAN) == C532['C527_PLAN']
+   c0.C532_XV_VENUE in ('pi42', 'coindcx') and tuple(c0.C527_PLAN) == C532['C527_PLAN']
    and C532['C524_XVENUE_EQUITY'] + C532['C528_RESERVE'] == C532['C528_BUDGET'])
 ok("  the book on Delta and the Binance book are paper experiments; Pendle off; live locked",
    c0.C521_DELTA_EQUITY == 500.0 and c0.C530_PENDLE is False and c0.C488_LIVE_OK is False)
@@ -58,6 +58,7 @@ ok("  the evidence for reading Pi42's funding from Binance is kept (246 rupee pe
 
 print("\n2. THE CROSS-VENUE LEDGER WITH PI42 AS ITS SECOND VENUE")
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 for _k, _v in C532.items():
@@ -118,7 +119,7 @@ ok("only Pi42's coins enter: HOT (short Delta / long Pi42); COLD's spread is as 
 ok("  costs: Pi42's 0.138% + Delta's 0.079% of the pair's notional", abs(x.fees - 50.0 * (cb + om._C524_COST_D)) < 1e-9,
    f"{x.fees:.6f}")
 ok("  the entries and the daily log line name Pi42", 'short Delta/long Pi42' in ' '.join(x.info['entered'])
-   and 'C524 cross-venue (paper, Delta vs {self.v2()})' in SRC and "({inf.get('wide_on', 0)} on Pi42)" in SRC)
+   and 'C524 cross-venue (paper, Delta vs {self.v2()})' in SRC and "({inf.get('wide_on', 0)} on {self.v2()})" in SRC)   # C542: the venue's name
 x.last_run = ''
 x.run(now_ms=today + DAY + 30 * 60000)
 hD = sum(1 for t in range(today // 1000 + 3600, (today + DAY) // 1000 + 1800, 3600) if (t // 3600) % 4 == 0)   # C539: to the run
@@ -257,7 +258,7 @@ try:
     ok("the totals: $600 = $550 trading + $50 reserve; the slab note with Rs 12 lakh", 'your equity $600.00 = $550.00 trading + $50.00 reserve' in G['alltotal']
        and '₹12 lakh' in G['alltotal'] and 'carried 4 years' in G['alltotal'], G['alltotal'][-400:])
     ok("the cross-venue panel: Delta vs Pi42, rupees, the Binance-read note, the reserve rule",
-       'Delta vs Pi42' in G['xvenue'] and 'settled in rupees' in G['xvenue'] and 'read from Binance' in G['xvenue']
+       'Delta vs Pi42' in G['xvenue'] and 'in rupees' in G['xvenue'] and 'read from Binance' in G['xvenue']   # C542 wording
        and 'reserve (half on each venue) tops it up at once' in G['xvenue'], G['xvenue'][:400])
     ok("no JavaScript errors", not errs, str(errs))
 except ImportError:

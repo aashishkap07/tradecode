@@ -325,14 +325,14 @@ done
 # paper accounts (positions, fills, funding; no keys). C524: c524_xvenue.json, the
 # cross-venue funding ledger. C530: c530_pendle.json, the Pendle fixed-yield ledger.
 # C538: c538_f8.json and c538_w3.json, the two test rules beside the cross-venue ledger.
-# C541: c538_dx.json, the same plan with CoinDCX in Pi42's place (paper).
+# C541: c538_dx.json, the same plan with CoinDCX in Pi42's place (paper). C542: c538_b15.json, 15 pairs of 12%.
 for f in "$REPO"/data/mode_v60.json "$REPO"/data/state_v60.json \
          "$REPO"/data/c488_book.json "$REPO"/data/c490_carry.json \
          "$REPO"/data/c501_spot.json "$REPO"/data/c501_savings.json "$REPO"/data/c501_allostatic.json \
          "$REPO"/data/c510_tournament.json "$REPO"/data/c488_inputs.npz \
          "$REPO"/data/c521_delta.json "$REPO"/data/c521_bfusd.json "$REPO"/data/c524_xvenue.json \
          "$REPO"/data/c530_pendle.json "$REPO"/data/c538_f8.json "$REPO"/data/c538_w3.json \
-         "$REPO"/data/c538_dx.json; do
+         "$REPO"/data/c538_dx.json "$REPO"/data/c538_b15.json; do
     [ -e "$f" ] && cp -f "$f" "$WT/logs/"
 done
 [ "$copied" -gt 0 ] || exit 0

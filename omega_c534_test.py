@@ -38,6 +38,7 @@ ok("version C534 or later", int(om._OMEGA_VERSION[1:]) >= 534)
 
 print("\n1. PI42'S COIN LIST SOON AFTER A START")
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 x0 = json.load(open(os.path.join(SNAP, 'c524_xvenue.json')))
@@ -77,7 +78,7 @@ LOG.clear(); CALLS.clear()
 xv.pi42_boot()
 w = [m for lv, m in LOG if lv >= logging.WARNING and 'C534' in m]
 ok("api.pi42.com does not answer: one warning, with the check to run", len(CALLS) == 1 and len(w) == 1
-   and "did not load" in w[0] and 'curl' in w[0] and 'api.pi42.com/v1/exchange/exchangeInfo' in w[0], w[0][:200] if w else '')
+   and "did not load" in w[0] and 'curl' in w[0] and 'https://api.pi42.com' in w[0], w[0][:200] if w else '')   # C542: the venue's host
 xv.pi42_boot()
 ok("  no second try within 10 minutes", len(CALLS) == 1)
 xv._pi42_try -= 601

@@ -40,7 +40,7 @@ print("\n1. THE ALLOCATION")
 c0 = om.Config()
 ok("Delta vs Pi42 $1000 = the operator's whole $1000; no reserve; the plan is the trade",
    c0.C524_XVENUE_EQUITY == 1000.0 and c0.C528_BUDGET == 1000.0 and c0.C528_RESERVE == 0.0
-   and c0.C532_XV_VENUE == 'pi42' and 'xvenue' in c0.C527_PLAN and 'delta' not in c0.C527_PLAN)
+   and c0.C532_XV_VENUE in ('pi42', 'coindcx') and 'xvenue' in c0.C527_PLAN and 'delta' not in c0.C527_PLAN)
 ok("  the two accounts even each other out (the other venue tops a side up); $1 a transfer",
    c0.C531_XV_REBALANCE is True and c0.C531_XV_TRANSFER_FEE == 1.0 and c0.C529_XV_WARN_AT == 0.65
    and c0.C529_XV_RESERVE_AT == 0.50)
@@ -61,6 +61,7 @@ ok("  the steadier near-tie ($200 book + $800 trade: 3.03%, 77%) is written down
 
 print("\n2. THE SERVER'S CROSS-VENUE LEDGER, $500 -> $1000")
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 x0 = json.load(open(os.path.join(SNAP, 'c524_xvenue.json')))
@@ -201,7 +202,7 @@ try:
        and 'reports/2026-10-04_c533_1000.md' in G['alltotal'] and '₹12 lakh' in G['alltotal'], G['alltotal'][-400:])
     ok("the cross-venue panel: $500 a side; no reserve, below 50% the log says move it NOW",
        'no reserve: below 50% the log says move it NOW' in G['xvenue'] and 'reserve (half on each venue)' not in G['xvenue']
-       and 'settled in rupees' in G['xvenue'], G['xvenue'][-400:])
+       and 'in rupees' in G['xvenue'], G['xvenue'][-400:])   # C542 wording
     ok("fits a phone (412 px, no sideways scroll)", W <= 412, str(W))
     ok("no JavaScript errors", not errs, str(errs))
 except ImportError:

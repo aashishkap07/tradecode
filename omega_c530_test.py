@@ -56,6 +56,7 @@ ok("C530's allocation: $500 + $250 + $100 + $100 reserve = $950, inside its $1,0
 ok("  untouched: live locked, the cross-venue rule (10 pairs, 10% a leg)", c0.C488_LIVE_OK is False
    and c0.C524_XVENUE_PAIRS == 10 and c0.C524_XVENUE_SIZE == 0.10)
 cfg = om.Config(); cfg.PAPER_MODE = True; cfg.VENUE = 'binance'; om._c467_cfg_ref[0] = cfg
+cfg.C532_XV_VENUE = 'pi42'   # C542 made CoinDCX the default; this test checks the Pi42-era plan (still supported)
 for _k, _v in om._C516_VENUE_DEFAULTS['binance'].items():
     setattr(cfg, _k, _v)
 for _k, _v in C530.items():
@@ -112,7 +113,7 @@ st = x2.status()
 ok("  its status carries the change (the panel says it)", st['rebased'] and st['rebased'][0]['f'] == 0.5
    and st['start_equity'] == 250.0)
 ok("  new pairs are sized from its equity ($25 a leg now): the entry rule is unchanged",
-   "n = float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10)) * self.eq" in SRC)
+   "n = self.bet() * self.eq" in SRC and "return float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10))" in SRC)   # C542: via bet()
 os.remove(os.path.join(BASE, 'c524_xvenue.json'))
 
 # ── 2. Pendle ────────────────────────────────────────────────────────────────
