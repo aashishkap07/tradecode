@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C539'
+_OMEGA_VERSION = 'C540'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3170,6 +3170,9 @@ class Config:
         self.C524_XVENUE_PAIRS = 10             # C524: at most 10 pairs ...
         self.C524_XVENUE_SIZE = 0.10            # C524: ... each 10% of its equity per leg
         self.C538_TESTS = True                  # C538: round 19's two near-misses (decide every 8 h; a 3-day average)
+        self.C540_READ_ONLY = True              # C540 (B1): read the REAL Delta India / Pi42 accounts when keys exist in
+                                                # data/api_keys.json -- GET only, four read paths each, never an order
+        self.C540_POLL_S = 600                  # C540: every 10 minutes (logged once an hour per venue)
                                                 # run beside the daily rule as paper copies, scored daily at 06:00 IST
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
@@ -24348,6 +24351,283 @@ class C538TestRule(C524CrossVenue):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# C540 (build step B1): READ-ONLY CONNECTIONS TO DELTA EXCHANGE INDIA AND PI42
+# ═══════════════════════════════════════════════════════════════════════════
+# The roadmap (reports/2026-10-04_live_march_roadmap.md): before any real order
+# exists, the bot reads the operator's REAL accounts -- balance, positions,
+# trades, the rent (funding) paid and received -- and shows them beside the
+# paper ledger. It is a window, not a hand: this code has ONE network call, an
+# HTTP GET, and it refuses any path not on the read list below. There is no
+# order, cancel, margin, leverage or transfer path anywhere in it.
+#
+# Keys: only from BASE_PATH/api_keys.json (on the server data/api_keys.json,
+# chmod 600), under "delta_india" and "pi42" ({"api_key", "api_secret"}).
+# Never in this file, never in a log line, never in the page: errors say what
+# went wrong in words and drop the response body. The logs push redacts every
+# value in api_keys.json by its literal text and refuses to push if one is
+# left (deploy/omega-scrub-keys.py).
+#
+# The official docs (read 8 Oct 2026):
+#   Delta  api.india.delta.exchange; headers api-key, timestamp (Unix SECONDS),
+#          signature = hex HMAC-SHA256(secret, method + timestamp + path +
+#          query string with its '?' + body); a signature older than 5 s is
+#          refused (the server clock must be synced). Two key permissions:
+#          "Read Data" and "Trading"; per its own troubleshooting page wallets
+#          and positions need "Trading", and a Trading key must be IP-locked.
+#   Pi42   fapi.pi42.com; headers api-key, signature = hex HMAC-SHA256(secret,
+#          the query string, which carries timestamp in MILLISECONDS).
+import hmac as _c540_hmac
+from urllib.parse import urlencode as _c540_urlencode
+
+_C540_URL = {'delta_india': 'https://api.india.delta.exchange', 'pi42': 'https://fapi.pi42.com'}
+_C540_READ_PATHS = {
+    'delta_india': ('/v2/wallet/balances', '/v2/positions/margined', '/v2/fills', '/v2/wallet/transactions'),
+    'pi42': ('/v1/wallet/futures-wallet/details', '/v1/positions/OPEN', '/v1/user-data/trade-history',
+             '/v1/user-data/transaction-history'),
+}
+_C540_NAMES = {'delta_india': 'Delta India', 'pi42': 'Pi42'}
+_C540_HTTP_GET = requests.get          # the one network call (tests replace it with recorded responses)
+
+
+def _c540_keys():
+    """{'delta_india': (key, secret), 'pi42': (key, secret)} for the sections present in
+    BASE_PATH/api_keys.json, and whether that file is readable by other users"""
+    p = os.path.join(BASE_PATH, 'api_keys.json')
+    out, loose = {}, False
+    try:
+        if not os.path.exists(p):
+            return out, loose
+        loose = bool(os.name == 'posix' and os.stat(p).st_mode & 0o077)
+        d = json.load(open(p))
+        for v in _C540_URL:
+            s = d.get(v) if isinstance(d, dict) else None
+            if isinstance(s, dict) and str(s.get('api_key') or '').strip() and str(s.get('api_secret') or '').strip():
+                out[v] = (str(s['api_key']).strip(), str(s['api_secret']).strip())
+    except Exception:
+        return {}, loose
+    return out, loose
+
+
+def _c540_delta_sign(secret, method, ts, path, query, body=''):
+    """Delta India: hex HMAC-SHA256 of method + timestamp + path + query (with '?') + body"""
+    return _c540_hmac.new(secret.encode('utf-8'), (method + ts + path + query + body).encode('utf-8'),
+                          hashlib.sha256).hexdigest()
+
+
+def _c540_pi42_sign(secret, query):
+    """Pi42: hex HMAC-SHA256 of the query string (timestamp included)"""
+    return _c540_hmac.new(secret.encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
+
+
+class C540Refused(Exception):
+    """a venue said no; the message is plain words, never the key or the response body"""
+
+
+def _c540_why(venue, status, body):
+    """the venue's refusal, in words the operator can act on"""
+    if body is None and status in (403, 503):              # an HTML page: a firewall answered, not the API
+        host = _C540_URL[venue].split('//')[1]
+        return (f"{_C540_NAMES[venue]}'s firewall answered instead of its API (HTTP {status}): this network may be blocked "
+                f"-- check from the server: curl -sI https://{host}")
+    t = json.dumps(body)[:400].lower() if body is not None else ''
+    if venue == 'delta_india':
+        if 'unauthorizedapiaccess' in t or 'not authorised' in t:
+            return ("the key works but may not read wallets or positions -- Delta's own docs say that needs the "
+                    "'Trading' permission (IP-locked); the bot still never places orders")
+        if 'ip_not_whitelisted' in t or 'whitelist' in t:
+            return "the server's IP address is not on this key's allowed list"
+        if 'signatureexpired' in t or 'expired' in t:
+            return "Delta refused the time: the server's clock is off by more than 5 seconds (check: timedatectl)"
+        if 'invalid_api_key' in t:
+            return "Delta does not know this key (deleted, regenerated, a testnet key, or a typo)"
+        if 'signature' in t:
+            return "the signature did not match: the secret in api_keys.json is probably wrong"
+    else:
+        if status in (401, 403) and ('ip' in t and 'allow' in t or 'whitelist' in t):
+            return "the server's IP address is not on this key's allowed list"
+        if status in (401, 403) or 'signature' in t or 'api-key' in t or 'api key' in t:
+            return "Pi42 refused the key (a typo in api_keys.json, a deleted key, or the server's IP not allowed)"
+    if status == 429:
+        return 'too many requests: the venue asked the bot to slow down'
+    return f'the venue answered HTTP {status}'
+
+
+class C540ReadOnly:
+    """B1: the operator's REAL Delta India and Pi42 accounts, read-only, beside the paper ledger."""
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self._tick_at = self._keys_at = 0.0
+        self.keys, self.loose = {}, False
+        self.snap = {}                      # venue -> the last read (or its error)
+        self._said = {}                     # venue -> hour last logged
+
+    def active(self):
+        return bool(getattr(self.cfg, 'C540_READ_ONLY', True))
+
+    def _get(self, venue, path, params=None):
+        """THE ONLY NETWORK CALL: an HTTP GET to a path on the read list, signed as the venue's docs say"""
+        if path not in _C540_READ_PATHS.get(venue, ()):
+            raise PermissionError(f'C540 is read-only: {path} is not on the read list')
+        key, secret = self.keys[venue]
+        params = dict(params or {})
+        if venue == 'delta_india':
+            q = _c540_urlencode(params)
+            query = ('?' + q) if q else ''
+            ts = str(int(time.time()))
+            headers = {'api-key': key, 'timestamp': ts, 'signature': _c540_delta_sign(secret, 'GET', ts, path, query),
+                       'User-Agent': 'omega-readonly', 'Accept': 'application/json'}
+        else:
+            params['timestamp'] = str(int(time.time() * 1000))
+            query = '?' + _c540_urlencode(params)
+            headers = {'api-key': key, 'signature': _c540_pi42_sign(secret, query[1:]), 'accept': '*/*'}
+        r = _C540_HTTP_GET(_C540_URL[venue] + path + query, headers=headers, timeout=15)
+        try:
+            body = r.json()
+        except Exception:
+            body = None
+        if r.status_code != 200 or (isinstance(body, dict) and body.get('success') is False):
+            raise C540Refused(_c540_why(venue, r.status_code, body))
+        return body
+
+    @staticmethod
+    def _f(x):
+        try:
+            return float(x)
+        except Exception:
+            return 0.0
+
+    def _read_delta(self):
+        v, now = 'delta_india', time.time()
+        b = self._get(v, '/v2/wallet/balances')
+        wallets = [dict(asset=str(w.get('asset_symbol') or ''), balance=round(self._f(w.get('balance')), 4),
+                        available=round(self._f(w.get('available_balance')), 4),
+                        margin=round(self._f(w.get('position_margin')) + self._f(w.get('order_margin')), 4))
+                   for w in (b.get('result') or []) if self._f(w.get('balance')) or self._f(w.get('available_balance'))]
+        p = self._get(v, '/v2/positions/margined', {'contract_types': 'perpetual_futures'})
+        pos = [dict(symbol=str(x.get('product_symbol') or ''), coin=str(x.get('product_symbol') or '')[:-3],
+                    size=self._f(x.get('size')), entry=self._f(x.get('entry_price')),
+                    upnl=round(self._f(x.get('unrealized_pnl')), 4), liq=self._f(x.get('liquidation_price')))
+               for x in (p.get('result') or []) if self._f(x.get('size'))]
+        t0 = int((now - 86400) * 1e6)
+        fund = n_f = 0.0
+        after = None
+        for _ in range(5):                                   # at most 5 pages of the day's rent
+            prm = {'transaction_types': 'funding', 'start_time': t0, 'page_size': 100}
+            if after:
+                prm['after'] = after
+            tx = self._get(v, '/v2/wallet/transactions', prm)
+            rows = tx.get('result') or []
+            fund += sum(self._f(r.get('amount')) for r in rows); n_f += len(rows)
+            after = (tx.get('meta') or {}).get('after')
+            if not after or not rows:
+                break
+        fl = self._get(v, '/v2/fills', {'start_time': t0, 'page_size': 100})
+        fills = fl.get('result') or []
+        return dict(ok=True, at=now, wallets=wallets, equity=round(self._f((b.get('meta') or {}).get('net_equity')), 4),
+                    positions=pos, rent_24h=round(fund, 4), rent_n=int(n_f), fills_24h=len(fills),
+                    fees_24h=round(sum(self._f(f.get('commission')) for f in fills), 4))
+
+    def _read_pi42(self):
+        v, now = 'pi42', time.time()
+        w = self._get(v, '/v1/wallet/futures-wallet/details', {'marginAsset': 'INR'})
+        w = w[0] if isinstance(w, list) and w else (w.get('data') if isinstance(w, dict) and isinstance(w.get('data'), dict) else w)
+        p = self._get(v, '/v1/positions/OPEN', {'pageSize': 100})
+        rows = p if isinstance(p, list) else (p.get('data') if isinstance(p, dict) and isinstance(p.get('data'), list) else
+                                              ([p] if isinstance(p, dict) and p.get('contractPair') else []))
+        pos = [dict(symbol=str(x.get('contractPair') or ''), coin=str(x.get('baseAsset') or str(x.get('contractPair') or '')[:-3]),
+                    side=str(x.get('positionType') or ''), size=self._f(x.get('quantity') or x.get('positionAmount')),
+                    entry=self._f(x.get('entryPrice')), liq=self._f(x.get('liquidationPrice')), margin=self._f(x.get('margin')))
+               for x in rows if self._f(x.get('quantity') or x.get('positionAmount'))]
+        t0 = int((now - 86400) * 1000)
+        by = {}
+        end = None
+        for _ in range(5):                                   # newest first, paged back to the start of the day
+            prm = {'startTimestamp': t0, 'sortOrder': 'desc', 'pageSize': 100}
+            if end:
+                prm['endTimestamp'] = end
+            tx = self._get(v, '/v1/user-data/transaction-history', prm)
+            tx = tx if isinstance(tx, list) else ((tx or {}).get('data') or [])
+            for r in tx:
+                by[str(r.get('type') or '?')] = by.get(str(r.get('type') or '?'), 0.0) + self._f(r.get('amount'))
+            if len(tx) < 100:
+                break
+            try:
+                end = int(datetime.strptime(str(tx[-1]['time'])[:23], '%Y-%m-%dT%H:%M:%S.%f').replace(
+                    tzinfo=timezone.utc).timestamp() * 1000) - 1
+            except Exception:
+                break
+        th = self._get(v, '/v1/user-data/trade-history', {'startTimestamp': t0, 'pageSize': 100})
+        th = th if isinstance(th, list) else ((th or {}).get('data') or [])
+        rent = sum(a for k, a in by.items() if 'FUNDING' in k and 'GST' not in k)
+        gst = sum(a for k, a in by.items() if 'GST' in k and 'FUNDING' in k)
+        return dict(ok=True, at=now, inr=round(self._f(w.get('walletBalance') or w.get('inrBalance')), 2),
+                    margin_inr=round(self._f(w.get('marginBalance')), 2), free_inr=round(self._f(w.get('withdrawableBalance')), 2),
+                    upnl_inr=round(self._f(w.get('unrealisedPnlCross')) + self._f(w.get('unrealisedPnlIsolated')), 2),
+                    positions=pos, rent_24h_inr=round(rent, 2), gst_24h_inr=round(gst, 2), by_type={k: round(a, 2) for k, a in by.items()},
+                    fills_24h=len(th), fees_24h_inr=round(sum(self._f(x.get('fee')) for x in th), 2))
+
+    def tick(self, now=None):
+        now = now or time.time()
+        if not self.active() or now - self._tick_at < float(getattr(self.cfg, 'C540_POLL_S', 600)):
+            return
+        self._tick_at = now
+        self.keys, self.loose = _c540_keys()
+        for v, fn in (('delta_india', self._read_delta), ('pi42', self._read_pi42)):
+            if v not in self.keys:
+                with self._lock:
+                    self.snap.pop(v, None)
+                continue
+            try:
+                s = fn()
+            except C540Refused as ex:
+                s = dict(ok=False, at=now, error=str(ex))
+            except Exception as ex:                          # a network failure: say which, never the key or URL
+                s = dict(ok=False, at=now, error=f'not reached ({type(ex).__name__}); retrying in 10 min')
+            with self._lock:
+                self.snap[v] = s
+            hour = int(now // 3600)
+            if self._said.get(v) != hour:                     # once an hour per venue
+                self._said[v] = hour
+                if s.get('ok'):
+                    logger.info("   \U0001f50d C540 real account (read-only) " + self.line(v, s))
+                else:
+                    logger.warning(f"⚠️ C540 real account {_C540_NAMES[v]} (read-only) not read: {s['error']}")
+        if self.keys and self.loose and self._said.get('loose') != int(now // 86400):
+            self._said['loose'] = int(now // 86400)
+            logger.warning(f"🚨 C540 {os.path.join(BASE_PATH, 'api_keys.json')} is readable by other users -- run: chmod 600 on it")
+
+    def line(self, v, s):
+        if v == 'delta_india':
+            w = ', '.join(f"{x['asset']} {x['balance']:.2f}" for x in s.get('wallets') or []) or 'no balance'
+            return (f"Delta India: {w}, {len(s.get('positions') or [])} position(s), rent last 24 h {s.get('rent_24h', 0):+.4f}, "
+                    f"{s.get('fills_24h', 0)} fill(s) | the paper ledger holds {len(getattr(self.bot.c524x, 'pairs', {}) or {})} "
+                    f"pairs; nothing is traded live")
+        return (f"Pi42: INR {s.get('inr', 0):.2f} (margin {s.get('margin_inr', 0):.2f}), {len(s.get('positions') or [])} position(s), "
+                f"rent last 24 h INR {s.get('rent_24h_inr', 0):+.2f} (GST {s.get('gst_24h_inr', 0):+.2f}), {s.get('fills_24h', 0)} fill(s) | "
+                f"nothing is traded live")
+
+    def status(self):
+        with self._lock:
+            xv = getattr(self.bot, 'c524x', None)
+            pairs = getattr(xv, 'pairs', {}) or {}
+            out = dict(mode='on' if self.active() else 'off', keys=sorted(self.keys), loose=self.loose,
+                       paper_pairs=len(pairs), live_locked=not bool(getattr(self.cfg, 'C488_LIVE_OK', False)), venues={})
+            for v in _C540_URL:
+                s = dict(self.snap.get(v) or {})
+                if not s:
+                    out['venues'][v] = dict(connected=False)
+                    continue
+                if s.get('ok'):
+                    held = {p.get('coin') for p in s.get('positions') or []}
+                    s['in_paper'] = len(held & set(pairs))
+                s['connected'] = True
+                out['venues'][v] = s
+            return out
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # C530: PENDLE FIXED YIELD, A PAPER LEDGER (AT MOST $100)
 # ═══════════════════════════════════════════════════════════════════════════
 # A Pendle "PT" is a stablecoin's yield sold in advance: it is bought below 1
@@ -24887,6 +25167,7 @@ class TradingBot:
         self.c521d = C521Delta(self)            # C521: the same plan on Delta Exchange India (paper)
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance/Pi42 (C532) funding spread, both legs (paper)
         self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3')]   # C538: two test rules beside it (paper)
+        self.c540 = C540ReadOnly(self)           # C540 (B1): the real accounts, read-only, when keys exist
         self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
         self.news = NewsAnalyzer(cfg)
@@ -25914,6 +26195,10 @@ class TradingBot:
                             _t538.tick()
                         except Exception as _e538:
                             logger.warning(f"⚠️ C538 test {_t538.key} tick failed: {type(_e538).__name__}: {_e538}")
+                    try:                                  # C540 (B1): the real accounts, read-only, every 10 min
+                        self.c540.tick()
+                    except Exception as _e540:
+                        logger.warning(f"⚠️ C540 read-only tick failed: {type(_e540).__name__}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity
@@ -44126,6 +44411,11 @@ class RemoteControl:
                             _out469['c538'] = [t.test_status() for t in getattr(bot_ref, 'c538', None) or []]
                         except Exception as _x538:
                             _out469['c538'] = {'error': f"{type(_x538).__name__}: {_x538}"}
+                        try:      # C540 (B1): the real accounts, read-only
+                            if getattr(bot_ref, 'c540', None) is not None:
+                                _out469['c540'] = bot_ref.c540.status()
+                        except Exception as _x540:
+                            _out469['c540'] = {'error': type(_x540).__name__}
                         try:      # C530: Pendle fixed yield
                             if getattr(bot_ref, 'c530p', None) is not None:
                                 _out469['c530'] = bot_ref.c530p.status()
@@ -44380,6 +44670,7 @@ details.fold>.inner>section:first-child,details.fold>.inner>.grid:first-child{ma
      plan'?" -- it was: the plan's own panel sat inside "Experiments and details". Its detail now has its own fold. -->
 <details class="fold" id="plandet"><summary><b id="plandetk">Your plan in detail</b> <span class="muted">(each pair's numbers, both accounts, every money move)</span></summary><div class="inner">
 <section hidden><h2>Your plan, as if live</h2><div id="plantotal" class="muted">&mdash;</div></section>
+<section><h2>Your real exchange accounts <span class="muted">(read-only)</span></h2><div id="realacc" class="muted">&mdash;</div></section>
 <section><h2>Delta vs Pi42 rent-gap trade <span class="muted">(paper, both legs)</span></h2><div id="xvenue" class="muted">&mdash;</div></section>
 </div></details>
 
@@ -45148,6 +45439,7 @@ function renderSimple(d){
     '<div class="s">'+(P.paper?'<b>Live trading is locked.</b> Real money is planned for March 2027, only if the tests in the plan pass.':
       '<b class="bad">Live trading is ON.</b>')+'</div>';
   try{renderTests(d,xv)}catch(e6){q('s-test').textContent='tests: '+e6}
+  try{renderReal(d)}catch(e7){q('realacc').textContent='real accounts: '+e7}
   var ex=(P.rows||[]).filter(function(r){return !r.plan&&r.start>0}).map(function(r){
     var n={book:'Binance book',delta:'Delta book',spot:'spot pot',carry:'carry',savings:'Savings',pendle:'Pendle'}[r.key]||r.label;
     return n+' '+(r.pct===null||r.pct===undefined?money(r.eq):((r.pct>=0?'+':'')+Number(r.pct).toFixed(2)+'%'))});
@@ -45158,6 +45450,37 @@ function renderSimple(d){
    the 06:00 IST runs: the one moment all three are counted together at the same prices. */
 function dayMon(ymd){var a=String(ymd||'').split('-'),mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return a.length===3?(+a[2])+' '+mo[(+a[1])-1]:String(ymd||'')}
+/* C540 (B1): the operator's REAL Delta India and Pi42 accounts, read-only -- a window, not a hand */
+function renderReal(d){
+  var R=d.c540||{},V=R.venues||{},nm={delta_india:'Delta India',pi42:'Pi42'},box=q('realacc'),line=[],det='';
+  var ks=Object.keys(nm),con=ks.filter(function(k){return (V[k]||{}).connected});
+  if(R.error||R.mode==='off'||!con.length){
+    line.push('<span class="muted">Your real exchange accounts: not connected yet. When you add read-only keys, their real balances show here beside the paper ones.</span>');
+    det='<div class="s muted">Not connected. The bot reads your real Delta India and Pi42 accounts only when keys are in data/api_keys.json on the server '+
+      '(read-only; it can never place an order). The step-by-step guide is in reports/2026-10-08_b1_read_only.md.</div>';
+  }else{
+    ks.forEach(function(k){var x=V[k]||{};
+      if(!x.connected){det+='<div class="s"><b>'+nm[k]+'</b>: not connected (no key in api_keys.json)</div>';return}
+      if(!x.ok){line.push('<b class="warn">'+nm[k]+'</b>: not read \u2014 '+x.error);det+='<div class="s"><b class="warn">'+nm[k]+'</b>: not read \u2014 '+x.error+'</div>';return}
+      var bal=k==='pi42'?'\u20b9'+Number(x.inr||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}):
+        ((x.wallets||[]).map(function(w){return w.asset+' '+Number(w.balance).toFixed(2)}).join(', ')||'0.00');
+      var np=(x.positions||[]).length;
+      line.push(nm[k]+' '+bal+(np?' \u00b7 '+np+' position'+(np>1?'s':''):''));
+      det+='<div class="s"><b>'+nm[k]+'</b>: balance '+bal+(k==='pi42'?' (margin \u20b9'+Number(x.margin_inr||0).toFixed(2)+', free \u20b9'+Number(x.free_inr||0).toFixed(2)+')':
+        (x.equity?' (net equity '+Number(x.equity).toFixed(2)+')':''))+' \u00b7 '+np+' open position'+(np===1?'':'s')+
+        (np?' ('+x.positions.map(function(p){return p.symbol+' '+(p.side?p.side.toLowerCase()+' ':'')+p.size}).join(', ')+'; '+x.in_paper+' of them in the paper ledger)':'')+
+        ' \u00b7 last 24 h: rent '+(k==='pi42'?'\u20b9'+Number(x.rent_24h_inr||0).toFixed(2)+' (GST \u20b9'+Number(x.gst_24h_inr||0).toFixed(2)+')':Number(x.rent_24h||0).toFixed(4))+
+        ', '+(x.fills_24h||0)+' fill'+((x.fills_24h||0)===1?'':'s')+' \u00b7 read '+istDay(new Date(Number(x.at)*1000).toISOString().slice(0,16).replace('T',' '))+' IST</div>';
+    });
+    line=['Your real accounts (read-only): '+line.join(' \u00b7 ')+(R.live_locked?'. Nothing is traded with real money yet.':'')];
+    det+='<div class="s muted">Read every 10 minutes with GET requests only: the bot cannot place, change or cancel anything. The paper ledger holds '+
+      (R.paper_pairs||0)+' pairs; until the February pilot your real accounts should hold none.'+(R.loose?' <b class="bad">api_keys.json is readable by other users: chmod 600 it.</b>':'')+'</div>';
+  }
+  var a=q('s-acc'),old=q('realline');if(old)old.remove();
+  if(a){var dv=document.createElement('div');dv.id='realline';dv.className='s';dv.innerHTML=line.join('<br>');a.appendChild(dv)}
+  box.innerHTML=det;
+}
+
 function renderTests(d,xv){
   var T=Array.isArray(d.c538)?d.c538.filter(function(t){return t&&t.mode==='paper'}):[],box=q('s-test');
   if(!T.length){box.closest('section').hidden=true;return}

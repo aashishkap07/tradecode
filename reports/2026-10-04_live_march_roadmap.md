@@ -92,7 +92,7 @@ Every step below runs in paper or dry-run until G1–G5 pass.
 | when | step | what you'll need to do |
 |---|---|---|
 | 5 Oct | check the first Delta-vs-Pi42 run (scheduled) | nothing |
-| from 8 Oct | **B1: read-only connections.** Signed requests to both exchanges that read your balance, positions, fills and funding paid. Built and tested against recorded examples; no keys in the code. | by about 1 Nov: create a **read-only** key on each exchange, locked to the server's IP, and put it in `data/api_keys.json` (I'll give the exact steps) |
+| from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | by about 1 Nov: create a key on each exchange, locked to the server's IP, and save it with `deploy/omega-keys.sh` (steps: `reports/2026-10-08_b1_read_only.md`) |
 | 1 Nov | monthly review, gates G1/G2 so far | nothing |
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, Pi42's quantity steps. If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |

@@ -48,6 +48,25 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 - **C538 deployed 6 Oct 20:22 IST** (`OMEGA C538`, omega_detail_20261006_202228.log; logs push sends c538_*.json): both copies
   ran every slot (14:00/22:00/06:00 IST), first score 7 Oct 06:00 IST: daily +$2.10, every 8 h +$2.11 (+0.76 +0.67 +0.68), 3-day
   +$2.10; no warnings.
+- **C540 = build step B1, pushed 8 Oct (not deployed): read-only connections to the REAL Delta India and Pi42 accounts**
+  (`reports/2026-10-08_b1_read_only.md`; routine `trig_01QxSwbjS8XPAzoFxQgNo8V1` fired 8 Oct 04:17 UTC, guard passed: ultracode on,
+  claude-opus-5-5). `C540ReadOnly` (`bot.c540`, `C540_READ_ONLY`, `C540_POLL_S` 600): one network call `_C540_HTTP_GET`
+  (= requests.get) inside `_get`, which refuses any path not in `_C540_READ_PATHS` (Delta /v2/wallet/balances,
+  /v2/positions/margined, /v2/fills, /v2/wallet/transactions; Pi42 /v1/wallet/futures-wallet/details, /v1/positions/OPEN,
+  /v1/user-data/trade-history, /v1/user-data/transaction-history). Signing per the official docs (read 8 Oct): Delta = hex
+  HMAC-SHA256(secret, 'GET' + ts(s) + path + '?query'), headers api-key/timestamp/signature/User-Agent, 5-s tolerance; Pi42 =
+  hex HMAC-SHA256(secret, query incl. timestamp(ms)), headers api-key/signature. Keys: `_c540_keys()` reads BASE_PATH/api_keys.json
+  sections `delta_india`/`pi42` every poll (no restart after adding a key); never logged/shown; loose file -> daily warning.
+  Reads: balances, positions, last-24 h rent (Delta transaction_type funding, 5 pages max; Pi42 by transaction type, FUNDING vs
+  GST_ON_FUNDING_FEE apart), fills and fees; `in_paper` = real positions whose coin the paper ledger holds. Refusals in words
+  (`_c540_why`): Delta UnauthorizedApiAccess -> needs 'Trading' (Delta's docs: "Orders, Positions, Wallets: requires Trading
+  permission"; Trading keys must be IP-locked), IP not allowed, SignatureExpired -> clock, invalid_api_key; Pi42 401/403;
+  an HTML 403 -> "firewall answered instead of its API". Page: a line under "Your two accounts" + `#realacc` in "Your plan in
+  detail". Log: one line per venue an hour. `deploy/omega-scrub-keys.py`: every value in api_keys.json redacted by literal text
+  in the logs push (gz included); exit 1/3 -> the push script dies ("refusing to push"); called after the label scrub.
+  `deploy/omega-keys.sh delta_india|pi42`: hidden prompts, merge into api_keys.json, chmod 600, prints lengths only. Real
+  servers with a FAKE key: Delta 401 invalid_api_key (request shape confirmed); Pi42 a 403 firewall page from this research
+  machine (the server reaches api.pi42.com). `omega_c540_test.py` 36 checks; battery 60/60. Roadmap B1 marked done.
 - **C539 pushed 7 Oct (not deployed): the 18:04 IST screens audited; the plan shown once; the ledger booked exactly; Round 20**
   (`reports/2026-10-07_c539_audit.md`). The operator: "isn't the pi vs delta Cross funding in the experiments section same as 'my
   current plan'? check all the strategies and their numbers in all dimensions and optimise wherever feasible". Verified at 12:35 UTC:

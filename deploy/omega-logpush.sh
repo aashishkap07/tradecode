@@ -352,6 +352,17 @@ done
 if [ -n "$TOK" ] && grep -rqF "$TOK" "$WT/logs" 2>/dev/null; then
     die "the control token is STILL present after scrubbing — refusing to push"
 fi
+# C540: the exchange keys (B1 read-only now, trading later) live in data/api_keys.json. Every value in it is
+# redacted by its LITERAL text, whatever surrounds it, gzip-rotated logs included -- and if one survives, or the
+# file cannot be read, or the scrubber is missing, nothing is pushed.
+KEYS_JSON="${OMEGA_BASE_PATH:-$REPO/data}/api_keys.json"
+if [ -f "$KEYS_JSON" ]; then
+    PYBIN="$(command -v python3 || true)"
+    [ -n "$PYBIN" ] && [ -f "$REPO/deploy/omega-scrub-keys.py" ] \
+        || die "api_keys.json exists but python3 or deploy/omega-scrub-keys.py is missing — refusing to push"
+    "$PYBIN" "$REPO/deploy/omega-scrub-keys.py" "$KEYS_JSON" "$WT/logs" >/dev/null \
+        || die "a value from api_keys.json could not be scrubbed — refusing to push"
+fi
 
 cd "$WT" || die "cannot enter the worktree"
 # ═══ C476: "NOTHING TO COMMIT" IS NOT "NOTHING TO PUSH" ═══════════════
