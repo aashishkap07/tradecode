@@ -130,3 +130,15 @@ kept. Otherwise C stays.
 - **A three-account version** (Delta + CoinDCX + Mudrex, each coin on the widest of its three gaps) is reported
   **for information only** this round. It needs its own engine and transfer rules, so it would be a later round.
 - **Jumps:** all of this is subject to the same one-coin jump risk as the plan (Round 23, due 22 Oct).
+
+## Clarification (9 Oct, still before any result; stricter only)
+
+Round 22 built its coin lists from a live read of Delta's turnover (8 Oct, 11:49 UTC), and that read was not saved.
+So engine check 1 cannot use Round 22's exact list. It is done this way instead:
+
+- **Engine check 1:** the new code path is given Binance's matrices and today's CoinDCX list. It must equal Round
+  22's own `run()` on those identical inputs, to the last digit.
+- **C is re-run today**, on today's read, beside its 8 Oct figure.
+- **The +0.50% margin** is measured against the **higher** of the two C figures: C today, or C on 8 Oct (+3.55% at
+  costs ×5, +4.15% at ×1).
+- **This run's turnover read is saved** with the results (`research/c542b_pairs.json`).
