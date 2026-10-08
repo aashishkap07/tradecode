@@ -6,12 +6,13 @@
 
 **🎯 LIVE TARGET (the operator, 4 Oct 2026): live money on the Delta India vs CoinDCX trade (C542; was Pi42) in MARCH 2027,
 not later, if the gates pass** -- `reports/2026-10-04_live_march_roadmap.md` (gates G1-G5 written
-before any result; build steps B1 read-only 8 Oct, B2 order path 15 Nov, B3 dry run 15 Dec, B4 pilot
+before any result, G6 added 9 Oct, stricter only; build steps B1 read-only 8 Oct, B2 order path 15 Nov, B3 dry run 15 Dec, B4 pilot
 1 Feb; go/no-go 20 Feb). **Pending tasks run automatically on Opus 5.5 in ultracode** (the operator, 4-5 Oct: "Opus 5.5 or
 whichever is the latest model with ultracode"): every routine has `model: claude-opus-5-5` and first
 checks get_session (`flag_settings.ultracode` true AND `session_context.model` / `last_served_model`
-claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. Routines (all fire into this session): first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
-(5 Oct 01:05 UTC); B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
+claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. **The full timeline (every routine with its IST time, the gates' dates, the operator's to-dos): `reports/2026-10-09_timeline.md`.**
+Routines (all fire into this session; the 9 active ones re-read 9 Oct): DONE first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
+(5 Oct 01:05 UTC); DONE B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
 (1st, 09:56 IST); Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (22 Oct); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
@@ -109,8 +110,23 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     ... each is compared with your rule over the same days it has run".
   - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
     parallel load and passed alone).
-  - Round 23 (jump protection) renumbered **C544** (routine `trig_012MbGyCcxg2dL75KpKXLzGP`; the B2 and Dec-refresh prompts
-    still say "C543" for it).
+  - Round 23 (jump protection) renumbered **C544** (routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
+- **Timeline (9 Oct ~00:45 IST, `reports/2026-10-09_timeline.md`; the operator: "build an accurate time line of scheduled
+  tasks for you and all the pending /remaining work").**
+  - All 19 routines listed; the 9 active ones read back. Seven prompts corrected tonight (Round 23 and the monthly review
+    were already current) so that all name Delta + CoinDCX, Round 23 as C544 and gate G6: B2 (also: the CoinDCX key works;
+    reads are in the detail log, not the journal), end-Nov review, Dec refresh, B3, B4, go/no-go, live day.
+  - IST times: Round 23 Thu 22 Oct 09:47; monthly review the 1st 09:56 (1 Nov - 1 Mar); B2 Sun 15 Nov 09:47; end-Nov Sat
+    28 Nov 09:47; Dec refresh Wed 2 Dec 09:30; B3 Tue 15 Dec 09:47; B4 Mon 1 Feb 10:47; go/no-go Sat 20 Feb 09:47; live day
+    Mon 1 Mar 10:47.
+  - The server's day (IST): book 05:35, carry 05:40, spot 05:50, **the plan 06:00** (+ the 3-day, 15x12 and 8-h copies;
+    8-h also 14:00/22:00), Pendle 06:10; C540 reads every 10 min (logged hourly per venue); health hourly; logs push :17;
+    watchdog every 5 min.
+  - **Critical path:** G3's 4 clean dry-run weeks from 15 Dec end ~12 Jan at the earliest; the last restart that still
+    finishes by 20 Feb is ~23 Jan. **The operator's long-lead items:** the CA's written answer (G6) by 31 Jan (question
+    drafted in the timeline, section 4); the alert channel by 15 Dec; deposits only from 1 Feb.
+  - Roadmap updated: G2 names CoinDCX, G6 added, "G1-G6" throughout, the 22 Oct Round 23 row, B1 done 8-9 Oct, the pilot
+    and March money on CoinDCX's Rs 102 rate, item 5 "Tax (G6)".
 - **C542 pushed 8 Oct (not deployed): Round 22 -- the best pair re-checked from scratch; the plan moves to Delta + CoinDCX
   (paper); CoinDCX read-only** (`reports/2026-10-08_c542_best_pair.md`).
   - **The operator:** "in your earlier studies you seemed to have missed coindcx ... research again very carefully to find

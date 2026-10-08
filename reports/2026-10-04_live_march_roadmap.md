@@ -38,8 +38,9 @@ keys, withdrawals off, locked to your server's IP.
 ## 2. The gates: all must pass by 20 Feb 2027 for a 1 March start
 
 **G1. The paper record**
-- **Period:** 5 Oct 2026 → 20 Feb 2027, about 4½ months, from the
-  Delta-vs-Pi42 ledger in the server's logs.
+- **Period:** 5 Oct 2026 → 20 Feb 2027, about 4½ months, from the plan's
+  ledger in the server's logs (Delta vs Pi42 until 8 Oct, then Delta vs
+  CoinDCX: the same ledger, the move's fees booked in it).
 - **Pass:**
   - average **≥ +1.5% a month before tax**, after all fees and GST (the
     research's cautious case was about +2.3% before tax; its planning case
@@ -50,10 +51,12 @@ keys, withdrawals off, locked to your server's IP.
   −4% → start at **$500**, not $1,000.
 - **Fail:** an average under +0.5% → **no live in March**. Write up why.
 
-**G2. Pi42 still copies Binance's funding**
+**G2. The second exchange still copies Binance's funding** (9 Oct: the second
+exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_check.py`;
+8 Oct: 191 of 191 coins identical)
 - **Pass:** every monthly check shows **≥ 80%** of coins within 0.002%.
-- **Fail:** two checks under 80% → the ledger's Pi42 figures can't be trusted.
-  Rethink before live.
+- **Fail:** two checks under 80% → the ledger's second-exchange figures can't
+  be trusted. Rethink before live.
 
 **G3. The real-money code**
 - **Pass:**
@@ -82,28 +85,36 @@ keys, withdrawals off, locked to your server's IP.
   - the logpush scrubber still removes them;
   - a "move money NOW" alert reaches your phone within 5 minutes (tested).
 
-**Go / no-go: 20–25 Feb 2027.** If G1–G5 pass, the live lock opens for the
+**G6. Added 9 Oct 2026 (stricter only, after C542):**
+- **Tax:** a CA confirms in writing that CoinDCX's rupee-margin futures are
+  business income, like Delta's (CoinDCX's own help page says so; T2, a VDA
+  reading, would cut the plan to about +0.8% a month after tax).
+- **One-coin jumps:** Round 23's protection is built into the order path and
+  tested: each leg on its own (isolated) margin, the other leg closed at once
+  if one is liquidated (BLESS +530% on 15 Oct 2025 would empty an account).
+
+**Go / no-go: 20–25 Feb 2027.** If G1–G6 pass, the live lock opens for the
 funding trade only, on **1 March 2027**.
 
 ## 3. What gets built, and when
 
-Every step below runs in paper or dry-run until G1–G5 pass.
+Every step below runs in paper or dry-run until G1–G6 pass.
 
 | when | step | what you'll need to do |
 |---|---|---|
 | 5 Oct | check the first Delta-vs-Pi42 run (scheduled) | nothing |
-| from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | by about 1 Nov: create a key on each exchange, locked to the server's IP, and save it with `deploy/omega-keys.sh` (steps: `reports/2026-10-08_b1_read_only.md`) |
-| 1 Nov | monthly review, gates G1/G2 so far | nothing |
+| from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | **done 8–9 Oct:** Delta's and CoinDCX's read-only keys are saved and read every 10 minutes (CoinDCX first read 9 Oct 00:04 IST) |
 | 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8); ask a CA to confirm CoinDCX's rupee-margin futures are business income |
-| before B2 | **Round 23: protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
+| 22 Oct | **Round 23 (C544): protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
+| 1 Nov | monthly review, gates G1/G2 so far | nothing |
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, each leg on its own (isolated) margin. If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |
 | 1–2 Dec | monthly review + the research refresh | nothing |
 | from 15 Dec | **B3: dry run on your server.** Every day the bot builds the real orders, logs them, sends none, and compares them with paper. The phone alert for "move money NOW" is set up here, and the account-health check runs **every 5 minutes** (hourly in paper; C537: deciding stays once a day, watching gets faster). | choose the alert channel (Telegram or similar) |
 | 1 Jan | monthly review | nothing |
-| 1 Feb | monthly review; **pilot setup** | deposit **$100 a side** (~₹10,200 on Pi42); turn on **trading** permission on both keys (withdrawals stay off) |
+| 1 Feb | monthly review; **pilot setup** | deposit **$100 a side** (~₹10,200 on CoinDCX at its ₹102 rate); a **trading** key on each exchange, IP-locked to the server (withdrawals stay off) |
 | 2–20 Feb | **B4: the pilot**, small real money | do one rupee transfer between the exchanges when the bot asks |
-| 20–25 Feb | **go / no-go** against G1–G5 | decide |
+| 20–25 Feb | **go / no-go** against G1–G6 | decide |
 | 1 Mar 2027 | **live**: $500 a side | top up to $500 a side |
 
 **Each scheduled step fires into this session, which is in ultracode.**
@@ -113,7 +124,8 @@ Every step below runs in paper or dry-run until G1–G5 pass.
 ## 4. Things only you can do (no rush before the dates above)
 
 1. **Accounts:**
-   - KYC complete on **Delta Exchange India** and **Pi42**;
+   - KYC complete on **Delta Exchange India** and **CoinDCX** (done by 8 Oct;
+     Pi42 is no longer needed);
    - your bank linked to both for rupee deposits and withdrawals;
    - 2FA on.
 2. **Keys** (when asked): create them on each exchange's website and lock
@@ -124,6 +136,8 @@ Every step below runs in paper or dry-run until G1–G5 pass.
 3. **Tax records** (speculative business income, ITR-3):
    - The bot's ledger will export a yearly profit statement.
    - Keep the exchanges' own statements too.
-4. **Money:** about **₹1 lakh** in total for March (~₹51,000 on Pi42 at its
+4. **Money:** about **₹1 lakh** in total for March (~₹51,000 on CoinDCX at its
    ₹102 rate, and Delta's own rate for the other $500), plus ~₹20,000 for the
    February pilot.
+5. **Tax (G6):** a CA's written answer on CoinDCX's rupee-margin futures, by the
+   end of January.
