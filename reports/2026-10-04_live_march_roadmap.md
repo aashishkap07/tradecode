@@ -86,9 +86,17 @@ exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_che
   - a "move money NOW" alert reaches your phone within 5 minutes (tested).
 
 **G6. Added 9 Oct 2026 (stricter only, after C542):**
-- **Tax:** a CA confirms in writing that CoinDCX's rupee-margin futures are
-  business income, like Delta's (CoinDCX's own help page says so; T2, a VDA
-  reading, would cut the plan to about +0.8% a month after tax).
+- **Tax** (rewritten 9 Oct at the operator's request: "i dont have a dedicated CA..please act as an expert CA
+  everytime a taxation question arises"; was "a CA confirms in writing"). All three must hold:
+  - (a) the written tax opinion `reports/2026-10-09_tax_opinion.md` (Claude as the operator's tax adviser, not a
+    registered CA) still concludes speculative business income for both legs, netted;
+  - (b) the operator **explicitly accepts at the go/no-go** the residual risk stated there in numbers: on today's list
+    +3.71% a month after tax under that reading; +0.23% if only the CoinDCX leg were a VDA; **−2.95% if both legs
+    were** (about Rs 60,000-80,000 of extra tax in a full year at $1,000);
+  - (c) **no adverse change by 20 Feb**: no CBDT circular or notification, and nothing in the Finance Bill 2027 (Budget
+    1 Feb), treating INR-settled crypto derivatives as VDAs. If one appears, G6 fails until re-assessed.
+  - This relaxes the tax part in one respect: there is no third-party signature. It is recorded here openly. The
+    numbers in (b) make the risk explicit instead of hiding it.
 - **One-coin jumps:** Round 23's protection is built into the order path and
   tested: each leg on its own (isolated) margin, the other leg closed at once
   if one is liquidated (BLESS +530% on 15 Oct 2025 would empty an account).
@@ -104,7 +112,7 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 |---|---|---|
 | 5 Oct | check the first Delta-vs-Pi42 run (scheduled) | nothing |
 | from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | **done 8–9 Oct:** Delta's and CoinDCX's read-only keys are saved and read every 10 minutes (CoinDCX first read 9 Oct 00:04 IST) |
-| 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8); ask a CA to confirm CoinDCX's rupee-margin futures are business income |
+| 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8; done 9 Oct); tax: no CA, see item 5 |
 | 22 Oct | **Round 23 (C544): protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
 | 1 Nov | monthly review, gates G1/G2 so far | nothing |
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, each leg on its own (isolated) margin. If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
@@ -139,5 +147,8 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 4. **Money:** about **₹1 lakh** in total for March (~₹51,000 on CoinDCX at its
    ₹102 rate, and Delta's own rate for the other $500), plus ~₹20,000 for the
    February pilot.
-5. **Tax (G6):** a CA's written answer on CoinDCX's rupee-margin futures, by the
-   end of January.
+5. **Tax (G6):** no CA (the operator's choice, 9 Oct). Claude acts as the tax adviser:
+   `reports/2026-10-09_tax_opinion.md` (speculative business income, ITR-3 Schedule BP, both legs netted). The
+   operator accepts or rejects its residual risk at the go/no-go. Tax dates: ITR-3 for tax year 2026-27 by 31 Jul
+   2027; advance tax for 2027-28 on 15 Jun, 15 Sep, 15 Dec 2027 and 15 Mar 2028; 31.2% of each month's net profit
+   set aside from the pilot on.

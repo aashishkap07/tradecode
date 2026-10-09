@@ -27,6 +27,16 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 - **Every reply explains, in plain English with analogies, what was done and how the bot works.**
 - Explain as an expert futures trader; verify against real data; keep this Atlas current; commit and push
   to the session branch (no PRs unless asked); give Termius commands without the ssh line.
+- **TAX ADVISER (the operator, 9 Oct 2026): "i dont have a dedicated CA..please act as an expert CA everytime a taxation
+  question arises".**
+  - Answer every tax question as an expert CA would: the law (the Income-tax Act 2025 is in force from 1 Apr 2026; cite
+    the 1961 sections too), the department's practice, the risk in numbers, and what to file.
+  - Be honest each time: Claude is not a registered CA and cannot sign, file or represent.
+  - The standing opinion is `reports/2026-10-09_tax_opinion.md`: speculative business income (ITR-3, Schedule BP), both
+    legs netted, no TDS, no VDA schedule.
+  - Its risk: +3.71% a month after tax at costs x5 (business income), +0.23% (CoinDCX leg a VDA), **-2.95% (both legs
+    VDAs)**, about Rs 60-80k of extra tax per year at $1,000.
+  - Keep it current (the monthly review's item 8: tax watch, set-aside, advance tax, ITR).
 - **Tax:** the operator's income is in the **top slab** (30% + 4% cess = 31.2% on trading profit; no
   s.87A rebate; no surcharge). `C528_TAX_RATE = 0.312` is their rate. Trading profit is filed on ITR-3
   as speculative business income; advance tax only once the extra tax tops Rs 10,000 a year.
@@ -185,6 +195,35 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **NO CA: CLAUDE IS THE TAX ADVISER (9 Oct ~14:15 IST)** (`reports/2026-10-09_tax_opinion.md`).
+  - Research:
+    - the Income-tax Act 2025 has been in force since 1 Apr 2026. The VDA 30% rate was carried over (commentary places it
+      in s.194's table); speculative transactions are s.66(31); speculative losses are s.113 (speculative profits only,
+      4 years);
+    - there is no CBDT circular on INR-settled crypto futures. Delta's help centre says not a VDA, and CoinDCX's says no
+      TDS/no VDA;
+    - the AY 2026-27 non-audit ITR-3 due date was 31 Aug 2026; the new Act's date for TY 2026-27 is not confirmed.
+  - **Worst case re-computed** (legs_ab, 71 coins, Delta turnover read 9 Oct). After tax per month:
+
+    | reading | costs x5 | costs x1 |
+    |---|---|---|
+    | T1 (business income) | **+3.71%** | +4.33% |
+    | CoinDCX leg a VDA | +0.23% | +0.91% |
+    | **both legs VDAs** | **-2.95%** | -2.21% |
+
+    (Pre-tax +5.40% at x5.)
+  - **Gate G6 tax part rewritten at the operator's request** (roadmap section 2). It was "a CA confirms in writing"; now:
+    - (a) the opinion still holds;
+    - (b) the operator explicitly accepts the stated risk at the go/no-go;
+    - (c) no CBDT circular/notification or Finance Bill 2027 clause treating INR-settled crypto derivatives as VDAs by
+      20 Feb.
+
+    Recorded openly as a relaxation in one respect (no third-party signature).
+  - **Routines updated:**
+    - monthly: item (3), and a new item (8) TAX (tax watch; 31.2% set-aside; advance tax 15 Jun/15 Sep/15 Dec/15 Mar once
+      the year's extra tax exceeds Rs 10k; the ITR-3 for TY 2026-27 by 31 Jul 2027);
+    - end-Nov review, B4 and go/no-go: each re-computes the three readings.
+  - Timeline and roadmap item 5 updated; the "ask a CA by 31 Jan" to-do is removed.
 - **Timeline UPDATED 9 Oct ~13:45 IST** (the operator: "coin switch key deleted ..now create the updated time-line of pending
   tasks /updates /decisions").
   - `reports/2026-10-09_timeline.md` was rewritten: what changed today; where the paper plan stands; the daily clock; the 9
