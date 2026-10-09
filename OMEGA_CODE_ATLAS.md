@@ -185,6 +185,18 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **Timeline UPDATED 9 Oct ~13:45 IST** (the operator: "coin switch key deleted ..now create the updated time-line of pending
+  tasks /updates /decisions").
+  - `reports/2026-10-09_timeline.md` was rewritten: what changed today; where the paper plan stands; the daily clock; the 9
+    routines (all read back, times unchanged); the gates; the operator's to-dos in date order (CoinSwitch key deleted 9 Oct);
+    a **decision log**, made and still to decide.
+  - Ledger at the 9 Oct 06:00 run (logs push 13:17 IST): eq $999.54; rent +$8.98; fees $6.95 (incl. the $2.08 move); price
+    -$1.49; one transfer $1.00; venue coindcx.
+  - Monthly review routine `trig_01JZa71yehwKWQQgbKtw5XHE` updated:
+    - item (3) now names the CA answer by 31 Jan, the alert channel by 15 Dec, and the CoinDCX key as already working;
+    - new item (7) VENUE WATCH (WazirX, Giottus, Cosmic, SunCrypto, Bitbns, KoinBX APIs; Delta/CoinDCX fee changes; new
+      rupee venues);
+    - it now points to the timeline and updates it.
 - **Timeline (9 Oct ~00:45 IST, `reports/2026-10-09_timeline.md`; the operator: "build an accurate time line of scheduled
   tasks for you and all the pending /remaining work").**
   - All 19 routines listed; the 9 active ones read back. Seven prompts corrected tonight (Round 23 and the monthly review
