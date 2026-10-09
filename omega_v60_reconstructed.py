@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C543'
+_OMEGA_VERSION = 'C544'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23602,6 +23602,32 @@ def _c542_cost(cfg, venue):
     return float(getattr(cfg, attr, dflt)) * (1 + float(getattr(cfg, 'C532_GST', 0.18))) + 0.0002
 
 
+# C544: THE TAX JOURNAL. The operator asked for an income statement they can file from (ITR-3, speculative business
+# income): every pair's two legs, opened and closed, with each leg's price result, rent received, rent paid and its
+# GST, and fees split into fee, GST and spread, by IST month -- plus transfers and exchange moves. The ledger kept only
+# totals and a short list of closed pairs; it now journals every event (omega_tax_statement.py turns it into the
+# statement). Paper legs are equal in dollars; live legs will be equal in rupees (Delta settles at a fixed Rs 85 per
+# dollar, CoinDCX at Rs 102 per USDT), so the statement converts paper at Delta's rate.
+_C544_J_MAX = 5000
+_C544_IST = 19800                          # seconds: IST = UTC + 5:30 (the Indian tax year runs on IST dates)
+
+
+def _c544_month(ms):
+    """C544: the IST calendar month of a time in ms, e.g. '2026-10'"""
+    return datetime.utcfromtimestamp(int(ms) / 1000 + _C544_IST).strftime('%Y-%m')
+
+
+def _c544_rates(cfg, venue):
+    """C544: the cost a side, split -- fee rate on each venue, GST on fees, and the modelled half-spread"""
+    g = float(getattr(cfg, 'C532_GST', 0.18))
+    if venue in _C542_V2:
+        _n, attr, dflt, _h, _s = _C542_V2[venue]
+        fb, gb = float(getattr(cfg, attr, dflt)), g
+    else:
+        fb, gb = 0.0005, 0.0                                    # Binance: no Indian GST
+    return dict(fd=0.0005, gd=0.18, fb=fb, gb=gb, spr=0.0002)
+
+
 class C524CrossVenue(_C501Store):
     """C524 X1 (paper): THE SAME COIN ON TWO VENUES, LONG WHERE LONGS PAY LESS.
 
@@ -23673,6 +23699,10 @@ class C524CrossVenue(_C501Store):
             self.transfers = list(d.get('transfers') or [])[-50:]                 # C531
             self.transfer_fees = float(d.get('transfer_fees') or 0.0)
             self.reb_month = str(d.get('reb_month') or '')
+            self.journal = list(d.get('journal') or [])[-_C544_J_MAX:]           # C544: the tax journal
+            if 'journal' not in d and self.start_equity:
+                self._c544_migrate()
+                self._c544_new = True                                              # saved below, once loaded
             want = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0) or 0.0)
             if self.start_equity and want > 0 and abs(want - self.start_equity) > 0.005:
                 self.rebase(want)
@@ -23682,6 +23712,8 @@ class C524CrossVenue(_C501Store):
                 self.move_venue(was)
                 if type(self) is C524CrossVenue:
                     self.save()                                  # (a test copy saves after restoring its own fields)
+            if getattr(self, '_c544_new', False) and type(self) is C524CrossVenue:
+                self.save()                                      # C544: the journal exists from the first load
 
     def move_venue(self, was):
         """C542: the plan's second exchange changed (C532_XV_VENUE). Every pair's second leg is closed on the
@@ -23694,12 +23726,16 @@ class C524CrossVenue(_C501Store):
             c_ = abs(float(p['d_qty'])) * float(p['cv']) * float(p['d_px']) * (old + new)
             p['pnl'] = float(p['pnl']) - c_
             tot += c_
+            if isinstance(p.get('jx'), dict):
+                p['jx']['fee_b'] = float(p['jx'].get('fee_b') or 0.0) + c_            # C544
         self.side['b'] -= tot
         self.fees += tot
         self.eq -= tot
         self.venue_moves = (list(getattr(self, 'venue_moves', []) or []) +
                             [dict(at=datetime.utcnow().strftime('%Y-%m-%d %H:%M'), frm=_C542_V2[was][0], to=self.v2(),
                                   pairs=len(self.pairs), cost=round(tot, 4))])[-10:]
+        self._c544_log(dict(t='move', ms=int(time.time() * 1000), frm=_C542_V2[was][0], to=self.v2(),
+                            pairs=len(self.pairs), cost=round(tot, 6)))
         self._moved = True
         logger.info(f"   \U0001f500 C542 {getattr(self, 'NAME', 'your plan')} (paper): the second account moves from "
                     f"{_C542_V2[was][0]} to {self.v2()} -- {len(self.pairs)} pairs' {_C542_V2[was][0]} legs closed and "
@@ -23734,6 +23770,7 @@ class C524CrossVenue(_C501Store):
                 for k in ('pnl', 'funding'):
                     if x.get(k) is not None:
                         x[k] = round(float(x[k]) * f, 4)
+            self._c544_scale(f)                                  # C544: the journal in the same money
             self.rebased = (self.rebased + [dict(at=datetime.utcnow().strftime('%Y-%m-%d %H:%M'),
                                                  frm=round(float(to) / f, 2), to=round(float(to), 2),
                                                  f=round(f, 6))])[-10:]
@@ -23796,6 +23833,7 @@ class C524CrossVenue(_C501Store):
             self.rebased = []                                    # C530: each change of its allocation
             self.transfers, self.transfer_fees, self.reb_month = [], 0.0, ''   # C531: between the two venues
             self.venue_moves = []                                # C542: each change of the second exchange
+            self.journal = []                                    # C544: the tax journal
         if save:
             self.save()
 
@@ -23806,12 +23844,87 @@ class C524CrossVenue(_C501Store):
                      last_run=self.last_run, info=self.info, daily={str(k): v for k, v in self.daily.items()},
                      side=self.side, rebased=self.rebased, transfers=self.transfers[-50:],
                      transfer_fees=self.transfer_fees, reb_month=self.reb_month,
-                     venue=self.venue(), venue_moves=list(getattr(self, 'venue_moves', []) or [])[-10:])   # C542
+                     venue=self.venue(), venue_moves=list(getattr(self, 'venue_moves', []) or [])[-10:],   # C542
+                     journal=list(getattr(self, 'journal', []) or [])[-_C544_J_MAX:])                     # C544
             d.update(self._extra())                             # C538
         self._write(d)
 
     def _extra(self):
         return {}
+
+    # ── C544: the tax journal ─────────────────────────────────────────────────
+    def _c544_log(self, rec):
+        if not hasattr(self, 'journal'):
+            self.journal = []
+        self.journal = (self.journal + [rec])[-_C544_J_MAX:]
+
+    def _c544_migrate(self):
+        """A ledger saved before C544: what it already did is carried in as totals (its closed pairs, transfers and
+        exchange moves had no leg detail), and each open pair starts its own record from now, its result to date kept
+        as its carry-in. Nothing in the ledger's money changes."""
+        now = int(time.time() * 1000)
+        self.journal = [dict(t='carry', ms=now, eq=round(self.eq, 6), start=round(self.start_equity, 6),
+                             fees=round(self.fees, 6), funding=round(self.funding, 6), price=round(self.price_pnl, 6),
+                             transfer_fees=round(float(getattr(self, 'transfer_fees', 0.0) or 0.0), 6),
+                             closed=[dict(x) for x in self.closed], transfers=[dict(x) for x in self.transfers],
+                             moves=[dict(x) for x in getattr(self, 'venue_moves', []) or []],
+                             rebased=[dict(x) for x in getattr(self, 'rebased', []) or []],
+                             open_pnl=round(sum(float(p.get('pnl') or 0.0) for p in self.pairs.values()), 6),
+                             open_funding=round(sum(float(p.get('funding') or 0.0) for p in self.pairs.values()), 6))]
+        for p in self.pairs.values():
+            if not isinstance(p.get('jx'), dict):
+                p['jx'] = dict(opened=int(p.get('opened') or now), d_px0=float(p['d_px']), b_px0=float(p['b_px']),
+                               n_in=float(p.get('notional') or 0.0), fee_d=0.0, fee_b=0.0, px_d=0.0, px_b=0.0, fm={},
+                               venue=self.v2(), rates=_c544_rates(self.cfg, self.venue()),
+                               carry=dict(ms=now, pnl=round(float(p.get('pnl') or 0.0), 6),
+                                          funding=round(float(p.get('funding') or 0.0), 6)))
+
+    def _c544_scale(self, f):
+        """a rebase (paper only): every money figure in the journal times f, as the ledger's are"""
+        for p in self.pairs.values():
+            jx = p.get('jx')
+            if isinstance(jx, dict):
+                for k in ('fee_d', 'fee_b', 'px_d', 'px_b', 'n_in'):
+                    jx[k] = float(jx.get(k) or 0.0) * f
+                jx['fm'] = {m: [float(v) * f for v in row] for m, row in (jx.get('fm') or {}).items()}
+        for r in getattr(self, 'journal', []) or []:
+            for k in ('fee', 'amt', 'cost', 'n_in', 'n_out', 'fee_d', 'fee_b', 'px_d', 'px_b', 'pnl'):
+                if isinstance(r.get(k), (int, float)):
+                    r[k] = float(r[k]) * f
+            if isinstance(r.get('fm'), dict):
+                r['fm'] = {m: [float(v) * f for v in row] for m, row in r['fm'].items()}
+        self._c544_log(dict(t='rebase', ms=int(time.time() * 1000), f=round(f, 6)))
+
+    def _c544_book(self, p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b):
+        """one daily mark of a pair: each leg's price result, and its rent received / paid / GST on rent paid, by IST
+        month (GST is the remainder, so the three always add up to what the ledger booked)"""
+        jx = p.get('jx')
+        if not isinstance(jx, dict):
+            return
+        jx['px_d'] = float(jx.get('px_d') or 0.0) + p['d_qty'] * p['cv'] * (dpx - p['d_px'])
+        jx['px_b'] = float(jx.get('px_b') or 0.0) + p['b_qty'] * (bpx - p['b_px'])
+        if not raw_d and not raw_b:
+            return
+        row = jx.setdefault('fm', {}).setdefault(_c544_month(now_ms), [0.0] * 6)
+        din, dout = sum(r for r in raw_d if r > 0), sum(r for r in raw_d if r < 0)
+        bin_, bout = sum(r for r in raw_b if r > 0), sum(r for r in raw_b if r < 0)
+        row[0] += din; row[1] += dout; row[2] += fu_d - din - dout
+        row[3] += bin_; row[4] += bout; row[5] += fu_b - bin_ - bout
+
+    def _c544_close(self, c, p, why, now_ms, n_out, cost_d, cost_b):
+        """a pair closed: both legs' whole record, from entry to exit, into the journal"""
+        jx = p.get('jx') if isinstance(p.get('jx'), dict) else {}
+        self._c544_log(dict(t='close', coin=c, why=why, venue=jx.get('venue') or self.v2(), side=int(p['side']),
+                            d_sym=p['d_sym'], d_qty=float(p['d_qty']), b_qty=float(p['b_qty']), cv=float(p['cv']),
+                            opened=int(jx.get('opened') or p.get('opened') or now_ms), closed=int(now_ms),
+                            d_px0=float(jx.get('d_px0') or 0.0), b_px0=float(jx.get('b_px0') or 0.0),
+                            d_px1=float(p['d_px']), b_px1=float(p['b_px']),
+                            n_in=float(jx.get('n_in') or 0.0), n_out=float(n_out),
+                            px_d=float(jx.get('px_d') or 0.0), px_b=float(jx.get('px_b') or 0.0),
+                            fee_d=float(jx.get('fee_d') or 0.0) + cost_d, fee_b=float(jx.get('fee_b') or 0.0) + cost_b,
+                            fee_d_out=cost_d, fee_b_out=cost_b, fm=dict(jx.get('fm') or {}),
+                            rates=jx.get('rates') or _c544_rates(self.cfg, self.venue()),
+                            carry=jx.get('carry'), pnl=float(p['pnl'])))
 
     def due(self, now=None):
         now = now or datetime.utcnow()
@@ -23901,15 +24014,19 @@ class C524CrossVenue(_C501Store):
             # never booked it (7 exits on 5 Oct: +$0.12 lost); each payment carries its own GST
             # (C532), not the window's net. The opening day's starts at the entry time.
             since = int(p['fund_from'])
-            fu_d = sum(self.fgst(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0) for x in fD_rec or []
-                       if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms)
-            fu_b = sum(self.fgst(-p['b_qty'] * bpx * float(x['fundingRate'])) for x in b_rec or []
-                       if since <= int(x['fundingTime']) < now_ms)
+            raw_d = [-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in fD_rec or []
+                     if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms]
+            raw_b = [-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
+                     if since <= int(x['fundingTime']) < now_ms]
+            fu_d = sum(self.fgst(r) for r in raw_d)
+            fu_b = sum(self.fgst(r) for r in raw_b)
             if b_rec is None or not fD_rec:
                 fu_d = fu_b = 0.0                                   # a venue did not answer: booked next day
+                raw_d, raw_b = [], []
             else:
                 p['fund_from'] = now_ms                             # C539: booked up to the run
                 n_fund += 1
+            self._c544_book(p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b)      # C544: the tax journal
             self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d     # C529: each venue's own side
             self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b
             p.update(d_px=dpx, b_px=bpx, pnl=p['pnl'] + pr + fu_d + fu_b, funding=p['funding'] + fu_d + fu_b,
@@ -23946,6 +24063,7 @@ class C524CrossVenue(_C501Store):
                 self.side['b'] -= n * cb; self.side['d'] -= n * _C524_COST_D
                 self.fees += cost; self.eq -= cost; day_pnl -= cost; d_cost += cost
                 p['pnl'] -= cost
+                self._c544_close(c, p, why, now_ms, n, n * _C524_COST_D, n * cb)     # C544
                 self.closed = (self.closed + [dict(coin=c, why=why, days=round((now_ms - p['opened']) / _C488_DAY, 1),
                                                    pnl=round(p['pnl'], 4), funding=round(p['funding'], 4))])[-200:]
                 del self.pairs[c]
@@ -23976,7 +24094,10 @@ class C524CrossVenue(_C501Store):
             self.fees += cost; self.eq -= cost; day_pnl -= cost; d_cost += cost
             self.pairs[c] = dict(side=side, d_sym=p_['sym'], cv=p_['cv'], d_qty=float(-side * k), b_qty=side * nd / bpx,
                                  d_px=dpx, b_px=bpx, notional=round(nd, 2), s_entry=sig[c], s_now=sig[c],
-                                 opened=now_ms, fund_from=now_ms, pnl=-cost, funding=0.0)
+                                 opened=now_ms, fund_from=now_ms, pnl=-cost, funding=0.0,
+                                 jx=dict(opened=now_ms, d_px0=dpx, b_px0=bpx, n_in=nd, fee_d=nd * _C524_COST_D,
+                                         fee_b=nd * cb, px_d=0.0, px_b=0.0, fm={}, venue=self.v2(),
+                                         rates=_c544_rates(self.cfg, self.venue()), carry=None))   # C544
             self.trades += 1
             room -= 1
             inn.append(f"{c} {'short Delta/long ' + self.v2() if side > 0 else 'long Delta/short ' + self.v2()} {100 * sig[c]:+.0f}%/yr")
@@ -24080,6 +24201,8 @@ class C524CrossVenue(_C501Store):
                  to='Delta' if dst == 'd' else self.v2(), amt=round(amt, 2), fee=fee, why=why,
                  d=round(half0 + self.side['d'], 2), b=round(half0 + self.side['b'], 2))
         self.transfers = (self.transfers + [t])[-50:]
+        self._c544_log(dict(t='transfer', ms=int(when.replace(tzinfo=timezone.utc).timestamp() * 1000) if when.tzinfo is None
+                            else int(when.timestamp() * 1000), frm=t['frm'], to=t['to'], amt=t['amt'], fee=fee, why=why))
         logger.info(f"   \U0001f500 C531 cross-venue (paper): {why} -> {t['frm']} sends ${amt:.2f} to {t['to']} "
                     f"(fee ${fee:.2f}); now Delta ${t['d']:.2f}, {self.v2()} ${t['b']:.2f}. LIVE: make this transfer"
                     + (" (rupees, by bank transfer)" if self.on_pi42() else ''))
@@ -24302,8 +24425,8 @@ class C538TestRule(C524CrossVenue):
             self.last_slot = int(d.get('last_slot') or 0)
             self.snaps = dict(d.get('snaps') or {})
             self.slots = list(d.get('slots') or [])[-30:]
-        if getattr(self, '_moved', False):
-            self.save()                                      # C542: the second exchange moved at load
+        if getattr(self, '_moved', False) or getattr(self, '_c544_new', False):
+            self.save()                                      # C542: the second exchange moved at load; C544: the journal began
 
     def _c538_blank(self):
         self.base = self.base_main = 0.0                     # equity + transfer fees when it was copied

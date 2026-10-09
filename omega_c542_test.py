@@ -81,8 +81,9 @@ cost = n_tot * (cb_p + cb_d)
 cfg.C532_XV_VENUE = 'pi42'
 x0 = om.C524CrossVenue(xb)                                   # the same file read as Pi42's: no move (the baseline)
 cfg.C532_XV_VENUE = 'coindcx'
-ok("  read with the plan on Pi42, nothing moves and nothing is saved", abs(x0.eq - float(snap['eq'])) < 1e-12
-   and 'venue' not in json.load(open(os.path.join(BASE, 'c524_xvenue.json'))))
+ok("  read with the plan on Pi42, nothing moves (C544 saves its new journal at once, still as a Pi42 ledger)",
+   abs(x0.eq - float(snap['eq'])) < 1e-12
+   and json.load(open(os.path.join(BASE, 'c524_xvenue.json'))).get('venue', 'pi42') == 'pi42')
 LOG.clear()
 x = om.C524CrossVenue(xb)
 ok(f"each pair's Pi42 leg closed and reopened on CoinDCX: {len(snap['pairs'])} pairs, ${n_tot:.2f} of bets x (0.138% + 0.079%) "

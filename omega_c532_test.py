@@ -146,7 +146,8 @@ ok("C532_XV_VENUE = 'binance' restores the C524 trade exactly: both enter at Bin
    set(x3.pairs) == {'HOT', 'COLD'} and x3.v2() == 'Binance' and x3.cost_b() == om._C524_COST_B and x3.fgst(-1.0) == -1.0)
 cfg.C532_XV_VENUE = 'pi42'
 ok("the pending funding (C527Pending) carries the same GST as the ledger books (C539: on each payment, both)",
-   "xd = sum(xv.fgst(-p['d_qty']" in SRC and "fu_d = sum(self.fgst(-p['d_qty']" in SRC)
+   "xd = sum(xv.fgst(-p['d_qty']" in SRC and ("fu_d = sum(self.fgst(-p['d_qty']" in SRC       # C544: the payments are
+                                               or "fu_d = sum(self.fgst(r) for r in raw_d)" in SRC))  # listed, then summed
 ok("every label names the second venue: margins, transfers, the watch, the panel, the total, the status row, the boot line",
    "for v, name in (('d', 'Delta'), ('b', self.v2())):" in SRC and "frm=self.v2() if src == 'b' else 'Delta'" in SRC
    and "f'Delta vs {xv.v2()} funding gap'" in SRC and 'f"paper, Delta vs {_x524.v2()}"' in SRC

@@ -117,7 +117,7 @@ for k in range(2, 10):
     x.run(now_ms=D0 + k * DAY + 30 * 60000)
 cl = [c for c in x.closed if c['coin'] == 'HOT']
 ok("a pair closed at 00:30 UTC kept its 00:00 UTC payment: the window ends at the run, not at midnight",
-   cl and 'HOT' not in x.pairs and "since <= int(x['time']) * 1000 < now_ms)" in SRC and "p['fund_from'] = now_ms" in SRC,
+   cl and 'HOT' not in x.pairs and ("since <= int(x['time']) * 1000 < now_ms)" in SRC or "since <= int(x['time']) * 1000 < now_ms]" in SRC) and "p['fund_from'] = now_ms" in SRC,
    str(cl[-1:]))
 ok("the signal still uses the 7 completed UTC days (the records run to the run; the daily sums stop at midnight)",
    "'end': max(today // 1000 - 1, int(upto or 0) // 1000)}" in SRC and 'fD = _c524_delta_daily(d, p[\'iv\'], lo, today // 1000)' in SRC)

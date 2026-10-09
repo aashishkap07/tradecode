@@ -120,7 +120,7 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     ... each is compared with your rule over the same days it has run".
   - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
     parallel load and passed alone).
-  - Round 23 (jump protection) renumbered **C544** (routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
+  - Round 23 (jump protection) renumbered **C544** (then **C545** on 9 Oct, when C544 became the tax journal; routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
 - **Round 22b (9 Oct, part 1: census + pre-registration + server check; `reports/2026-10-09_mudrex_coinswitch.md`).** The operator:
   "what about testing mudrex and coinswitch and any other exchange you might have missed ? if the data is behind a key , i can
   create an api key for you to test".
@@ -195,6 +195,50 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **C544 (9 Oct, pushed, NOT deployed yet): THE TAX JOURNAL + THE ITR STATEMENT.**
+  - The operator: "As a learned CA specialising in taxation, build a transaction & net profit/loss summary, the details of
+    the source of this sort of income ... so that i can present that directly while filing ITR in year 2027 ... keep
+    updating the summary & re analysing it everytime ... during live trading the summary will start afresh but in exactly
+    same/correct/latest generated format".
+  - **Bot (C524CrossVenue, inherited by the C538 copies):**
+    - every pair carries `jx`: entry prices, n_in, entry fee per leg (incl. GST and the 0.02% spread), price result per
+      leg (px_d/px_b), and rent by IST month `fm[m] = [d_in, d_out, d_gst, b_in, b_out, b_gst]`. The GST is the
+      remainder, so it always equals what was booked; `raw_d/raw_b` are listed and then summed with the same fgst, so the
+      ledger figures are unchanged bit for bit;
+    - each exit writes a `close` record (both legs, exit prices, n_out, fees in and out, fm, rates
+      `{fd, gd, fb, gb, spr}`);
+    - even-outs write `transfer` records; exchange moves write `move` records (their cost also goes into
+      `jx.fee_b`); rebase scales the journal;
+    - a ledger saved before C544 gets one `carry` record (its totals, closed list, transfers, moves) and each open pair a
+      `jx.carry` (its result to date). It is saved at first load;
+    - `journal` is saved with the ledger (at most 5,000 records).
+  - **`omega_tax_statement.py LEDGER [--live] [--ty 2026-27] [--inr 85] [--edition N]`** writes
+    `reports/tax/ITR_TY<ty>_rent_gap_<PAPER|LIVE>.md` + `.csv` in 11 fixed sections:
+    1. assessee and accounts (CoinDCX = Neblio Technologies Pvt Ltd, FIU VA00030982);
+    2. the nature and source of the income;
+    3. the summary mapped to ITR-3 "speculative activity" (turnover = the sum of each leg's |realised difference|; gross
+       profit; expenditure; net) and Schedule BP;
+    4. exchange by exchange;
+    5. by IST month;
+    6. the register of closed positions;
+    7. open positions (rent credited is income; price is not, until closed);
+    8. transfers;
+    9. the tax estimate;
+    10. reconciliation (each position's price + rent - fees == the ledger's pnl);
+    11. the return note and the records to keep.
+
+    PAPER carries the pre-journal result in one line; LIVE starts afresh. The first edition (from the 9 Oct 06:00
+    ledger) is all carry-in: -Rs 39 (eq $999.54).
+  - **RUPEE PARITY FOUND:** Delta India `/v2/settings` `fiat_to_usd.asset_to_fiat_value = 85` (a fixed Rs 85/$); CoinDCX
+    INR-M is a fixed Rs 102/USDT. Equal-dollar legs would leave about 17% of the price move as rupee exposure, so live
+    legs must be matched in RUPEES (CoinDCX USDT = Delta $ x 85/102). The B2 prompt now says so. Paper converts at x85.
+  - **Round 23 renumbered C545** (routine `trig_012MbGyCcxg2dL75KpKXLzGP` renamed). B2, B3, the end-Nov review, the Dec
+    refresh, the monthly review and the live-day routines now carry the journal/statement duties: the monthly review
+    regenerates and re-analyses the statement; B3 makes the bot write it daily; live day checks LIVE edition 1.
+  - **Tests:**
+    - `omega_c544_test.py` 27 checks, among them: the journal == the ledger to 1e-9; fm sums == booked rent; GST 18%
+      on rent paid only; net + unrealised == the ledger's change; the same 11 sections in PAPER and LIVE; CSV x85;
+    - `omega_c532_test.py` / `omega_c539_test.py`: their source-text checks accept the listed-then-summed form.
 - **NO CA: CLAUDE IS THE TAX ADVISER (9 Oct ~14:15 IST)** (`reports/2026-10-09_tax_opinion.md`).
   - Research:
     - the Income-tax Act 2025 has been in force since 1 Apr 2026. The VDA 30% rate was carried over (commentary places it

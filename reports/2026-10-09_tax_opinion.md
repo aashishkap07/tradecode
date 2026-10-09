@@ -180,7 +180,13 @@ The research, re-run today on the plan's 71 coins (two years, 10 pairs of 10%):
 - **Your to-do list loses "ask a CA by 31 January".** It gains a few tax dates, all of them after the live start
   (section 5).
 
-## 5. Your tax calendar
+## 5. Your income statement for the return
+
+`reports/tax/` holds the statement you will file from. The bot journals every trade (C544). The statement is re-made and
+re-checked at every monthly review: paper editions now, and the LIVE one started afresh from your first real trade, in
+the same format. How to enter it in ITR-3: `reports/tax/README.md`.
+
+## 6. Your tax calendar
 
 | when | what | who |
 |---|---|---|
