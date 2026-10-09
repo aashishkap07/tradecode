@@ -704,7 +704,8 @@ def write(d, o, ty, live, inr, outdir, edition, asof, profile=None, taxpayer=Non
         sched = ' · '.join(f"{lab} {y + (1 if lab.endswith('Mar') else 0)}: ₹{N(round(o['tax'] * p))}" for lab, p in
                            (('15 Jun', 0.15), ('15 Sep', 0.45), ('15 Dec', 0.75), ('15 Mar', 1.0)))
         w(f"| Advance tax (cumulative by each date) | {sched} |")
-        w("| Or, instead | declare this income to your employer (1961 s.192(2B)) and let salary TDS cover it |")
+        w("| Or, instead | declare this income to your employer on Form 122 (2025 Act s.392(4)(a); was 1961 s.192(2B)), so "
+          "salary TDS covers it. Money arriving in the same bank account as your salary is not a declaration |")
     else:
         w("| Advance tax | not needed (under ₹10,000); pay as self-assessment tax before filing |")
     if I['net'] < 0:

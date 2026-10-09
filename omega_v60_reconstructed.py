@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C545'
+_OMEGA_VERSION = 'C546'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23803,6 +23803,15 @@ class C524CrossVenue(_C501Store):
         """C542: each leg as a share of the ledger's equity (a test copy may differ)"""
         return float(getattr(self.cfg, 'C524_XVENUE_SIZE', 0.10))
 
+    def same_cap(self):
+        """C546 (Round 24, research/r24_preregistration.md, passed as K6): at most this many of the held pairs may face
+        the same way -- 60% of the slots, i.e. 6 of 10 (9 of 15 for a 15-pair copy). Delta India's longs usually pay
+        more, so most pairs are "short Delta / long CoinDCX", and each ACCOUNT carries one-way market risk even though
+        each pair is neutral: on 10 Oct 2025, minute by minute, the poorer account fell to 50.1% with the base rule and to
+        69.9% with the cap; over 24 months its lowest daily point rose from 56.9% to 66.3%, after tax +$3 a year.
+        Only entries are held back; nothing open is closed for it."""
+        return int(float(getattr(self.cfg, 'C546_XV_SAME_SHARE', 0.6)) * self.n_pairs() + 1e-9)
+
     def on_pi42(self):
         """C532: the second leg is on an Indian rupee venue with its own coin list (C542: Pi42 or CoinDCX)"""
         return self.venue() in _C542_V2
@@ -24128,14 +24137,19 @@ class C524CrossVenue(_C501Store):
                 self.trades += 1
                 out.append(f"{c} ({why})")
         # 3. entries: the widest spreads first
-        inn, small = [], []
+        inn, small, capped = [], [], []
         room = self.n_pairs() - len(self.pairs)
+        k_max = self.same_cap()                                        # C546: at most this many facing one way
+        n_way = {1: sum(1 for q in self.pairs.values() if q['side'] > 0), -1: sum(1 for q in self.pairs.values() if q['side'] < 0)}
         cand = sorted((c for c in coins if c not in self.pairs and sig.get(c) is not None and abs(sig[c]) >= 0.20
                        and (not self.on_pi42() or (p42 and c in self.pi42))),          # C532: Pi42's coins only
                       key=lambda c: -abs(sig[c]))
         for c in cand:
             if room <= 0:
                 break
+            if n_way[1 if sig[c] > 0 else -1] >= k_max:
+                capped.append(c)                                       # C546: that way is full
+                continue
             p_, dpx, bpx = self.prods[c], dm.get(self.prods[c]['sym'], 0.0), bm.get(c + 'USDT', 0.0)
             if dpx <= 0 or bpx <= 0:
                 continue
@@ -24158,6 +24172,7 @@ class C524CrossVenue(_C501Store):
                                          rates=_c544_rates(self.cfg, self.venue()), carry=None))   # C544
             self.trades += 1
             room -= 1
+            n_way[side] += 1
             inn.append(f"{c} {'short Delta/long ' + self.v2() if side > 0 else 'long Delta/short ' + self.v2()} {100 * sig[c]:+.0f}%/yr")
         if eq0 > 0:
             dk = today // _C488_DAY * _C488_DAY                     # C538: by day (a test rule decides 3 times a day)
@@ -24172,7 +24187,8 @@ class C524CrossVenue(_C501Store):
                          pi42_missing=(self.on_pi42() and not p42),
                          day_pnl=round(day_pnl, 2), day_fund=round(d_fund, 2), day_price=round(d_price, 2),   # C536
                          day_cost=round(d_cost, 2), moved=(dict(amt=tr['amt'], frm=tr['frm'], to=tr['to'], fee=tr['fee'])
-                                                            if tr else None))
+                                                            if tr else None),
+                         capped=capped[:10], same_max=k_max, n_short_delta=n_way[1], n_long_delta=n_way[-1])  # C546
         return day_pnl
 
     def tick(self):
@@ -24199,7 +24215,9 @@ class C524CrossVenue(_C501Store):
                         + (f" | {self.v2()}'s list did not load: no new pairs today" if inf.get('pi42_missing') else '')
                         + ""
                         f"{' | in ' + '; '.join(inf['entered']) if inf.get('entered') else ''}"
-                        f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''} [{time.time() - t0:.0f}s]")
+                        f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''}"
+                        f"{' | held back (' + str(inf.get('same_max')) + ' already face that way): ' + ', '.join(inf['capped'][:5]) if inf.get('capped') else ''}"
+                        f" [{time.time() - t0:.0f}s]")
         except Exception as ex:
             self._fail_at = time.time()
             logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
@@ -24350,6 +24368,7 @@ class C524CrossVenue(_C501Store):
                         n=len(self.pairs), pairs=pairs, fees=round(self.fees, 4), funding=round(self.funding, 4),
                         price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
                         last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
+                        same_max=self.same_cap(),                                                     # C546
                         record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)),
                         margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:],
                         transfers=self.transfers[-5:], n_transfers=len(self.transfers), v2=self.v2(),
@@ -45831,7 +45850,7 @@ function renderSimple(d){
        lo<0.65?'<div class="s"><b class="warn">Getting low:</b> the '+weak+' account is below 65%. At the next daily run the bot moves money across from the fuller one.</div>':
        '<div class="s"><b class="good">Healthy.</b> <span class="muted">If one falls below 65% (the faint line), the bot moves money across at the daily run. Below 50% (the red line) it asks you to move money now.</span></div>';
     var tl=(xv.transfers||[]).slice(-1)[0];
-    if(tl)ah+='<div class="s muted">last move: '+istDay(tl.at)+' IST, '+money(tl.amt)+' from '+tl.frm+' to '+tl.to+' ($'+Number(tl.fee||0).toFixed(0)+' fee)'+
+    if(tl)ah+='<div class="s muted">last move: '+istDay(tl.at)+' IST, '+money(tl.amt)+' from '+tl.frm+(tl.frm!=='Delta'&&tl.frm!==v2?' (your second account then)':'')+' to '+tl.to+(tl.to!=='Delta'&&tl.to!==v2?' (your second account then)':'')+' ($'+Number(tl.fee||0).toFixed(0)+' fee)'+
       (P.paper?' · when live, this will be your bank transfer':'')+'</div>';
     q('s-acc').innerHTML=ah;
   }else{q('s-acc').innerHTML='<span class="muted">appears after the first daily run</span>'}
@@ -45843,6 +45862,10 @@ function renderSimple(d){
       h+='<tr><td>'+p.coin+'</td><td class="'+(dn?'bdn':'bup')+'">'+(dn?'\u2193 down':'\u2191 up')+'</td><td class="'+(dn?'bup':'bdn')+'">'+(dn?'\u2191 up':'\u2193 down')+
         '</td><td>'+Math.abs(Number(g)||0).toFixed(0)+'%</td><td class="'+cls(rent)+'">'+sgn(rent)+'</td><td>'+Number(p.days||0).toFixed(1)+'</td></tr>'});
     h+='</table>';
+    var nsd=pr.filter(function(p){return String(p.how||'').indexOf('short Delta')===0}).length,nld=pr.length-nsd,cap=Number(xv.same_max)||0;
+    if(cap){var full=nsd>=cap?'down on Delta':(nld>=cap?'up on Delta':'');   /* C546: the one-way cap */
+      h+='<div class="s muted">facing: '+nsd+' down on Delta, '+nld+' up on Delta. At most '+cap+' may face the same way, so one account never carries most of the market’s swing'+
+        (full?'; no new pair '+full+' until one of those closes':'')+'.</div>'}
     var pend=xv.pending?Number(xv.pending.total)||0:0;
     h+='<div class="s">rent collected <b class="'+cls(xv.funding)+'">'+sgn(xv.funding)+'</b>'+(pend?', plus <span class="'+cls(pend)+'">'+sgn(pend)+
       '</span> waiting to be added at the next daily run':'')+'</div>'+

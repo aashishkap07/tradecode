@@ -168,6 +168,7 @@ xb3 = types.SimpleNamespace(cfg=cfg, c488=xe, portfolio=None, _c462_state_settle
 for f in glob.glob(os.path.join(BASE, 'c5*.json')):
     os.remove(f)
 cfg.C524_XVENUE_EQUITY = 1000.0
+cfg.C546_XV_SAME_SHARE = 1.0          # C546: these 20 coins all face one way; this check is about size, not direction
 xm = om.C524CrossVenue(xb3); xm.reset(); xb3.c524x = xm
 xm.run(now_ms=D0 + 30 * 60000)
 b3 = om.C538TestRule(xb3, 'b15'); b3.reset(); xb3.c538 = [b3]
@@ -179,6 +180,7 @@ ok("a run on 20 equally wide coins: your plan opens 10 pairs of $100, the copy 1
    len(xm.pairs) == 10 and all(abs(p['d_qty']) == 100 for p in xm.pairs.values()) and len(b3.pairs) == 15 and set(n_) == {120.0},
    f"{len(xm.pairs)} / {len(b3.pairs)} {sorted(set(n_))}")
 ok("  every entry names CoinDCX", all('CoinDCX' in e for e in xm.info['entered'] + b3.info['entered']) and xm.info['venue'] == 'CoinDCX')
+cfg.C546_XV_SAME_SHARE = 0.6          # C546's cap back on
 
 print("\n4. COINDCX, READ-ONLY")
 SEC = SRC[SRC.index('# C540 (build step B1)'):SRC.index('# C530: PENDLE FIXED YIELD')]

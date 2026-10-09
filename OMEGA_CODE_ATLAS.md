@@ -126,7 +126,7 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     ... each is compared with your rule over the same days it has run".
   - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
     parallel load and passed alone).
-  - Round 23 (jump protection) renumbered **C544** (then **C545** on 9 Oct, when C544 became the tax journal; then **C546**, when C545 made the statement complete for filing; routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
+  - Round 23 (jump protection) renumbered **C544** (then **C545** on 9 Oct, when C544 became the tax journal; then **C546**, when C545 made the statement complete for filing; then **C547** on 10 Oct, when C546 became Round 24's one-way cap; routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
 - **Round 22b (9 Oct, part 1: census + pre-registration + server check; `reports/2026-10-09_mudrex_coinswitch.md`).** The operator:
   "what about testing mudrex and coinswitch and any other exchange you might have missed ? if the data is behind a key , i can
   create an api key for you to test".
@@ -201,7 +201,56 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
-- **C545 (9 Oct evening, pushed, NOT deployed yet): THE ITR STATEMENT, COMPLETE FOR FILING.** The operator: "make sure
+- **C546 + ROUND 24 (10 Oct ~03:00 IST, pushed, NOT deployed yet): THE SCREENS AUDITED; THE ONE-WAY CAP.** The operator (00:40 IST
+  screens): "analyse carefully to the core, excavate any hidden issues ... discover any possibilities of profitability
+  enhancement or sustainance..proceed accordingly ...update the time line accurately". Report:
+  `reports/2026-10-10_round24_screens.md`.
+  - **Screens verified:**
+    - $1,000.91 = $999.54 (9 Oct 06:00 run) + $1.08 rent waiting + $0.29 price since the run;
+    - Delta $570.99 / CoinDCX $429.92, re-made from live marks at 00:50 IST as $571.77 / $428.02;
+    - rent column sum $8.46 = $7.38 booked + $1.08;
+    - scoreboard snapshots (f8 3.25, w3 2.93, b15 0.32 vs 1.27);
+    - `OMEGA C545` at 20:23 IST, no errors;
+    - G2 re-run 10 Oct 01:30 IST: 191/191 identical.
+  - **114/86 is STRK:** +38.8% intraday (0.0557 at 06:00 → 0.0773 high, 22:00 IST) on the CoinDCX short leg.
+  - **Hidden issues:**
+    1. **each account is one-sided** (7 of 10 "short Delta / long CoinDCX");
+    2. every earlier test used **daily closes**: the 10 Oct 2025 crash wicked mark prices 40-93% within minutes;
+    3. **isolated margin per leg is ruinous** in that crash (Round 23 candidate);
+    4. **Oracle Always Free reclaims idle instances** (95th-percentile CPU, network, and on A1 memory, < 20% over 7
+       days). Fix: Pay As You Go (free within limits) + an outside dead-man's switch (B3);
+    5. the page's "last move: from Pi42" now says "(your second account then)";
+    6. the Pi42 read warning once per restart: the Pi42 key is still saved (optional delete);
+    7. the tunnel link is token-guarded on every GET (C467-D): not an issue.
+  - **ROUND 24** (`research/r24_preregistration.md` pushed first; `research/r24_round24.py/.txt/.json`; 64 coins, the cache
+    rebuilt 10 Oct; engine check OK = Round 22's legs and Round 21's sides exactly):
+    - **A (1-minute mark prices, Delta `MARK:` candles + Binance markPriceKlines):** 10 Oct 2025 base: the poorer account
+      50.1% (Delta, 21:22 UTC); K6 69.9%; cross margin survives all 6 days × 3 rules; isolated 1/3 liquidates 10 legs,
+      1/2 liquidates 9. Today's own book through that crash: CoinDCX 55% at 21:20 UTC.
+    - **B swaps:** S40 +$38/yr, but an account goes to −34% (fails); S80 +$46/yr, t 2.31 (fails $50 and t 2.5).
+    - **C caps:** K7 fails "safer" (61.5%, transfers −13%); **K6 PASSES**: poorer account 56.9% → 66.3%, after tax
+      +3.41% → +3.44% a month (+$3/yr), transfers 7.6 → 7.1, every wobble list, crash day no worse. On two single-coin
+      jump days (5 Aug, 11 Jun 2026) K6 was 2-4 points lower.
+    - **D:** widest-10 gap 85% → 167%/yr (first 18 vs last 6 months; slope +99 points/yr, t 6.3); plan's month
+      +3.78% → +8.50% before tax; peak Jul 2026 +16.7%, Sep +3.0%. Not fading; cyclical. Planning figure: +3.4% after
+      tax (costs ×5), +4.0% (×1).
+  - **Bot C546:**
+    - `C524CrossVenue.same_cap()` = int(`C546_XV_SAME_SHARE` 0.6 × n_pairs): 6 of 10, 9 of 15 for b15;
+    - entries skip a candidate whose way already holds `same_cap()` pairs (`info.capped`, `same_max`, `n_short_delta`,
+      `n_long_delta`); nothing open is closed;
+    - the daily log adds "held back (6 already face that way): ...";
+    - status carries `same_max`; the pairs card says "facing: N down on Delta, M up on Delta. At most 6 may face the
+      same way ...".
+    - Today's book has 7 short-Delta pairs: no new short-Delta pair until one closes.
+  - **Tax answers:** a shared salary/trading bank account is NOT a declaration to the employer. That is **Form 122**
+    (2025 Act s.392(4)(a); was 1961 s.192(2B)); the statement's section 9 now says so. Recommended: advance tax
+    yourself from 2027-28. The server is on Oracle's free tier: no expense to claim (profile `expenses` stays empty).
+  - **Round 23 renumbered C547.** Its prompt now requires 1-minute data, rejects isolated margin unless it survives 10
+    Oct 2025, and prefers cross margin. B2: cross margin on both exchanges, confirmed on the real CoinDCX account
+    (CoinDCX's API documents `position_margin_type: crossed` with `margin_currency_short_name: INR`). B3: an outside
+    dead-man's switch.
+  - **Tests:** `omega_c546_test.py` 13 checks; `omega_c542_test.py`'s sizing check lifts the cap for its 20 one-way coins; battery **62/62**.
+- **C545 (9 Oct evening, deployed 20:23 IST: `OMEGA C545` in the logs): THE ITR STATEMENT, COMPLETE FOR FILING.** The operator: "make sure
   that the above income document is complete in the sense that i won't have to fill in any transaction details myself or
   anything else ..so that when the document matching the live bot is created , i can hand it over straight (after of
   course thoroughly reviewing with you ) to a third party CA who will only help in filing itr".
