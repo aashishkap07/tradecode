@@ -89,6 +89,13 @@ looked at what Mudrex does publish (its prices). That is how it turned out to be
 
 ## 5. What I need from you
 
+**Update, 9 Oct: you chose not to make a Mudrex key.** That is fine for now:
+- Mudrex's two-year test runs on Bybit's history, which the price proof shows is Mudrex's market.
+- A Mudrex key is needed **only if Mudrex wins**. It would then confirm, before any switch, that Mudrex pays exactly
+  Bybit's rent. Live trading would need a key anyway. Until then, the rule "its key reads from your server" keeps
+  Mudrex from replacing CoinDCX on the price proof alone.
+- Only the CoinSwitch key is made now.
+
 There are two parts. **Part B works even without the keys**: Mudrex can then be tested on the proof from its prices.
 CoinSwitch can be tested only with its key.
 

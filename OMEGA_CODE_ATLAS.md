@@ -151,7 +151,9 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     key-helper list.
   - Battery **62/62** (59 Python + 3 shell).
   - **Next:**
-    - the operator (optionally) makes the two keys with no money in the accounts, runs the server check, and pushes the logs;
+    - **9 Oct: the operator will NOT make a Mudrex key** (only CoinSwitch's). Mudrex is tested on the census prior
+      (UNCONFIRMED); per the pre-registration it can win only after a keyed read confirms its rent = Bybit's;
+    - the operator makes the CoinSwitch key (no money in the account), runs the server check, and pushes the logs;
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
