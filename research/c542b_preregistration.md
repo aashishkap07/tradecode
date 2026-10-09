@@ -142,3 +142,31 @@ So engine check 1 cannot use Round 22's exact list. It is done this way instead:
 - **The +0.50% margin** is measured against the **higher** of the two C figures: C today, or C on 8 Oct (+3.55% at
   costs ×5, +4.15% at ×1).
 - **This run's turnover read is saved** with the results (`research/c542b_pairs.json`).
+
+## Round 22c: "the best of both second exchanges" (pre-registered 9 Oct, after part 1's pair results, before this test)
+
+**Why this test:** Part 1 kept Delta + CoinDCX. The operator then asked for "the best possible combination of exchanges
+... in terms of average monthly returns". The one combination not yet tested is three accounts:
+- Delta;
+- **plus both** CoinDCX (Binance's rent) and CoinSwitch (Bybit's rent);
+- each coin's second leg goes to whichever of the two gives the wider gap with Delta.
+
+**A cheap upper bound first** (`research/c542c_best.py`):
+- `legs_best` is `legs` with two candidate second legs.
+- **At entry**, a coin uses the venue with the larger |7-day gap|; on a tie, CoinDCX. It stays on that venue until
+  it exits, and it exits on that venue's own signal.
+- **Costs:** Delta, plus the chosen venue's cost (CoinDCX 0.05% × 1.18 + 0.02%; CoinSwitch 0.055% × 1.18 + 0.02%).
+- **Coins:** Delta ≥ $100k a day ∩ (CoinDCX's list for the CoinDCX leg, CoinSwitch's for the CoinSwitch leg), and each
+  must move with its twin (correlation ≥ 0.9).
+- **The two rupee accounts are treated as one pooled account.** That ignores the bank round trip between CoinDCX and
+  CoinSwitch, so it can only flatter the result. That is what makes it an upper bound.
+- **Engine checks:**
+  - with the CoinSwitch leg switched off, it must equal C exactly;
+  - with the CoinDCX leg switched off, it must equal S exactly.
+
+**The decision:**
+- **If the upper bound's after-tax month (T1) at costs ×5 is below C today + 0.50%**, the three-account idea is
+  dropped. Modelling the third account, the transfers and the poorer-account bar can only lower it.
+- **Otherwise** (and above C at costs ×1 too), the full three-account engine is built as its own round before B2
+  (15 Nov), and adopted only if it passes every Round 22 bar.
+- Mudrex (the same rates as CoinSwitch, a slightly lower fee) is reported beside it for information. It has no key.
