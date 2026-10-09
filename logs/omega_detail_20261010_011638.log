@@ -1,0 +1,45 @@
+01:16:38 | 📊 Paper Mode
+01:16:38 | ✅ Connected | 741 futures markets (Binance USDⓈ-M)
+01:16:38 | 📊 Binance Fees: Maker 0.02% | Taker 0.05%
+01:16:38 | 📊 Market type: PERPETUAL FUTURES (swap) — verified
+01:16:38 | 📋 Limit Orders: ENABLED (offset 0.1%) -- the idle intraday scanner's; the book trades with market orders
+01:16:38 | 📂 Loaded state: $500.77 realised | 0 intraday positions | available $440.32 before open P&L (locked $60.44)
+01:16:38 | 📐 RISK @ $500.77: monthly dial 20% = $100.00/month (20% of this month's anchor $500.00)  |  the portfolio book trades: its month guard closes the book if MARKED equity falls that far below the month's anchor [C497]
+ 
+  ================================================================================================
+  OMEGA C546  PAPER  Binance perps
+  10 Oct 2026   01:16
+  start $500.77 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $500.77 realised  741 markets
+  MONTH     dial 20% = $100.00 this month
+            used $0.00 realised (the guard counts MARKED equity once prices load)
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+01:16:38 |    (legacy Flask page not installed — the dashboard is the control panel)
+01:16:38 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+01:16:38 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+01:16:38 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+01:16:38 |        See deploy/DEPLOY.md — one command, no open ports, free.
+01:16:38 | ============================================================
+01:16:38 | 🤖 OMEGA V60 — INFORMATION ENGINE (C466)
+01:16:38 | 📊 C532 YOUR PLAN (paper until you go live): Delta vs CoinDCX funding gap (both in rupees) $1000 = $1000 of your $1000
+01:16:38 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades the Binance paper account (an experiment, not your plan):
+01:16:38 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+01:16:38 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+01:16:38 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+01:16:38 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at Binance's own rate (read every 6 h; 6.69% until the first read) every minute · rule tournament (C510, 9 rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same book on Delta Exchange India, $500 (C521), an experiment · Delta vs CoinDCX funding spread, both legs, $1000 (C532/C542: both in rupees; CoinDCX's rates are Binance's)
+01:16:38 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+01:16:39 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+01:16:39 | ============================================================
+01:16:39 | 🔄 Monitoring thread started — SPLIT LOOP [C397]: FAST leg every 0.8s (prices in PARALLEL → hard stop, trailing floor, peak floor, capture floor); SLOW leg every 20s (OHLCV/DRI) and 90s (BTC/ETH regime, AFTER positions are checked, never before) -- it watches INTRADAY positions; the book has no stops, its one limit is the month guard
+01:16:40 |    🇮🇳 C534 CoinDCX's coin list loaded: 505 rupee perps (api.coindcx.com); held pairs CoinDCX does not list, closed at the next daily run: none
+01:16:40 |    🏦 C527 Binance Flexible Savings USDT: 2.49% = 2.49% market (read every 6 h)
+01:16:45 |    🔍 C540 real account (read-only) Delta India: no balance, 0 position(s), rent last 24 h +0.0000, 0 fill(s) | the paper ledger holds 10 pairs; nothing is traded live
+01:16:45 | ⚠️ C540 real account Pi42 (read-only) not read: Pi42's firewall answered instead of its API (HTTP 403): this network may be blocked -- check from the server: curl -sI https://fapi.pi42.com
+01:16:46 |    🔍 C540 real account (read-only) CoinDCX: futures no futures balance; rupee wallet INR 0.00, 0 position(s), rent last 24 h 0 | nothing is traded live
+01:16:46 | 💼 C488: portfolio engine ON -- the intraday scanner opens no new positions (OMEGA_ENGINE=intraday restores it); the book holds 10 positions
