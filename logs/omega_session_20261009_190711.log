@@ -1,0 +1,77 @@
+19:07:11 | 📊 Paper Mode
+19:07:11 | ✅ Connected | 741 futures markets (Binance USDⓈ-M)
+ 
+  ================================================================================================
+  OMEGA C544  PAPER  Binance perps
+  09 Oct 2026   19:07
+  start $500.77 realised  risk dial 20%/month
+  ================================================================================================
+ 
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $500.77 realised  741 markets
+  MONTH     dial 20% = $100.00 this month
+            used $0.00 realised (the guard counts MARKED equity once prices load)
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+ 
+19:07:11 | 🌐 Remote control on http://0.0.0.0:8138 — TOKEN REQUIRED
+19:07:11 |    📱 Local network: http://10.0.0.160:8138/?t=<your token> (this machine's own address)
+19:07:11 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+19:07:11 |        See deploy/DEPLOY.md — one command, no open ports, free.
+19:07:11 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades the Binance paper account (an
+    experiment, not your plan):
+19:07:11 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) --
+    a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+19:07:11 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the
+    20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+19:07:11 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid,
+    taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month
+    guard on MARKED equity
+19:07:11 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10
+    UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at Binance's
+    own rate (read every 6 h; 6.69% until the first read) every minute · rule tournament (C510, 9
+    rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same book on
+    Delta Exchange India, $500 (C521), an experiment · Delta vs CoinDCX funding spread, both legs,
+    $1000 (C532/C542: both in rupees; CoinDCX's rates are Binance's)
+19:07:11 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep
+    2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed
+    (OMEGA_ENGINE=intraday runs and describes it)
+19:07:11 | 💡 Stop safely: sudo systemctl stop omega (Ctrl+C only when run by hand)
+19:07:17 | ⚠️ C540 real account Pi42 (read-only) not read: Pi42's firewall answered instead of its
+    API (HTTP 403): this network may be blocked -- check from the server: curl -sI
+    https://fapi.pi42.com
+ 
+  19:15  up 0h08m  daily book --------------------------------------------------------------------
+  PLAN      $1,000.59 of $1,000.00 ($+0.59)  after tax on net profit $1,000.41
+            Delta vs CoinDCX funding gap $1,000.59  paper
+  BELOW     experiments, not your money
+  EQUITY    $494.82  unreal $-5.95
+  OPEN      no intraday positions  book holds 10 (BOOK row)  free $434.38 after open P&L
+  SHADOW    intraday M1 $482.59 (-3.43%)  M1g $506.31 (+1.32%)  8d paper only
+  CARRY     $498.97 (-0.17%)  5 held  paper only
+  SPOT      $247.68 (-0.93%)  0 held  0% invested  cash earns 2.51%  paper pot
+  SAVINGS   idle $310.61 (63%)  at 2.51% +$0.46 so far  ~$0.65/month  paper
+  BFUSD     wallet $494.73 at 7.66%  +$0.77 so far  ~$3.16/month  vs Savings $0.65  paper
+  DELTA     $495.70 (-0.86%)  8 held  fees $0.41  funding $+0.21
+            paper experiment: the book on Delta
+  XVENUE    $999.54 (-0.05%)  10 pairs  funding $+8.98  fees $6.95  paper, Delta vs CoinDCX
+  TESTS     every 8 h: ahead $0.01, 3 days  3-day avg: behind $0.31, 3 days
+            15 x 12%: behind $0.95, 1 day  paper, vs your daily rule
+  BOOK      10 pos gross $273.14 (0.55x)  open $-5.95  funding $-0.00  vol 27% top 20
+            rebal 2026-10-09
+  CONTEXT   since 01 Oct $-5.18 (-1.04%) in 8.4d  normal -3.0% to +6.8%  bottom 29%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   8d from 2026-10-01  base -1.00%  N2 -1.50%  N3 -1.32%  N2+N3 -1.74%  +K4 -3.23%
+            +GK* -1.45%  +K4+GK -2.54%  +GK+DD -1.17%  +GK+XA -2.00%
+  DATA      on time  prices 34s  funding booked  book today  shadow 13:00  carry today
+            spot pot today
+  SESSION   $-0.29 -0.06%  peak $495.11  dd 0.06%
+  MONTH     book guard $5.18 of $100.00 used  on marked equity  from $500.00  dial 20%
+            #.........................
+  RECORD    book closed 11  5W 6L  net $-0.06  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+ 
+19:15:11 | 🎯 C510 Book (what trades): 10 positions, gross 0.55x, open $-5.95 | rule C2 N2+N3 + range
+    vol (GK) | closed 11: 5W/6L $-0.06 | since 01 Oct -1.04% (normal)

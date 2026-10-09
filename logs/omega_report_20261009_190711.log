@@ -1,0 +1,48 @@
+
+  ================================================================================================
+  OMEGA C544  PAPER  Binance perps
+  09 Oct 2026   19:07
+  start $500.77 realised  risk dial 20%/month
+  ================================================================================================
+
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $500.77 realised  741 markets
+  MONTH     dial 20% = $100.00 this month
+            used $0.00 realised (the guard counts MARKED equity once prices load)
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+
+
+
+  19:15  up 0h08m  daily book --------------------------------------------------------------------
+  PLAN      $1,000.59 of $1,000.00 ($+0.59)  after tax on net profit $1,000.41
+            Delta vs CoinDCX funding gap $1,000.59  paper
+  BELOW     experiments, not your money
+  EQUITY    $494.82  unreal $-5.95
+  OPEN      no intraday positions  book holds 10 (BOOK row)  free $434.38 after open P&L
+  SHADOW    intraday M1 $482.59 (-3.43%)  M1g $506.31 (+1.32%)  8d paper only
+  CARRY     $498.97 (-0.17%)  5 held  paper only
+  SPOT      $247.68 (-0.93%)  0 held  0% invested  cash earns 2.51%  paper pot
+  SAVINGS   idle $310.61 (63%)  at 2.51% +$0.46 so far  ~$0.65/month  paper
+  BFUSD     wallet $494.73 at 7.66%  +$0.77 so far  ~$3.16/month  vs Savings $0.65  paper
+  DELTA     $495.70 (-0.86%)  8 held  fees $0.41  funding $+0.21
+            paper experiment: the book on Delta
+  XVENUE    $999.54 (-0.05%)  10 pairs  funding $+8.98  fees $6.95  paper, Delta vs CoinDCX
+  TESTS     every 8 h: ahead $0.01, 3 days  3-day avg: behind $0.31, 3 days
+            15 x 12%: behind $0.95, 1 day  paper, vs your daily rule
+  BOOK      10 pos gross $273.14 (0.55x)  open $-5.95  funding $-0.00  vol 27% top 20
+            rebal 2026-10-09
+  CONTEXT   since 01 Oct $-5.18 (-1.04%) in 8.4d  normal -3.0% to +6.8%  bottom 29%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   8d from 2026-10-01  base -1.00%  N2 -1.50%  N3 -1.32%  N2+N3 -1.74%  +K4 -3.23%
+            +GK* -1.45%  +K4+GK -2.54%  +GK+DD -1.17%  +GK+XA -2.00%
+  DATA      on time  prices 34s  funding booked  book today  shadow 13:00  carry today
+            spot pot today
+  SESSION   $-0.29 -0.06%  peak $495.11  dd 0.06%
+  MONTH     book guard $5.18 of $100.00 used  on marked equity  from $500.00  dial 20%
+            #.........................
+  RECORD    book closed 11  5W 6L  net $-0.06  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+
