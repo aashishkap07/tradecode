@@ -201,7 +201,20 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
-- **C546 + ROUND 24 (10 Oct ~03:00 IST, pushed, NOT deployed yet): THE SCREENS AUDITED; THE ONE-WAY CAP.** The operator (00:40 IST
+- **SERVER FACTS (the operator's `nproc; free -m; uptime; uname -m`, 10 Oct 01:17 IST):**
+  - Oracle **Ampere A1 (aarch64), 1 OCPU, 5.9 GB RAM, no swap**; up 7 days 12:57;
+  - load average 0.17 / 0.14 / 0.10; memory used 800 MB (**13.6%**).
+  - On an A1 shape, Oracle's idle test counts memory as well as CPU and network, each under 20% at the 95th
+    percentile over 7 days. Memory and network are clearly under 20% and CPU is probably under it (load ~0.1-0.2 on
+    one core), so the instance is **likely to qualify as idle**.
+  - **The fix stays: Pay As You Go** (free within Always Free limits; Oracle sends an e-mail notice about a week
+    before stopping an idle instance -- watch for it).
+  - Deliberately burning CPU to look busy is not recommended: it is against the spirit of the rule, and the threshold
+    has changed before.
+- **C546 DEPLOYED 10 Oct 01:16:38 IST** (`OMEGA C546` in omega_session/omega_detail_20261010_011638, no errors; the
+  ledger reloaded intact: $999.54, 10 pairs, 7 short Delta, journal `carry`). The operator's grep came back empty only
+  because it ran in the same second as the restart.
+- **C546 + ROUND 24 (10 Oct ~03:00 IST, deployed 01:16 IST): THE SCREENS AUDITED; THE ONE-WAY CAP.** The operator (00:40 IST
   screens): "analyse carefully to the core, excavate any hidden issues ... discover any possibilities of profitability
   enhancement or sustainance..proceed accordingly ...update the time line accurately". Report:
   `reports/2026-10-10_round24_screens.md`.

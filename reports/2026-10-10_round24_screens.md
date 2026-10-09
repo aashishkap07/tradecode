@@ -179,5 +179,5 @@ the statement. One thing to do for the server's sake, not the tax's: upgrade to 
 | when | what |
 |---|---|
 | **this week** | Upgrade your Oracle Cloud account to **Pay As You Go** (Billing → Upgrade and manage payment). It needs a card, but stays free within the Always Free limits, and Oracle then doesn't stop "idle" servers. Optionally set a budget alert of ₹100 |
-| any time | Send me the output of `nproc; free -m; uptime; uname -m`. It shows the machine's size and how busy it is |
+| ~~any time~~ | ~~send me the server's size~~ | **done 10 Oct 01:17**: Ampere A1 (ARM), 1 core, 5.9 GB, load 0.10–0.17, memory 13.6% used. On this type Oracle's idle test counts memory too, and yours is under 20%, so Pay As You Go matters |
 | optional | Delete the Pi42 read-only key (on Pi42's site and in `data/api_keys.json`) |
