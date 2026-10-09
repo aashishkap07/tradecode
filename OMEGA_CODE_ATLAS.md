@@ -151,6 +151,34 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     key-helper list.
   - Battery **62/62** (59 Python + 3 shell).
   - **Next:**
+    - **PART 2 DONE, 9 Oct afternoon: DELTA + COINDCX STAYS** (`reports/2026-10-09_mudrex_coinswitch.md` section 0).
+      - Server check: 13:04 IST, 476 coins, 1,325,591 Bybit settlements, 0 errors; logs push 13:06 IST.
+      - CoinSwitch EXCHANGE_2 = Bybit predicted for **100% of 762** (Binance 62% of 644). CoinSwitch has 763 coins:
+        180 on Delta, 457 on CoinDCX.
+      - `research/c542b_pairs.txt` (Delta turnover read 9 Oct ~07:40 UTC), after tax T1 at costs x5 (x1); pre-tax per
+        month:
+
+        | pair | coins | after tax T1 (x1) | pre-tax | result |
+        |---|---|---|---|---|
+        | C | 72 | **+3.58%** (+4.18%) | +5.20% | PASS |
+        | M | 66 | +3.28% (+3.85%) | +4.77% | fail: list wobble, without LAB worst month -4.62% |
+        | S | 66 | +3.25% (+3.84%) | +4.73% | fail: the same |
+        | CM | 222 | -4.61% | -4.61% | 24/24 months down, poorer account 11.7% |
+        | CS | 226 | -4.77% | -4.77% | 24/24 months down |
+
+      - Diagnosis (`same_asset` / data checked): BTC closes equal to cents, level ratio 1.0. The Binance-Bybit 7-day gap
+        has a median of 3.6%/yr (only 9% of coin-days >= 20%). Big gaps come only on wild coins whose prices
+        dislocate (H 120% one-day return gap; RIVER, COAI). The info medians on the 174 three-venue coins: Delta-Binance
+        24.9%, Delta-Bybit 27.0%.
+      - Fragility: EDEN (Delta turnover $107k, at the floor) entering S moves it +4.82% -> +4.22% pre-tax. The six C coins
+        missing from M/S: AIN, AIOT, TST (not on Bybit), LIT (not on CoinSwitch/Mudrex), PUMP and SKYAI (named
+        PUMPFUN/SKYAI1 there; not matched).
+      - **Round 22c** (pre-registered dcf8628, `research/c542c_best.py`/`.txt`): Delta + the better of CoinDCX/CoinSwitch
+        coin by coin, the two rupee accounts pooled (an upper bound). Engine checks: CoinSwitch off == C, CoinDCX off == S.
+        Upper bound B +5.10% pre-tax, **+3.51% T1** (x1 +4.16%) vs C +5.25% / +3.61% / +4.21% (73 coins, read 07:51 UTC);
+        Mudrex variant +3.52%. Below C, so **DROPPED** (picking the larger of two noisy gaps selects noise).
+      - **Next:** the operator deletes the CoinSwitch key (website + `api_keys.json`, report section 8). No Mudrex key is
+        needed. The CA question stays CoinDCX. Every Indian venue a bot can reach is now tested.
     - **9 Oct: the operator will NOT make a Mudrex key** (only CoinSwitch's). Mudrex is tested on the census prior
       (UNCONFIRMED); per the pre-registration it can win only after a keyed read confirms its rent = Bybit's;
     - the operator makes the CoinSwitch key (no money in the account), runs the server check, and pushes the logs;

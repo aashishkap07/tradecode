@@ -1,7 +1,91 @@
-# Mudrex, CoinSwitch and every other Indian exchange, re-checked (Round 22b, part 1)
+# Mudrex, CoinSwitch and every other Indian exchange, re-checked (Round 22b and 22c)
 
 9 Oct 2026. You asked: "what about testing mudrex and coinswitch and any other exchange you might have missed ? if
-the data is behind a key , i can create an api key for you to test ..."
+the data is behind a key , i can create an api key for you to test ...". After the server check (13:06 IST) you
+added: "please proceed accordingly intelligently so that the best possible combination of exchanges is selected in
+terms of average monthly returns".
+
+## 0. The result (part 2, 9 Oct afternoon)
+
+**Delta + CoinDCX stays your plan. It is the best combination of every exchange that can be tested.**
+
+**What your server found** (13:04 IST, one moment, 762 coins):
+- **CoinSwitch's rent = Bybit's predicted rent for 100% of 762 coins.** So CoinSwitch is confirmed as a Bybit
+  photocopy.
+- Against Binance, only 62% match.
+- CoinSwitch has 763 coins: 180 also on Delta, 457 also on CoinDCX.
+- Bybit's history came down cleanly: 476 coins, 1.33 million rent payments, 0 errors.
+
+**The test, exactly as written before** (two years, costs ×5, 10 pairs of 10%, after tax at 31.2%;
+`research/c542b_pairs.txt`):
+
+| pair | coins | a month before tax | worst month | after tax (T1) | normal costs, after tax | passes? |
+|---|---|---|---|---|---|---|
+| **Delta + CoinDCX (your plan)** | 72 | **+5.20%** | −2.25% | **+3.58%** | **+4.18%** | **yes** |
+| Delta + Mudrex (Bybit's rent) | 66 | +4.77% | −2.16% | +3.28% | +3.85% | no: without its best coin, one month falls to −4.6% |
+| Delta + CoinSwitch (Bybit's rent) | 66 | +4.73% | −2.27% | +3.25% | +3.84% | no: same reason |
+| CoinDCX + Mudrex (Binance vs Bybit) | 222 | **−4.61%** | −10.3% | — | −1.37% | no: it loses every month |
+| CoinDCX + CoinSwitch | 226 | **−4.77%** | −10.5% | — | −1.40% | no: it loses every month |
+
+**The "best of both" combination** (`research/c542c_best.txt`). Each coin's second leg went to whichever of CoinDCX
+or CoinSwitch paid the wider gap. Three accounts; generous, because the two rupee accounts were pooled as one:
+
+| | a month before tax | after tax (T1) | normal costs, after tax |
+|---|---|---|---|
+| Delta + CoinDCX alone | **+5.25%** | **+3.61%** | **+4.21%** |
+| Delta + the better of CoinDCX / CoinSwitch, coin by coin | +5.10% | +3.51% | +4.16% |
+| the same with Mudrex in CoinSwitch's place | +5.12% | +3.52% | +4.17% |
+
+**Even the generous version earns less than your plan alone,** so the three-account idea is dropped.
+
+### Why, in plain words
+
+1. **Binance's and Bybit's boards almost always show the same numbers.**
+   - The typical gap between them is about 3.6% a year, far below the 20% the trade needs to enter.
+   - Big professional traders keep those two boards in line.
+   - The few big gaps appear on wild coins (H, RIVER, COAI), where the two prices also jump apart (H once differed by
+     120% in a day). The price swings eat the rent.
+   - **Analogy:** two shops that copy each other's prices. The only days they differ are days when one shop is on fire.
+2. **Delta's board is the odd one out. It differs from Bybit's slightly more often than from Binance's** (a 27.0% a
+   year typical gap vs 24.9%). Yet the Delta + Bybit-copy pairs earned less:
+   - six of your plan's coins can't be paired there:
+     - AIN, AIOT and TST aren't on Bybit;
+     - LIT is on Bybit but not on CoinSwitch or Mudrex;
+     - PUMP and SKYAI are listed under other names ("PUMPFUN", "SKYAI1"), which the test did not match. Adding PUMP
+       could not close the gap: the Bybit pairs trail by about 0.3% a month after tax, and a switch needs them to lead
+       by 0.5%;
+   - the Bybit pairs are fragile. One coin sitting at the $100k-a-day cutoff (EDEN) moved the CoinSwitch result by 0.6%
+     a month just by entering the list;
+   - H, the coin with four +100% days in a year, is their biggest loser (Round 23, 22 Oct, deals with such jumps).
+3. **"Pick the better board per coin" doesn't help either.**
+   - Picking whichever of two noisy numbers is higher tends to pick the noise. **Analogy:** choosing the shop with the
+     bigger "sale" sign; the biggest signs are often mistakes that are corrected the next day.
+   - Costs and price noise then eat the small extra.
+
+### What this means for you
+
+- **Nothing changes** in the bot, the plan, the timeline or your CA question (it stays about CoinDCX).
+- **Delete the CoinSwitch key now.** CoinSwitch did not win. Steps are in section 8.
+- **No Mudrex key is needed.** Mudrex lost on the numbers, with or without a key.
+- **The search is now complete for every Indian exchange a bot can use.** Delta, CoinDCX, ZebPay, Pi42 (blocked),
+  Mudrex and CoinSwitch are tested. WazirX, Giottus, Cosmic, SunCrypto, Bitbns and KoinBX can't be tested (no API).
+- If any of them opens an API, or Delta's or CoinDCX's fees change, the monthly review will flag it.
+
+## 8. Removing the CoinSwitch key
+
+1. **On the CoinSwitch PRO website:** Profile → API Trading → revoke (delete) the key.
+2. **On the server**, remove it from the key file. This prints only the names of the sections left, never a key:
+
+```
+sudo -u omega python3 -c "import json,os;f='/home/omega/omega/data/api_keys.json';d=json.load(open(f));d.pop('coinswitch',None);t=f+'.tmp';fd=os.open(t,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600);os.write(fd,json.dumps(d,indent=1).encode());os.close(fd);os.replace(t,f);print('removed coinswitch; sections left:',sorted(d))"
+```
+
+**What you should see:** `removed coinswitch; sections left: ['coindcx', 'delta_india', 'pi42']`. The Pi42 key can
+also go; delete it on Pi42's site whenever convenient.
+
+---
+
+# Part 1 (9 Oct morning): the census and the method
 
 ## 1. The short answer
 
