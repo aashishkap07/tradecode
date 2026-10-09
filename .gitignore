@@ -13,3 +13,6 @@ corpusF/
 /omega_report_*.log
 /omega_session_*.log
 /omega_detail_*.log
+# C545: the tax statement's private folder on the server -- your name, PAN and exchange logins (taxpayer.json) and the
+# statements written in full beside it. Never in git; data/ is not tracked anyway, this is belt and braces.
+/data/tax/

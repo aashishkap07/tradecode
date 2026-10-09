@@ -37,6 +37,12 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - Its risk: +3.71% a month after tax at costs x5 (business income), +0.23% (CoinDCX leg a VDA), **-2.95% (both legs
     VDAs)**, about Rs 60-80k of extra tax per year at $1,000.
   - Keep it current (the monthly review's item 8: tax watch, set-aside, advance tax, ITR).
+  - **The statement is the whole tax file** (the operator, 9 Oct evening: "make sure that the above income document is
+    complete in the sense that i won't have to fill in any transaction details myself or anything else ... i can hand it
+    over straight (after of course thoroughly reviewing with you) to a third party CA who will only help in filing itr ..
+    you act as my personal CA experienced with Indian taxation especially related to cryptocurrency"). The operator
+    fills in nothing; a third-party CA only files from section 12. Identity (name, PAN, logins) lives only in the
+    server's `data/tax/taxpayer.json` (600, never in git, scrubbed from logs); the copy in git is masked.
 - **Tax:** the operator's income is in the **top slab** (30% + 4% cess = 31.2% on trading profit; no
   s.87A rebate; no surcharge). `C528_TAX_RATE = 0.312` is their rate. Trading profit is filed on ITR-3
   as speculative business income; advance tax only once the extra tax tops Rs 10,000 a year.
@@ -120,7 +126,7 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     ... each is compared with your rule over the same days it has run".
   - `omega_c542_test.py` +1 check (44); battery 62/62 (omega_c467_remote_test's scan-age check failed once under 6-way
     parallel load and passed alone).
-  - Round 23 (jump protection) renumbered **C544** (then **C545** on 9 Oct, when C544 became the tax journal; routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
+  - Round 23 (jump protection) renumbered **C544** (then **C545** on 9 Oct, when C544 became the tax journal; then **C546**, when C545 made the statement complete for filing; routine `trig_012MbGyCcxg2dL75KpKXLzGP`).
 - **Round 22b (9 Oct, part 1: census + pre-registration + server check; `reports/2026-10-09_mudrex_coinswitch.md`).** The operator:
   "what about testing mudrex and coinswitch and any other exchange you might have missed ? if the data is behind a key , i can
   create an api key for you to test".
@@ -195,7 +201,68 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
-- **C544 (9 Oct, pushed, NOT deployed yet): THE TAX JOURNAL + THE ITR STATEMENT.**
+- **C545 (9 Oct evening, pushed, NOT deployed yet): THE ITR STATEMENT, COMPLETE FOR FILING.** The operator: "make sure
+  that the above income document is complete in the sense that i won't have to fill in any transaction details myself or
+  anything else ..so that when the document matching the live bot is created , i can hand it over straight (after of
+  course thoroughly reviewing with you ) to a third party CA who will only help in filing itr".
+  - **Bot (journal only, no money changes):**
+    - `_c544_book(..., ms_d, ms_b)`: each rent payment goes into the IST month it was PAID (from `x['time']` /
+      `fundingTime`), not the month of the run. The 06:00 IST run on 1 April books the last 18 hours of March, which
+      belong to the year that ended. Each paid payment carries its own GST; the last row takes the rounding remainder,
+      so the months still sum to the ledger exactly. Without times (an older caller), the run's month is used, as before;
+    - `_c545_yearend(now_ms)`, called in `run()` after the inputs and before any mark: at the first run of a new tax
+      year (`last_run`'s TY differs from now's), it journals `{t: 'yearend', ty, asof, eq, start, d, b, venue, open:
+      {coin: {px_d, px_b, carry}}}`, the ledger as the old year left it. Once per year; a rebase scales it;
+    - `_c545_ty(ms)`. `_OMEGA_VERSION = 'C545'`.
+  - **`omega_tax_statement.py`, now 13 sections plus an "at a glance" box for the filing CA:**
+    - **12, the ITR-3 filing sheet:**
+      - Part A-GEN: code 21009 (Speculative trading, confirmed in each year's utility);
+      - 44AA/s.62 books: computed from the limits ₹2.5 lakh income / ₹25 lakh turnover, this year and the 3 before
+        (from last year's .json);
+      - 44AB/s.63 audit: ₹10 crore;
+      - presumptive 44AD: No;
+      - P&L no-accounts case, speculative activity: turnover, gross profit, expenditure, net;
+      - Part A-BS no-accounts case: sundry debtors = money held at the exchanges on 31 March; creditors, stock and
+        cash 0;
+      - Schedule BP, CYLA (0, not allowed), BFLA and CFL (losses carried 4 years, oldest set off first, via
+        `losses_cf` in each year's .json), TDS 0, Schedule IT from 26AS, VDA nil, FA nil, AL (above ₹50 lakh: the
+        same balances);
+      - regime: Form 10-IEA or its successor if old; due date: profile or plan 31 Jul;
+    - **13, the handover pack:** instructions to the filing CA (ITR-3; no VDA; no 44AD; AIS entries matched, AIS
+      feedback if they say VDA; other heads as usual; file on time), the documents, and a completeness check naming
+      who closes each item;
+    - **the tax year cut exactly:** a close record whose position was open on 31 March counts in section 7: its rent to
+      31 March is this year's, its price result next year's (shown at its 31 March value from the yearend record). A
+      pair opened after the year is left out. A carried-in pair's entry fee stays in its carry-in;
+    - **31 March balances** (section 4 and 10): live from the exchanges' records (`xrec`), else the yearend record,
+      else the ledger at the cut-off: wallet = half + side − open legs' unrealised;
+    - **each exchange's own records** (`--xrec`, default `data/tax/xrec_TY<ty>.json`, built in B3): realised, funding
+      and fees per exchange beside the journal's, agree = within ₹10 a line;
+    - **other business expenses** (live only), from `profile.json` `expenses`, by month;
+    - paper's carry-in (−₹39) stays outside every filing figure (an info line only);
+    - section 5 gains a "slippage, transfer and other charges" column, so each row adds up;
+    - **`.json`** per year (the filing figures, `losses_cf`, `history`, completeness).
+  - **Identity:** `--setup` asks for 5 answers and saves `data/tax/taxpayer.json` (600; PAN validated, bank last 4 digits
+    only). By default the statement is written into that private folder in full (600); `--out` anywhere else masks
+    name, PAN, logins and bank. stdout never prints them. `deploy/omega-logpush.sh` scrubs every taxpayer.json value
+    like the API keys (re-copy to /usr/local/bin); `.gitignore` has `/data/tax/`. **The default `--out` is now the
+    private folder**: the reviews pass `--out reports/tax`, and the server must never write into the tracked
+    reports/tax (it would break `git pull`).
+  - `reports/tax/profile.json` (not secret; kept by Claude): business_code_confirmed, due_date, filed, expenses,
+    exchanges (Delta's operating company to be read from its terms at live day), started_live, reviews.
+  - **Paper edition 2** (9 Oct 19:31 IST, from the C544 ledger on the logs branch): all carry-in (−₹39); 10 open
+    pairs; money held Delta ₹45,333 + CoinDCX ₹39,628 = ₹84,961 (= equity $999.54 x 85); complete 2 of 7 (the rest are
+    June-2027 and live-day items).
+  - **Round 23 renumbered C546** (routine renamed). B2, B3, live day and the monthly review prompts now carry the
+    C545 duties: B3 writes the server copy into data/tax daily, pushes only the .json, and builds the reconcile step
+    (xrec); live day sets started_live and Delta's company; June 2027 confirms the code and due date, reviews with the
+    operator, and hands over the server copy.
+  - **Tests:** `omega_c545_test.py` 47 checks (the 31 March boundary split; the yearend record once a year and rebased;
+    a past year cut exactly, and two years summing to the positions' whole results; the box = section 12 = .json;
+    a loss carried forward and set off next year; 44AA past ₹25 lakh; setup refusals and 600; full copy only beside the
+    identity file, masked elsewhere, never on stdout; logpush scrub; xrec agree/disagree; expenses live only;
+    completeness). `omega_c544_test.py` 27 still pass. Battery **61/61**.
+- **C544 (9 Oct, deployed ~19:07 IST: `OMEGA C544` in the logs, the ledger's `carry` record on the logs branch): THE TAX JOURNAL + THE ITR STATEMENT.**
   - The operator: "As a learned CA specialising in taxation, build a transaction & net profit/loss summary, the details of
     the source of this sort of income ... so that i can present that directly while filing ITR in year 2027 ... keep
     updating the summary & re analysing it everytime ... during live trading the summary will start afresh but in exactly
@@ -232,7 +299,7 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - **RUPEE PARITY FOUND:** Delta India `/v2/settings` `fiat_to_usd.asset_to_fiat_value = 85` (a fixed Rs 85/$); CoinDCX
     INR-M is a fixed Rs 102/USDT. Equal-dollar legs would leave about 17% of the price move as rupee exposure, so live
     legs must be matched in RUPEES (CoinDCX USDT = Delta $ x 85/102). The B2 prompt now says so. Paper converts at x85.
-  - **Round 23 renumbered C545** (routine `trig_012MbGyCcxg2dL75KpKXLzGP` renamed). B2, B3, the end-Nov review, the Dec
+  - **Round 23 renumbered C545** (since C546; routine `trig_012MbGyCcxg2dL75KpKXLzGP` renamed). B2, B3, the end-Nov review, the Dec
     refresh, the monthly review and the live-day routines now carry the journal/statement duties: the monthly review
     regenerates and re-analyses the statement; B3 makes the bot write it daily; live day checks LIVE edition 1.
   - **Tests:**

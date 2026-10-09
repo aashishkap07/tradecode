@@ -184,7 +184,14 @@ The research, re-run today on the plan's 71 coins (two years, 10 pairs of 10%):
 
 `reports/tax/` holds the statement you will file from. The bot journals every trade (C544). The statement is re-made and
 re-checked at every monthly review: paper editions now, and the LIVE one started afresh from your first real trade, in
-the same format. How to enter it in ITR-3: `reports/tax/README.md`.
+the same format.
+
+Since C545 it is the whole tax file for this income:
+- section 12 lists every ITR-3 field it touches, with the figure to enter;
+- section 13 is the handover pack for the CA who only files the return;
+- you fill in nothing.
+
+How the handover works: `reports/tax/README.md`.
 
 ## 6. Your tax calendar
 
@@ -195,8 +202,9 @@ the same format. How to enter it in ITR-3: `reports/tax/README.md`.
 | **1 Feb 2027** | the Union Budget: read the Finance Bill for crypto-derivative changes before 20 Feb | me (at the go/no-go) |
 | 20 Feb 2027 | accept (or not) the tax risk in section 3, at the go/no-go | **you** |
 | from Feb 2027 (pilot) | each month: download the statements from both exchanges; move 31.2% of the month's net profit to a tax savings account | **you** (I'll remind you in the monthly review) |
-| June 2027 | check your AIS; I prepare the figures for ITR-3, tax year 2026-27 | me, then you |
-| **by 31 Jul 2027** | file ITR-3 for tax year 2026-27 (pay any small self-assessment tax first) | **you** |
+| June 2027 | I confirm the business code and the due date, check the statement against your AIS, and go through it with you | me, with you |
+| **by 31 Jul 2027** | hand the server copy of the statement to a filing CA, who files ITR-3 for tax year 2026-27 from its section 12 (pay any small self-assessment tax first) | **you** |
+| after filing | tell me the filing date; I record it (a loss carried forward needs an on-time return) | **you**, one line |
 | **15 Jun, 15 Sep, 15 Dec 2027, 15 Mar 2028** | advance tax for 2027-28 (amounts calculated in the monthly review before each date) | **you** pay; I calculate |
 
 ## Sources

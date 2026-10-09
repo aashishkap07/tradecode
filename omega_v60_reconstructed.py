@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C544'
+_OMEGA_VERSION = 'C545'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23608,6 +23608,8 @@ def _c542_cost(cfg, venue):
 # totals and a short list of closed pairs; it now journals every event (omega_tax_statement.py turns it into the
 # statement). Paper legs are equal in dollars; live legs will be equal in rupees (Delta settles at a fixed Rs 85 per
 # dollar, CoinDCX at Rs 102 per USDT), so the statement converts paper at Delta's rate.
+# C545: each rent payment is journaled in the IST month it was paid (not the month of the run), and the first run of a
+# new tax year journals the ledger as the old year left it (a 'yearend' record: the 31 March balances the return asks for).
 _C544_J_MAX = 5000
 _C544_IST = 19800                          # seconds: IST = UTC + 5:30 (the Indian tax year runs on IST dates)
 
@@ -23615,6 +23617,13 @@ _C544_IST = 19800                          # seconds: IST = UTC + 5:30 (the Indi
 def _c544_month(ms):
     """C544: the IST calendar month of a time in ms, e.g. '2026-10'"""
     return datetime.utcfromtimestamp(int(ms) / 1000 + _C544_IST).strftime('%Y-%m')
+
+
+def _c545_ty(ms):
+    """C545: the Indian tax year (1 April - 31 March, IST) of a time in ms, e.g. '2026-27'"""
+    d = datetime.utcfromtimestamp(int(ms) / 1000 + _C544_IST)
+    y = d.year if d.month >= 4 else d.year - 1
+    return f"{y}-{str(y + 1)[2:]}"
 
 
 def _c544_rates(cfg, venue):
@@ -23893,11 +23902,19 @@ class C524CrossVenue(_C501Store):
                     r[k] = float(r[k]) * f
             if isinstance(r.get('fm'), dict):
                 r['fm'] = {m: [float(v) * f for v in row] for m, row in r['fm'].items()}
+            if r.get('t') == 'yearend':                                                    # C545
+                for k in ('eq', 'start', 'd', 'b'):
+                    r[k] = float(r.get(k) or 0.0) * f
+                for o in (r.get('open') or {}).values():
+                    for k in ('px_d', 'px_b', 'carry'):
+                        o[k] = float(o.get(k) or 0.0) * f
         self._c544_log(dict(t='rebase', ms=int(time.time() * 1000), f=round(f, 6)))
 
-    def _c544_book(self, p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b):
+    def _c544_book(self, p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b, ms_d=None, ms_b=None):
         """one daily mark of a pair: each leg's price result, and its rent received / paid / GST on rent paid, by IST
-        month (GST is the remainder, so the three always add up to what the ledger booked)"""
+        month. C545: each payment goes to the month it was PAID, not the month of the run -- the run at 06:00 IST on
+        1 April books the last 18 hours of March, and they belong to the tax year that ended. Each payment paid carries
+        its own GST; the last row takes the rounding remainder, so the three always add up to what the ledger booked."""
         jx = p.get('jx')
         if not isinstance(jx, dict):
             return
@@ -23905,11 +23922,47 @@ class C524CrossVenue(_C501Store):
         jx['px_b'] = float(jx.get('px_b') or 0.0) + p['b_qty'] * (bpx - p['b_px'])
         if not raw_d and not raw_b:
             return
-        row = jx.setdefault('fm', {}).setdefault(_c544_month(now_ms), [0.0] * 6)
-        din, dout = sum(r for r in raw_d if r > 0), sum(r for r in raw_d if r < 0)
-        bin_, bout = sum(r for r in raw_b if r > 0), sum(r for r in raw_b if r < 0)
-        row[0] += din; row[1] += dout; row[2] += fu_d - din - dout
-        row[3] += bin_; row[4] += bout; row[5] += fu_b - bin_ - bout
+        fm = jx.setdefault('fm', {})
+        for raw, when, k, tot in ((raw_d, ms_d, 0, fu_d), (raw_b, ms_b, 3, fu_b)):
+            if not raw:
+                continue
+            when = when if (when and len(when) == len(raw)) else [now_ms] * len(raw)
+            row, gst = None, 0.0
+            for r, t in zip(raw, when):
+                row = fm.setdefault(_c544_month(t), [0.0] * 6)
+                if r > 0:
+                    row[k] += r
+                elif r < 0:
+                    row[k + 1] += r
+                g = self.fgst(r) - r
+                row[k + 2] += g
+                gst += g
+            row[k + 2] += tot - sum(raw) - gst
+
+    def _c545_yearend(self, now_ms):
+        """C545: the first run of a new Indian tax year journals the ledger as the old year left it (its last daily
+        mark, before this run's): equity, each exchange's money, and each open pair's price result not yet realised --
+        what the return's no-accounts balance sheet asks for at 31 March. Live, the exchanges' own statements give the
+        exact 23:59 figure and the statement shows both. Journal only: no money changes."""
+        last = str(self.last_run or '')
+        if len(last) < 10 or not self.start_equity:
+            return None
+        y, m = int(last[:4]), int(last[5:7])
+        y = y if m >= 4 else y - 1
+        ty = f"{y}-{str(y + 1)[2:]}"
+        if ty == _c545_ty(now_ms) or any(r.get('t') == 'yearend' and r.get('ty') == ty for r in getattr(self, 'journal', []) or []):
+            return None
+        half0 = self.start_equity / 2.0
+        op = {}
+        for c, p in self.pairs.items():
+            jx = p.get('jx') if isinstance(p.get('jx'), dict) else {}
+            op[c] = dict(px_d=round(float(jx.get('px_d') or 0.0), 6), px_b=round(float(jx.get('px_b') or 0.0), 6),
+                         carry=round(float(((jx.get('carry') or {}).get('pnl')) or 0.0), 6))
+        rec = dict(t='yearend', ty=ty, ms=int(now_ms), asof=last, eq=round(self.eq, 6), start=round(self.start_equity, 6),
+                   d=round(half0 + float(self.side.get('d', 0.0)), 6), b=round(half0 + float(self.side.get('b', 0.0)), 6),
+                   venue=self.v2(), open=op)
+        self._c544_log(rec)
+        return rec
 
     def _c544_close(self, c, p, why, now_ms, n_out, cost_d, cost_b):
         """a pair closed: both legs' whole record, from entry to exit, into the journal"""
@@ -23998,6 +24051,7 @@ class C524CrossVenue(_C501Store):
         if not self.start_equity:
             self.start_equity = self.eq = float(getattr(self.cfg, 'C524_XVENUE_EQUITY', 550.0))
         coins, got, bm, dm, p42 = self._inputs(today, now_ms)
+        self._c545_yearend(now_ms)                                   # C545: 31 March, as the old tax year left it
         sig = self._signals(got, coins, today)
         day_pnl, n_fund = 0.0, 0
         d_fund = d_price = d_cost = 0.0                              # C536: the day's result in its parts, for the page
@@ -24018,15 +24072,19 @@ class C524CrossVenue(_C501Store):
                      if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms]
             raw_b = [-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
                      if since <= int(x['fundingTime']) < now_ms]
+            # C545: when each of those was paid (the tax journal books a payment in its own IST month)
+            ms_d = [int(x['time']) * 1000 for x in fD_rec or []
+                    if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms]
+            ms_b = [int(x['fundingTime']) for x in b_rec or [] if since <= int(x['fundingTime']) < now_ms]
             fu_d = sum(self.fgst(r) for r in raw_d)
             fu_b = sum(self.fgst(r) for r in raw_b)
             if b_rec is None or not fD_rec:
                 fu_d = fu_b = 0.0                                   # a venue did not answer: booked next day
-                raw_d, raw_b = [], []
+                raw_d, raw_b, ms_d, ms_b = [], [], [], []
             else:
                 p['fund_from'] = now_ms                             # C539: booked up to the run
                 n_fund += 1
-            self._c544_book(p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b)      # C544: the tax journal
+            self._c544_book(p, now_ms, dpx, bpx, raw_d, raw_b, fu_d, fu_b, ms_d, ms_b)      # C544/C545: the tax journal
             self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d     # C529: each venue's own side
             self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b
             p.update(d_px=dpx, b_px=bpx, pnl=p['pnl'] + pr + fu_d + fu_b, funding=p['funding'] + fu_d + fu_b,

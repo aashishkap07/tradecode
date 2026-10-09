@@ -113,7 +113,7 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 | 5 Oct | check the first Delta-vs-Pi42 run (scheduled) | nothing |
 | from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | **done 8–9 Oct:** Delta's and CoinDCX's read-only keys are saved and read every 10 minutes (CoinDCX first read 9 Oct 00:04 IST) |
 | 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8; done 9 Oct); tax: no CA, see item 5 |
-| 22 Oct | **Round 23 (C545; C544 is the tax journal): protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
+| 22 Oct | **Round 23 (C546; C544-C545 are the tax journal and statement): protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
 | 1 Nov | monthly review, gates G1/G2 so far | nothing |
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, each leg on its own (isolated) margin. If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |
@@ -142,8 +142,10 @@ Every step below runs in paper or dry-run until G1–G6 pass.
    - Never paste a key into chat or the code. Copy it onto the server into
      `data/api_keys.json` (steps will be given).
 3. **Tax records** (speculative business income, ITR-3):
-   - The bot's ledger will export a yearly profit statement.
-   - Keep the exchanges' own statements too.
+   - The bot journals every trade (C544), and `omega_tax_statement.py` makes the yearly statement, complete for filing
+     (C545: every ITR-3 field, the 31 March balances, losses carried forward, a handover pack). A filing CA copies it
+     into ITR-3; the operator fills in nothing (`reports/tax/README.md`).
+   - Keep the exchanges' own statements too; from B3 the statement also checks itself against them.
 4. **Money:** about **₹1 lakh** in total for March (~₹51,000 on CoinDCX at its
    ₹102 rate, and Delta's own rate for the other $500), plus ~₹20,000 for the
    February pilot.

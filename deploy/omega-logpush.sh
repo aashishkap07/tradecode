@@ -365,6 +365,16 @@ if [ -f "$KEYS_JSON" ]; then
     "$PYBIN" "$REPO/deploy/omega-scrub-keys.py" "$KEYS_JSON" "$WT/logs" >/dev/null \
         || die "a value from api_keys.json could not be scrubbed — refusing to push"
 fi
+# C545: the tax statement's identity file (name, PAN, exchange logins; data/tax/taxpayer.json, chmod 600). Nothing
+# writes it to a log, and data/tax/ is never copied -- this is the same literal scrub, in case one ever does.
+TAXP_JSON="${OMEGA_BASE_PATH:-$REPO/data}/tax/taxpayer.json"
+if [ -f "$TAXP_JSON" ]; then
+    PYBIN="$(command -v python3 || true)"
+    [ -n "$PYBIN" ] && [ -f "$REPO/deploy/omega-scrub-keys.py" ] \
+        || die "taxpayer.json exists but python3 or deploy/omega-scrub-keys.py is missing — refusing to push"
+    "$PYBIN" "$REPO/deploy/omega-scrub-keys.py" "$TAXP_JSON" "$WT/logs" >/dev/null \
+        || die "a value from taxpayer.json could not be scrubbed — refusing to push"
+fi
 
 cd "$WT" || die "cannot enter the worktree"
 # ═══ C476: "NOTHING TO COMMIT" IS NOT "NOTHING TO PUSH" ═══════════════
