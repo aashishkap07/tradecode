@@ -217,8 +217,19 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     browser, blockers off, a Visa/Mastercard credit card with international use (Indian OTP/RuPay cards are a known
     failure).
   - **Budget alert being created:** `omega-zero-spend`, root compartment, monthly, SGD 1, Actual Spend ≥ 1%, e-mail.
-  - **Next:** the operator sends the instance Metrics chart (CPU and memory utilisation, 7 days) to settle whether the
-    idle rule can apply at all. **Last resort if Pay As You Go is impossible and both lines are under 20%:** right-size
+  - **Instance metrics, 3-9 Oct (the operator's screenshots, 10 Oct 15:32 IST):**
+    - CPU utilisation (mean) about 1.5-2%, peaks about 3.5%;
+    - memory about 13-15%;
+    - network receive about 2-5 KB/s, one spike near 40 KB/s;
+    - disk writes about 1-2 per second.
+    - **All three idle tests are met by a wide margin. The instance qualifies as "idle" today.** No notice has been
+      received yet (3 weeks old).
+    - Verdict: **Pay As You Go from a computer is the real fix and is now a priority.**
+    - Plan B (right-size to 1 OCPU / 3 GB + 2 GB swap, which takes memory to about 28%) needs a stop/start of the
+      instance. In a busy region an A1 restart can meet "out of host capacity", so it is done only if Pay As You Go
+      proves impossible, at a quiet hour, with the logs pushed first.
+    - The operator's question "should I do the restart check now?": yes. The two commands only READ settings; they
+      don't restart anything. **Last resort if Pay As You Go is impossible and both lines are under 20%:** right-size
     the instance to 1 OCPU / 3 GB plus a 2 GB swap file, so the bot's real memory use reads about 27%.
   - If Oracle ever stops the instance: Start it in the console. omega.service and cloudflared-quick are enabled at
     boot (`Restart=always`, `WantedBy=multi-user.target`), and the ephemeral public IP stays with the instance across
