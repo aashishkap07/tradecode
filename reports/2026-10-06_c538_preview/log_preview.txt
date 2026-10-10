@@ -1,0 +1,132 @@
+--- 1. LOAD (OMEGA C538, the server's 4 Oct state) ---
+--- 2. LIVE PRICES ---
+(preview) Binance marks 741 (ok), Delta tickers 226 (ok), Binance prices taken with Delta's: 741 [5s]
+--- 3. BOOT: WHAT IS RUNNING ---
+14:43:57 | 📊 C532 YOUR PLAN (paper until you go live): Delta vs Pi42 funding gap (both in rupees) $1000 = $1000 of your $1000
+14:43:57 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades the Binance paper account (an experiment, not your plan):
+14:43:57 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+14:43:57 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+14:43:57 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+14:43:57 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at Binance's own rate (read every 6 h; 6.69% until the first read) every minute · rule tournament (C510, 9 rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same book on Delta Exchange India, $500 (C521), an experiment · Delta vs Pi42 funding spread, both legs, $1000 (C532: both in rupees; Pi42's rates read from Binance, its source)
+14:43:57 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+--- 4. THE CROSS-VENUE TRADE'S NEXT DAILY RUN, DONE NOW ON LIVE DATA ---
+(preview) the run failed: StopIteration: skipped (OMEGA_PREVIEW_NORUN)
+14:43:57 |    🧪 C538 test "Checks every 8 hours" (paper, not your plan): starts as a copy of your daily ledger as of its 2026-10-06 run ($996.30, 10 pairs); from now on it decides at 06:00, 14:00 and 22:00 IST instead of once a day. The two are compared every day after the 06:00 IST run.
+14:44:39 |    🧪 C538 test "Checks every 8 hours" (paper, not your plan) 14:00 IST: +0.65 -> $996.96 | 10 pairs, 10 the same as yours [42s]
+(preview) C538 Checks every 8 hours: copied 2026-10-06, last decision slot 2026-10-06 08:00 UTC, 10 pairs, 10 the same as the daily rule's, $996.96 (daily $996.30)
+14:44:39 |    🧪 C538 test "Uses a 3-day average" (paper, not your plan): starts as a copy of your daily ledger as of its 2026-10-06 run ($996.30, 10 pairs); from now on it judges each gap on its last 3 days instead of 7. The two are compared every day after the 06:00 IST run.
+(preview) C538 Uses a 3-day average: copied 2026-10-06, last decision slot 2026-10-06 00:00 UTC, 10 pairs, 10 the same as the daily rule's, $996.30 (daily $996.30)
+(preview) sides now: Delta $488.72 (0.977), Pi42 $507.79 (1.016)
+--- 5. THE 8-MINUTE STATUS BLOCK ---
+
+
+  14:44  up 0h00m  daily book ----------------------------------------
+  PLAN      $996.51 of $1,000.00 ($-3.49)
+            after tax on net profit $996.51
+            Delta vs Pi42 funding gap $996.51  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.28  unreal $+0.72
+  OPEN      no intraday positions  book holds 11 (BOOK row)
+            free $440.26 after open P&L
+  CARRY     $498.94 (-0.18%)  8 held  paper only
+  SPOT      $249.45 (-0.22%)  3 held  8% invested  cash earns 6.69%
+            paper pot
+  SAVINGS   idle $314.58 (0%)  at 6.69% +$0.31 so far  ~$1.75/month
+            paper
+  BFUSD     wallet $502.13 at 7.66%  +$0.45 so far  ~$3.21/month
+            vs Savings $1.75  paper
+  DELTA     $503.94 (+0.79%)  9 held  fees $0.37  funding $+0.19
+            paper experiment: the book on Delta
+  XVENUE    $996.30 (-0.37%)  10 pairs  funding $+3.79  fees $4.87
+            paper, Delta vs Pi42
+  TESTS     every 8 h: scored from 06:00 IST
+            3-day avg: scored from 06:00 IST  paper, vs your daily rule
+  BOOK      11 pos gross $310.45 (0.62x)  open $+0.72  funding $-0.06
+            vol 27% top 20  rebal 2026-10-06
+  CONTEXT   since 01 Oct $+2.29 (+0.46%) in 5.5d  normal -2.6% to +5.0%
+            top 47%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   5d from 2026-10-01  base +0.17%  N2 +0.03%  N3 +0.36%
+            N2+N3 +0.32%  +K4 +0.67%  +GK* +0.40%  +K4+GK +0.83%
+            +GK+DD +0.66%  +GK+XA +1.81%
+  DATA      on time
+  SESSION   $+0.72 +0.14%
+  DAY       barrier not yet derived (no day anchor)
+  RECORD    book closed 8  5W 3L  net $+1.78  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  --------------------------------------------------------------------
+
+--- 6. THE PLAN TOTAL ---
+{
+ "plan": {
+  "start": 1000.0,
+  "eq": 996.51,
+  "pnl": -3.49,
+  "pct": -0.35,
+  "n": 1
+ },
+ "tax": {
+  "rate": 0.312,
+  "pnl": -3.49,
+  "tax": 0.0,
+  "after": -3.49,
+  "eq_after": 996.51,
+  "business": -3.49,
+  "tax_business": 0.0,
+  "vda": 0,
+  "tax_vda": 0.0,
+  "vda_rate": 0.312
+ },
+ "budget": {
+  "invest": 1000.0,
+  "reserve": 0.0
+ },
+ "rows": [
+  [
+   "book",
+   "Main book (futures)",
+   500.0,
+   502.29,
+   false
+  ],
+  [
+   "savings",
+   "Savings on the book's idle cash",
+   0.0,
+   0.31,
+   false
+  ],
+  [
+   "spot",
+   "Spot pot",
+   250.0,
+   249.45,
+   false
+  ],
+  [
+   "carry",
+   "Funding carry (spot + perp)",
+   499.83,
+   498.94,
+   false
+  ],
+  [
+   "delta",
+   "Same book on Delta India",
+   500.0,
+   503.94,
+   false
+  ],
+  [
+   "xvenue",
+   "Delta vs Pi42 funding gap (both in rupees)",
+   1000.0,
+   996.51,
+   true
+  ]
+ ]
+}
+14:44:39 | 🌐 Remote control on http://0.0.0.0:58021 — TOKEN REQUIRED
+14:44:39 |    📱 Local network: http://192.0.2.2:58021/?t=<your token> (this machine's own address)
+14:44:39 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+14:44:39 |        See deploy/DEPLOY.md — one command, no open ports, free.

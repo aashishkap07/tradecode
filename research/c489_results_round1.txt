@@ -1,0 +1,37 @@
+# C489 round 1 output (research/omega_c489_research.py), 2026-09-25
+
+383 coins, 49656 hours, 2021-01-01 .. 2026-08-31; universe 40 max  [56s]
+   returns/flow 21s
+   volume 121s
+   beta/funding 141s
+   chaos 179s
+   markov 195s
+   done 198s
+
+INTRADAY HYPOTHESES (4-hour hold, overlapping cohorts, 0.08%/turnover, real funding; OOS 2021-07 on)
+  H1 1h reversal (-z_r1)                       2021-07..2026-08  net -274.2%/yr  vol  15.6%  Sharpe -17.56  t -34.74  quarters+ 0/4  maxDD 100.0%  month -22.88% (2% +)  - | gross -1%/yr cost 272%/yr
+  H2 24h continuation (+z_r24)                 2021-07..2026-08  net  -78.2%/yr  vol  29.9%  Sharpe -2.61  t -6.03  quarters+ 0/4  maxDD 99.1%  month -6.53% (21% +)  - | gross +40%/yr cost 117%/yr
+  H3 buying pressure persists (+flow4)         2021-07..2026-08  net -260.4%/yr  vol  19.0%  Sharpe -13.68  t -29.58  quarters+ 0/4  maxDD 100.0%  month -21.73% (0% +)  - | gross +12%/yr cost 271%/yr
+  H4 Markov 1st order (+mk1)                   2021-07..2026-08  net -196.0%/yr  vol  19.7%  Sharpe -9.95  t -21.40  quarters+ 0/4  maxDD 100.0%  month -16.35% (0% +)  - | gross +20%/yr cost 221%/yr
+  H5 Markov 2nd order (+mk2)                   2021-07..2026-08  net -243.8%/yr  vol  16.3%  Sharpe -14.98  t -33.69  quarters+ 0/4  maxDD 100.0%  month -20.34% (2% +)  - | gross +12%/yr cost 260%/yr
+  H6 chaos switch (Hurst/PE)                   2021-07..2026-08  net -265.1%/yr  vol  27.6%  Sharpe -9.62  t -21.29  quarters+ 0/4  maxDD 100.0%  month -22.12% (2% +)  - | gross +5%/yr cost 269%/yr
+  H7 catch-up to BTC (-resid4)                 2021-07..2026-08  net -280.0%/yr  vol  23.0%  Sharpe -12.16  t -24.78  quarters+ 0/4  maxDD 100.0%  month -23.36% (0% +)  - | gross -3%/yr cost 276%/yr
+  H8 fade crowded funding (-fundz)             2021-07..2026-08  net  -86.1%/yr  vol  23.6%  Sharpe -3.65  t -7.64  quarters+ 0/4  maxDD 99.1%  month -7.18% (16% +)  - | gross -5%/yr cost 99%/yr
+
+PROBABILITY MODEL (walk-forward logistic, retrain 30d on 180d)  [286s]
+  M1 probability model (63 fits)               2021-07..2026-08  net -100.4%/yr  vol  10.2%  Sharpe -9.80  t -22.73  quarters+ 0/4  maxDD 99.4%  month -8.28% (2% +)  - | gross +6%/yr cost 105%/yr
+  M1g gated (2% of hours traded)               2021-07..2026-08  net   -5.6%/yr  vol   2.8%  Sharpe -1.99  t -4.16  quarters+ 0/4  maxDD 26.6%  month -0.46% (13% +)  - | gross +2%/yr cost 8%/yr
+
+CORRELATION WITH THE C488 BOOK (daily)
+  H1 1h reversal (-z_r1)                       rho +0.02
+  H2 24h continuation (+z_r24)                 rho +0.03
+  H3 buying pressure persists (+flow4)         rho -0.04
+  H4 Markov 1st order (+mk1)                   rho +0.23
+  H5 Markov 2nd order (+mk2)                   rho +0.14
+  H6 chaos switch (Hurst/PE)                   rho +0.02
+  H7 catch-up to BTC (-resid4)                 rho -0.02
+  H8 fade crowded funding (-fundz)             rho +0.02
+  M1                                           rho +0.00
+  M1g                                          rho +0.02
+
+[403s]

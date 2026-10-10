@@ -1,0 +1,26 @@
+====================================================================================================
+C500 ROUND 7 | crypto only, top 20, dial 15% (vol 20%), $6 floor at $250 | 2020-05-01 .. 2026-08-31
+====================================================================================================
+  BASE (what runs)                         net  +32.6%/yr Sharpe 1.56 maxDD 31.4% month +2.72% worst month -15.5%
+
+K1 momentum-crash guard: 'rebound risk' state on 25% of days
+  K1 crash guard (C2 x0.5 in rebound risk) net  +30.9%/yr Sharpe 1.49 maxDD 29.4% month +2.58% worst month -15.0%
+                                           vs base:  -1.70%/yr  NW t -1.05  quarters+ 1/4  holdout 2025-26 -6.16%/yr  -> not admitted
+
+K2 horizon ensemble
+  K2 C2 over 7/14/28, C3 over 3/7/14       net  +37.3%/yr Sharpe 1.71 maxDD 28.2% month +3.11% worst month -13.3%
+                                           vs base:  +4.64%/yr  NW t +1.26  quarters+ 2/4  holdout 2025-26 -1.65%/yr  -> not admitted
+
+K3 Ichimoku trend (sign agrees with the base trend on 69% of eligible coin-days)
+  K3 Ichimoku cloud as C1                  net  +30.4%/yr Sharpe 1.49 maxDD 33.9% month +2.53% worst month -20.2%
+                                           vs base:  -2.24%/yr  NW t -0.84  quarters+ 1/4  holdout 2025-26 +0.34%/yr  -> not admitted
+
+K4 allostatic volatility
+  K4 EWMA vol, half-life 10 days           net  +34.3%/yr Sharpe 1.61 maxDD 29.3% month +2.82% worst month -9.7%
+                                           vs base:  +0.31%/yr  NW t +0.08  quarters+ 2/4  holdout 2025-26 +3.57%/yr  -> not admitted
+
+M1 three-day loss of 3.4% or more: 2.7% of 3-day windows, 28 separate episodes in 6.3 years (about 4.4 a year)
+   the next 30 days after an episode: median +1.2%, mean +1.7%, positive 59%, worst -15.6%, best +19.6%
+
+M2 BTC implied (Deribit DVOL) minus the following 30 days' realised volatility
+   970 days (2023-12-06 .. 2026-08-01): implied 50% vs realised 44% on average; premium mean +6.1 vol points, median +9.5; realised ABOVE implied on 27% of days; worst -44 points

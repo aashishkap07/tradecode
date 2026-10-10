@@ -1,0 +1,21 @@
+Hyperliquid perps 178; on Binance USDⓈ-M too: 173
+
+H1 Binance vs Hyperliquid cross-venue funding spread, 2024-10-08 .. 2026-09-30, 173 coins on both venues, on capital (2x gross per venue at 10 pairs)
+  net +8.10%/yr  HAC t +3.66  vol 3.14%/yr  | funding +15.79%/yr  price +0.30%/yr  costs 7.99%/yr  | pairs held: median 10, max 10
+  months: 24, positive 21, median +0.66%, worst -2.26%, best +2.24%
+  2024-10..2025-03                   +6.16%
+  2025-04..2025-09                   +0.44%
+  2025-10..2026-03                   +4.82%
+  2026-04..2026-09 (last 6 months)   +4.62%
+  BAR (t >= 2, >= 3/4 half-years, last 6 months > 0): PASSED
+  entries by coin: MOVE 17, REZ 14, VVV 13, ACE 13, USUAL 12, ZORA 12, ZETA 11, KAITO 11, BIO 11, SOPH 11, MERL 11, ME 10, LAYER 10, DYM 8, BSV 8
+  persistence: the 7-day spread's correlation with the next 7 days', across coins: median +0.40 (103 weeks)
+
+THE SAME RULE, EACH ASSUMPTION MADE HARDER (171 of 173 coins correlate >= 0.9)
+  timing: 00:00 payment to the day before    net    +7.9%/yr  t  +3.34  months+ 21/24  worst month  -2.76%  funding  +17.0  price   -1.5  costs   7.5  PASS
+  costs x5                                   net   -23.9%/yr  t  -8.21  months+ 2/24  worst month  -4.42%  funding  +15.8  price   +0.3  costs  39.9  fail
+  costs x10                                  net   -63.8%/yr  t -15.21  months+ 0/24  worst month  -8.28%  funding  +15.8  price   +0.3  costs  79.9  fail
+  identity: return correlation >= 0.9        net    +8.1%/yr  t  +3.67  months+ 21/24  worst month  -2.26%  funding  +15.8  price   +0.3  costs   8.0  PASS
+  ALL: timing + costs x5 + identity          net   -22.2%/yr  t  -7.11  months+ 2/24  worst month  -5.03%  funding  +17.0  price   -1.5  costs  37.6  fail
+
+the daily spread Hyperliquid - Binance, all coin-days: mean +3.2%/yr, |spread| >= 20%/yr on 16% of coin-days
