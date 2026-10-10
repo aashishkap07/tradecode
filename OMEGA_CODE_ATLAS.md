@@ -229,7 +229,22 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
       instance. In a busy region an A1 restart can meet "out of host capacity", so it is done only if Pay As You Go
       proves impossible, at a quiet hour, with the logs pushed first.
     - The operator's question "should I do the restart check now?": yes. The two commands only READ settings; they
-      don't restart anything. **Last resort if Pay As You Go is impossible and both lines are under 20%:** right-size
+      don't restart anything.
+  - **Restart check done 10 Oct 15:40 IST:**
+    - `systemctl is-enabled omega cloudflared-quick` → enabled, enabled;
+    - tunnel URL `pty-shades-completion-equipped.trycloudflare.com` (unchanged);
+    - Ubuntu 24.04.5 LTS, kernel 7.0.0-1013-oracle aarch64, load 0.06, disk 11.5% of 44 GB, memory 13%, swap 0%,
+      0 pending updates.
+    - The MOTD offers 26.04.1 LTS: **do NOT run do-release-upgrade** (24.04 is supported to 2029; a major upgrade can
+      break Python and the services; revisit after live is stable). Ubuntu Pro/ESM's 3 extra updates are optional.
+  - **Decision 10 Oct: no Plan B now.**
+    - The operator gets a laptop in a few days.
+    - Oracle's past practice is an e-mail notice and about a week's grace before stopping an idle instance, so the
+      chance of a stop in those few days is small.
+    - Plan B's restart (capacity) and memory risks are larger than that.
+    - Pay As You Go is an account/billing change; it does not stop or recreate instances, and Always Free resources
+      stay free after it.
+    - If the idle notice arrives first: upgrade within its grace week; Plan B only if the upgrade fails. **Last resort if Pay As You Go is impossible and both lines are under 20%:** right-size
     the instance to 1 OCPU / 3 GB plus a 2 GB swap file, so the bot's real memory use reads about 27%.
   - If Oracle ever stops the instance: Start it in the console. omega.service and cloudflared-quick are enabled at
     boot (`Restart=always`, `WantedBy=multi-user.target`), and the ephemeral public IP stays with the instance across
