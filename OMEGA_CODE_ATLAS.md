@@ -201,6 +201,28 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **ORACLE ACCOUNT FACTS (the operator's console screenshots, 10 Oct 11:00 IST):**
+  - Billing → Subscriptions → "Universal Credits", subscription 100001000188462:
+    - started 18 Sep 2026, Infrastructure, currency **SGD**;
+    - a free-trial credit of **SGD 400** with **8 of 30 days left**, so the trial ends about **18 Oct 2026**;
+    - **SGD 0.00 used, 0 SKUs used**: everything running is Always Free;
+    - region India West (Mumbai).
+  - Oracle's docs (10 Oct): after the promotion, Always Free resources remain available "as long as the account
+    remains active". Free accounts stay active only if used within the past 60 days, so the operator logs in monthly.
+  - Always Free A1 is now 1,500 OCPU-hours + 9,000 GB-hours a month (= 2 OCPU / 12 GB), in the home region. The
+    instance (1 OCPU / 6 GB) is inside it. 200 GB of block storage including boot volumes.
+  - The idle-reclamation page doesn't itself promise that Pay As You Go exempts an instance; Oracle's 2023 notices
+    said it did.
+  - **"Upgrade and Manage Payment" won't load on the operator's Android Chrome/Firefox.** Advised: a desktop
+    browser, blockers off, a Visa/Mastercard credit card with international use (Indian OTP/RuPay cards are a known
+    failure).
+  - **Budget alert being created:** `omega-zero-spend`, root compartment, monthly, SGD 1, Actual Spend ≥ 1%, e-mail.
+  - **Next:** the operator sends the instance Metrics chart (CPU and memory utilisation, 7 days) to settle whether the
+    idle rule can apply at all. **Last resort if Pay As You Go is impossible and both lines are under 20%:** right-size
+    the instance to 1 OCPU / 3 GB plus a 2 GB swap file, so the bot's real memory use reads about 27%.
+  - If Oracle ever stops the instance: Start it in the console. omega.service and cloudflared-quick are enabled at
+    boot (`Restart=always`, `WantedBy=multi-user.target`), and the ephemeral public IP stays with the instance across
+    stop/start. The quick-tunnel dashboard URL changes after a reboot.
 - **SERVER FACTS (the operator's `nproc; free -m; uptime; uname -m`, 10 Oct 01:17 IST):**
   - Oracle **Ampere A1 (aarch64), 1 OCPU, 5.9 GB RAM, no swap**; up 7 days 12:57;
   - load average 0.17 / 0.14 / 0.10; memory used 800 MB (**13.6%**).
