@@ -2989,3 +2989,285 @@
  
 11:10:17 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.04 | rule C2 N2+N3 +
     range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.23% (normal)
+ 
+  11:18  up 178h01m  daily book ------------------------------------------------------------------
+  PLAN      $1,012.20 of $1,000.00 ($+12.20)  after tax on net profit $1,008.39
+            Delta vs CoinDCX funding gap $1,012.20  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.21  unreal $+13.12
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.86 after open P&L
+  SHADOW    intraday M1 $454.22 (-9.10%)  M1g $484.97 (-2.95%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.90 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.57 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.23 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.79 (-0.24%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.49 (0.78x)  open $+13.12  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.21 (+0.24%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 2s  funding booked  book today  shadow 05:00  carry today
+            spot pot today
+  SESSION   $+6.24 +1.26%  peak $502.48  dd 0.25%
+  CURVE     =====+++++++++++++==+++++++++++=========+=+++=======++++++++++++++=+++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:18:18 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.12 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.24% (normal)
+ 
+  11:26  up 178h09m  daily book ------------------------------------------------------------------
+  PLAN      $1,012.00 of $1,000.00 ($+12.00)  after tax on net profit $1,008.26
+            Delta vs CoinDCX funding gap $1,012.00  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.09  unreal $+13.00
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.74 after open P&L
+  SHADOW    intraday M1 $454.22 (-9.10%)  M1g $484.97 (-2.95%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.90 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.47 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.09 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.72 (-0.26%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.84 (0.78x)  open $+13.00  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.09 (+0.22%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 38s  funding booked  book today  shadow 05:00  carry today
+            spot pot today
+  SESSION   $+6.12 +1.24%  peak $502.48  dd 0.28%
+  CURVE     =====+++++++++++++==+++++++++++=========+==++=======++++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:26:18 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.00 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.22% (normal)
+11:32:08 |    👻 C489 shadow hour 06:00 UTC: 38 coins scored (full (16 features)), gate shut | M1
+    $455.15 (-8.92%) M1g $485.64 (-2.82%) over 16d [3s]
+ 
+  11:34  up 178h17m  daily book ------------------------------------------------------------------
+  PLAN      $1,012.11 of $1,000.00 ($+12.11)  after tax on net profit $1,008.33
+            Delta vs CoinDCX funding gap $1,012.11  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.01  unreal $+12.92
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.66 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.90 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.41 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.01 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.64 (-0.27%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.66 (0.78x)  open $+12.92  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.01 (+0.20%) in 16.1d  normal -3.8% to +10.0%  bottom 40%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 31s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.04 +1.22%  peak $502.48  dd 0.29%
+  CURVE     =====+++++++++++++==++++++++++++========+==++=======++++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:34:19 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+12.92 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.20% (normal)
+ 
+  11:42  up 178h25m  daily book ------------------------------------------------------------------
+  PLAN      $1,012.21 of $1,000.00 ($+12.21)  after tax on net profit $1,008.40
+            Delta vs CoinDCX funding gap $1,012.21  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.18  unreal $+13.09
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.83 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.91 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.53 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.18 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.77 (-0.25%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.95 (0.78x)  open $+13.09  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.18 (+0.24%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 25s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.21 +1.25%  peak $502.48  dd 0.26%
+  CURVE     =====+++++++++++++==++++++++++++===+====+==++=======++++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:42:19 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.09 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.24% (normal)
+ 
+  11:50  up 178h33m  daily book ------------------------------------------------------------------
+  PLAN      $1,011.88 of $1,000.00 ($+11.88)  after tax on net profit $1,008.17
+            Delta vs CoinDCX funding gap $1,011.88  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.24  unreal $+13.15
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.89 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.91 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.58 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.24 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.99 (-0.20%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $390.02 (0.78x)  open $+13.15  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.24 (+0.25%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 18s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.27 +1.27%  peak $502.48  dd 0.25%
+  CURVE     =====+++++++++++++==+++++++++++============++========+++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:50:20 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.15 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.25% (normal)
+ 
+  11:58  up 178h41m  daily book ------------------------------------------------------------------
+  PLAN      $1,012.14 of $1,000.00 ($+12.14)  after tax on net profit $1,008.35
+            Delta vs CoinDCX funding gap $1,012.14  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.22  unreal $+13.13
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.87 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.91 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.57 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.22 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.82 (-0.24%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.93 (0.78x)  open $+13.13  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.22 (+0.24%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 10s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.25 +1.26%  peak $502.48  dd 0.25%
+  CURVE     =====+++++++++++++==+++++++++++============++========+++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+11:58:20 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.13 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.24% (normal)
+ 
+  12:06  up 178h49m  daily book ------------------------------------------------------------------
+  PLAN      $1,011.59 of $1,000.00 ($+11.59)  after tax on net profit $1,007.97
+            Delta vs CoinDCX funding gap $1,011.59  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.10  unreal $+13.01
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.75 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.91 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.48 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.10 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.77 (-0.25%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.81 (0.78x)  open $+13.01  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.10 (+0.22%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 4s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.13 +1.24%  peak $502.48  dd 0.27%
+  CURVE     =====+++++++++++++==+++++++++++============++=======++++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+12:06:20 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+13.01 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.22% (normal)
+ 
+  12:14  up 178h57m  daily book ------------------------------------------------------------------
+  PLAN      $1,011.87 of $1,000.00 ($+11.87)  after tax on net profit $1,008.17
+            Delta vs CoinDCX funding gap $1,011.87  paper
+  BELOW     experiments, not your money
+  EQUITY    $501.08  unreal $+12.99
+  OPEN      no intraday positions  book holds 13 (BOOK row)  free $418.73 after open P&L
+  SHADOW    intraday M1 $455.15 (-8.92%)  M1g $485.64 (-2.82%)  16d paper only
+  CARRY     $498.26 (-0.32%)  1 held  paper only
+  SPOT      $247.91 (-0.84%)  0 held  0% invested  cash earns 6.23%  paper pot
+  SAVINGS   idle $293.50 (59%)  at 6.23% +$0.73 so far  ~$1.52/month  paper
+  BFUSD     wallet $501.13 at 7.66%  +$1.57 so far  ~$3.20/month  vs Savings $1.52  paper
+  DELTA     $498.70 (-0.26%)  11 held  fees $0.64  funding $+0.18
+            paper experiment: the book on Delta
+  XVENUE    $1,011.96 (+1.20%)  10 pairs  funding $+21.62  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.27, 11 days  3-day avg: ahead $0.14, 11 days
+            15 x 12%: ahead $5.07, 9 days  paper, vs your daily rule
+  BOOK      13 pos gross $389.73 (0.78x)  open $+12.99  funding $+0.13  vol 27% top 20
+            rebal 2026-10-17
+  CONTEXT   since 01 Oct $+1.08 (+0.22%) in 16.1d  normal -3.8% to +10.0%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   16d from 2026-10-01  base -1.05%  N2 -1.05%  N3 -1.00%  N2+N3 -1.33%  +K4 -1.85%
+            +GK* -0.71%  +K4+GK -0.94%  +GK+DD -0.46%  +GK+XA -0.54%
+  DATA      on time  prices 38s  funding booked  book today  shadow 06:00  carry today
+            spot pot today
+  SESSION   $+6.11 +1.23%  peak $502.48  dd 0.28%
+  CURVE     =====++++++++++=++==+++++++++++============++=======++++++++++++++++++++++++++++++++++
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 15  6W 9L  net $-12.81  fees and funding in
+  FEES      book $0.20  14 taker fills this run  0.050% of $392.26 traded
+  ------------------------------------------------------------------------------------------------
+ 
+12:14:20 | 🎯 C510 Book (what trades): 13 positions, gross 0.78x, open $+12.99 | rule C2 N2+N3 +
+    range vol (GK) | closed 15: 6W/9L $-12.81 | since 01 Oct +0.22% (normal)
