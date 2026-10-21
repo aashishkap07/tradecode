@@ -1,0 +1,48 @@
+
+  ================================================================================================
+  OMEGA C546  PAPER  Binance perps
+  21 Oct 2026   06:05
+  start $502.45 realised  risk dial 20%/month
+  ================================================================================================
+
+  RISK FRAME -------------------------------------------------------------------------------------
+  EQUITY    $502.45 realised  744 markets
+  MONTH     dial 20% = $100.00 this month
+            used $0.00 realised (the guard counts MARKED equity once prices load)
+  BOOK      daily trend + momentum + carry, rebalanced 00:05 UTC
+            month guard on MARKED equity (open P&L counts)  intraday scanner idle
+  ------------------------------------------------------------------------------------------------
+
+
+
+  06:13  up 0h08m  daily book --------------------------------------------------------------------
+  PLAN      $1,016.83 of $1,000.00 ($+16.83)  after tax on net profit $1,011.58
+            Delta vs CoinDCX funding gap $1,016.83  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.75  unreal $+0.30
+  OPEN      no intraday positions  book holds 14 (BOOK row)  free $411.53 after open P&L
+  SHADOW    intraday M1 $468.59 (-6.23%)  M1g $490.47 (-1.85%)  20d paper only
+  CARRY     $498.29 (-0.31%)  1 held  paper only
+  SPOT      $248.06 (-0.77%)  0 held  0% invested  cash earns 6.54%  paper pot
+  SAVINGS   idle $285.69 (57%)  at 6.54% +$0.92 so far  ~$1.56/month  paper
+  BFUSD     wallet $502.55 at 7.66%  +$1.97 so far  ~$3.21/month  vs Savings $1.56  paper
+  DELTA     $501.55 (+0.31%)  12 held  fees $0.96  funding $+0.49
+            paper experiment: the book on Delta
+  XVENUE    $1,017.06 (+1.71%)  10 pairs  funding $+26.66  fees $7.58  paper, Delta vs CoinDCX
+  TESTS     every 8 h: behind $0.30, 15 days  3-day avg: ahead $0.35, 15 days
+            15 x 12%: ahead $8.25, 13 days  paper, vs your daily rule
+  BOOK      14 pos gross $468.85 (0.93x)  open $+0.30  funding $+0.49  vol 27% top 20
+            rebal 2026-10-21
+  CONTEXT   since 01 Oct $+2.75 (+0.55%) in 19.9d  normal -4.1% to +11.4%  bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   20d from 2026-10-01  base -0.90%  N2 -0.80%  N3 -0.46%  N2+N3 -1.01%  +K4 -0.43%
+            +GK* +0.60%  +K4+GK +1.77%  +GK+DD +0.82%  +GK+XA +1.12%
+  DATA      on time  prices 33s  funding booked  book today  shadow 00:00  carry today
+            spot pot today
+  SESSION   $+0.51 +0.10%
+  MONTH     book guard $0.00 of $100.00 used  on marked equity  from $500.00  dial 20%
+            ..........................
+  RECORD    book closed 22  11W 11L  net $+0.04  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  ------------------------------------------------------------------------------------------------
+
