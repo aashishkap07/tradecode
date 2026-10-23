@@ -201,6 +201,41 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **RECHECK + CHOICE (b) (23 Oct 2026 ~10:30-11:00 IST; `reports/2026-10-23_recheck.md`).** The operator: "i would go
+  with your recommendation (b) above .. also recheck all balances , pnl , taxation , trading mechanisms carefully .. also
+  clarify what would be decided about the other paper ongoing plans like delta book, spot pot, etc..".
+  - **Choice (b) recorded** in roadmap G6, the timeline and the go/no-go prompt. It is final only at 20 Feb, with the
+    jump numbers re-computed (`research/r23_descriptive.py`) and B2/B3's safety net shown built and tested.
+  - **Verified (logs push 10:17 IST + live exchange data):**
+    - ledger $1,019.5858 = 1000 + 29.8565 - 1.3904 - 7.8803 - 1.00; sides $579.84 + $439.75;
+    - each pair's pnl = carry + px_d + px_b + rent since - fees (max error $1e-6);
+    - **rent re-computed** from Delta FUNDING candles at settlement hours valued at Delta MARK 1h, and Binance
+      fundingRate x its markPrice, GST 18% on paid: $25.554 ledger vs $25.495 (0.23%). STRK +$0.114: the ledger values
+      at the run's price, STRK swung 39% on 9 Oct;
+    - **signals re-computed** for all 10 held coins: identical; TST +1.5%/yr now (its 22 Oct exit right);
+    - 23 Oct: 96 coins wide, 10 slots full, nothing entered; 5/5 each way;
+    - fees Delta 0.0005 on all 10, CoinDCX 0.059% (incl. GST) on 190/191 (PAXG 0.0118); contract values match; Delta
+      `asset_to_fiat_value` 85;
+    - **G2 re-run: 191/191 identical** rent and interval; CoinDCX futures marks (`rt` mp) == Binance marks on all 10 held;
+    - marked now $1,019.65;
+    - since 9 Oct 15/15 days positive (+0.08..+0.19%), +2.13% = +4.3% per 30 days before tax.
+  - **Tax:** paper statement edition 3 (`reports/tax/`): net Rs 1,701 + open Rs 2 = ledger +$20.04 since the journal x 85;
+    checks OK; no CBDT/court/Budget change found (web search 23 Oct).
+  - **Found and fixed:**
+    1. deposits must be EQUAL RUPEES: pilot Rs 8,500 each, March Rs 42,500 each (Rs 85,000). It was Rs 10,200 / Rs 51,000
+       on CoinDCX. Roadmap section 4, timeline, B4, go/no-go and live-day prompts corrected;
+    2. the live-day prompt still said "each leg on isolated margin": now cross margin + the cap + the safety net;
+    3. B4's G6 wording updated;
+    4. the monthly, end-Nov and Dec prompts use Round 23's figures (+3.2% after tax at x5, +3.8% at x1, 63 coins);
+       Dec (f): b15 cannot replace 10x10 without a NEW pre-registered jump-guard round; Dec (i) added: the book on
+       Delta India as a possible second India-only strategy after March.
+  - **Experiments (recommendation, awaiting the operator's yes):**
+    - KEEP the 3 test copies (decided 2 Dec), the book on Delta India (`c521_delta`, $507.47 +1.49% since 2 Oct;
+      C531 research +4.03%/month backtested, +2.69% planning case) and the Binance book + tournament that feed it;
+    - STOP C489 shadow (M1 -5.31%, M1g -1.21% in 22 d), C490 carry (-0.35%), C501 spot pot (-1.04%, TDS $1.14),
+      C501 Savings, C521 BFUSD, C501 K4 (empty, duplicates the tournament);
+    - flags `C489_SHADOW`, `C490_CARRY`, `C501_SPOT`, `C501_SAVINGS`, `C521_BFUSD`, `C501_K4` -> False would be C548;
+    - dx retired 8 Oct by design (`active()` only while the plan is on Pi42); Pendle off.
 - **C547 + ROUND 23 (23 Oct 2026, pushed; not yet deployed): ONE COIN JUMPING -- NO GUARD PASSED; THE PAGE SAYS WHAT A JUMP
   WOULD DO.** The routine fired 22 Oct; the operator, 23 Oct: "please continue from where you left off above without losing
   any context as per the scheduled tasks". Report: `reports/2026-10-23_round23_jumps.md`.

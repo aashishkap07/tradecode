@@ -115,6 +115,9 @@ exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_che
         biggest short leg empties that account;
       - BLESS's +530% would have done so on 60% of days;
       - 13 held coins jumped >= +100% in 24 months, the largest AKE +346% (the account fell to 43.6%, nothing wiped).
+    - **The operator's choice, 23 Oct 2026: (b)** ("i would go with your recommendation (b)"). It becomes final at the
+      go/no-go, when the jump numbers are re-computed on that day's list and the safety net below is shown built and
+      tested. If either is missing, the jump part fails.
     - **The safety net** (B2 builds, B3 dry-runs; needed either way):
       - cross margin + the C546 cap;
       - a resting reduce-only emergency stop on each short leg where its account would fall to 25% of its half,
@@ -141,10 +144,10 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 | 1–2 Dec | monthly review + the research refresh | nothing |
 | from 15 Dec | **B3: dry run on your server.** Every day the bot builds the real orders, logs them, sends none, and compares them with paper. The phone alert for "move money NOW" is set up here, and the account-health check runs **every 5 minutes** (hourly in paper; C537: deciding stays once a day, watching gets faster). | choose the alert channel (Telegram or similar) |
 | 1 Jan | monthly review | nothing |
-| 1 Feb | monthly review; **pilot setup** | deposit **$100 a side** (~₹10,200 on CoinDCX at its ₹102 rate); a **trading** key on each exchange, IP-locked to the server (withdrawals stay off) |
+| 1 Feb | monthly review; **pilot setup** | deposit **₹8,500 on each exchange** (= $100 on Delta at ₹85, 83.33 USDT on CoinDCX at ₹102: equal rupees, corrected 23 Oct); a **trading** key on each exchange, IP-locked to the server (withdrawals stay off) |
 | 2–20 Feb | **B4: the pilot**, small real money | do one rupee transfer between the exchanges when the bot asks |
 | 20–25 Feb | **go / no-go** against G1–G6 | decide |
-| 1 Mar 2027 | **live**: $500 a side | top up to $500 a side |
+| 1 Mar 2027 | **live**: ₹42,500 a side | top up to **₹42,500 on each exchange** ($500 on Delta, 416.67 USDT on CoinDCX) |
 
 **Each scheduled step fires into this session, which is in ultracode.**
 - Before working, each one checks that ultracode is still on.
@@ -167,9 +170,14 @@ Every step below runs in paper or dry-run until G1–G6 pass.
      (C545: every ITR-3 field, the 31 March balances, losses carried forward, a handover pack). A filing CA copies it
      into ITR-3; the operator fills in nothing (`reports/tax/README.md`).
    - Keep the exchanges' own statements too; from B3 the statement also checks itself against them.
-4. **Money:** about **₹1 lakh** in total for March (~₹51,000 on CoinDCX at its
-   ₹102 rate, and Delta's own rate for the other $500), plus ~₹20,000 for the
-   February pilot.
+4. **Money (corrected 23 Oct): equal RUPEES on both exchanges.** **₹42,500 on each** for March (₹85,000 in all):
+   - Delta credits ₹85 per dollar, so ₹42,500 = $500;
+   - CoinDCX credits ₹102 per USDT, so ₹42,500 = 416.67 USDT.
+
+   For the February pilot it is **₹8,500 on each** (₹17,000).
+   - **Why:** the two legs of a pair are matched in rupees (the CoinDCX leg's USDT = the Delta leg's dollars × 85/102).
+     Equal rupees therefore give both accounts the same leverage, and the even-out compares rupees.
+   - The earlier figures (₹51,000 and ₹10,200 on CoinDCX, "about ₹1 lakh") put 20% more on CoinDCX than it needs.
 5. **Tax (G6):** no CA (the operator's choice, 9 Oct). Claude acts as the tax adviser:
    `reports/2026-10-09_tax_opinion.md` (speculative business income, ITR-3 Schedule BP, both legs netted). The
    operator accepts or rejects its residual risk at the go/no-go. Tax dates: ITR-3 for tax year 2026-27 by 31 Jul

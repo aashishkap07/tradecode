@@ -1,6 +1,6 @@
 # Income statement for ITR-3: speculative business income from rupee-settled crypto futures
 
-**Tax year 2026-27** (01 Apr 2026 – 31 Mar 2027) · **PAPER** · edition 2 · prepared 09 Oct 2026 19:31 IST · amounts in **₹** (Delta India's fixed rate ₹85 per dollar) · year to date, cut-off 09 Oct 2026
+**Tax year 2026-27** (01 Apr 2026 – 31 Mar 2027) · **PAPER** · edition 3 · prepared 23 Oct 2026 10:51 IST · amounts in **₹** (Delta India's fixed rate ₹85 per dollar) · year to date, cut-off 23 Oct 2026
 
 > **PAPER — NOT FOR FILING.** This is a rehearsal on the bot's paper ledger: no real money moved, so there is no income to declare. It is kept in exactly the format the live statement will use. The live statement starts afresh, from zero, on the first real trade.
 
@@ -10,8 +10,8 @@
 |---|---|
 | Return | **ITR-3** (business income; the trade is speculative business) |
 | Business code | **21009** — Speculative trading (confirmed in the year's utility before filing) |
-| P&L, no-accounts case, speculative activity | turnover **₹0** · gross profit **₹0** · expenditure **₹0** · net **₹0** |
-| Balance sheet, no-accounts case (31 March) | sundry debtors **₹84,961** (money held by the two exchanges) · creditors 0 · stock 0 · cash 0 |
+| P&L, no-accounts case, speculative activity | turnover **₹5,382** · gross profit **₹1,761** · expenditure **₹59** · net **₹1,701** |
+| Balance sheet, no-accounts case (31 March) | sundry debtors **₹86,663** (money held by the two exchanges) · creditors 0 · stock 0 · cash 0 |
 | Books (s.44AA / 2025 Act s.62) · audit (s.44AB / s.63) | **not required** · **not required** |
 | Schedule VDA · TDS on this income | **nil — do not use Schedule VDA** · **none** (check AIS) |
 | Losses carried forward (Schedule CFL) | none |
@@ -42,20 +42,20 @@
 
 | | ₹ | ITR-3 field |
 |---|---:|---|
-| **A. Turnover** (each leg's difference, + and − alike) | 0 | P&L: speculative activity — turnover |
-| Price differences realised on closed positions | 0 | |
-| Funding (rent) received | 0 | |
-| Funding (rent) paid | 0 | |
-| GST charged on funding paid | 0 | |
-| Slippage (modelled in paper; live it is inside the fill prices) | 0 | |
-| **B. Gross profit** | **0** | P&L: speculative activity — gross profit |
-| Exchange fees | 0 | |
-| GST on exchange fees | 0 | |
+| **A. Turnover** (each leg's difference, + and − alike) | 5,382 | P&L: speculative activity — turnover |
+| Price differences realised on closed positions | 7 | |
+| Funding (rent) received | 2,036 | |
+| Funding (rent) paid | -222 | |
+| GST charged on funding paid | -40 | |
+| Slippage (modelled in paper; live it is inside the fill prices) | -20 | |
+| **B. Gross profit** | **1,761** | P&L: speculative activity — gross profit |
+| Exchange fees | -50 | |
+| GST on exchange fees | -9 | |
 | Bank / transfer charges between the exchanges | 0 | |
-| **C. Expenditure** | **0** | P&L: speculative activity — expenditure |
-| **D. Net income from speculative business (B − C)** | **0** | Schedule BP: income from speculative business |
+| **C. Expenditure** | **-59** | P&L: speculative activity — expenditure |
+| **D. Net income from speculative business (B − C)** | **1,701** | Schedule BP: income from speculative business |
 | *Paper result before the journal began (carried in whole, marked to market, not split)* | *-39* | *(paper only)* |
-| *Open positions, unrealised (not income until closed)* | *0* | *(not reported)* |
+| *Open positions, unrealised (not income until closed)* | *2* | *(not reported)* |
 
 *Turnover method:* ICAI Guidance Note on Tax Audit — for speculative transactions, the total of favourable and unfavourable differences. Each leg of each position is one transaction; its difference is its price difference plus its funding. GST paid on fees and funding is an expense (no GST registration, so no input credit).
 
@@ -63,19 +63,19 @@
 
 | | Delta Exchange India | CoinDCX | total |
 |---|---:|---:|---:|
-| price differences realised | 0 | 0 | 0 |
-| funding received | 0 | 0 | 0 |
-| funding paid | 0 | 0 | 0 |
-| GST on funding paid | 0 | 0 | 0 |
-| exchange fees | 0 | 0 | 0 |
-| GST on fees | 0 | 0 | 0 |
-| money held at 31 March (so far: at the cut-off) | 45,333 | 39,628 | 84,961 |
+| price differences realised | -399 | 405 | 7 |
+| funding received | 1,921 | 115 | 2,036 |
+| funding paid | -11 | -211 | -222 |
+| GST on funding paid | -2 | -38 | -40 |
+| exchange fees | -25 | -25 | -50 |
+| GST on fees | -5 | -5 | -9 |
+| money held at 31 March (so far: at the cut-off) | 46,803 | 39,859 | 86,663 |
 
 ## 5. Month by month (₹, IST months)
 
 | month | positions closed | price differences | funding (net) | fees + GST | slippage, transfer and other charges | net |
 |---|---:|---:|---:|---:|---:|---:|
-| — | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2026-10 | 3 | 7 | 1,774 | -59 | -20 | 1,701 |
 
 ## 6. Register of closed positions (₹)
 
@@ -83,24 +83,26 @@ Each position is one coin held on both exchanges at once. "Short Delta / long Co
 
 | # | coin | opened | closed | position | Delta: price · funding · fees | CoinDCX: price · funding · fees | net | why closed |
 |---|---|---|---|---|---|---|---:|---|
-| — | none in this tax year yet | | | | | | | |
+| 1 | FARTCOIN | 03 Oct 2026 | 11 Oct 2026 | short Delta / long CoinDCX | -270 · 5 · -5 | 266 · -6 · -5 | -17 | spread under 10%/yr |
+| 2 | IO | 03 Oct 2026 | 17 Oct 2026 | short Delta / long CoinDCX | -754 · 36 · -5 | 759 · -22 · -5 | 5 | spread under 10%/yr |
+| 3 | TST | 05 Oct 2026 | 22 Oct 2026 | short Delta / long CoinDCX | 625 · 104 · -4 | -620 · -36 · -4 | 61 | spread under 10%/yr |
 
 *Paper only, before the journal: 7 positions closed with net ₹-237 (fees included); their leg detail was not recorded.*
 
-## 7. Positions open at the cut-off (09 Oct 2026) (₹) — not income until closed
+## 7. Positions open at the cut-off (23 Oct 2026) (₹) — not income until closed
 
 | coin | opened | position | funding credited this year (income) | price, unrealised |
 |---|---|---|---:|---:|
-| KAITO | 03 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹49 paper result before the journal)* |
-| FARTCOIN | 03 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹-12 paper result before the journal)* |
-| IO | 03 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹55 paper result before the journal)* |
-| TST | 05 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹5 paper result before the journal)* |
-| BEAT | 05 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹43 paper result before the journal)* |
-| LIT | 05 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹53 paper result before the journal)* |
-| STRK | 05 Oct 2026 | long Delta / short CoinDCX | 0 | 0 *(+ ₹14 paper result before the journal)* |
-| NOT | 05 Oct 2026 | long Delta / short CoinDCX | 0 | 0 *(+ ₹53 paper result before the journal)* |
-| H | 05 Oct 2026 | short Delta / long CoinDCX | 0 | 0 *(+ ₹-2 paper result before the journal)* |
-| AIXBT | 05 Oct 2026 | long Delta / short CoinDCX | 0 | 0 *(+ ₹23 paper result before the journal)* |
+| KAITO | 03 Oct 2026 | short Delta / long CoinDCX | 152 | -1 *(+ ₹49 paper result before the journal)* |
+| BEAT | 05 Oct 2026 | short Delta / long CoinDCX | 169 | 2 *(+ ₹43 paper result before the journal)* |
+| LIT | 05 Oct 2026 | short Delta / long CoinDCX | 126 | 9 *(+ ₹53 paper result before the journal)* |
+| STRK | 05 Oct 2026 | long Delta / short CoinDCX | 232 | -10 *(+ ₹14 paper result before the journal)* |
+| NOT | 05 Oct 2026 | long Delta / short CoinDCX | 226 | 10 *(+ ₹53 paper result before the journal)* |
+| H | 05 Oct 2026 | short Delta / long CoinDCX | 136 | -2 *(+ ₹-2 paper result before the journal)* |
+| AIXBT | 05 Oct 2026 | long Delta / short CoinDCX | 217 | 2 *(+ ₹23 paper result before the journal)* |
+| AUCTION | 11 Oct 2026 | long Delta / short CoinDCX | 265 | -3 |
+| MEME | 17 Oct 2026 | long Delta / short CoinDCX | 147 | -6 |
+| ARC | 22 Oct 2026 | short Delta / long CoinDCX | 22 | 3 |
 
 ## 8. Money moved between the exchanges (not income; only the charges are expenses)
 
@@ -112,19 +114,19 @@ Each position is one coin held on both exchanges at once. "Short Delta / long Co
 
 | | ₹ |
 |---|---:|
-| Net income from speculative business | 0 |
-| Taxable speculative income | 0 |
-| Tax at your slab rate, 30% + 4% cess = 31.2% (no surcharge) | 0 |
+| Net income from speculative business | 1,701 |
+| Taxable speculative income | 1,701 |
+| Tax at your slab rate, 30% + 4% cess = 31.2% (no surcharge) | 531 |
 | Advance tax | not needed (under ₹10,000); pay as self-assessment tax before filing |
 | *Paper result before the journal (₹-39): not split into legs, so left out of every figure above* | *(paper only)* |
 
 ## 10. Reconciliation, and the year-end balances
 
-- **Bot's ledger:** every journaled position's own figures (price + funding − fees) equal the ledger's result for it: **yes** (10 of 10).
+- **Bot's ledger:** every journaled position's own figures (price + funding − fees) equal the ledger's result for it: **yes** (13 of 13).
 - Paper ledger at the start of the journal (09 Oct 2026 19:07 IST): equity ₹84,961 from ₹85,000; fees ₹590, funding ₹764, price ₹-127, transfer charges ₹85.
-- Paper ledger now: equity ₹84,961 (start ₹85,000).
+- Paper ledger now: equity ₹86,665 (start ₹85,000).
 - **Each exchange's own records:** not applicable (paper). Live, each exchange's funding, fees and realised results are set beside this statement's, line by line.
-- **Money held at the exchanges** (the bot's ledger at the cut-off (09 Oct 2026); at 31 March, the year-end figure): Delta ₹45,333 · CoinDCX ₹39,628 · total **₹84,961**. This is the no-accounts balance sheet's *sundry debtors* (section 12): money the exchanges hold for you, not cash.
+- **Money held at the exchanges** (the bot's ledger at the cut-off (23 Oct 2026); at 31 March, the year-end figure): Delta ₹46,803 · CoinDCX ₹39,859 · total **₹86,663**. This is the no-accounts balance sheet's *sundry debtors* (section 12): money the exchanges hold for you, not cash.
 
 ## 11. Note for the return, and the records to keep
 
@@ -147,29 +149,29 @@ Field names are the AY 2025-26 ITR-3's. The tax year 2026-27 forms (the first un
 | where | field | enter | why |
 |---|---|---:|---|
 | Part A-GEN | Nature of business: code · trade name · description | 21009 · — · Trading in rupee-settled crypto perpetual futures on Delta Exchange India and CoinDCX (speculative) | code 21009 = Speculative trading; confirmed in the year’s utility before filing |
-| Part A-GEN | Liable to maintain accounts u/s 44AA (2025 Act s.62)? | **No** | income ₹0 (limit ₹2,50,000) · turnover ₹0 (limit ₹25,00,000), this and the 3 preceding years |
-| Part A-GEN | Liable to audit u/s 44AB (2025 Act s.63)? | **No** | turnover ₹0 (limit ₹10 crore; all money moves by bank); presumptive income (44AD) never opted |
+| Part A-GEN | Liable to maintain accounts u/s 44AA (2025 Act s.62)? | **No** | income ₹1,701 (limit ₹2,50,000) · turnover ₹5,382 (limit ₹25,00,000), this and the 3 preceding years |
+| Part A-GEN | Liable to audit u/s 44AB (2025 Act s.63)? | **No** | turnover ₹5,382 (limit ₹10 crore; all money moves by bank); presumptive income (44AD) never opted |
 | Part A-GEN | Income declared under presumptive sections 44AD / 44ADA / 44AE? | **No** | declared at actual; do not opt for 44AD (opting out later locks it for 5 years) |
 | Part A-P&L, no-accounts case | Business other than speculative: gross receipts · gross profit · expenses · net | 0 · 0 · 0 · 0 | this trade is entirely speculative |
-| Part A-P&L, no-accounts case | **Speculative activity: turnover** | **0** | section 3, line A |
-| Part A-P&L, no-accounts case | **Speculative activity: gross profit** | **0** | section 3, line B |
-| Part A-P&L, no-accounts case | **Speculative activity: expenditure** | **0** | section 3, line C |
-| Part A-P&L, no-accounts case | **Speculative activity: net income** | **0** | section 3, line D |
-| Part A-BS, no-accounts case (31 March) | Sundry debtors | **84,961** | money held by the two exchanges (section 10) |
+| Part A-P&L, no-accounts case | **Speculative activity: turnover** | **5,382** | section 3, line A |
+| Part A-P&L, no-accounts case | **Speculative activity: gross profit** | **1,761** | section 3, line B |
+| Part A-P&L, no-accounts case | **Speculative activity: expenditure** | **59** | section 3, line C |
+| Part A-P&L, no-accounts case | **Speculative activity: net income** | **1,701** | section 3, line D |
+| Part A-BS, no-accounts case (31 March) | Sundry debtors | **86,663** | money held by the two exchanges (section 10) |
 | Part A-BS, no-accounts case | Sundry creditors · stock-in-trade · cash balance | 0 · 0 · 0 | nothing owed; futures are not stock; no cash is used |
 | Part A-OI · Part A-QD | other information · quantitative details | not filled | only for audited accounts / goods |
-| Schedule BP, speculative business | Net profit or loss from speculative business (as per P&L) | **0** | section 3, line D |
+| Schedule BP, speculative business | Net profit or loss from speculative business (as per P&L) | **1,701** | section 3, line D |
 | Schedule BP, speculative business | Additions · deductions | 0 · 0 | no disallowance: fees and GST are wholly for the business; no depreciation, no STT |
-| Schedule BP, speculative business | Income from speculative business | **0** | taxed at the slab rate |
+| Schedule BP, speculative business | Income from speculative business | **1,701** | taxed at the slab rate |
 | Schedule CYLA | Speculative loss set off against other heads | **0** | not allowed (s.73 / 2025 Act s.113) |
 | Schedule BFLA | Brought-forward speculative loss set off | **0** | none brought forward |
 | Schedule CFL | Speculative loss carried forward | **0** | none |
 | Schedule TDS2 · TCS | Tax deducted / collected on this income | **0** | neither exchange deducts TDS on these contracts; anything in AIS is matched first |
-| Schedule IT | Advance tax and self-assessment tax | as pre-filled from Form 26AS | the challans you paid for this income (section 9: ₹0 for the year) |
+| Schedule IT | Advance tax and self-assessment tax | as pre-filled from Form 26AS | the challans you paid for this income (section 9: ₹531 for the year) |
 | Schedule VDA | Income from transfer of virtual digital assets | **nil — leave empty** | no VDA is transferred (section 2); filling it would itself declare a VDA |
 | Schedule CG · OS · SI | capital gains · other sources · special-rate income | nothing from this trade | slab rate, business head |
 | Schedule FA | Foreign assets | **nil for this trade** | both exchanges are Indian, accounts held in rupees |
-| Schedule AL | Assets and liabilities (only if total income > ₹50 lakh) | 84,961 as deposits | the same exchange balances |
+| Schedule AL | Assets and liabilities (only if total income > ₹50 lakh) | 86,663 as deposits | the same exchange balances |
 | Tax regime | as for your whole return | your choice | with business income, opting for the old regime needs Form 10-IEA (or its 2026 Rules successor) by the due date; switching back is allowed once |
 | Filing | due date | plan **31 Jul 2027** (the legal date for a non-audit ITR-3 is confirmed when notified) | a loss is carried forward only if filed by the due date |
 

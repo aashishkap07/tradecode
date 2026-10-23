@@ -1,33 +1,33 @@
 {
  "ty": "2026-27",
  "kind": "PAPER",
- "edition": "2",
- "prepared": "09 Oct 2026 19:31",
+ "edition": "3",
+ "prepared": "23 Oct 2026 10:51",
  "inr_per_usd": 85.0,
  "past": false,
- "cut": "09 Oct 2026",
+ "cut": "23 Oct 2026",
  "itr": {
   "form": "ITR-3",
   "business_code": "21009",
   "code_confirmed": false,
   "pl_no_accounts_speculative": {
-   "turnover": 0,
-   "gross_profit": 0,
-   "expenditure": 0,
-   "net": 0
+   "turnover": 5382,
+   "gross_profit": 1761,
+   "expenditure": 59,
+   "net": 1701
   },
   "bs_no_accounts": {
-   "sundry_debtors": 84961,
+   "sundry_debtors": 86663,
    "sundry_creditors": 0,
    "stock_in_trade": 0,
    "cash_balance": 0,
    "source": "ledger"
   },
   "bp_speculative": {
-   "net": 0,
+   "net": 1701,
    "additions": 0,
    "deductions": 0,
-   "income": 0
+   "income": 1701
   },
   "bfla": [],
   "books_44aa": false,
@@ -36,14 +36,14 @@
   "vda": "nil",
   "tds": 0
  },
- "taxable": 0,
- "tax": 0,
+ "taxable": 1701,
+ "tax": 531,
  "losses_cf": [],
  "history": [
   {
    "ty": "2026-27",
-   "turnover": 0,
-   "net": 0
+   "turnover": 5382,
+   "net": 1701
   }
  ],
  "checks_ok": true,
