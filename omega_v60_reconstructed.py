@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C546'
+_OMEGA_VERSION = 'C547'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -23812,6 +23812,35 @@ class C524CrossVenue(_C501Store):
         Only entries are held back; nothing open is closed for it."""
         return int(float(getattr(self.cfg, 'C546_XV_SAME_SHARE', 0.6)) * self.n_pairs() + 1e-9)
 
+    def jump_risk(self):
+        """C547 (Round 23, research/r23_preregistration.md, pushed before it ran; research/r23_round23.txt): what ONE
+        coin jumping several times over in a day would do -- information only, nothing is traded on it. For each
+        account, at the daily run's marks: its biggest SHORT leg (the bet that loses when the price rises), the one-day
+        jump on that coin that would empty the account, and what a +100% jump would leave of its half. Round 23 tested
+        six guards (no new pair after a +100% jump or in a new listing; half-size legs for the wildest coins or after a
+        +50% jump; a stop on each short leg at +50% or +100%) and NONE passed: each cost more than $30 a year after tax,
+        or left an account lower on a replayed day. On the 24 months' book a +530% jump (BLESS, 15 Oct 2025) on the
+        biggest short leg would have emptied its account on 60% of account-days (median jump needed +504%); AKE's +346%
+        (2 Sep 2026, on the short leg's exchange) took the CoinDCX account to 43.6% of its half, minute by minute, and
+        nothing was wiped. Cross
+        margin, the C546 cap, and closing the twin at once (the real-money order path, B2) are the safeguards."""
+        if not self.start_equity:
+            return {}
+        half = self.start_equity / 2.0
+        out = {}
+        for v in ('d', 'b'):
+            bal = half + float(self.side.get(v, 0.0))
+            legs = ([(c, abs(p['d_qty']) * p['cv'] * p['d_px']) for c, p in self.pairs.items() if p['side'] > 0] if v == 'd'
+                    else [(c, abs(p['b_qty']) * p['b_px']) for c, p in self.pairs.items() if p['side'] < 0])
+            if not legs:
+                out[v] = dict(bal=round(bal, 2), coin=None, n_short=0)
+                continue
+            c, n = max(legs, key=lambda x: x[1])
+            out[v] = dict(bal=round(bal, 2), coin=c, leg=round(n, 2), n_short=len(legs),
+                          empty=round(bal / n, 3) if n > 0 else None,
+                          after100=round((bal - n) / half, 3) if half > 0 else None)
+        return out
+
     def on_pi42(self):
         """C532: the second leg is on an Indian rupee venue with its own coin list (C542: Pi42 or CoinDCX)"""
         return self.venue() in _C542_V2
@@ -24188,7 +24217,8 @@ class C524CrossVenue(_C501Store):
                          day_pnl=round(day_pnl, 2), day_fund=round(d_fund, 2), day_price=round(d_price, 2),   # C536
                          day_cost=round(d_cost, 2), moved=(dict(amt=tr['amt'], frm=tr['frm'], to=tr['to'], fee=tr['fee'])
                                                             if tr else None),
-                         capped=capped[:10], same_max=k_max, n_short_delta=n_way[1], n_long_delta=n_way[-1])  # C546
+                         capped=capped[:10], same_max=k_max, n_short_delta=n_way[1], n_long_delta=n_way[-1],  # C546
+                         jump=self.jump_risk())                                                                  # C547
         return day_pnl
 
     def tick(self):
@@ -24217,10 +24247,17 @@ class C524CrossVenue(_C501Store):
                         f"{' | in ' + '; '.join(inf['entered']) if inf.get('entered') else ''}"
                         f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''}"
                         f"{' | held back (' + str(inf.get('same_max')) + ' already face that way): ' + ', '.join(inf['capped'][:5]) if inf.get('capped') else ''}"
-                        f" [{time.time() - t0:.0f}s]")
+                        + self._jump_text(inf.get('jump'))                                    # C547
+                        + f" [{time.time() - t0:.0f}s]")
         except Exception as ex:
             self._fail_at = time.time()
             logger.warning(f"⚠️ C524 cross-venue run failed ({type(ex).__name__}: {ex}) -- retrying in 5 min")
+
+    def _jump_text(self, j):
+        """C547: the daily log's one-coin-jump clause"""
+        bits = [f"{nm} +{100 * x['empty']:.0f}% ({x['coin']})" for k, nm in (('d', 'Delta'), ('b', self.v2()))
+                for x in [(j or {}).get(k) or {}] if x.get('coin') and x.get('empty')]
+        return (' | a one-day jump that would empty an account: ' + ', '.join(bits)) if bits else ''
 
     def pi42_boot(self):
         """C534: load Pi42's coin list soon after a start (then every 6 h, as before), so the page
@@ -24369,6 +24406,7 @@ class C524CrossVenue(_C501Store):
                         price_pnl=round(self.price_pnl, 4), trades=self.trades, closed=self.closed[-5:],
                         last_run=self.last_run, next_run_utc=f"{h:02d}:{m:02d}", info=self.info,
                         same_max=self.same_cap(),                                                     # C546
+                        jump=self.jump_risk(),                                                        # C547
                         record=_c490_record(np.array([self.daily[k] for k in sorted(self.daily)], float)),
                         margins=self._margins_safe(), pending=self._pending_safe(), rebased=self.rebased[-1:],
                         transfers=self.transfers[-5:], n_transfers=len(self.transfers), v2=self.v2(),
@@ -45866,6 +45904,10 @@ function renderSimple(d){
     if(cap){var full=nsd>=cap?'down on Delta':(nld>=cap?'up on Delta':'');   /* C546: the one-way cap */
       h+='<div class="s muted">facing: '+nsd+' down on Delta, '+nld+' up on Delta. At most '+cap+' may face the same way, so one account never carries most of the market’s swing'+
         (full?'; no new pair '+full+' until one of those closes':'')+'.</div>'}
+    var jr=xv.jump||{},jb=[];   /* C547: Round 23 -- what one coin jumping several times over in a day would do */
+    [['d','Delta'],['b',v2]].forEach(function(a){var x=jr[a[0]];if(x&&x.coin&&x.empty)jb.push('the '+a[1]+' account by a +'+Math.round(100*x.empty)+'% jump in '+x.coin+
+      (x.after100!==null&&x.after100!==undefined?' (a +100% jump would leave '+Math.round(100*x.after100)+'%)':''))});
+    if(jb.length)h+='<div class="s muted">one-coin jump: in a day, it would take '+jb.join('; ')+'. No guard passed its test (Round 23); with real money, each exchange keeps all its bets on one shared balance and the other bet is closed at once.</div>';
     var pend=xv.pending?Number(xv.pending.total)||0:0;
     h+='<div class="s">rent collected <b class="'+cls(xv.funding)+'">'+sgn(xv.funding)+'</b>'+(pend?', plus <span class="'+cls(pend)+'">'+sgn(pend)+
       '</span> waiting to be added at the next daily run':'')+'</div>'+
