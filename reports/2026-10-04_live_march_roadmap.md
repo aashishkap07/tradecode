@@ -105,6 +105,22 @@ exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_che
   - The original wording was "each leg on its own (isolated) margin, the other leg closed at once". On minute data,
     isolated margin of 1/3 or 1/2 per leg would have liquidated 9–10 legs on 10 Oct 2025, while cross margin
     survived every replayed day (`reports/2026-10-10_round24_screens.md`). The change is recorded here openly.
+  - **Status after Round 23 (23 Oct 2026): NOT MET as written.** No protection passed its pre-registered bars
+    (`reports/2026-10-23_round23_jumps.md`). Every guard cost more than $30 a year after tax, or left an account lower
+    on a replayed day. This clause is **not rewritten**. At the go/no-go the operator chooses:
+    - **(a) strict:** no live money until a guard passes a new pre-registered round on fresh data;
+    - **(b) accept the stated risk explicitly**, as the tax part does, and only if B2/B3 have built and tested the safety
+      net below. The risk, in numbers:
+      - a one-day jump of about +500% (median; +362% on the worst 5% of days; +189% on the worst day) on an account's
+        biggest short leg empties that account;
+      - BLESS's +530% would have done so on 60% of days;
+      - 13 held coins jumped >= +100% in 24 months, the largest AKE +346% (the account fell to 43.6%, nothing wiped).
+    - **The safety net** (B2 builds, B3 dry-runs; needed either way):
+      - cross margin + the C546 cap;
+      - a resting reduce-only emergency stop on each short leg where its account would fall to 25% of its half,
+        re-placed at every daily run (it would have fired 0 times in 24 months);
+      - the twin closed at once whenever a leg is stopped or liquidated;
+      - the 5-minute account check and phone alert.
 
 **Go / no-go: 20–25 Feb 2027.** If G1–G6 pass, the live lock opens for the
 funding trade only, on **1 March 2027**.
@@ -118,9 +134,9 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 | 5 Oct | check the first Delta-vs-Pi42 run (scheduled) | nothing |
 | from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | **done 8–9 Oct:** Delta's and CoinDCX's read-only keys are saved and read every 10 minutes (CoinDCX first read 9 Oct 00:04 IST) |
 | 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8; done 9 Oct); tax: no CA, see item 5 |
-| 22 Oct | **Round 23 (C547; C544-C545 are the tax journal and statement, C546 Round 24's one-way cap): protection against one coin jumping several times over in a day** (BLESS +530% on 15 Oct 2025 would empty one account): each bet on its own margin, the twin closed at once, a coin filter. Needed before real money, and before any setting bigger than 10 pairs of 10% | nothing |
+| 22-23 Oct | **Round 23 (C547): DONE 23 Oct. No guard passed** (coin filters, half-size bets, stops at +50%/+100%: each cost $20-110 a year after tax or left an account lower on a replayed day). The plan is unchanged; 15 × 12% stays a paper copy. The page now says how big a one-day jump would empty each account (C547). G6's jump part is not met as written (see G6) | read `reports/2026-10-23_round23_jumps.md`; decide (a) or (b) at the go/no-go |
 | 1 Nov | monthly review, gates G1/G2 so far | nothing |
-| from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, **cross margin** on both exchanges (Round 24; was "isolated margin per leg"). If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. | nothing |
+| from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, **cross margin** on both exchanges (Round 24; was "isolated margin per leg"). If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. **From Round 23:** an emergency stop resting on each short leg (where its account would fall to 25%), and the twin closed at once on any stop or liquidation. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |
 | 1–2 Dec | monthly review + the research refresh | nothing |
 | from 15 Dec | **B3: dry run on your server.** Every day the bot builds the real orders, logs them, sends none, and compares them with paper. The phone alert for "move money NOW" is set up here, and the account-health check runs **every 5 minutes** (hourly in paper; C537: deciding stays once a day, watching gets faster). | choose the alert channel (Telegram or similar) |

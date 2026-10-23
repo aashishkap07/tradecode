@@ -13,7 +13,7 @@ checks get_session (`flag_settings.ultracode` true AND `session_context.model` /
 claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. **The full timeline (every routine with its IST time, the gates' dates, the operator's to-dos): `reports/2026-10-09_timeline.md`.**
 Routines (all fire into this session; the 9 active ones re-read 9 Oct): DONE first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
 (5 Oct 01:05 UTC); DONE B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
-(1st, 09:56 IST); Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (22 Oct); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
+(1st, 09:56 IST); DONE Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (fired 22 Oct, run 23 Oct: nothing passed, C547 information only); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
 `trig_01657znZVsvZxzQZrunVxz5H`.
@@ -201,6 +201,64 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **C547 + ROUND 23 (23 Oct 2026, pushed; not yet deployed): ONE COIN JUMPING -- NO GUARD PASSED; THE PAGE SAYS WHAT A JUMP
+  WOULD DO.** The routine fired 22 Oct; the operator, 23 Oct: "please continue from where you left off above without losing
+  any context as per the scheduled tasks". Report: `reports/2026-10-23_round23_jumps.md`.
+  - **Pre-registration** `research/r23_preregistration.md` (commit 4a919e0, pushed before anything ran). **Test**
+    `research/r23_round23.py/.txt/.json` (commit c34f1d8): Round 24's legs2/sides2 copied as legs3/sides3 with three switches.
+    - **Engine checks OK:** switches off == legs2/sides2 with capK=6 (net 0.559631, lowest 0.597492), and the minute
+      replay without a stop == Round 24's minute_day on its six days.
+    - Daily mark highs/lows: Delta `MARK:` 1d candles + Binance markPriceKlines 1d (67 coins, cache
+      `scratchpad/r23_hl`). Replay days: Round 24's six + the 40 largest of 155 days a held coin moved >= 30% intraday.
+    - **Today's list: 63 coins** (saved in the JSON; Round 24's 64 were not saved).
+  - **Results** (10 x 10% + K6, costs x5; base after tax +3.18% a month, x1 +3.78%; t 6.70; worst month -1.28%; lowest
+    daily account 59.7%; W530 95.2%; L100 +30.8%; replays' lowest 43.6% on 2 Sep 2026 (AKE), 10 Oct 2025 53.5%):
+    - **J1** (no entry after a +100% jump in 90 days): -$105/yr, not safer. FAIL.
+    - **J2** (no entry in a coin with < 90 days of Binance history): -$20/yr, L100 +49.3% (safer), worst month -0.61%,
+      3/24 down; replays' lowest **41.3% vs the bar 41.6%**. FAIL by 0.3 points.
+    - **Z1** (half size, top quarter of 30-day vol): -$110/yr; W530 88.4%; replays' lowest 67.1%. FAIL (cost, safer).
+    - **Z2** (half size after a +50% jump in 30 days): -$68/yr. FAIL (cost, safer).
+    - **S50** (short-leg stop +50%, slip 5%, twin closed): 39 stops in 24 months; W530 0%, L100 +46.4%, replays 52.2%;
+      **-$92/yr**. FAIL (cost).
+    - **S100**: 13 stops; W530 0%, replays 51.5%; **-$39/yr** (bar -$30). FAIL (cost).
+    - **ADOPTED: nothing; the plan is unchanged.** The grid (10/15 x 10/12%) was not run, as the pre-registration
+      requires. **15 x 12% stays a paper copy.**
+  - **Descriptive, after the verdict** (`research/r23_descriptive.py/.txt/.json`):
+    - every stop moved on BOTH exchanges (0 one-exchange wicks);
+    - the jump on an account's biggest short leg that would empty it: median **+504%**, 5th percentile +362%, worst day
+      +189%; BLESS's +530% would on **60%** of account-days, AKE's +346% on 3.7%;
+    - an emergency stop where the account would fall to 25% (or 40%) of its half: **fired 0 times in 24 months**;
+    - **coin-list sensitivity:** today's list + one of 31 coins with $30k-$100k of turnover: after tax +3.13% .. +3.40%,
+      lowest 47.9% .. 66.2% (Round 24's list: +3.44%, 66.3%). **Planning figure revised to about +3.2% a month after tax
+      (costs x5), +3.8% (x1)**; was +3.4% / +4.0%.
+  - **G6's jump part is NOT met as written** ("Round 23's protection is built into the order path and tested"). It was not
+    rewritten. The roadmap records the operator's choice at the go/no-go:
+    - (a) keep it strict: a guard must pass a new pre-registered round;
+    - (b) explicitly accept the stated risk (section 4 of the report), with the B2/B3 safety net built and tested:
+      cross margin + K6; a resting reduce-only emergency stop on each short leg at the "account at 25% of its half" level,
+      re-placed daily; the twin closed at once on any stop or liquidation (fills watched every minute); the 5-minute
+      account check and phone alert.
+    - My recommendation: (b). The B2 routine prompt carries the safety net.
+  - **Bot C547 (information only):**
+    - `C524CrossVenue.jump_risk()` returns for each account (`d`, `b`), at the daily run's marks: `bal`, the biggest short
+      leg's `coin` and `leg` notional, `n_short`, `empty` = bal / leg (the jump that would empty it) and `after100` =
+      (bal - leg) / half;
+    - it is in `info.jump` and in `status()['jump']`;
+    - `_jump_text()` adds "| a one-day jump that would empty an account: Delta +X% (COIN), CoinDCX +Y% (COIN)" to the daily
+      log line;
+    - the pairs card adds "one-coin jump: in a day, it would take ..." (no jargon: omega_c535's plain-top check caught
+      "cross margin" in the first wording).
+    - Nothing traded on it; the cap and the C544/C545 journal unchanged. `omega_c547_test.py` 19 checks; battery **63/63**.
+  - **Server (logs push 09:17 IST 23 Oct):** daily runs 21 Oct $1,017.06, 22 Oct $1,017.90 (in ARC, out TST), **23 Oct
+    $1,019.59** (+$20.05 since 9 Oct's $999.54, ~+4.3% a month before tax vs research +4.6%). **The bot restarted 21 Oct
+    06:05:14 IST** (new session omega_*_20261021_060514), 5 min after that day's run; the logs give no cause (no watchdog
+    line in them). The operator was asked for `last -x reboot shutdown` and the watchdog/omega journal for that window.
+  - **Routine prompts updated 23 Oct:** B2 `trig_01XjNNKCDMzqwQjXGge7753r` (the safety net to build: emergency stop at the
+    25% level on every short leg, the twin closed at once on stop/liquidation/ADL, both exchanges' liquidation rules, a
+    mocked BLESS test; c547 tests stay green); B3 `trig_014fCVNMfi4FPxzJMkU69iDi` (dry run logs the emergency-stop prices
+    and checks them against `jump_risk()`; a twin-close drill; alerts for an emergency stop); go/no-go
+    `trig_0183TJJTMZgwLFsuynRn1RMw` (G6 jump part not met as written: (a) strict or (b) explicit acceptance of the
+    re-computed jump risk ONLY with the safety net built and tested).
 - **ORACLE ACCOUNT FACTS (the operator's console screenshots, 10 Oct 11:00 IST):**
   - Billing → Subscriptions → "Universal Credits", subscription 100001000188462:
     - started 18 Sep 2026, Infrastructure, currency **SGD**;
