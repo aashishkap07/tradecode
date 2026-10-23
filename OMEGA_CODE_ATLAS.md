@@ -246,6 +246,18 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
       before it ends). Live, B2 must survive a restart between two legs.
   - **Routine prompts:** all 8 now carry the full-check rule. B2 adds restart-safety (idempotent client order ids,
     reconcile at boot); B3 checks the update window moved.
+  - **Confirmed 23 Oct 11:33-11:36 IST (the operator's screens):**
+    - unattended-upgrades 21 Oct 06:04:37: ca-certificates (06:04:45-50), **liblzma5 + xz-utils (06:04:59-06:05:01)**,
+      git/git-man/python3-jwt/tzdata (06:05:15), done 06:05:46. The omega restart at 06:05:09 = needrestart after
+      liblzma5;
+    - the override is live: `list-timers` showed the next run Sat 24 Oct ~03:30 ("16h left" at 11:33); the last run
+      was 23 Oct ~06:51 and did not restart the bot;
+    - C547 booted 10:57:37 (`OMEGA C547`, 11:17 push); C548 ~11:32 (page header "C548 ... running 4 min");
+    - the page's "+$0.31 waiting" was recomputed from Delta/Binance records for 00:30-06:06 UTC as $0.299 (one payment
+      per leg at 04:00 UTC); per-pair rent = booked + waiting matches to the cent except ARC (1 cent);
+    - C540: real CoinDCX rupee wallet INR 0.07, Delta no balance; the Pi42 403 warning once per restart
+      (the key is still saved; harmless).
+  - **Monthly from 1 Nov:** check `/var/run/reboot-required`; reboot only at a quiet hour (never 05:30-06:30 IST).
 - **RECHECK + CHOICE (b) (23 Oct 2026 ~10:30-11:00 IST; `reports/2026-10-23_recheck.md`).** The operator: "i would go
   with your recommendation (b) above .. also recheck all balances , pnl , taxation , trading mechanisms carefully .. also
   clarify what would be decided about the other paper ongoing plans like delta book, spot pot, etc..".
