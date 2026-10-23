@@ -25,6 +25,20 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
 
 **Standing rules from the operator (4 Oct 2026):**
 - **Every reply explains, in plain English with analogies, what was done and how the bot works.**
+- **FULL CHECK AT EVERY MAJOR UPDATE (the operator, 23 Oct 2026): "keep the time line updated everytime and check
+  carefully for errors l/discrepancies/pnl/taxations/logic rules/trading mechanism in detail everytime you are doing a
+  major update or revision as per the time line".**
+  - At every major update or revision (and every scheduled routine), re-check against the real logs and the exchanges'
+    own data, as `reports/2026-10-23_recheck.md` did:
+    - the ledger's identity and each pair's P&L;
+    - rent re-computed from Delta's and Binance's funding records;
+    - the signals re-computed;
+    - fees, contract sizes and rupee rates re-read;
+    - CoinDCX == Binance (G2);
+    - the tax statement tied to the ledger;
+    - any tax-law change.
+  - Report every error or discrepancy found, and update `reports/2026-10-09_timeline.md` every time.
+  - All 8 routine prompts carry this rule.
 - Explain as an expert futures trader; verify against real data; keep this Atlas current; commit and push
   to the session branch (no PRs unless asked); give Termius commands without the ssh line.
 - **TAX ADVISER (the operator, 9 Oct 2026): "i dont have a dedicated CA..please act as an expert CA everytime a taxation
@@ -201,6 +215,37 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **C548 (23 Oct 2026 ~11:20 IST, pushed; not yet deployed): SIX EXPERIMENTS OFF; THE 21 OCT RESTART EXPLAINED.**
+  Report: `reports/2026-10-23_c548_switchoff.md`. The operator: "please switch off the 6 paper plans you mentioned above";
+  "ill do the Adobe work [= the Oracle Pay As You Go upgrade] on the laptop by today".
+  - **Bot:**
+    - `_C548_OFF` = C489_SHADOW, C490_CARRY, C501_SPOT, C501_SAVINGS, C521_BFUSD, C501_K4;
+    - `_c548_retire(cfg)` sets them False when `C548_RETIRE` (Config, True) is set; it is called first in
+      `TradingBot.__init__` (`self._c548_off`), before any ledger is built;
+    - Config's own defaults stay True, so the old tests that build these classes from `Config()` still run their code;
+    - saved ledgers are kept (frozen);
+    - `_c527_total`: `tds` and `left_out` only count ledgers that are on (`_on()`: an object without `active()` counts
+      as on);
+    - the 15 x 12% card's text now says Round 23 found no protection that pays.
+  - **Kept:** the plan, the f8/w3/b15 copies, the book on Delta India (c521d; its marks also price the plan between
+    runs: `_c527_total` and `margins()` use `c521d.marks`), and the Binance book + tournament that feed it.
+  - **Preview:** `research/c548_preview.py` on the 10:17 IST state + live prices:
+    - no SHADOW/CARRY/SPOT/SAVINGS/BFUSD lines;
+    - boot PAPER line: tournament, Delta book, the plan;
+    - plan $1,019.59; jump line Delta +572% (LIT), CoinDCX +463% (MEME);
+    - JS errors none.
+  - **Tests:** `omega_c548_test.py` 16 checks; battery **64/64** (C527's stand-in `object()` needed `_on()`).
+  - **21 Oct restart (the operator's output):**
+    - `last -x`: no reboot since 2 Oct 12:19;
+    - watchdog only "no scan recorded yet -- leaving it alone" (06:35-06:55);
+    - systemd `Stopped`/`Started omega.service` at 06:05:09 = a clean restart request;
+    - the server clock is IST;
+    - **likely cause:** `apt-daily-upgrade.timer` (06:00 + up to 60 min random) + needrestart.
+    - Asked: the confirmation commands, and to move the timer to 03:30 + 20 min (override.conf).
+    - **Risk:** the plan's 06:00 IST run takes ~25 s; on paper a restart mid-run just repeats the run (nothing saved
+      before it ends). Live, B2 must survive a restart between two legs.
+  - **Routine prompts:** all 8 now carry the full-check rule. B2 adds restart-safety (idempotent client order ids,
+    reconcile at boot); B3 checks the update window moved.
 - **RECHECK + CHOICE (b) (23 Oct 2026 ~10:30-11:00 IST; `reports/2026-10-23_recheck.md`).** The operator: "i would go
   with your recommendation (b) above .. also recheck all balances , pnl , taxation , trading mechanisms carefully .. also
   clarify what would be decided about the other paper ongoing plans like delta book, spot pot, etc..".

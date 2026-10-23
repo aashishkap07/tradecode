@@ -2400,7 +2400,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C547'
+_OMEGA_VERSION = 'C548'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3183,7 +3183,11 @@ class Config:
         self.C540_POLL_S = 600                  # C540: every 10 minutes (logged once an hour per venue)
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
-        self.C530_PENDLE = False                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
+        self.C530_PENDLE = False
+        # C548 (the operator, 23 Oct 2026: "please switch off the 6 paper plans you mentioned above"): the six paper
+        # experiments with no route to the operator's money are switched off when the bot starts (_c548_retire).
+        # Their code, tests and saved ledgers stay; False brings all six back.
+        self.C548_RETIRE = True                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
         self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
         self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
         self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
@@ -25630,15 +25634,42 @@ def _c527_total(bot, now=None):
     bf = getattr(bot, 'c521b', None)
     if bf is not None and bf.active() and bf.last_ts:
         out['bfusd'] = dict(interest=round(bf.interest, 4), tds=round(bf.tds, 2))
-    out['tds'] = round(float(getattr(sp, 'tds', 0.0) or 0.0), 4) if sp is not None else 0.0
+    _on = lambda o: o is not None and bool(getattr(o, 'active', lambda: True)())                              # C548
+    out['tds'] = round(float(getattr(sp, 'tds', 0.0) or 0.0), 4) if _on(sp) else 0.0                          # C548
     out['left_out'] = [x for x, a in (('intraday shadow', 'c489'), ('rule tournament', 'c510t'))
-                       if getattr(bot, a, None) is not None]
+                       if _on(getattr(bot, a, None))]                                                           # C548
     return out
+
+
+# C548: the six paper experiments switched off (reports/2026-10-23_recheck.md section 6). None has a route to the
+# operator's money: each runs on Binance (a crypto-asset gain there is taxed at 30% flat with 1% TDS and no loss
+# set-off; the operator's plan is India-only), and none earned its keep:
+#   C489_SHADOW   the intraday shadow (M1 -5.31%, M1g -1.21% in 22 days; the same rules lost money in 2021-26);
+#   C490_CARRY    spot + perp carry on Binance (-0.35% in 23 days; at best what Savings pays);
+#   C501_SPOT     the spot pot (-1.04%, with $1.14 of 1% TDS withheld);
+#   C501_SAVINGS  Savings on the Binance book's idle cash (only with a Binance account);
+#   C521_BFUSD    BFUSD on the same wallet (likewise);
+#   C501_K4       the allostatic shadow (empty: the rule tournament already scores K4).
+# KEPT: the plan, its three test copies, the book on Delta India (a possible second India-only strategy, decided at
+# the 2 Dec refresh; its Delta marks also price the plan between daily runs) and the Binance book + rule tournament
+# that compute its targets.
+_C548_OFF = ('C489_SHADOW', 'C490_CARRY', 'C501_SPOT', 'C501_SAVINGS', 'C521_BFUSD', 'C501_K4')
+
+
+def _c548_retire(cfg):
+    """switch the six off for the running bot (C548_RETIRE False keeps them); returns the flags it turned off"""
+    if not bool(getattr(cfg, 'C548_RETIRE', True)):
+        return []
+    off = [k for k in _C548_OFF if bool(getattr(cfg, k, True))]
+    for k in _C548_OFF:
+        setattr(cfg, k, False)
+    return off
 
 
 class TradingBot:
     def __init__(self, cfg: Config):
         self.cfg = cfg
+        self._c548_off = _c548_retire(cfg)      # C548: before the ledgers below are built
         self.exchange = ExchangeManager(cfg)
         self.portfolio = Portfolio(cfg)
         self.c488 = C488Engine(self)            # C488: the medium-term portfolio engine
@@ -46023,7 +46054,7 @@ function renderTests(d,xv){
   var b15=T.filter(function(t){return t.key==='b15'})[0];   /* C542 */
   if(b15)h+='<div class="s muted">15 pairs of 12%: the research\u2019s best setting with CoinDCX \u2014 in two years of past data about '+m2(b15.month)+
     ' a month more than yours before tax (ahead in '+Math.round(b15.ahead/10)+' months out of 10). It is not your plan: more and bigger bets mean one coin '+
-    'that jumps several times over in a day (BLESS rose 530% on 15 Oct 2025) can empty one account. It must first pass a test with protection against that.</div>';
+    'that jumps several times over in a day (BLESS rose 530% on 15 Oct 2025) can empty one account. Round 23 (23 Oct) tested six kinds of protection and none paid for itself, so it stays a copy unless a new test passes.</div>';   /* C548 */
   if(dx)h+='<div class="s muted">CoinDCX: Pi42’s trading door is shut to the bot (8 Oct), so this copy runs your exact rule with CoinDCX as the '+
     'second account'+(dx.coins?' ('+dx.coins+' coins listed there)':'')+'. In two years of past data it came out ahead by about '+m2(dx.month)+
     ' a month (ahead in '+Math.round(dx.ahead/10)+' months out of 10): more coins to choose from and half Pi42’s fee. Moving your plan to '+
