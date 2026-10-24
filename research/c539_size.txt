@@ -1,0 +1,31 @@
+ROUND 20 (C539): THE BET SIZE PER LEG, $1,000, DELTA vs PI42 (pre-registered)
+
+coins: 53 (Pi42 lists it, Delta turnover >= $100k today, the same asset); C533 had 52 on 4 Oct (Delta's turnover moves day to day)
+
+size   net/yr     t entries skipped avg/month worst month months<0 months>=2% | lowest acct months <50% transfers/yr | BAR
+S8     +43.5%  6.02     166      23    +3.59%      -2.08%     6/24        54% |       61.0%          0%          6.1 | fail
+B0     +51.3%  6.41     167       9    +4.23%      -2.78%     6/24        62% |       60.3%          8%          7.1 | -
+S12    +59.2%  6.62     168       3    +4.89%      -3.28%     6/24        67% |       52.2%          4%         10.1 | PASS
+S15    +71.3%  6.95     168       1    +5.88%      -4.05%     6/24        71% |       52.7%          8%         17.2 | fail
+
+PASSED: S12
+(the account columns are relative to its starting $500; 'months <50%' counts months with a daily close where the poorer account was under half the two accounts' mean)
+
+ENGINE CHECK (pre-registered: the 10% baseline must reproduce C533 before any variant is read) -- FAILED
+  C533 (4 Oct): +50.3%/yr, t 6.07, 167 entries, worst month -3.89%, lowest account 47.8%
+  today:        +51.3%/yr, t 6.41, 167 entries, worst month -2.78%, lowest account 60.3%
+  Cause (research/c539_size_check.py): the coin list. It is set by Delta's turnover TODAY (>= $100k), which moves
+  day to day; the code, the cache (2 Oct) and the funding intervals are unchanged. One small coin moves the worst
+  month by up to 0.7 points: adding JTO alone gives -3.36% and a lowest account of 47.6%; PENDLE alone -3.45%.
+
+SENSITIVITY (not the bar): each size on coin lists that differ by the coins that move the result most
+  today (53)           10%: net +51.3% worst -2.78% low 60% | 12%: net +59.2% worst -3.28% low 52% | 15%: net +71.3% worst -4.05% low 53%
+  +JTO                 10%: net +50.7% worst -3.36% low 48% | 12%: net +58.8% worst -3.97% low 54% | 15%: net +70.4% worst -4.92% low 51%
+  +PENDLE              10%: net +50.9% worst -3.45% low 50% | 12%: net +59.0% worst -4.06% low 55% | 15%: net +71.0% worst -5.05% low 51%
+  +JTO +PENDLE         10%: net +50.4% worst -3.84% low 46% | 12%: net +58.5% worst -4.53% low 54% | 15%: net +70.1% worst -5.64% low 47%
+  +JTO +PENDLE +TIA    10%: net +50.6% worst -3.84% low 49% | 12%: net +58.8% worst -4.52% low 54% | 15%: net +70.4% worst -5.63% low 48%
+
+VERDICT: 12% passes on today's list (+$79/yr more, worst month -3.28%) but breaks gate G1's -4% on lists one
+coin away (+PENDLE -4.06%; +JTO +PENDLE -4.53%), which is where the 4 Oct study's list sat (B0 -3.89%).
+A result that flips with one coin is not robust: 10% a leg stays. 10% stays inside -4% on every list tried
+(worst -3.84%); its lowest account touched 46-50% on some lists (the "move money NOW" alert, once in two years).

@@ -1,0 +1,37 @@
+ROUND 21 (C541): COINDCX IN PI42'S PLACE AS THE SECOND LEG, $1,000 (pre-registered)
+
+Delta turnover read 2026-10-08 10:56 UTC. Coins (>= $100k a day on Delta, the same asset):
+  Pi42's list: 50   CoinDCX's list: 69   in CoinDCX's but not Pi42's: 19   in Pi42's but not CoinDCX's: []
+
+      net/yr     t entries avg/month worst month months<0 months>=2% | poorer acct transfers/yr | Oct24-Sep25 Oct25-Sep26
+P0    +48.7%  6.71     169    +4.02%      -3.34%     5/24        71% |       49.7%          6.6 |       +9.2%      +87.3%
+D1    +53.6%  7.67     169    +4.43%      -2.21%     4/24        71% |       61.6%          6.6 |      +15.3%      +90.9%
+D2    +62.5%  7.79     169    +5.16%      -2.22%     4/24        71% |       51.4%          6.6 |      +15.2%     +108.6%
+
+half-years (Oct-Mar, Apr-Sep, Oct-Mar, Apr-Sep):
+  P0:   -1.6%   +10.7%   +43.1%   +44.2%
+  D1:   +1.9%   +13.3%   +44.4%   +46.6%
+  D2:   +1.9%   +13.3%   +58.7%   +49.9%
+
+engine check: D2's per-coin sum +62.482%/yr vs xv_pi42 +62.482%/yr -> OK
+D2's coins by P&L (%/yr of $1,000, days held): LAB +8.3 (79d), BLESS +5.7 (273d), AIN +4.5 (212d), ZRO +3.8 (431d), TST +3.6 (170d), AIO +3.4 (213d), MANA +3.3 (411d), H +3.2 (234d), FIL +3.1 (304d), STX +3.1 (335d), INIT +2.7 (230d), ENA +2.7 (279d)
+  ... the five largest losers: TRX -0.1 (52d), TAO -0.1 (21d), HBAR -0.2 (121d), VIRTUAL -0.2 (14d), AIOT -1.1 (59d)
+
+LIST WOBBLE (D2): worst month and poorer account
+  without LAB                        net  +54.9%/yr   worst month  -2.22%   poorer account  51.4%   ok
+  without BLESS                      net  +59.5%/yr   worst month  -2.22%   poorer account  51.4%   ok
+  without AIN                        net  +59.7%/yr   worst month  -2.22%   poorer account  58.7%   ok
+  without ZRO                        net  +62.0%/yr   worst month  -2.22%   poorer account  55.1%   ok
+  without TST                        net  +60.1%/yr   worst month  -2.22%   poorer account  50.5%   ok
+  turnover floor $75k (79 coins)     net  +66.4%/yr   worst month  -2.15%   poorer account  50.0%   ok
+  turnover floor $150k (59 coins)    net  +55.7%/yr   worst month  -2.08%   poorer account  56.3%   ok
+
+THE BAR FOR D2:
+  PASS  G1 average month >= +1.5%
+  PASS  G1 no month below -4%
+  PASS  G1 poorer account >= 40%
+  PASS  HAC t >= 2.0
+  PASS  both years positive
+  PASS  list wobble holds
+
+RESULT: D2 PASSES -- CoinDCX can take Pi42's place as the second leg

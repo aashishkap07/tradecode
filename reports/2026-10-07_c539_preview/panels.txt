@@ -1,0 +1,103 @@
+[sub]
+no real money moves · running 0 min · prices up to date
+
+[s-money]
+$998.70
+-$1.30 (-0.13%) since you started with $1,000.00
+after tax: $998.70 (no tax on a loss)
+all of it in the rent-gap trade (Delta vs Pi42)
+goal: +2% to +4% a month, after tax · paper: no real money moves
+
+[s-acc]
+each started with $500.00; the % is what each holds now, rent paid in since the daily run included
+Delta India
+$520.34
+104%
+Pi42
+$478.36
+96%
+Healthy. If one falls below 65% (the faint line), the bot moves money across at the daily run. Below 50% (the red line) it asks you to move money now.
+last move: 5 Oct, 06:00 IST, $163.07 from Pi42 to Delta ($1 fee) · when live, this will be your bank transfer
+
+[s-pairs]
+coin	Delta	Pi42	gap/yr	rent	days
+KAITO	↓ down	↑ up	71%	+$0.59	4.7
+FARTCOIN	↓ down	↑ up	57%	+$0.24	4.7
+TST	↓ down	↑ up	91%	+$0.27	2.5
+BEAT	↓ down	↑ up	114%	+$0.53	2.5
+IO	↓ down	↑ up	86%	+$0.85	4.7
+LIT	↓ down	↑ up	100%	+$0.47	2.5
+STRK	↑ up	↓ down	67%	+$0.16	2.5
+NOT	↑ up	↓ down	89%	+$0.39	2.5
+H	↓ down	↑ up	69%	+$0.24	2.5
+AIXBT	↑ up	↓ down	60%	+$0.23	2.5
+rent collected +$5.55
+fees paid $4.87, plus $1.00 for moving money · price moves -$1.28 (small, because each pair’s two bets cancel)
+↓ down = a bet that the price falls, ↑ up = a bet that it rises; each bet is about $100. Rent includes what has settled since the last daily run. A new pair shows its rent from its first settlement.
+
+[s-next]
+Last daily run: 7 Oct, 06:00 IST — done: +$2.10 (rent +$1.76, price moves +$0.34). No pairs needed changing. No money needed moving.
+Next daily run: 06:00 IST (in 11 h 16 min). The bot adds up the rent, closes pairs whose gap has faded, opens new ones, and evens out the two accounts.
+Every hour it checks both accounts and warns if one runs low.
+Live trading is locked. Real money is planned for March 2027, only if the tests in the plan pass.
+
+[s-test]
+Since 6 Oct, two copies of your plan have each followed one different rule, on the same coins, prices and fees. Nothing here is your money.
+way	result	vs yours
+Your rule: once a day	+$2.10	—
+Checks every 8 hours	+$2.11	ahead $0.01
+Uses a 3-day average	+$2.10	level
+score as of 7 Oct, 06:00 IST (1 day); updated every day after that run
+Checks every 8 hours — decides at 06:00, 14:00 and 22:00 IST instead of once a day. Last decision 7 Oct, 14:00 IST: no change. 10 pairs, 10 the same as yours.
+Uses a 3-day average — judges each gap on its last 3 days instead of 7. Last decision 7 Oct, 06:00 IST: no change. 10 pairs, 10 the same as yours.
+How to read it: a few days mean little. In two years of past data, checking every 8 hours came out ahead by about $2.90 a month (ahead in 8 months out of 10); the 3-day average by about $6.40 a month, but only in 6 months out of 10, with big swings. On 2 December the research checks whether either truly beats yours. Until then your rule stays.
+
+[plandetk]
+Your plan in detail
+
+[moresum]
+(not your money: Binance book -0.22% · spot pot -0.26% · carry -0.15% · Delta book +0.13%)
+
+[alltotalk]
+
+
+[eqk]
+
+
+[eq]
+
+
+[eqs]
+
+
+[day]
+
+
+[days]
+
+
+[reck]
+
+
+[rec]
+
+
+[recs]
+
+
+[running]
+
+
+[alltotal]
+
+
+[xvenue]
+
+
+[delta]
+
+
+[pendle]
+
+
+[JavaScript errors] []

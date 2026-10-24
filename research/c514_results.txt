@@ -1,0 +1,54 @@
+======================================================================================================================
+C514 ROUND 12 | the N2+N3 book, crypto top 20, dial 20%, $6 floor at $250 | 2020-01-01 .. 2026-08-31
+======================================================================================================================
+
+PART A: 2692 position episodes, 23110 held coin-days after the entry day (median episode 7 days)
+
+  by z (open profit, own-vol units): coin-days | P(loss) next day / next 7 days / rest of the trade | mean return (%) same
+  z <= -2             285 |  44.2%   44.8%   54.1% |  -2.38   +1.48   -2.22
+  -2 < z <= -1       1838 |  47.0%   49.7%   50.7% |  +0.16   -0.55   -0.98
+  -1 < z <= 0        6753 |  51.0%   51.4%   53.2% |  -0.05   -0.29   +0.35
+  0 < z <= 1         8577 |  50.7%   51.0%   54.4% |  +0.14   +0.40   +0.37
+  1 < z <= 2         4215 |  51.0%   49.5%   55.2% |  +0.29   +1.07   +0.94
+  2 < z <= 3         1174 |  51.4%   50.1%   53.6% |  +0.08   +0.85   +1.42
+  z > 3               268 |  50.7%   43.8%   57.1% |  +0.27   +2.21   -0.66
+
+  by u (7-day stretch, own-vol units): coin-days | P(loss) next day / next 7 days / rest of the trade | mean return (%) same
+  u <= -2             248 |  42.3%   49.2%   47.5% |  -2.98   -0.52   -4.46
+  -2 < u <= -1       1841 |  47.7%   46.5%   52.0% |  +0.10   +1.04   -0.93
+  -1 < u <= 0        7088 |  50.4%   50.8%   54.0% |  -0.07   -0.63   -0.29
+  0 < u <= 1         9040 |  51.1%   51.2%   54.6% |  +0.15   +0.51   +0.25
+  1 < u <= 2         3716 |  50.6%   50.8%   54.6% |  +0.37   +0.97   +1.70
+  2 < u <= 3         1019 |  51.4%   49.4%   49.0% |  +0.37   +1.48   +4.96
+  u > 3               150 |  55.3%   52.1%   55.3% |  -1.04   -0.03   +0.60
+
+  the highest P(loss) in any bucket with >= 500 coin-days: 1 < z <= 2 (7 days 49.5%, rest of the trade 55.2%)
+  a '70% point' (pre-registered: >= 500 coin-days and P >= 70%): NOT FOUND
+
+  DESCRIPTIVE, the 2689 trades (price only): won 45% | average win +13.9%, average loss -9.1% | the best 10% of trades made 304% of the net | best +175%, worst -127% (log)
+
+PART B: exits on the N2+N3 book, dial 20% (admission: NW t >= 2.33, >= 3/4 quarters, holdout > 0, DD <= base + 2)
+  BASE N2+N3 (what runs)             +4.01%/mo (simple +51.2%/yr) Sharpe 1.81 maxDD 38.3% worst month -17.8% months>=2%  54% gross 0.89x | +Savings: year avg>=2%/mo boot  81% haircut  61%
+  X1 take profit at z > 2            +2.57%/mo (simple +33.5%/yr) Sharpe 1.35 maxDD 40.4% worst month -16.7% months>=2%  49% gross 0.73x | +Savings: year avg>=2%/mo boot  66% haircut  48%
+                                     vs base -17.73%/yr (simple)  NW t -2.48  quarters+ 0/4  holdout 2025-26 -19.34%/yr  extra turnover -5.4x/yr  -> not admitted
+  X2 take profit at z > 3            +3.83%/mo (simple +48.7%/yr) Sharpe 1.82 maxDD 33.6% worst month -18.4% months>=2%  53% gross 0.84x | +Savings: year avg>=2%/mo boot  82% haircut  60%
+                                     vs base  -2.52%/yr (simple)  NW t -0.77  quarters+ 1/4  holdout 2025-26 -3.59%/yr  extra turnover -1.7x/yr  -> not admitted
+  X3 halve at z > 2                  +3.33%/mo (simple +42.4%/yr) Sharpe 1.70 maxDD 38.8% worst month -17.2% months>=2%  55% gross 0.81x | +Savings: year avg>=2%/mo boot  77% haircut  54%
+                                     vs base  -8.84%/yr (simple)  NW t -2.47  quarters+ 0/4  holdout 2025-26 -9.63%/yr  extra turnover -3.0x/yr  -> not admitted
+  S1 stop at z < -2                  +4.05%/mo (simple +51.8%/yr) Sharpe 1.79 maxDD 36.2% worst month -14.8% months>=2%  53% gross 0.85x | +Savings: year avg>=2%/mo boot  82% haircut  60%
+                                     vs base  +0.62%/yr (simple)  NW t +0.23  quarters+ 2/4  holdout 2025-26 +2.80%/yr  extra turnover -1.0x/yr  -> not admitted
+  S2 trailing stop 3 sd from best    +3.06%/mo (simple +40.7%/yr) Sharpe 1.35 maxDD 32.5% worst month -11.4% months>=2%  51% gross 0.67x | +Savings: year avg>=2%/mo boot  69% haircut  48%
+                                     vs base -10.51%/yr (simple)  NW t -1.45  quarters+ 1/4  holdout 2025-26 -24.66%/yr  extra turnover -6.6x/yr  -> not admitted
+
+DESCRIPTIVE: the same at dial 15%
+  BASE N2+N3 (what runs)             +2.91%/mo (simple +36.6%/yr) Sharpe 1.76 maxDD 24.9% worst month -13.8% months>=2%  53% gross 0.63x | +Savings: year avg>=2%/mo boot  74% haircut  50%
+  X1 take profit at z > 2            +1.92%/mo (simple +24.5%/yr) Sharpe 1.37 maxDD 24.8% worst month -14.3% months>=2%  49% gross 0.53x | +Savings: year avg>=2%/mo boot  58% haircut  35%
+                                     vs base -12.18%/yr (simple)  NW t -2.31  quarters+ 1/4  holdout 2025-26 -18.18%/yr  extra turnover -2.8x/yr
+  X2 take profit at z > 3            +2.80%/mo (simple +35.1%/yr) Sharpe 1.81 maxDD 24.0% worst month -14.3% months>=2%  51% gross 0.60x | +Savings: year avg>=2%/mo boot  74% haircut  49%
+                                     vs base  -1.58%/yr (simple)  NW t -0.71  quarters+ 1/4  holdout 2025-26 -6.37%/yr  extra turnover -0.9x/yr
+  X3 halve at z > 2                  +2.44%/mo (simple +30.6%/yr) Sharpe 1.68 maxDD 24.1% worst month -14.1% months>=2%  53% gross 0.58x | +Savings: year avg>=2%/mo boot  68% haircut  43%
+                                     vs base  -6.07%/yr (simple)  NW t -2.31  quarters+ 1/4  holdout 2025-26 -9.06%/yr  extra turnover -1.6x/yr
+  S1 stop at z < -2                  +2.87%/mo (simple +36.1%/yr) Sharpe 1.71 maxDD 25.6% worst month -11.2% months>=2%  51% gross 0.61x | +Savings: year avg>=2%/mo boot  73% haircut  48%
+                                     vs base  -0.49%/yr (simple)  NW t -0.26  quarters+ 2/4  holdout 2025-26 +2.20%/yr  extra turnover -0.7x/yr
+  S2 trailing stop 3 sd from best    +2.34%/mo (simple +30.1%/yr) Sharpe 1.38 maxDD 24.5% worst month  -8.2% months>=2%  47% gross 0.49x | +Savings: year avg>=2%/mo boot  62% haircut  39%
+                                     vs base  -6.56%/yr (simple)  NW t -1.29  quarters+ 1/4  holdout 2025-26 -20.41%/yr  extra turnover -4.2x/yr

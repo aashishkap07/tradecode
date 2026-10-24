@@ -1,0 +1,18 @@
+# OMEGA V60 — Python dependencies  [C468]
+#
+# The first four are HARD requirements: the bot imports them at module level and
+# will not start without them. C468 exists because setup.sh installed three of
+# the four -- pandas was missing -- and the resulting crash looked identical to
+# every other reason the control panel might not answer.
+ccxt>=4.0
+pandas>=2.0
+numpy>=1.24
+requests>=2.28
+
+# Optional. Both are wrapped in try/except at import and the bot runs without
+# them -- but it runs DEGRADED and says so in one line at the top of the log,
+# which is easy to miss:
+#   scikit-learn  -> "scikit-learn not available - ML features disabled"
+#   flask         -> unused by the control panel (it uses http.server), kept
+#                    only for an older web view
+scikit-learn>=1.3

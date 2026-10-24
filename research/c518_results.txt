@@ -1,0 +1,25 @@
+======================================================================================================================
+C518 ROUND 13 | selling 30-day volatility (short variance-swap ladder, strike DVOL - 3 pts) beside the N2+N3 book
+======================================================================================================================
+window 2021-06-22 .. 2026-08-31 (1897 days)
+
+  BOOK (N2+N3, dial 20%, + Savings), same window: +3.58%/mo Sharpe 1.61 maxDD 36.6% worst month -17.7% | year avg>=2%/mo: boot 74% haircut 54%
+
+V1 BTC short volatility
+  stream  +0.82%/mo  Sharpe 1.09  vol 9%  maxDD 16.2%  worst month -13.2%  worst 30 days -15.4%  months>0 67%
+          NW t +2.01  quarters+ 3/4  holdout 2025-26 -3.9%/yr  corr with the book: daily -0.12, monthly -0.09; in the book's worst 10% of months the stream averaged +2.3%
+  blend   +3.26%/mo  Sharpe 1.34  maxDD 40.0% (book 36.6%)  worst month -28.2%  | year avg>=2%/mo: boot 67% haircut 53% (book 54%)  -> not admitted
+
+V2 ETH short volatility
+  stream  -0.26%/mo  Sharpe -0.17  vol 13%  maxDD 43.7%  worst month -13.2%  worst 30 days -16.6%  months>0 59%
+          NW t -0.32  quarters+ 2/4  holdout 2025-26 -25.0%/yr  corr with the book: daily -0.05, monthly -0.02; in the book's worst 10% of months the stream averaged +0.8%
+  blend   -0.05%/mo  Sharpe 0.22  maxDD 67.8% (book 36.6%)  worst month -27.4%  | year avg>=2%/mo: boot 33% haircut 31% (book 54%)  -> not admitted
+
+V3 BTC+ETH, equal risk
+  stream  +0.24%/mo  Sharpe 0.25  vol 26%  maxDD 60.2%  worst month -26.9%  worst 30 days -34.3%  months>0 62%
+          NW t +0.48  quarters+ 2/4  holdout 2025-26 -31.2%/yr  corr with the book: daily -0.09, monthly -0.07; in the book's worst 10% of months the stream averaged +3.7%
+  blend   +1.50%/mo  Sharpe 0.68  maxDD 41.9% (book 36.6%)  worst month -29.0%  | year avg>=2%/mo: boot 48% haircut 40% (book 54%)  -> not admitted
+
+DESCRIPTIVE: the cost assumption (V3, BTC+ETH)
+  cost 1.5 vol pts: +1.14%/mo  Sharpe 0.67  maxDD 47.1%  NW t +1.29
+  cost 5.0 vol pts: -0.94%/mo  Sharpe -0.30  maxDD 76.1%  NW t -0.57

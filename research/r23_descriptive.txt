@@ -1,0 +1,71 @@
+ROUND 23, DESCRIPTIVE (after the verdict; nothing here is a test)
+
+1. EVERY STOP BOOKED (day, coin, short leg on, its exchange's day-high jump %, the other exchange's %)
+
+  S50: 39 stops in 24 months; set off by one exchange alone (the other under half the stop): 0
+    2025-01-19  FARTCOIN  short on CoinDCX  +58% / +58%
+    2025-02-03  GRIFFAIN  short on Delta    +68% / +67%
+    2025-02-11  ARC       short on Delta    +53% / +52%
+    2025-04-27  BMT       short on CoinDCX  +54% / +54%
+    2025-06-16  ALT       short on CoinDCX  +103% / +110%
+    2025-08-30  M         short on Delta    +106% / +62%
+    2025-09-13  H         short on Delta    +57% / +57%
+    2025-10-13  H         short on Delta    +150% / +150%
+    2025-10-16  EVAA      short on Delta    +108% / +107%
+    2025-10-19  H         short on Delta    +59% / +59%
+    2025-10-21  EVAA      short on Delta    +59% / +56%
+    2025-10-21  ARC       short on Delta    +59% / +59%
+    2025-10-22  EVAA      short on Delta    +87% / +86%
+    2025-10-24  H         short on Delta    +169% / +168%
+    2025-11-07  FIL       short on CoinDCX  +110% / +110%
+    2025-11-25  ARC       short on Delta    +63% / +60%
+    2025-12-31  MUBARAK   short on CoinDCX  +65% / +67%
+    2026-02-13  VVV       short on CoinDCX  +61% / +62%
+    2026-02-15  INIT      short on CoinDCX  +65% / +65%
+    2026-03-10  AIN       short on Delta    +103% / +100%
+    2026-04-02  SOLV      short on CoinDCX  +140% / +140%
+    2026-04-13  EVAA      short on Delta    +70% / +69%
+    2026-05-07  EVAA      short on Delta    +67% / +66%
+    2026-05-22  BEAT      short on Delta    +70% / +70%
+    2026-06-01  LAB       short on CoinDCX  +76% / +75%
+    2026-06-02  SKYAI     short on Delta    +60% / +60%
+    2026-06-06  LAB       short on Delta    +61% / +60%
+    2026-06-07  SIREN     short on Delta    +56% / +56%
+    2026-06-09  H         short on CoinDCX  +113% / +102%
+    2026-06-11  AIN       short on Delta    +52% / +52%
+    2026-06-11  H         short on Delta    +133% / +133%
+    2026-06-11  SKYAI     short on Delta    +53% / +52%
+    2026-06-14  H         short on Delta    +80% / +79%
+    2026-07-04  LAB       short on Delta    +179% / +179%
+    2026-07-09  SKYAI     short on Delta    +51% / +51%
+    2026-07-14  LAB       short on Delta    +80% / +79%
+    2026-08-28  AKE       short on CoinDCX  +64% / +64%
+    2026-09-15  AKE       short on CoinDCX  +86% / +86%
+    2026-09-18  STRK      short on CoinDCX  +55% / +56%
+
+  S100: 13 stops in 24 months; set off by one exchange alone (the other under half the stop): 0
+    2025-06-16  ALT       short on CoinDCX  +103% / +110%
+    2025-08-30  M         short on Delta    +106% / +62%
+    2025-10-13  H         short on Delta    +150% / +150%
+    2025-10-16  EVAA      short on Delta    +108% / +107%
+    2025-10-24  H         short on Delta    +169% / +168%
+    2025-11-07  FIL       short on CoinDCX  +110% / +110%
+    2026-03-10  AIN       short on Delta    +103% / +100%
+    2026-04-02  SOLV      short on CoinDCX  +140% / +140%
+    2026-06-09  H         short on CoinDCX  +113% / +102%
+    2026-06-11  H         short on Delta    +133% / +133%
+    2026-07-04  LAB       short on Delta    +179% / +179%
+    2026-09-02  AKE       short on CoinDCX  +346% / +384%
+    2026-09-18  AKE       short on CoinDCX  +124% / +124%
+
+2. WHAT A ONE-COIN JUMP WOULD COST (base book, cross margin)
+  1281 account-days. The jump on the account's largest short leg that would empty it: median +504%, 5th percentile +362%, the worst day +189%.
+  A +530% jump (BLESS) would empty it on 60% of account-days; a +346% jump (AKE on 2 Sep 2026, on its short leg's exchange; +384% on Delta) on 3.7%.
+  The largest short leg: median $126; its account: median $618 (5th percentile $415) -- the book grows with its profits.
+  An emergency stop where the account would fall to 25% of its half: fired 0 times in 24 months 
+  An emergency stop where the account would fall to 40% of its half: fired 0 times in 24 months 
+
+3. HOW MUCH THE FIGURES MOVE WITH THE COIN LIST (today's list + one coin with $30k-$100k of Delta turnover)
+  today's 63 coins: after tax +3.18% a month, the poorer account's lowest 59.7%
+  + one of 31 coins: after tax +3.13% .. +3.40%, lowest 47.9% .. 66.2%
+  Round 24's 64-coin list of 10 Oct (not saved): after tax +3.44%, lowest 66.3% -- several coins differ, not one.

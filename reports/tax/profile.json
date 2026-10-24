@@ -1,0 +1,23 @@
+{
+ "_about": "The tax statement's settings that are not secret (omega_tax_statement.py reads them). Kept by your tax adviser at each review: the business code once checked in the year's ITR-3 utility, the year's legal due date once notified, the date each return was filed, the first real trade, other business expenses (live only), the exchanges' operating companies, and the editions reviewed with you. Your name, PAN and logins are NOT here: they live only on the server, in data/tax/taxpayer.json (set with --setup).",
+ "business_code": "21009",
+ "business_code_confirmed": {},
+ "description": "Trading in rupee-settled crypto perpetual futures on Delta Exchange India and CoinDCX (speculative)",
+ "due_date": {},
+ "filed": {},
+ "expenses": [],
+ "exchanges": {
+  "delta": {
+   "name": "Delta Exchange India",
+   "entity": "",
+   "fiu": ""
+  },
+  "coindcx": {
+   "name": "CoinDCX",
+   "entity": "Neblio Technologies Pvt Ltd",
+   "fiu": "VA00030982"
+  }
+ },
+ "started_live": "",
+ "reviews": []
+}

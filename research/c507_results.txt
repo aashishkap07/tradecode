@@ -1,0 +1,18 @@
+==============================================================================================================
+C507 ROUND 10 | crypto only, top 20, dial 15% (vol 20%), $6 floor at $250 | 2020-05-01 .. 2026-08-31
+==============================================================================================================
+  BASE (what runs)                             net  +32.6%/yr Sharpe 1.56 maxDD 31.4% months>=2%  49%  worst -14.6%
+  C2 long leg   alone (unit size):  +15.5%/yr on 16% vol, Sharpe 0.98, NW t +2.52 | by year: 2020 +32% 2021 +38% 2022 -29% 2023 +28% 2024 +13% 2025 +3% 2026 +12%
+  C2 short leg  alone (unit size):   +0.3%/yr on 17% vol, Sharpe 0.02, NW t +0.05 | by year: 2020 -17% 2021 -18% 2022 +29% 2023 -13% 2024 +5% 2025 +11% 2026 +4%
+
+N1 momentum long-only
+  N1 C2 long leg only                          net  +33.4%/yr Sharpe 1.61 maxDD 38.6% months>=2%  49%  worst -17.5%
+                                               vs base:  +0.79%/yr  NW t +0.13  quarters+ 2/4  holdout 2025-26 -2.40%/yr  -> not admitted
+
+N2 crowded-short filter: removes 27% of C2 short signals
+  N2 no C2 short where 7d funding < 0          net  +35.5%/yr Sharpe 1.68 maxDD 29.8% months>=2%  47%  worst -15.9%
+                                               vs base:  +2.82%/yr  NW t +1.02  quarters+ 4/4  holdout 2025-26 +2.62%/yr  -> not admitted
+
+N3 residual momentum: median beta 0.96
+  N3 C2 on residual 14d return                 net  +34.8%/yr Sharpe 1.68 maxDD 25.3% months>=2%  49%  worst -13.7%
+                                               vs base:  +2.14%/yr  NW t +0.82  quarters+ 3/4  holdout 2025-26 +3.36%/yr  -> not admitted

@@ -1,0 +1,13 @@
+W1 (instants): 319 contracts; discovery 827 contract-weekends, holdout 4806
+  discovery slope of Monday on weekend drift +0.480 (t +4.18) -> rule: continuation; its own net -0.137%/weekend over 64 weekends
+  HOLDOUT (from 2026-03): slope -0.178 (t -3.52); rule net -0.414%/weekend t -3.55 quarters+ 0/4 over 29 weekends -> not admitted
+W1 diagnostic (candles opening at the hour): 319 contracts; discovery 765 contract-weekends, holdout 4806
+  discovery slope of Monday on weekend drift +0.677 (t +4.82) -> rule: continuation; its own net -0.095%/weekend over 64 weekends
+  HOLDOUT (from 2026-03): slope -0.268 (t -5.48); rule net -0.459%/weekend t -2.95 quarters+ 0/4 over 29 weekends -> not admitted
+G1 neutral grid (+-15%, 20 steps, maker 0.02%): 24 months (2024-09..2026-08), 513 coin-months
+  mean month -0.67%  t -0.56  quarters+ 2/4  months positive 62%  best +8.83%  worst -16.64%  -> not admitted
+  per coin-month: 57% positive, median +1.31%, mean -0.72%, worst -274.8%, best +65.9%; left the range in its month: loss tail = mean of the worst 10% -39.9%
+  COMBO-C (crypto, dial 15%)                   2020-05..2026-08  net  +32.3%/yr  vol  22.7%  Sharpe +1.42  t +3.43  quarters+ 4/4  maxDD 31.1%  month +2.69% (63% +)  ADMIT 
+  D1 drawdown loop                             2020-05..2026-08  net  +24.7%/yr  vol  17.5%  Sharpe +1.41  t +3.42  quarters+ 3/4  maxDD 21.0%  month +2.06% (63% +)  ADMIT 
+  D1 minus COMBO-C (the test)                  2020-05..2026-08  net   -7.6%/yr  vol   7.7%  Sharpe -0.99  t -2.35  quarters+ 0/4  maxDD 39.5%  month -0.63% (33% +)  - 
+  max drawdown 31.1% -> 21.0%  |  D1 not admitted
