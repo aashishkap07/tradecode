@@ -258,6 +258,24 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - C540: real CoinDCX rupee wallet INR 0.07, Delta no balance; the Pi42 403 warning once per restart
       (the key is still saved; harmless).
   - **Monthly from 1 Nov:** check `/var/run/reboot-required`; reboot only at a quiet hour (never 05:30-06:30 IST).
+  - **C548 VERIFIED from the logs branch (check-in fired 23 Oct 12:25 IST, delivered and done 24 Oct ~10:35 IST):**
+    - session 23 Oct 11:32:21: `OMEGA C548`; the boot PAPER line lists only the tournament, the Delta book and the plan;
+      no Traceback in either session;
+    - **24 Oct 03:35:08: the bot restarted inside the new 03:30-03:50 update window**, as designed. The 06:00 run was
+      untouched;
+    - **24 Oct 06:00:49 run:** day +$1.56 -> $1,021.15 (+2.11%); 10 pairs, no entries/exits (98 of 194 coins wide, slots
+      full); log clause "a one-day jump that would empty an account: Delta +611% (ARC), CoinDCX +463% (MEME)" (C547 works);
+    - **full check on the 24 Oct ledger:**
+      - identity 1000 + 31.52 rent... = $1,021.1486 = the sides (Delta $581.64, CoinDCX $439.51);
+      - pair P&L max error $5e-7;
+      - rent booked $1.66 vs recomputed from Delta/Binance records $1.68 (valued at the run's price vs each
+        settlement's);
+      - signals 10/10 identical; STRK's gap -11%/yr is near the 10% exit line;
+    - **8-minute block (10:15 IST):** no SHADOW/CARRY/SPOT/SAVINGS/BFUSD lines; DATA "on time ... book today"; plan
+      marked $1,021.77, after tax $1,014.98; tests: 8 h -$0.23, 3-day +$1.39, 15x12 +$12.22; Delta book $510.28
+      (+2.06%);
+    - the C540 Pi42 warning shows once per UTC day (it rolls at 05:30 IST) + once per restart: by design (C542). It ends
+      if the Pi42 key is removed from `data/api_keys.json` (optional).
 - **RECHECK + CHOICE (b) (23 Oct 2026 ~10:30-11:00 IST; `reports/2026-10-23_recheck.md`).** The operator: "i would go
   with your recommendation (b) above .. also recheck all balances , pnl , taxation , trading mechanisms carefully .. also
   clarify what would be decided about the other paper ongoing plans like delta book, spot pot, etc..".
