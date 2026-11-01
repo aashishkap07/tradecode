@@ -14,7 +14,7 @@ Rules and bar fixed in research/c524_preregistration.md (committed first):
 Delta's funding: FUNDING:<SYM> records at each exchange time (C523: the value set AT T is the rate
 settled at T). Public endpoints only (api.india.delta.exchange, www.binance.com/fapi).
 """
-import os, sys, json, math, time, datetime as dt, concurrent.futures as cf
+import os, sys, json, math, time, bisect, datetime as dt, concurrent.futures as cf
 import numpy as np, requests
 
 DELTA = 'https://api.india.delta.exchange'
@@ -108,26 +108,41 @@ def bn_daily(sym):
     return [(int(x[0]) // 1000, float(x[4])) for x in r]
 
 
+C549_HOURLY = True        # C549 (1 Nov 2026): count Delta's temporary hourly settlements (False: the rule before)
+
+
 def delta_daily_funding(recs, iv_now, shift00=False):
     """sum per UTC day of Delta's rate at each exchange time, fraction. The exchange interval is the
     product's current one unless the record shows otherwise: per 30-day block, a 4-hour product whose
-    values never change at 04/12/20 UTC but do at 00/08/16 was on 8 hours then."""
+    values never change at 04/12/20 UTC but do at 00/08/16 was on 8 hours then.
+    C549: Delta also switches a coin to HOURLY settlements during a squeeze (Oct 2026: ARK, BMT, GTC, IOST, IRYS,
+    ORDER, RLC); counting only the usual timetable kept 1 in 4 of those payments. A settlement also happened at an
+    hour whose rate differs from the hour before, or that lies between two such changes off the timetable at most
+    4 hours away each side (the bot's _c549_paid). An hourly reading today is taken as a 4-hour coin."""
     v = dict(recs)
     hrs = iv_now // 3600
+    if C549_HOURLY and hrs < 4:
+        hrs = 4
     days = {}
     ts = sorted(v)
     blocks = {}
     for t in ts:
         blocks.setdefault((t - START) // (30 * DAY), []).append(t)
+    moved = lambda t: (t - 3600) in v and v[t] != v[t - 3600]
     for b, tt in blocks.items():
         h_iv = hrs
         if hrs == 4:
-            ch4 = sum(1 for t in tt if (t // 3600) % 8 == 4 and (t - 3600) in v and v[t] != v[t - 3600])
-            ch8 = sum(1 for t in tt if (t // 3600) % 8 == 0 and (t - 3600) in v and v[t] != v[t - 3600])
+            ch4 = sum(1 for t in tt if (t // 3600) % 8 == 4 and moved(t))
+            ch8 = sum(1 for t in tt if (t // 3600) % 8 == 0 and moved(t))
             if ch4 == 0 and ch8 > 0:
                 h_iv = 8
+        off = [t for t in tt if (t // 3600) % h_iv and moved(t)] if C549_HOURLY else []
         for t in tt:
-            if (t // 3600) % h_iv == 0:
+            ok = (t // 3600) % h_iv == 0
+            if not ok and off:
+                i = bisect.bisect_right(off, t)
+                ok = moved(t) or (0 < i < len(off) and t - off[i - 1] <= 4 * 3600 and off[i] - t <= 4 * 3600)
+            if ok:
                 d = (t - (1 if shift00 else 0)) // DAY * DAY
                 days[d] = days.get(d, 0.0) + v[t] / 100.0
     return days

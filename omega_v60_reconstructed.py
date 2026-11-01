@@ -47,6 +47,7 @@ import signal
 import hashlib
 import statistics
 import traceback
+import bisect        # C549: Delta's hourly-settlement runs (_c549_paid)
 import re            # C466: the colour painter compiles its
                      # token pattern at import time; `re` was only imported
                      # far below, as _re426, inside a later block.
@@ -2400,7 +2401,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C548'
+_OMEGA_VERSION = 'C549'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3183,11 +3184,11 @@ class Config:
         self.C540_POLL_S = 600                  # C540: every 10 minutes (logged once an hour per venue)
         self.C527_PENDING = True                # C527: read the funding settled since carry's/cross-venue's daily run
         self.C527_SAVINGS_LIVE = True           # C527: the Savings rate from Binance's public listing (else C501_SAVINGS_APR)
-        self.C530_PENDLE = False
+        self.C530_PENDLE = False                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
         # C548 (the operator, 23 Oct 2026: "please switch off the 6 paper plans you mentioned above"): the six paper
         # experiments with no route to the operator's money are switched off when the bot starts (_c548_retire).
         # Their code, tests and saved ledgers stay; False brings all six back.
-        self.C548_RETIRE = True                # C531: off -- at $100 Binance Savings paid more (C530); the code stays
+        self.C548_RETIRE = True
         self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
         self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
         self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
@@ -22887,7 +22888,7 @@ class C521Delta(_C501Store):
         if not force and self.prods and time.time() - self._prod_at < 6 * 3600:
             return True
         d = _c521_get('/v2/products', {'contract_types': 'perpetual_futures', 'states': 'live'})
-        out = {}
+        out, old = {}, (self.prods or {})
         for p in d or []:
             try:
                 sp = p.get('product_specs') or {}
@@ -22899,8 +22900,11 @@ class C521Delta(_C501Store):
                 base = str((p.get('underlying_asset') or {}).get('symbol') or '')
                 if base in _C516_TRADFI:
                     continue
-                out[base] = dict(sym=str(p['symbol']), cv=float(p['contract_value']),
-                                 iv=int(sp.get('rate_exchange_interval') or 28800),
+                iv = int(sp.get('rate_exchange_interval') or 28800)
+                # C549: the coin's usual timetable -- an hourly reading is a temporary switch (a squeeze); kept
+                # from the last 4- or 8-hour reading, else 4 hours (every coin switched in Oct 2026 was a 4-hour one)
+                grid = iv if iv >= 14400 else int((old.get(base) or {}).get('grid') or 14400)
+                out[base] = dict(sym=str(p['symbol']), cv=float(p['contract_value']), iv=iv, grid=grid,
                                  taker=float(p.get('taker_commission_rate') or 0.0005))
             except Exception:
                 continue
@@ -23531,16 +23535,52 @@ _C524_COST_B = 0.0005 + 0.0002          # Binance taker 0.05% + 0.02% half-sprea
 _C524_COST_D = 0.0005 * 1.18 + 0.0002   # Delta taker 0.05% + 18% GST + 0.02% half-spread
 
 
-def _c524_delta_daily(recs, iv_s, lo, hi):
-    """Delta's funding per UTC day, fraction: the FUNDING:<SYM> record at each exchange
-    time (the value set AT T is the rate settled at T, C523), days lo <= d < hi"""
-    hrs = max(1, int(iv_s) // 3600)
-    out = {}
+def _c549_paid(recs, iv_s, lo, hi, grid_s=None):
+    """C549: Delta's settlements in lo <= t < hi (seconds), as [(t, rate fraction)], from its hourly FUNDING:<SYM>
+    records. The record at hour T repeats the rate of the last settlement, so a 4-hour coin shows one rate for 4
+    hours. Delta switches a coin to HOURLY settlements during a squeeze and back later (Oct 2026: ARK, BMT, GTC, IOST,
+    IRYS, ORDER, RLC; every one a 4-hour coin), and the bot used to apply the coin's CURRENT interval to the whole
+    window: read while hourly, each old 4-hour payment counted 4 times (ARK -1176%/yr on 27 Oct, truly -51%; BMT
+    -1016% on 28 Oct, truly -27%); read after, 3 of every 4 hourly payments were missed (BMT +244% on 31 Oct, truly
+    -86%). A settlement happened at T when
+      - T is on the coin's usual timetable (`grid_s`, else `iv_s`; an hourly reading means its usual 4 hours), or
+      - the rate at T differs from the hour before (a rate changes only at a settlement), or
+      - T lies between two such changes off the timetable, each at most 4 hours away (an hourly run of equal rates,
+        e.g. Delta's floor 0.00125%: GTC 13 Oct 17-20 UTC).
+    Checked on all 250 coins over 34 days: 6 a day for every 4-hour coin, 3 for every 8-hour coin, 24 in an hourly
+    run. Missing hours are never counted as changes."""
+    v = {}
     for x in recs or []:
-        t = int(x.get('time') or 0)
-        if (t // 3600) % hrs == 0 and lo <= t < hi:
-            d = t // 86400 * 86400
-            out[d] = out.get(d, 0.0) + float(x['close']) / 100.0
+        try:
+            v[int(x.get('time') or 0)] = float(x['close'])
+        except (TypeError, ValueError, KeyError):
+            continue
+    g = max(1, int(grid_s or iv_s or 28800) // 3600)
+    g = 4 if g < 4 else g
+    ts = sorted(v)
+    moved = lambda t: (t - 3600) in v and v[t] != v[t - 3600]
+    off = [t for t in ts if (t // 3600) % g and moved(t)]
+    out = []
+    for t in ts:
+        if not lo <= t < hi:
+            continue
+        ok = (t // 3600) % g == 0 or moved(t)
+        if not ok and off:
+            i = bisect.bisect_right(off, t)
+            ok = 0 < i < len(off) and t - off[i - 1] <= 4 * 3600 and off[i] - t <= 4 * 3600
+        if ok:
+            out.append((t, v[t] / 100.0))
+    return out
+
+
+def _c524_delta_daily(recs, iv_s, lo, hi, grid_s=None):
+    """Delta's funding per UTC day, fraction: the FUNDING:<SYM> record at each exchange
+    time (the value set AT T is the rate settled at T, C523), days lo <= d < hi. C549:
+    the settlements are found by _c549_paid (a coin's interval can change in the window)."""
+    out = {}
+    for t, r in _c549_paid(recs, iv_s, lo, hi, grid_s):
+        d = t // 86400 * 86400
+        out[d] = out.get(d, 0.0) + r
     return out
 
 
@@ -23583,6 +23623,36 @@ def _c541_coindcx_coins():
         return out if len(out) >= 20 else None
     except Exception:
         return None
+
+
+_C549_DCX_ONE = 'https://api.coindcx.com/exchange/v1/derivatives/futures/data/instrument'
+_c549_eo = {}
+
+
+def _c549_dcx_exit_only(coin, now=None):
+    """C549: True when CoinDCX takes only CLOSING orders on the coin's rupee perpetual (its own `exit_only` flag).
+    30 Oct 2026, 09:38 IST, after Binance's security incident: every CoinDCX futures market was close-only for some
+    hours ("recent developments impacting a global liquidity provider"); on 1 Nov ERA, GTC, LA and SOPH still were
+    (4 of 504). A pair opened there on paper could not be opened with real money. Read once a coin per 30 minutes,
+    only for a pair about to be opened; an unanswered read counts as open on paper (the rule's choice is kept) --
+    with real money (B2) an unanswered read must mean "do not open"."""
+    now = float(now or time.time())
+    hit = _c549_eo.get(coin)
+    if hit and now - hit[0] < 1800:
+        return hit[1]
+    eo = None
+    try:
+        r = requests.get(_C549_DCX_ONE, params={'pair': f'B-{coin}_USDT', 'margin_currency_short_name': 'INR'}, timeout=10)
+        d = r.json() if r.status_code == 200 else None
+        i = d.get('instrument', d) if isinstance(d, dict) else None
+        if isinstance(i, dict) and 'exit_only' in i:
+            eo = bool(i['exit_only'])
+    except Exception:
+        eo = None
+    if eo is None:
+        return False
+    _c549_eo[coin] = (now, eo)
+    return eo
 
 
 # C542: the plan's second exchange (C532_XV_VENUE) -- name, fee setting, default fee, public host, where its rent
@@ -24047,7 +24117,7 @@ class C524CrossVenue(_C501Store):
                          {'symbol': coin + 'USDT', 'startTime': lo * 1000, 'limit': 1000})   # hourly coin has 192 in 8 days
         if not isinstance(b, list):
             b = None
-        fD = _c524_delta_daily(d, p['iv'], lo, today // 1000)
+        fD = _c524_delta_daily(d, p['iv'], lo, today // 1000, p.get('grid'))      # C549
         fB = {}
         for x in b or []:
             t = int(x['fundingTime']) // 1000
@@ -24104,19 +24174,19 @@ class C524CrossVenue(_C501Store):
             if dpx <= 0 or bpx <= 0:
                 continue
             pr = p['d_qty'] * p['cv'] * (dpx - p['d_px']) + p['b_qty'] * (bpx - p['b_px'])
-            hrs = max(1, int(self.prods.get(c, {}).get('iv') or 28800) // 3600)
+            pc = self.prods.get(c, {})
             # C525: [since, cut) -- the window starts AT the last cut-off. C539: the cut is the
             # run itself, not midnight: a pair closed at 00:30 held the 00:00 UTC settlement and
             # never booked it (7 exits on 5 Oct: +$0.12 lost); each payment carries its own GST
             # (C532), not the window's net. The opening day's starts at the entry time.
             since = int(p['fund_from'])
-            raw_d = [-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0 for x in fD_rec or []
-                     if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms]
+            # C549: Delta's settlements found by _c549_paid -- the coin may have paid hourly for part of the day
+            paid = _c549_paid(fD_rec, pc.get('iv') or 28800, -(-since // 1000), -(-now_ms // 1000), pc.get('grid'))
+            raw_d = [-p['d_qty'] * p['cv'] * dpx * r for t, r in paid]
             raw_b = [-p['b_qty'] * bpx * float(x['fundingRate']) for x in b_rec or []
                      if since <= int(x['fundingTime']) < now_ms]
             # C545: when each of those was paid (the tax journal books a payment in its own IST month)
-            ms_d = [int(x['time']) * 1000 for x in fD_rec or []
-                    if (int(x['time']) // 3600) % hrs == 0 and since <= int(x['time']) * 1000 < now_ms]
+            ms_d = [t * 1000 for t, r in paid]
             ms_b = [int(x['fundingTime']) for x in b_rec or [] if since <= int(x['fundingTime']) < now_ms]
             fu_d = sum(self.fgst(r) for r in raw_d)
             fu_b = sum(self.fgst(r) for r in raw_b)
@@ -24130,7 +24200,7 @@ class C524CrossVenue(_C501Store):
             self.side['d'] += p['d_qty'] * p['cv'] * (dpx - p['d_px']) + fu_d     # C529: each venue's own side
             self.side['b'] += p['b_qty'] * (bpx - p['b_px']) + fu_b
             p.update(d_px=dpx, b_px=bpx, pnl=p['pnl'] + pr + fu_d + fu_b, funding=p['funding'] + fu_d + fu_b,
-                     s_now=sig.get(c))
+                     s_now=sig.get(c) if sig.get(c) is not None else p.get('s_now'))       # C549: kept over a gap
             self.price_pnl += pr
             self.funding += fu_d + fu_b
             day_pnl += pr + fu_d + fu_b
@@ -24142,16 +24212,25 @@ class C524CrossVenue(_C501Store):
         if tr:
             day_pnl -= tr['fee']
         # 2. exits
-        out = []
+        out, gaps = [], []
         for c in list(self.pairs):
             p, s = self.pairs[c], sig.get(c)
             why = None
+            if s is not None:
+                p['gap'] = 0                                         # C549: a spread again
             if c not in self.prods or bm.get(c + 'USDT', 0) <= 0 or dm.get(p['d_sym'], 0) <= 0:
                 why = 'not listed'
             elif self.on_pi42() and self.pi42 and c not in self.pi42:
                 why = f'not on {self.v2()}'                         # C532: the second leg must be Pi42's (C541: or CoinDCX's)
             elif s is None:
-                why = f'no {self.WIN}-day spread'
+                # C549: a day's records that did not load (27 Oct: 173 of ~194 coins scored, BEAT closed though its
+                # spread was still +40-70%/yr) is not a reason to pay two exits: held, and closed only when the
+                # spread is still missing at the third run in a row (a delisted coin is closed above, at once)
+                p['gap'] = int(p.get('gap') or 0) + 1
+                if p['gap'] >= 3:
+                    why = f'no {self.WIN}-day spread'
+                else:
+                    gaps.append(f"{c} ({p['gap']} of 3)")
             elif abs(s) < 0.10:
                 why = 'spread under 10%/yr'
             elif (1 if s > 0 else -1) != p['side']:
@@ -24170,7 +24249,7 @@ class C524CrossVenue(_C501Store):
                 self.trades += 1
                 out.append(f"{c} ({why})")
         # 3. entries: the widest spreads first
-        inn, small, capped = [], [], []
+        inn, small, capped, shut = [], [], [], []
         room = self.n_pairs() - len(self.pairs)
         k_max = self.same_cap()                                        # C546: at most this many facing one way
         n_way = {1: sum(1 for q in self.pairs.values() if q['side'] > 0), -1: sum(1 for q in self.pairs.values() if q['side'] < 0)}
@@ -24182,6 +24261,9 @@ class C524CrossVenue(_C501Store):
                 break
             if n_way[1 if sig[c] > 0 else -1] >= k_max:
                 capped.append(c)                                       # C546: that way is full
+                continue
+            if self.venue() == 'coindcx' and _c549_dcx_exit_only(c):
+                shut.append(c)                                         # C549: CoinDCX takes closing orders only
                 continue
             p_, dpx, bpx = self.prods[c], dm.get(self.prods[c]['sym'], 0.0), bm.get(c + 'USDT', 0.0)
             if dpx <= 0 or bpx <= 0:
@@ -24222,7 +24304,8 @@ class C524CrossVenue(_C501Store):
                          day_cost=round(d_cost, 2), moved=(dict(amt=tr['amt'], frm=tr['frm'], to=tr['to'], fee=tr['fee'])
                                                             if tr else None),
                          capped=capped[:10], same_max=k_max, n_short_delta=n_way[1], n_long_delta=n_way[-1],  # C546
-                         jump=self.jump_risk())                                                                  # C547
+                         jump=self.jump_risk(),                                                                  # C547
+                         gaps=gaps, shut=shut[:10])                                                              # C549
         return day_pnl
 
     def tick(self):
@@ -24250,6 +24333,8 @@ class C524CrossVenue(_C501Store):
                         + ""
                         f"{' | in ' + '; '.join(inf['entered']) if inf.get('entered') else ''}"
                         f"{' | out ' + '; '.join(inf['exited']) if inf.get('exited') else ''}"
+                        f"{' | held, no spread today (records did not load): ' + ', '.join(inf['gaps']) if inf.get('gaps') else ''}"
+                        f"{' | not opened, ' + self.v2() + ' takes closing orders only: ' + ', '.join(inf['shut']) if inf.get('shut') else ''}"
                         f"{' | held back (' + str(inf.get('same_max')) + ' already face that way): ' + ', '.join(inf['capped'][:5]) if inf.get('capped') else ''}"
                         + self._jump_text(inf.get('jump'))                                    # C547
                         + f" [{time.time() - t0:.0f}s]")
@@ -24445,21 +24530,18 @@ class C524CrossVenue(_C501Store):
             return None
 
 
-def _c538_signal(d_recs, b_recs, iv_s, cut_s, win):
+def _c538_signal(d_recs, b_recs, iv_s, cut_s, win, grid_s=None):
     """C538: the trailing `win`-day mean of (Delta - Binance) funding up to `cut_s`, annualised,
     as paid by a long. Settlements in [cut - win days, cut); each venue must have at least one
     in every 24 hours of it -- the daily rule's "every one of those days", with the days ending
     at the cut. With the cut at midnight and win 7 it equals _c524_signal exactly."""
-    hrs = max(1, int(iv_s) // 3600)
     lo = int(cut_s) - win * 86400
     sd, sb = [0.0] * win, [0.0] * win
     hd, hb = [False] * win, [False] * win
-    for x in d_recs or []:
-        t = int(x.get('time') or 0)
-        if (t // 3600) % hrs == 0 and lo <= t < cut_s:
-            k = (t - lo) // 86400
-            sd[k] += float(x['close']) / 100.0
-            hd[k] = True
+    for t, r in _c549_paid(d_recs, iv_s, lo, int(cut_s), grid_s):              # C549: hourly runs counted right
+        k = (t - lo) // 86400
+        sd[k] += r
+        hd[k] = True
     for x in b_recs or []:
         t = int(x['fundingTime']) // 1000
         if lo <= t < cut_s:
@@ -24622,8 +24704,8 @@ class C538TestRule(C524CrossVenue):
         return self._slot(now_ms)
 
     def _signals(self, got, coins, today):
-        return {c: (_c538_signal(got[c][2], got[c][3], self.prods[c]['iv'], today // 1000, self.WIN)
-                    if c in self.prods else None) for c in coins}
+        return {c: (_c538_signal(got[c][2], got[c][3], self.prods[c]['iv'], today // 1000, self.WIN,
+                                 self.prods[c].get('grid')) if c in self.prods else None) for c in coins}
 
     def _inputs(self, today, now_ms=None):
         m = self.main
@@ -24885,7 +24967,18 @@ def _c540_why(venue, status, body):
             return "Pi42 refused the key (a typo in api_keys.json, a deleted key, or the server's IP not allowed)"
     if status == 429:
         return 'too many requests: the venue asked the bot to slow down'
-    return f'the venue answered HTTP {status}'
+    m = _c549_venue_msg(body) if venue == 'coindcx' else ''
+    return f'the venue answered HTTP {status}' + (f' ("{m}")' if m else '')
+
+
+def _c549_venue_msg(body):
+    """C549: the venue's own short reason (CoinDCX's `message`), for the log. From 28 Oct 2026 ~20:30 IST every read
+    of the real CoinDCX account answered HTTP 422 and the log could not say why. At most 120 characters; any long
+    token (a key or a signature looks like one) is cut out, so the log never carries one."""
+    m = body.get('message') if isinstance(body, dict) else None
+    if not isinstance(m, str) or not m.strip():
+        return ''
+    return re.sub(r'[A-Za-z0-9_\-+/=]{24,}', '...', ' '.join(m.split()))[:120]
 
 
 class C540ReadOnly:
@@ -25475,7 +25568,7 @@ class C527Pending:
 
             def one(c):
                 p = xpairs[c]
-                st = int(p['fund_from']) // 1000
+                st = int(p['fund_from']) // 1000 - 8 * 3600              # C549: 8 h before, to see an hourly run
                 return c, _c521_get('/v2/history/candles', {'resolution': '1h', 'symbol': 'FUNDING:' + p['d_sym'],
                                                            'start': st, 'end': int(now)})
             with ThreadPoolExecutor(max_workers=4) as pool:
@@ -25490,10 +25583,9 @@ class C527Pending:
                 pr = (getattr(xv, 'prods', None) or {}).get(c) or (getattr(de, 'prods', None) or {}).get(c)
                 if not pr:
                     raise RuntimeError(f'no Delta product for {c} yet')
-                hrs = max(1, int(pr.get('iv') or 28800) // 3600)
                 st = int(p['fund_from']) // 1000
-                xd = sum(xv.fgst(-p['d_qty'] * p['cv'] * dpx * float(x['close']) / 100.0) for x in rec
-                         if (int(x['time']) // 3600) % hrs == 0 and st <= int(x['time']) <= now)
+                xd = sum(xv.fgst(-p['d_qty'] * p['cv'] * dpx * r)                      # C549: hourly runs counted
+                         for t, r in _c549_paid(rec, pr.get('iv') or 28800, st, int(now) + 1, pr.get('grid')))
                 xb = sum(xv.fgst(-p['b_qty'] * bpx * r) for t, r in bf.get(c + 'USDT', []) if p['fund_from'] <= t <= now_ms)
                 xc = xd + xb                                       # C532/C539: GST on each payment, as the ledger books it
                 x_by[c] = xc

@@ -50,6 +50,10 @@ keys, withdrawals off, locked to your server's IP.
 - **Partial pass:** an average of +0.5% to +1.5% a month, or one month below
   −4% → start at **$500**, not $1,000.
 - **Fail:** an average under +0.5% → **no live in March**. Write up why.
+- **1 Nov 2026 (C549):** the research was re-run after a counting error was fixed (Delta's temporary hourly rent
+  payments, `reports/2026-11-01_monthly_review.md`). Its planning case is now **+3.66% a month before tax** (costs ×5;
+  was +4.62%), +2.52% after tax. The bar above is unchanged. October's paper record: +3.44% before tax (+3.84% per 30
+  days over G1's window), lowest account 65%.
 
 **G2. The second exchange still copies Binance's funding** (9 Oct: the second
 exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_check.py`;
@@ -93,6 +97,9 @@ exchange is now CoinDCX, C542; the test is unchanged; `research/c541_coindcx_che
   - (b) the operator **explicitly accepts at the go/no-go** the residual risk stated there in numbers: on today's list
     +3.71% a month after tax under that reading; +0.23% if only the CoinDCX leg were a VDA; **−2.95% if both legs
     were** (about Rs 60,000-80,000 of extra tax in a full year at $1,000);
+    **corrected 1 Nov 2026 (C549, `research/c549_tax_readings.txt`, 63 coins): +2.66% / −1.17% / −4.90%**, about
+    Rs 75,000-95,000 of extra tax in a full year at $1,000 under the worst reading. The figures shown at the go/no-go
+    are re-computed that day;
   - (c) **no adverse change by 20 Feb**: no CBDT circular or notification, and nothing in the Finance Bill 2027 (Budget
     1 Feb), treating INR-settled crypto derivatives as VDAs. If one appears, G6 fails until re-assessed.
   - This relaxes the tax part in one respect: there is no third-party signature. It is recorded here openly. The
@@ -138,7 +145,7 @@ Every step below runs in paper or dry-run until G1–G6 pass.
 | from 8 Oct | **B1: read-only connections. DONE 8 Oct (C540).** Signed GET requests to both exchanges that read your balance, positions, fills and funding paid; anything else refused in code. Built and tested against the docs' examples; Delta's real server checked with a fake key. Note: Delta's docs say reading wallets/positions needs its 'Trading' permission (IP-locked): try Read Data first, else by B3. | **done 8–9 Oct:** Delta's and CoinDCX's read-only keys are saved and read every 10 minutes (CoinDCX first read 9 Oct 00:04 IST) |
 | 8 Oct | **Done: the second exchange is CoinDCX** (Round 22 re-checked every Indian exchange: Delta + CoinDCX is the best pair, +3.55% a month after tax at costs x5, +4.15% at normal costs; `reports/2026-10-08_c542_best_pair.md`). Pi42 is shut to every network. The plan moved to CoinDCX in paper (C542); CoinDCX answers your server (401 JSON). | make the CoinDCX read-only key (report section 8; done 9 Oct); tax: no CA, see item 5 |
 | 22-23 Oct | **Round 23 (C547): DONE 23 Oct. No guard passed** (coin filters, half-size bets, stops at +50%/+100%: each cost $20-110 a year after tax or left an account lower on a replayed day). The plan is unchanged; 15 × 12% stays a paper copy. The page now says how big a one-day jump would empty each account (C547). G6's jump part is not met as written (see G6) | read `reports/2026-10-23_round23_jumps.md`; decide (a) or (b) at the go/no-go |
-| 1 Nov | monthly review, gates G1/G2 so far | nothing |
+| 1 Nov | **monthly review: DONE 1 Nov** (`reports/2026-11-01_monthly_review.md`). G1 passing (+3.84% per 30 days), G2 pass (191/191). **C549:** Delta's temporary hourly rent payments are now counted right (two pairs had faced the wrong way); the research's planning case corrected to +3.66% a month before tax / +2.52% after; G6(b)'s readings corrected. CoinDCX was close-only for some hours on 30 Oct (Binance's breach): the bot now checks CoinDCX's close-only flag | deploy C549; check the CoinDCX API key (it answers HTTP 422 since 28 Oct) |
 | from 15 Nov | **B2: the order path.** Open and close **both legs together**: whole Delta contracts, CoinDCX's quantity steps, **cross margin** on both exchanges (Round 24; was "isolated margin per leg"). If one leg fails, the other is undone at once. Exits are reduce-only. Plus the kill switch, and checking the exchanges' positions against the ledger every hour. **From Round 23:** an emergency stop resting on each short leg (where its account would fall to 25%), and the twin closed at once on any stop or liquidation. | nothing |
 | 28 Nov | **end-November paper review** (about 8 weeks of record) | read it |
 | 1–2 Dec | monthly review + the research refresh | nothing |

@@ -215,6 +215,78 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **C549 (1 Nov 2026, the monthly review; pushed, not yet deployed): DELTA'S HOURLY RENT COUNTED RIGHT; NO EXIT ON A FETCH
+  GAP; COINDCX CLOSE-ONLY RESPECTED; COINDCX'S REFUSAL REASON LOGGED. RESEARCH FIGURES CORRECTED.**
+  Report: `reports/2026-11-01_monthly_review.md` (routine `trig_01JZa71yehwKWQQgbKtw5XHE`, fired 1 Nov 04:26 UTC).
+  - **The error:**
+    - Delta switches a coin to HOURLY settlements during a squeeze and back. In Oct 2026: ARK (1-8 Oct, 24-27 Oct),
+      RLC, GTC, IOST, IRYS, BMT, ORDER; every one a 4-hour coin. 153 coins are 4-hourly and 97 are 8-hourly.
+    - `FUNDING:<SYM>` 1h records repeat the last settlement's rate.
+    - `_c524_delta_daily`, run()'s rent booking, `_c538_signal` and the pending rent all kept `(t//3600) % (iv//3600)
+      == 0` with the coin's CURRENT `rate_exchange_interval`:
+      - read while hourly, 4-hour blocks were counted 4 times. ARK −1176%/yr on 27 Oct (true −51%) and BMT −1016% on
+        28 Oct (true −27%), both entered the wrong way;
+      - read after, 3 of 4 hourly payments were missed. BMT +244% on 31 Oct (true −86%, turned the wrong way round);
+        ARK's 27→28 Oct Delta rent booked $0.315 of $0.901.
+    - Both logged signals reproduced exactly with the bot's own function. Ledger: ARK −$0.28, BMT +$0.34, held BMT
+      −$0.34; $0.66 rent unbooked (not rewritten, as C539).
+    - Copies on the 7 coins: f8 −$3.35, w3 −$1.37, b15 −$1.43.
+  - **The fix:** `_c549_paid(recs, iv_s, lo, hi, grid_s)` returns `[(t, rate)]`. A settlement at hour T when:
+    - T is on the usual timetable (grid; an hourly reading means 4 h); or
+    - the rate differs from T−1h (a missing hour is never a change); or
+    - T lies between two off-grid changes each ≤ 4 h away (an hourly run of equal rates: GTC 13 Oct 17-20 UTC at the
+      0.00125% floor).
+    - It is used by `_c524_delta_daily`, run() booking (raw_d/ms_d), `_c538_signal(..., grid_s)` and the pending rent
+      (`_C527`, which now fetches from 8 h before `fund_from`). `% hrs == 0` is gone from the file.
+    - `refresh_products` keeps `grid` per coin (iv if ≥ 4 h, else the last such reading, else 4 h).
+    - `import bisect`.
+    - Checked on 250 coins × 34 days: 6/day (4 h), 3/day (8 h), 24 in hourly runs.
+    - NOT changed: the Delta book's C523 funding step (`due += iv`; none of its 13 coins went hourly in Oct; the 2 Dec
+      refresh decides).
+  - **Also:**
+    - a held pair whose spread is None (a fetch gap; 27 Oct only 173 of ~194 coins scored, BEAT closed though still
+      +40-70%/yr) is held (`p['gap']`; closed at the 3rd run in a row; `info['gaps']`; log "held, no spread today");
+      `s_now` is kept over a gap;
+    - `_c549_dcx_exit_only(coin)`: CoinDCX's instrument `exit_only` flag (INR margin), read once per coin per 30 min,
+      only for a pair about to open; an unanswered read = open on paper. B2 must treat it as do-not-open.
+      `info['shut']`; log "not opened, CoinDCX takes closing orders only";
+    - `_c549_venue_msg`: `_c540_why('coindcx', ...)` appends CoinDCX's own `message` (≤ 120 chars, tokens ≥ 24 chars
+      cut). The operator's read-only key answers HTTP 422 on every read since 28 Oct ~20:30 IST (OK until 19:30; a
+      bogus key gets 401);
+    - the C530_PENDLE comment, which C548 had moved onto C548_RETIRE, is restored.
+  - **Research (`research/c524_xvenue.py` `C549_HOURLY = True`, the default; False = the old rule):**
+    - 50 of 185 coins had hourly days in 24 months, 17 of the plan's 63 (595 coin-days; Binance was also hourly on
+      546 of them).
+    - `research/c549_hourly_check.py`/`.txt` (Round 23's run3, 63 coins, K6). The before column reproduces Round 23
+      exactly. Before tax 4.62 → **3.66%**; after T1 3.18 → **2.52%**; x1 T1 3.78 → **3.13%**; worst −1.28 → −1.44%;
+      5 → 6 losing months of 24; lowest 59.7% unchanged; year 2 +100.3 → +77.2%.
+    - `research/c549_tax_readings.py`/`.txt` (Round 22b's legs_ab, no cap): T1 +2.66% (x1 +3.31%), CoinDCX-leg VDA
+      −1.17%, both VDA −4.90% (9 Oct: +3.71 / +0.23 / −2.95).
+    - Roadmap G1/G6(b) and the tax opinion carry dated notes. `research/c537_timing.py`'s own `delta_events` and
+      `research/c524_xvenue_checks.py` keep the old rule (past one-offs; the 2 Dec refresh switches c537's).
+  - **Monthly review figures:**
+    - October +3.44% before tax ($1,000 → $1,032.20; 28/30 days positive); G1 window +3.84%/30d;
+    - G2 191/191 (re-run);
+    - lowest account Delta 65% (5 Oct 05:33 IST, before the first even-out);
+    - even-outs 5 Oct $163.07, 1 Nov $58.11;
+    - ≥ 30% moves: STRK (9, 10, 12 Oct), BEAT (26, 27 Oct);
+    - the cap held back ARK once (9 Oct);
+    - statement edition 4: net ₹2,827, which ties to the ledger to the rupee;
+    - copies since their starts: f8 +2.97%, w3 +3.67%, b15 +4.72% (plan same days +4.03 / +3.92 / +3.50%).
+  - **Venues:**
+    - Binance breach (~$6.3bn, 29-30 Oct); CoinDCX futures close-only 30 Oct 09:38 IST for some hours; on 1 Nov
+      exit_only = ERA, GTC, LA, SOPH (4 of 504 INR markets);
+    - CoinDCX fees 0.059% (493), 0.0118% (7 commodities), 0.1003% (AGT, BULLA, CT, DODOX);
+    - Delta maintenance 18 Oct 01:00; the Delta WebSocket deprecation (31 Oct) is n/a (REST only).
+  - **Preview** (`research/c549_preview.py`, the 1 Nov state + live prices): BMT out ("spread changed sign"), ARK in long
+    Delta at −138%/yr; the other 9 signals agree with their sides; JS errors none.
+  - **Tests:** `omega_c549_test.py` 33 checks (real ARK/BMT/GTC/RLC records in `test_fixtures/c549_hourly_funding.json`);
+    battery **68/68** (65 Python + 3 shell). `omega_c539_test.py`'s two source-text checks also accept the C549 lines
+    (same window, same midnight cut). `omega_c468_boot_test.sh` needs `/tmp/claude-0/omegatest` to exist (a fresh
+    container lacks it); with it, the bot booted `OMEGA C549` and answered in 3 s.
+  - **Container note:** the 27 Oct image has Chromium at `chrome-linux64/`; the page tests glob `chrome-linux/chrome`.
+    A local symlink was made (not in the repo).
+  - **Routines updated 1 Nov:** B2, end-Nov, Dec refresh, go/no-go.
 - **C548 (23 Oct 2026 ~11:20 IST, pushed; not yet deployed): SIX EXPERIMENTS OFF; THE 21 OCT RESTART EXPLAINED.**
   Report: `reports/2026-10-23_c548_switchoff.md`. The operator: "please switch off the 6 paper plans you mentioned above";
   "ill do the Adobe work [= the Oracle Pay As You Go upgrade] on the laptop by today".

@@ -77,7 +77,7 @@ argue otherwise.
 - Both legs, on both exchanges, are speculative transactions of the **same** business. So a loss on one exchange is set
   off against the gain on the other within the same year.
 - The tax falls only on the **net** profit. This is the "T1" reading the research uses: +3.71% a month after tax at
-  costs ×5 on today's coin list.
+  costs ×5 on today's coin list (+2.66% on 1 Nov's, after the C549 correction: section 3).
 
 **Losses:**
 - A speculative loss can be set off only against speculative profit (the 2025 Act's s.113, formerly s.73).
@@ -146,6 +146,13 @@ The research, re-run today on the plan's 71 coins (two years, 10 pairs of 10%):
 | **business income, both legs netted (my opinion)** | **+3.71%** | **+4.33%** |
 | the CoinDCX leg alone taxed as a VDA | +0.23% | +0.91% |
 | **both legs taxed as VDAs** (each winning leg taxed 30%, every losing leg ignored) | **−2.95%** | **−2.21%** |
+
+> **Corrected 1 Nov 2026 (C549).** The research counted only each coin's usual rent timetable on Delta and missed
+> 3 of 4 payments while Delta had a coin on hourly payments during a squeeze (`reports/2026-11-01_monthly_review.md`).
+> Re-run on the 1 Nov list of 63 coins (`research/c549_tax_readings.txt`; costs ×5, normal costs in brackets):
+> **business income +2.66% (+3.31%) · the CoinDCX leg alone a VDA −1.17% (−0.45%) · both legs VDAs −4.90% (−4.12%)**.
+> The worst reading's extra tax for a full year at $1,000 is now about **Rs 75,000-95,000**. My opinion below is
+> unchanged; the margin under the business-income reading is thinner.
 
 **What this means:**
 - The trade works only under the business-income reading. Under the worst reading, the tax on each pair's winning leg
