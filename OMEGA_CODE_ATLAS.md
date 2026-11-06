@@ -287,6 +287,20 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - **Container note:** the 27 Oct image has Chromium at `chrome-linux64/`; the page tests glob `chrome-linux/chrome`.
     A local symlink was made (not in the repo).
   - **Routines updated 1 Nov:** B2, end-Nov, Dec refresh, go/no-go.
+  - **C549 VERIFIED 6 Nov** (the operator's 11:02 IST screens; logs push 04:47 UTC):
+    - booted 1 Nov 12:03 IST, no restart since;
+    - 2 Nov run: out BMT (sign; the wrong-way pair, −$1.01 in all), in ALT −128%/yr (ARK −124.8% at the 2 Nov cut,
+      one slot);
+    - runs 2-6 Nov +0.48 / +1.40 / +1.08 / +0.88 / +1.11 → $1,038.15;
+    - identity exact (1000 + 50.2461 − 0.9892 − 9.1101 − 2.00); accounts 500.55 / 537.60;
+    - 6 Nov rent recomputed $0.9801 vs booked $0.98; all 10 signals identical (`_c549_paid` + Binance records);
+    - no held coin hourly in 8 days; since 29 Oct only BMT and IRYS; none hourly now;
+    - copies dropped ORDER/IRYS/BMT at their first C549 decision;
+    - G1 5 Oct-6 Nov +4.04% / 33 runs = +3.67%/30d; November +2.91%/30d;
+    - the C540 reason line: CoinDCX "API key expired. Please generate new keys." (115 reads). The operator makes a new
+      key (`deploy/omega-keys.sh coindcx`; `_c540_keys()` is re-read every tick, no restart);
+    - stale page text: the copies card's research sentence (`C538TestRule.RULES` month=2.90 / 6.40 / ahead) is Round 19,
+      before C549. The 2 Dec refresh updates it.
 - **C548 (23 Oct 2026 ~11:20 IST, pushed; not yet deployed): SIX EXPERIMENTS OFF; THE 21 OCT RESTART EXPLAINED.**
   Report: `reports/2026-10-23_c548_switchoff.md`. The operator: "please switch off the 6 paper plans you mentioned above";
   "ill do the Adobe work [= the Oracle Pay As You Go upgrade] on the laptop by today".

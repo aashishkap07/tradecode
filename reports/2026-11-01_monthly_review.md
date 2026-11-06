@@ -326,3 +326,57 @@ Expect `OMEGA C549`. Tomorrow's 06:00 run should close BMT and open ARK (the pre
 sudo journalctl -u omega --since "20 min ago" | grep "C540 real account CoinDCX" | tail -2
 cat /var/run/reboot-required 2>/dev/null || echo "no reboot needed"
 ```
+
+## 12. Follow-up, 6 Nov: C549 checked on the server (your 11:02 IST screens and the 10:17 IST logs push)
+
+**Deployed and working.**
+- `OMEGA C549` has run since **1 Nov 12:03 IST** (your page: "running 118 h 59 min"), with no restart since.
+- **Its first daily run (2 Nov) closed BMT** ("spread changed sign"). BMT had been facing the wrong way since 31 Oct
+  and cost −$1.01 in all, exit fees included. My 1 Nov figure, −$0.34, was only "so far".
+- **ALT was opened instead** (long Delta / short CoinDCX, −128%/yr). The 1 Nov preview had shown ARK, but with the
+  2 Nov window ALT's gap was the wider: −128.4% against ARK's −124.8%, recomputed from the exchanges. There was one
+  free slot.
+- **The copies cleaned up at their first C549 decision:**
+  - f8 (1 Nov 14:00 IST) and b15 (2 Nov 06:00) closed ORDER, IRYS and BMT;
+  - every copy now holds ARK only the right way round;
+  - the BMT that f8 closed this morning was its correct-way pair, closed because its gap shrank below 10% a year.
+
+**Your page, checked against the ledger and the exchanges:**
+
+| | your page | re-computed |
+|---|---|---|
+| equity | $1,038.25 (+3.82%) | ledger $1,038.15 at the 06:00 run + $0.11 waiting = $1,038.26 |
+| the books | rent $50.25 · fees $9.11 · moving money $2.00 · price −$0.99 | $1,000 + 50.25 − 9.11 − 2.00 − 0.99 = **$1,038.15**, exact; the two accounts ($500.55 + $537.60 at 06:00) sum to it |
+| after tax | $1,026.32 (tax $11.93) | 31.2% of $38.25 = $11.93 |
+| the 6 Nov run's rent | +$0.98 | **$0.9801** from Delta's and Binance's own records, pair by pair (120 payments: 6 per coin on each exchange) |
+| the 10 gaps | ARC 88, ALT 130, KAITO 94, MEME 56, AUCTION 34, LIT 79, STRK 20, NOT 63, H 95, AIXBT 90 %/yr | identical to one decimal, recomputed with the corrected rule |
+| facing | 4 down / 6 up on Delta, "no new pair up on Delta until one closes" | correct: the 6-of-10 cap is full on that side |
+| one-coin jump | Delta +479% (LIT), CoinDCX +550% (ALT) | consistent: LIT's leg is about $105 at today's price on a $501 account |
+
+- **Daily runs:** 2 Nov +$0.48, 3 Nov +$1.40, 4 Nov +$1.08, 5 Nov +$0.88, 6 Nov +$1.11. All 199 coins scored each day,
+  no gaps, no close-only refusals, nothing held back by the cap. No held coin paid hourly in the last 8 days. Since
+  29 Oct only BMT (to 30 Oct 09:00 UTC) and IRYS (29 Oct) did, and no coin is hourly today.
+- **G1 so far:** +4.04% over 33 runs (5 Oct – 6 Nov) = **+3.67% per 30 days** before tax (bar +1.5%). November alone:
+  +2.91% per 30 days. It is slower because several gaps have narrowed (STRK 20%, AUCTION 34%, MEME 56%); the bot
+  closes a pair only below 10%.
+- **The copies** (to 6 Nov 06:00): f8 +$25.22 (behind by $17.62), w3 +$41.28 (behind by $1.56), b15 +$54.04 since 8 Oct
+  (ahead by $13.17).
+  - The card's "in two years of past data" sentence (8 hours +$2.90 a month, 3-day +$6.40) still quotes the October
+    research, from before the hourly correction (`C538TestRule.RULES`).
+  - The 2 Dec refresh re-runs it with the corrected rule and updates those figures.
+
+**The CoinDCX read-only key: CoinDCX's own answer is "API key expired. Please generate new keys."**
+- That is the C549 reason line at work: 115 hourly reads since the deploy, all the same answer.
+- CoinDCX publishes no key lifetime that I can find. This key lasted about 20 days (made 9 Oct, refused from 28 Oct
+  ~20:30 IST). It may be an unannounced expiry rule, or a quiet security step after CoinDCX's wallet trouble of
+  21-22 Oct.
+- **The fix is yours: a new key** (the steps are in the reply). The bot re-reads its key file every 10 minutes, so no
+  restart is needed.
+- **For B2:** a key can expire without warning. The order path must treat "key expired" as "stop opening, alert the
+  operator", and the monthly review watches this line.
+
+**Still open on your side:**
+- the Oracle Pay As You Go upgrade, still pending. The server's load (CPU ~2%, memory ~14%) is under Oracle's 20%
+  "idle" line. Until the upgrade, Oracle may stop it after a warning e-mail;
+- the reboot check (`cat /var/run/reboot-required`);
+- the monthly console login (the upgrade visit counts).
