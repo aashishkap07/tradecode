@@ -1,0 +1,36 @@
+ROUND 19 (C537): WHEN, AND HOW OFTEN, THE RENT-GAP TRADE SHOULD DECIDE (pre-registered)
+
+coins: 52 (Pi42 lists it, Delta turnover >= $100k today, the same asset); SENSITIVITY: the 2 quietest dropped
+
+rent - costs on $1,000 (price legs hedged, left out), 2024-10 .. 2026-09
+variant                             net/yr x1      t  rent/yr  costs/yr  entries  hold (median)  net/yr x5 | vs B0:  diff/yr      t  half-years +  last 6m  x5 >= B0  BAR
+B0  daily 00:30 UTC (live)             +66.7%   9.06   +70.3%      3.5%      166      17.0 days     +52.6% |    +0.0%    nan         0/4      +0.00%       yes  -
+F8  every 8 h                          +70.0%   9.22   +73.7%      3.7%      172      15.7 days     +55.2% |    +3.2%   2.03         3/4      +2.10%       yes  fail
+F4  every 4 h                          +68.6%   9.19   +72.3%      3.7%      173      15.7 days     +53.8% |    +1.9%   2.44         3/4      +3.54%       yes  fail
+F1  every hour                         +67.2%   9.20   +70.8%      3.6%      169      15.5 days     +52.8% |    +0.5%   0.58         3/4      +1.29%       yes  fail
+E0  exit only on a sign change         +59.4%   8.80   +61.3%      2.0%       93      42.0 days     +51.5% |    -7.4%  -4.74         1/4      -8.94%        no  fail
+E5  exit under 5%/yr                   +61.7%   8.84   +64.3%      2.6%      121      24.0 days     +51.3% |    -5.0%  -4.13         2/4      -7.35%        no  fail
+E15 exit under 15%/yr                  +68.9%   9.05   +73.1%      4.2%      194      12.5 days     +52.3% |    +2.2%   1.20         2/4      +0.68%        no  fail
+N15 enter at 15%/yr                    +66.8%   9.06   +70.5%      3.8%      175      18.0 days     +51.8% |    +0.0%   0.17         3/4      +0.02%        no  fail
+N30 enter at 30%/yr                    +68.5%   9.03   +71.2%      2.7%      129      22.0 days     +57.6% |    +1.7%   0.97         3/4      +0.03%       yes  fail
+W3  3-day window                       +72.7%   8.44   +78.9%      6.2%      288       9.0 days     +47.8% |    +6.0%   2.51         3/4      +5.08%        no  fail
+W14 14-day window                      +52.6%   9.90   +54.8%      2.2%      102      39.5 days     +43.9% |   -14.1%  -3.83         0/4     -19.91%        no  fail
+P15 15 pairs x 6.67%                   +55.2%   8.81   +58.3%      3.1%      219      16.0 days     +42.9% |   -11.5%  -5.00         0/4     -10.87%        no  fail
+
+DESCRIPTIVE (no bar)
+  1. settlements where a held pair paid instead of earning (its gap ran the wrong way before the next decision):
+     B0  daily 00:30 UTC (live)     20.0% of held settlements,  -8.7%/yr of capital
+     F8  every 8 h                  19.3% of held settlements,  -9.1%/yr of capital
+     F4  every 4 h                  19.5% of held settlements,  -8.0%/yr of capital
+     F1  every hour                 18.6% of held settlements,  -6.9%/yr of capital
+  2. base rent, the median coin a year (+ = up-bettors pay): Delta -0.9%, Pi42/Binance +2.5%, the gap -3.5%; Delta dearer for up-bettors on 42% of 52 coins
+     Binance's default rent (0.01% a settlement on 8 h, 0.005% on 4 h, ~11%/yr) was the rate on 45% of its settlements; Delta's commonest rates: +0.0100% (20%), +0.0050% (10%), +0.0013% (0%)
+  3. persistence: this week's gap vs next week's, correlation 0.58 (27762 coin-days); next week, as a share of this week's gap (median), the same side:
+     gap   10%-20%  /yr:   5721 coin-days,   94% of it remains, same sign  93%
+     gap   20%-40%  /yr:   4403 coin-days,   94% of it remains, same sign  94%
+     gap   40%-80%  /yr:   4067 coin-days,   96% of it remains, same sign  95%
+     gap   80%+     /yr:   3500 coin-days,   89% of it remains, same sign  95%
+     a pair's median hold under the live rule: 17 days
+  4. settlements by hour of day (UTC): Delta 00h 28403, 04h 9225, 08h 28417, 12h 9232, 16h 28431, 20h 9236; Binance 00h 32405, 01h 240, 02h 240, 03h 240, 04h 16833, 05h 237, 06h 236, 07h 235, 08h 32408, 09h 237, 10h 236, 11h 236, 12h 16875, 13h 237, 14h 237, 15h 237, 16h 32425, 17h 239, 18h 238, 19h 236, 20h 16885, 21h 239, 22h 238, 23h 238
+
+PASSED: none -- the live rule (daily at 06:00 IST) stays

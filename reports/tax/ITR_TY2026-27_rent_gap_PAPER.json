@@ -1,0 +1,61 @@
+{
+ "ty": "2026-27",
+ "kind": "PAPER",
+ "edition": "4",
+ "prepared": "01 Nov 2026 10:23",
+ "inr_per_usd": 85.0,
+ "past": false,
+ "cut": "01 Nov 2026",
+ "itr": {
+  "form": "ITR-3",
+  "business_code": "21009",
+  "code_confirmed": false,
+  "pl_no_accounts_speculative": {
+   "turnover": 12531,
+   "gross_profit": 3030,
+   "expenditure": 202,
+   "net": 2827
+  },
+  "bs_no_accounts": {
+   "sundry_debtors": 87788,
+   "sundry_creditors": 0,
+   "stock_in_trade": 0,
+   "cash_balance": 0,
+   "source": "ledger"
+  },
+  "bp_speculative": {
+   "net": 2827,
+   "additions": 0,
+   "deductions": 0,
+   "income": 2827
+  },
+  "bfla": [],
+  "books_44aa": false,
+  "audit_44ab": false,
+  "presumptive": false,
+  "vda": "nil",
+  "tds": 0
+ },
+ "taxable": 2827,
+ "tax": 882,
+ "losses_cf": [],
+ "history": [
+  {
+   "ty": "2026-27",
+   "turnover": 12531,
+   "net": 2827
+  }
+ ],
+ "checks_ok": true,
+ "complete": {
+  "done": 2,
+  "of": 7,
+  "open": [
+   "Your name, PAN and account IDs on the server copy (section 1)",
+   "Business code confirmed in this year's ITR-3 utility",
+   "This year's legal due date confirmed",
+   "Delta Exchange India's operating company and FIU-IND number",
+   "Reviewed with your adviser before handover"
+  ]
+ }
+}

@@ -1,0 +1,75 @@
+loading ...
+  656 symbols (stablecoins, indices and 2026 stock/commodity perps excluded), 2020-01-01..2026-08-31
+
+THE C488 SLEEVES ON THIS DATA (reference)
+  C1                                             2020-03..2026-08 net  +11.0%/yr vol  17.9% Sh +0.61 t +1.68 q+ 4/4 DD 18.1% mo +0.91% | 2024+   +4.3%/yr -
+  C2                                             2020-04..2026-08 net   +6.4%/yr vol   9.3% Sh +0.69 t +1.77 q+ 3/4 DD 16.8% mo +0.53% | 2024+  +12.4%/yr -
+  C3                                             2020-04..2026-08 net  +10.0%/yr vol   9.4% Sh +1.06 t +2.43 q+ 3/4 DD 15.8% mo +0.83% | 2024+   +7.5%/yr -
+  COMBO-C                                        2020-05..2026-08 net  +32.3%/yr vol  22.7% Sh +1.42 t +3.43 q+ 4/4 DD 31.1% mo +2.69% | 2024+  +33.5%/yr ADMIT
+
+ROUND 5 -- the seven pre-registered tests (bar: t >= 2.45, 3/4 quarters, positive, positive 2024+)
+  N1 new-listing short                           2020-01..2026-08 net   +2.1%/yr vol  27.0% Sh +0.08 t +0.20 q+ 3/4 DD 61.7% mo +0.17% | 2024+  +11.7%/yr -
+                                                   gross +1.4%/yr funding +1.6%/yr cost 0.9%/yr turnover 11x  by year {2020: -16.1, 2021: -40.7, 2022: 28.8, 2023: 10.7, 2024: 6.1, 2025: 15.4, 2026: 9.6}
+  N2 low volatility                              2020-04..2026-08 net  +12.1%/yr vol  12.5% Sh +0.96 t +2.23 q+ 4/4 DD 22.8% mo +1.00% | 2024+   +9.7%/yr -
+                                                   gross +15.1%/yr funding -2.9%/yr cost 0.6%/yr turnover 8x  by year {2020: 24.3, 2021: 9.7, 2022: 10.2, 2023: 6.6, 2024: 24.3, 2025: 4.9, 2026: -3.3}
+  N3 attention (abnormal volume)                 2020-04..2026-08 net  -10.4%/yr vol   9.9% Sh -1.05 t -2.66 q+ 0/4 DD 54.8% mo -0.86% | 2024+  -13.7%/yr -
+                                                   gross -6.1%/yr funding -2.3%/yr cost 1.6%/yr turnover 20x  by year {2020: -19.0, 2021: -1.9, 2022: -9.4, 2023: 0.7, 2024: -21.8, 2025: -13.0, 2026: -1.9}
+  N4a crowd contrarian                           2021-12..2026-08 net   +5.9%/yr vol   8.1% Sh +0.73 t +1.52 q+ 4/4 DD 14.3% mo +0.49% | 2024+  +11.2%/yr -
+                                                   gross +6.0%/yr funding +0.1%/yr cost 1.9%/yr turnover 24x  by year {2021: -2.4, 2022: 5.8, 2023: -5.4, 2024: 21.8, 2025: -6.1, 2026: 14.0}
+  N4b follow top traders                         2021-12..2026-08 net   -8.1%/yr vol   7.2% Sh -1.13 t -2.35 q+ 0/4 DD 34.4% mo -0.67% | 2024+  -13.1%/yr -
+                                                   gross -3.4%/yr funding -0.8%/yr cost 1.5%/yr turnover 19x  by year {2021: -0.4, 2022: 0.3, 2023: -2.9, 2024: -29.2, 2025: -3.2, 2026: -2.7}
+  N5 efficiency-weighted trend                   2020-03..2026-08 net  +13.6%/yr vol  19.9% Sh +0.68 t +1.85 q+ 4/4 DD 21.7% mo +1.12% | 2024+   +4.6%/yr -
+  N5 minus C1 (the test)                         2020-03..2026-08 net   +2.6%/yr vol   4.7% Sh +0.55 t +1.35 q+ 2/4 DD  8.9% mo +0.21% | 2024+   +0.4%/yr -
+  N6 factor-momentum COMBO                       2020-05..2026-08 net  +17.7%/yr vol  23.5% Sh +0.75 t +1.86 q+ 3/4 DD 39.8% mo +1.48% | 2024+  +14.1%/yr -
+  N6 minus COMBO-C (the test)                    2020-05..2026-08 net  -14.6%/yr vol  16.8% Sh -0.87 t -2.25 q+ 0/4 DD 66.3% mo -1.22% | 2024+  -19.4%/yr -
+                                                   sleeves switched on: C1 47% of days, C2 55% of days, C3 55% of days
+
+ADMITTED: none of N1-N4b; N5 replaces C1: False; N6 factor momentum: False
+
+CORRELATIONS of daily sleeve P&L (days where both trade)
+  C1   +1.00 +0.07 +0.06 +0.18 +0.00 -0.19 +0.08 +0.17 +0.97
+  C2   +0.07 +1.00 +0.06 +0.17 -0.09 -0.48 +0.21 -0.05 +0.13
+  C3   +0.06 +0.06 +1.00 +0.13 -0.06 -0.13 +0.04 -0.11 +0.08
+  N1   +0.18 +0.17 +0.13 +1.00 -0.35 -0.39 -0.05 +0.04 +0.19
+  N2   +0.00 -0.09 -0.06 -0.35 +1.00 +0.38 +0.07 +0.07 -0.01
+  N3   -0.19 -0.48 -0.13 -0.39 +0.38 +1.00 -0.13 +0.08 -0.25
+  N4a  +0.08 +0.21 +0.04 -0.05 +0.07 -0.13 +1.00 -0.06 +0.11
+  N4b  +0.17 -0.05 -0.11 +0.04 +0.07 +0.08 -0.06 +1.00 +0.15
+  N5   +0.97 +0.13 +0.08 +0.19 -0.01 -0.25 +0.11 +0.15 +1.00
+         C1    C2    C3    N1    N2    N3   N4a   N4b    N5
+
+COMBO-E = C1 + C2 + C3  vs  COMBO-C
+  COMBO-C                                        2020-05..2026-08 net  +32.3%/yr vol  22.7% Sh +1.42 t +3.43 q+ 4/4 DD 31.1% mo +2.69% | 2024+  +33.5%/yr ADMIT
+  COMBO-E                                        2020-05..2026-08 net  +32.3%/yr vol  22.7% Sh +1.42 t +3.43 q+ 4/4 DD 31.1% mo +2.69% | 2024+  +33.5%/yr ADMIT
+  by year  COMBO-C {2020: 34.5, 2021: 33.3, 2022: -8.9, 2023: 56.4, 2024: 49.2, 2025: 16.6, 2026: 23.6}
+           COMBO-E {2020: 34.5, 2021: 33.3, 2022: -8.9, 2023: 56.4, 2024: 49.2, 2025: 16.6, 2026: 23.6}
+  last 24 months COMBO-C: +26.1%/yr Sharpe +1.17 month +2.17%
+  last 24 months COMBO-E: +26.1%/yr Sharpe +1.17 month +2.17%
+  last 12 months COMBO-C: +40.5%/yr Sharpe +1.71 month +3.37%
+  last 12 months COMBO-E: +40.5%/yr Sharpe +1.71 month +3.37%
+
+THE DIAL: what each monthly target would have taken on COMBO-E (same path, 3x gross cap)
+  vol target 13.3% (dial 10.0%): month +1.80% (2024+: +1.86%), max DD 22%, worst month -7.6%
+  vol target 20.0% (dial 15.0%): month +2.69% (2024+: +2.79%), max DD 31%, worst month -11.4%
+  vol target 26.7% (dial 20.0%): month +3.45% (2024+: +3.73%), max DD 40%, worst month -15.2%
+  vol target 33.0% (dial 24.8%): month +4.17% (2024+: +4.59%), max DD 48%, worst month -18.8%
+  vol target 40.0% (dial 30.0%): month +4.85% (2024+: +5.42%), max DD 54%, worst month -22.8%
+
+CAPACITY (Rule 51): positions under $6 dropped
+  COMBO-C (top 20) $250                          2020-05..2026-08 net  +32.6%/yr vol  21.0% Sh +1.56 t +3.81 q+ 4/4 DD 31.4% mo +2.72% | 2024+  +42.7%/yr ADMIT
+  COMBO-C (top 20) $1000                         2020-05..2026-08 net  +35.7%/yr vol  22.4% Sh +1.59 t +3.94 q+ 3/4 DD 35.0% mo +2.98% | 2024+  +46.8%/yr ADMIT
+  COMBO-E (top 20) $250                          2020-05..2026-08 net  +32.6%/yr vol  21.0% Sh +1.56 t +3.81 q+ 4/4 DD 31.4% mo +2.72% | 2024+  +42.7%/yr ADMIT
+  COMBO-E (top 20) $1000                         2020-05..2026-08 net  +35.7%/yr vol  22.4% Sh +1.59 t +3.94 q+ 3/4 DD 35.0% mo +2.98% | 2024+  +46.8%/yr ADMIT
+
+DIAGNOSTICS (never used for admission)
+  N1 enter day   7 exit day  60: net   +0.5%/yr t +0.06 q+ 2/4
+  N1 enter day   7 exit day 120: net   +0.1%/yr t +0.01 q+ 3/4
+  N1 enter day   7 exit day 180: net   -4.0%/yr t -0.35 q+ 3/4
+  N1 enter day  14 exit day  60: net   +3.2%/yr t +0.40 q+ 2/4
+  N1 enter day  14 exit day 120: net   +2.1%/yr t +0.20 q+ 3/4
+  N1 enter day  14 exit day 180: net   -2.1%/yr t -0.19 q+ 3/4
+  N1 enter day  30 exit day  60: net   +4.3%/yr t +0.62 q+ 2/4
+  N1 enter day  30 exit day 120: net   +1.6%/yr t +0.16 q+ 3/4
+  N1 enter day  30 exit day 180: net   -2.2%/yr t -0.19 q+ 3/4
+  N2 with 30-day volatility: net  +10.0%/yr t +1.80 q+ 2/4
+  N2 with 90-day volatility: net  +13.0%/yr t +2.51 q+ 4/4

@@ -1,0 +1,42 @@
+loading the hourly archive ...
+
+R3a LIQUIDITY PROVISION (limits at 2 sigma, maker in, maker target / taker stop+time)  [401s]
+  R3a LP  (primary)                            2021-07..2026-08  net -480.2%/yr  vol  92.7%  Sharpe -5.18  t -11.84  quarters+ 0/4  maxDD 100.0%  month -40.06% (2% +)  - | 117510 fills, 44% hit the target
+  R3a LPh (Hurst < 0.5)                        2021-07..2026-08  net -328.7%/yr  vol  69.8%  Sharpe -4.71  t -10.85  quarters+ 0/4  maxDD 100.0%  month -27.43% (2% +)  - | 83537 fills, 44% hit the target
+  R3a LPm (Markov expects reversion)           2021-07..2026-08  net -381.9%/yr  vol  76.2%  Sharpe -5.01  t -11.58  quarters+ 0/4  maxDD 100.0%  month -31.86% (0% +)  - | 106564 fills, 45% hit the target
+
+R3b PER-ASSET INDIVIDUALISED SELECTION  [408s]
+  R3b IND (trend/revert/flat per coin)         2021-07..2026-08  net  -59.3%/yr  vol  31.4%  Sharpe -1.89  t -4.63  quarters+ 0/4  maxDD 97.5%  month -4.95% (26% +)  - | 39005 position changes
+
+DAILY ITEMS  [409s]
+  R3c CARRY (spot long + perp short)           2021-07..2026-08  net   +2.2%/yr  vol   1.4%  Sharpe +1.55  t +2.78  quarters+ 3/4  maxDD  6.7%  month +0.19% (37% +)  ADMIT | avg 5.5 positions
+  R3d per-asset lookback C1                    2021-07..2026-08  net   +6.1%/yr  vol  19.5%  Sharpe +0.31  t +0.77  quarters+ 3/4  maxDD 25.4%  month +0.51% (52% +)  - 
+      pooled C1 (reference)                    2021-07..2026-08  net   +9.3%/yr  vol  18.4%  Sharpe +0.51  t +1.25  quarters+ 4/4  maxDD 18.1%  month +0.78% (55% +)  - 
+  R3d difference (must be > 0)                 2021-07..2026-08  net   -3.2%/yr  vol   5.1%  Sharpe -0.64  t -1.49  quarters+ 1/4  maxDD 18.1%  month -0.27% (42% +)  - 
+
+  CARRY vs book: rho -0.01
+    book (top 20)                              2021-07..2026-08  net  +27.3%/yr  vol  23.1%  Sharpe +1.18  t +2.57  quarters+ 4/4  maxDD 34.5%  month +2.28% (63% +)  ADMIT 
+    book + CARRY at equal risk (same vol)      2021-07..2026-08  net  +44.8%/yr  vol  23.1%  Sharpe +1.94  t +3.62  quarters+ 3/4  maxDD 50.7%  month +3.74% (53% +)  ADMIT 
+
+[422s]
+
+DIAGNOSTICS (not admission tests), research/c490_diagnostics.py:
+  carry 2021:  +7.27%  avg pos 8.0  days 184
+  carry 2022:  -3.44%  avg pos 5.2  days 365
+  carry 2023:  +6.09%  avg pos 7.0  days 365
+  carry 2024:  +8.25%  avg pos 7.0  days 366
+  carry 2025:  -4.64%  avg pos 3.9  days 365
+  carry 2026:  -1.99%  avg pos 2.1  days 243
+    carry enter 5% exit 2%                     2021-07..2026-08  net   +0.7%/yr  vol   1.5%  Sharpe +0.47  t +0.82  quarters+ 3/4  maxDD 13.0%  month +0.06% (48% +)  - | avg 7.5 pos
+    carry enter 10% exit 5%                    2021-07..2026-08  net   +2.2%/yr  vol   1.4%  Sharpe +1.55  t +2.78  quarters+ 3/4  maxDD  6.7%  month +0.19% (37% +)  ADMIT | avg 5.5 pos
+    carry enter 15% exit 8%                    2021-07..2026-08  net   +3.6%/yr  vol   1.2%  Sharpe +3.01  t +5.45  quarters+ 3/4  maxDD  1.8%  month +0.30% (45% +)  ADMIT | avg 1.9 pos
+    carry enter 20% exit 10%                   2021-08..2026-08  net   +3.6%/yr  vol   1.2%  Sharpe +2.94  t +5.23  quarters+ 3/4  maxDD  1.8%  month +0.30% (34% +)  ADMIT | avg 1.6 pos
+    book alone (dial 1)                        2021-07..2026-08  net  +27.3%/yr  vol  23.1%  Sharpe +1.18  t +2.57  quarters+ 4/4  maxDD 34.5%  month +2.28% (63% +)  ADMIT 
+    book + carry as tested (additive)          2021-07..2026-08  net  +29.5%/yr  vol  23.1%  Sharpe +1.28  t +2.75  quarters+ 4/4  maxDD 36.8%  month +2.46% (63% +)  ADMIT 
+  2021: book   +8.4%  book+carry  +15.7%
+  2022: book  -19.4%  book+carry  -22.8%
+  2023: book  +47.4%  book+carry  +53.5%
+  2024: book  +47.2%  book+carry  +55.4%
+  2025: book  +38.2%  book+carry  +33.5%
+  2026: book  +19.4%  book+carry  +17.4%
+  LP OPTIMISTIC ordering (diagnostic)          2021-07..2026-08  net +165.4%/yr  vol  54.9%  Sharpe +3.01  t +7.12  quarters+ 4/4  maxDD 32.2%  month +13.80% (81% +)  ADMIT | 101364 fills, 51% target

@@ -1,0 +1,6804 @@
+[
+{
+"name": "BTCINR",
+"baseAsset": "BTC",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ETHINR",
+"baseAsset": "ETH",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SOLINR",
+"baseAsset": "SOL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XRPINR",
+"baseAsset": "XRP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "DOGEINR",
+"baseAsset": "DOGE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "1000PEPEINR",
+"baseAsset": "1000PEPE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "1000SHIBINR",
+"baseAsset": "1000SHIB",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BTCUSDT",
+"baseAsset": "BTC",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ETHUSDT",
+"baseAsset": "ETH",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOLUSDT",
+"baseAsset": "SOL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XRPUSDT",
+"baseAsset": "XRP",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DOGEUSDT",
+"baseAsset": "DOGE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000PEPEUSDT",
+"baseAsset": "1000PEPE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000SHIBUSDT",
+"baseAsset": "1000SHIB",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SPACEINR",
+"baseAsset": "SPACE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ORCAUSDT",
+"baseAsset": "ORCA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ESPINR",
+"baseAsset": "ESP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ALCHUSDT",
+"baseAsset": "ALCH",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BLESSUSDT",
+"baseAsset": "BLESS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ESPUSDT",
+"baseAsset": "ESP",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOLVUSDT",
+"baseAsset": "SOLV",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GUAINR",
+"baseAsset": "GUA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SPACEUSDT",
+"baseAsset": "SPACE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1MBABYDOGEUSDT",
+"baseAsset": "1MBABYDOGE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000BONKUSDT",
+"baseAsset": "1000BONK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BASUSDT",
+"baseAsset": "BAS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MANTAUSDT",
+"baseAsset": "MANTA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WLFIUSDT",
+"baseAsset": "WLFI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RSRUSDT",
+"baseAsset": "RSR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XTZUSDT",
+"baseAsset": "XTZ",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BERAUSDT",
+"baseAsset": "BERA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ALCHINR",
+"baseAsset": "ALCH",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "WLFIINR",
+"baseAsset": "WLFI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XPLINR",
+"baseAsset": "XPL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ALLOINR",
+"baseAsset": "ALLO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BOMEINR",
+"baseAsset": "BOME",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GOATUSDT",
+"baseAsset": "GOAT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KAITOUSDT",
+"baseAsset": "KAITO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000CATUSDT",
+"baseAsset": "1000CAT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DYMINR",
+"baseAsset": "DYM",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PENDLEUSDT",
+"baseAsset": "PENDLE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AKEUSDT",
+"baseAsset": "AKE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GMTUSDT",
+"baseAsset": "GMT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GRIFFAININR",
+"baseAsset": "GRIFFAIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RAVEUSDT",
+"baseAsset": "RAVE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RAYSOLUSDT",
+"baseAsset": "RAYSOL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AUCTIONUSDT",
+"baseAsset": "AUCTION",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BLUAIUSDT",
+"baseAsset": "BLUAI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XPLUSDT",
+"baseAsset": "XPL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CHIPINR",
+"baseAsset": "CHIP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "WIFUSDT",
+"baseAsset": "WIF",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CGPTUSDT",
+"baseAsset": "CGPT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HBARINR",
+"baseAsset": "HBAR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "METAUSDT",
+"baseAsset": "META",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MEMEUSDT",
+"baseAsset": "MEME",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PUMPUSDT",
+"baseAsset": "PUMP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LPTUSDT",
+"baseAsset": "LPT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MEWUSDT",
+"baseAsset": "MEW",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FARTCOINUSDT",
+"baseAsset": "FARTCOIN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ARUSDT",
+"baseAsset": "AR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "IMXUSDT",
+"baseAsset": "IMX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CHIPUSDT",
+"baseAsset": "CHIP",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "POLYXUSDT",
+"baseAsset": "POLYX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TSLAINR",
+"baseAsset": "TSLA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BRINR",
+"baseAsset": "BR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CLOINR",
+"baseAsset": "CLO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ARBINR",
+"baseAsset": "ARB",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RIVERUSDT",
+"baseAsset": "RIVER",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LDOINR",
+"baseAsset": "LDO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SPXINR",
+"baseAsset": "SPX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GLMUSDT",
+"baseAsset": "GLM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "VETINR",
+"baseAsset": "VET",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FLOWUSDT",
+"baseAsset": "FLOW",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SKHYNIXUSDT",
+"baseAsset": "SKHYNIX",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000SATSUSDT",
+"baseAsset": "1000SATS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ARCUSDT",
+"baseAsset": "ARC",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AVAUSDT",
+"baseAsset": "AVA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DOGSINR",
+"baseAsset": "DOGS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CETUSUSDT",
+"baseAsset": "CETUS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GASUSDT",
+"baseAsset": "GAS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "API3INR",
+"baseAsset": "API3",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SANDUSDT",
+"baseAsset": "SAND",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "APTUSDT",
+"baseAsset": "APT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KAITOINR",
+"baseAsset": "KAITO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ENAUSDT",
+"baseAsset": "ENA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CRVUSDT",
+"baseAsset": "CRV",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "IOINR",
+"baseAsset": "IO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LINEAUSDT",
+"baseAsset": "LINEA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ARKMUSDT",
+"baseAsset": "ARKM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "EVAAINR",
+"baseAsset": "EVAA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JELLYJELLYUSDT",
+"baseAsset": "JELLYJELLY",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZRXUSDT",
+"baseAsset": "ZRX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ETCINR",
+"baseAsset": "ETC",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "EVAAUSDT",
+"baseAsset": "EVAA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TRXINR",
+"baseAsset": "TRX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "THETAINR",
+"baseAsset": "THETA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAUTINR",
+"baseAsset": "XAUT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAUTUSDT",
+"baseAsset": "XAUT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TRXUSDT",
+"baseAsset": "TRX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LITINR",
+"baseAsset": "LIT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TSTINR",
+"baseAsset": "TST",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MOCAUSDT",
+"baseAsset": "MOCA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BCHINR",
+"baseAsset": "BCH",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JELLYJELLYINR",
+"baseAsset": "JELLYJELLY",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ASTERUSDT",
+"baseAsset": "ASTER",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HYPEINR",
+"baseAsset": "HYPE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "WINR",
+"baseAsset": "W",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "HYPEUSDT",
+"baseAsset": "HYPE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KAIAUSDT",
+"baseAsset": "KAIA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ASTERINR",
+"baseAsset": "ASTER",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ATOMUSDT",
+"baseAsset": "ATOM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000CHEEMSUSDT",
+"baseAsset": "1000CHEEMS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SUSDT",
+"baseAsset": "S",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WUSDT",
+"baseAsset": "W",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LIGHTUSDT",
+"baseAsset": "LIGHT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ENJINR",
+"baseAsset": "ENJ",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XNYUSDT",
+"baseAsset": "XNY",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MINAUSDT",
+"baseAsset": "MINA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LINKUSDT",
+"baseAsset": "LINK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KITEUSDT",
+"baseAsset": "KITE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TSTUSDT",
+"baseAsset": "TST",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "COINUSDT",
+"baseAsset": "COIN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CHILLGUYUSDT",
+"baseAsset": "CHILLGUY",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "USUALUSDT",
+"baseAsset": "USUAL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ACTUSDT",
+"baseAsset": "ACT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SAHARAINR",
+"baseAsset": "SAHARA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JASMYINR",
+"baseAsset": "JASMY",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AWEUSDT",
+"baseAsset": "AWE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CYBERUSDT",
+"baseAsset": "CYBER",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CLUSDT",
+"baseAsset": "CL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XMRUSDT",
+"baseAsset": "XMR",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CLINR",
+"baseAsset": "CL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ZECINR",
+"baseAsset": "ZEC",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SPCXINR",
+"baseAsset": "SPCX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SKHYNIXINR",
+"baseAsset": "SKHYNIX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAUINR",
+"baseAsset": "XAU",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SAPIENUSDT",
+"baseAsset": "SAPIEN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KASINR",
+"baseAsset": "KAS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AVNTUSDT",
+"baseAsset": "AVNT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BZUSDT",
+"baseAsset": "BZ",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "VVVINR",
+"baseAsset": "VVV",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "VVVUSDT",
+"baseAsset": "VVV",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SKLUSDT",
+"baseAsset": "SKL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MOVEINR",
+"baseAsset": "MOVE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAGINR",
+"baseAsset": "XAG",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "DOTINR",
+"baseAsset": "DOT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "REZUSDT",
+"baseAsset": "REZ",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "COOKIEINR",
+"baseAsset": "COOKIE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "REDUSDT",
+"baseAsset": "RED",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PEOPLEUSDT",
+"baseAsset": "PEOPLE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AVAXINR",
+"baseAsset": "AVAX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAGUSDT",
+"baseAsset": "XAG",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AXSINR",
+"baseAsset": "AXS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ATUSDT",
+"baseAsset": "AT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "COOKIEUSDT",
+"baseAsset": "COOKIE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "POLINR",
+"baseAsset": "POL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "1000FLOKIINR",
+"baseAsset": "1000FLOKI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CLOUSDT",
+"baseAsset": "CLO",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PHAUSDT",
+"baseAsset": "PHA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "POPCATINR",
+"baseAsset": "POPCAT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TAOINR",
+"baseAsset": "TAO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "DASHINR",
+"baseAsset": "DASH",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BABAUSDT",
+"baseAsset": "BABA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SIRENUSDT",
+"baseAsset": "SIREN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RAVEINR",
+"baseAsset": "RAVE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "APRINR",
+"baseAsset": "APR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LITUSDT",
+"baseAsset": "LIT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZKUSDT",
+"baseAsset": "ZK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LTCUSDT",
+"baseAsset": "LTC",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BABAINR",
+"baseAsset": "BABA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AZTECUSDT",
+"baseAsset": "AZTEC",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BEATINR",
+"baseAsset": "BEAT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ORDIINR",
+"baseAsset": "ORDI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "WALUSDT",
+"baseAsset": "WAL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NEARINR",
+"baseAsset": "NEAR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FOLKSUSDT",
+"baseAsset": "FOLKS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LABINR",
+"baseAsset": "LAB",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "INJUSDT",
+"baseAsset": "INJ",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CYSINR",
+"baseAsset": "CYS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FLUXUSDT",
+"baseAsset": "FLUX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOLVINR",
+"baseAsset": "SOLV",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JASMYUSDT",
+"baseAsset": "JASMY",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FILUSDT",
+"baseAsset": "FIL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DYMUSDT",
+"baseAsset": "DYM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000FLOKIUSDT",
+"baseAsset": "1000FLOKI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FILINR",
+"baseAsset": "FIL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "0GUSDT",
+"baseAsset": "0G",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MELANIAINR",
+"baseAsset": "MELANIA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "OPUSDT",
+"baseAsset": "OP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MUINR",
+"baseAsset": "MU",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "APEINR",
+"baseAsset": "APE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "VANAUSDT",
+"baseAsset": "VANA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LUMIAUSDT",
+"baseAsset": "LUMIA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MYXINR",
+"baseAsset": "MYX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NMRUSDT",
+"baseAsset": "NMR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ALTUSDT",
+"baseAsset": "ALT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HBARUSDT",
+"baseAsset": "HBAR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AAVEUSDT",
+"baseAsset": "AAVE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XPDINR",
+"baseAsset": "XPD",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "APEUSDT",
+"baseAsset": "APE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "UAIUSDT",
+"baseAsset": "UAI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PNUTUSDT",
+"baseAsset": "PNUT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XANUSDT",
+"baseAsset": "XAN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BRETTINR",
+"baseAsset": "BRETT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GIGGLEUSDT",
+"baseAsset": "GIGGLE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SNDKINR",
+"baseAsset": "SNDK",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GALAINR",
+"baseAsset": "GALA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CELOUSDT",
+"baseAsset": "CELO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PROMUSDT",
+"baseAsset": "PROM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SEIUSDT",
+"baseAsset": "SEI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AIXBTINR",
+"baseAsset": "AIXBT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ENAINR",
+"baseAsset": "ENA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LABUSDT",
+"baseAsset": "LAB",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NEIROINR",
+"baseAsset": "NEIRO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PIPPININR",
+"baseAsset": "PIPPIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TAOUSDT",
+"baseAsset": "TAO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XAUUSDT",
+"baseAsset": "XAU",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CATIINR",
+"baseAsset": "CATI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "VELODROMEUSDT",
+"baseAsset": "VELODROME",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GUSDT",
+"baseAsset": "G",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZORAUSDT",
+"baseAsset": "ZORA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SAGAINR",
+"baseAsset": "SAGA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "HMSTRUSDT",
+"baseAsset": "HMSTR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AXSUSDT",
+"baseAsset": "AXS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GOOGLUSDT",
+"baseAsset": "GOOGL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LYNUSDT",
+"baseAsset": "LYN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RAREUSDT",
+"baseAsset": "RARE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "JUPINR",
+"baseAsset": "JUP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SAMSUNGUSDT",
+"baseAsset": "SAMSUNG",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "UNIINR",
+"baseAsset": "UNI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NOTUSDT",
+"baseAsset": "NOT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GOOGLINR",
+"baseAsset": "GOOGL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PONSINR",
+"baseAsset": "PONS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PLUMEUSDT",
+"baseAsset": "PLUME",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "UNIUSDT",
+"baseAsset": "UNI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WIFINR",
+"baseAsset": "WIF",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PONSUSDT",
+"baseAsset": "PONS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BARDUSDT",
+"baseAsset": "BARD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TUTINR",
+"baseAsset": "TUT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NILUSDT",
+"baseAsset": "NIL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FETINR",
+"baseAsset": "FET",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SPKUSDT",
+"baseAsset": "SPK",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BASINR",
+"baseAsset": "BAS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LTCINR",
+"baseAsset": "LTC",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AAVEINR",
+"baseAsset": "AAVE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "INJINR",
+"baseAsset": "INJ",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SQDUSDT",
+"baseAsset": "SQD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TUTUSDT",
+"baseAsset": "TUT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FIDAINR",
+"baseAsset": "FIDA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SPELLUSDT",
+"baseAsset": "SPELL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WLDINR",
+"baseAsset": "WLD",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XPDUSDT",
+"baseAsset": "XPD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ATOMINR",
+"baseAsset": "ATOM",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TRUMPUSDT",
+"baseAsset": "TRUMP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BIOUSDT",
+"baseAsset": "BIO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AMDUSDT",
+"baseAsset": "AMD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SANDINR",
+"baseAsset": "SAND",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FLOWINR",
+"baseAsset": "FLOW",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BMTUSDT",
+"baseAsset": "BMT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HANAUSDT",
+"baseAsset": "HANA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "METAINR",
+"baseAsset": "META",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CYSUSDT",
+"baseAsset": "CYS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DRAMUSDT",
+"baseAsset": "DRAM",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "COTIUSDT",
+"baseAsset": "COTI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MERLUSDT",
+"baseAsset": "MERL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FORMUSDT",
+"baseAsset": "FORM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOMIUSDT",
+"baseAsset": "SOMI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KOMAUSDT",
+"baseAsset": "KOMA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DRAMINR",
+"baseAsset": "DRAM",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "1000RATSINR",
+"baseAsset": "1000RATS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SNDKUSDT",
+"baseAsset": "SNDK",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PUMPINR",
+"baseAsset": "PUMP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XVGUSDT",
+"baseAsset": "XVG",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AEROUSDT",
+"baseAsset": "AERO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "STRKINR",
+"baseAsset": "STRK",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MOVEUSDT",
+"baseAsset": "MOVE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PNUTINR",
+"baseAsset": "PNUT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BANDUSDT",
+"baseAsset": "BAND",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PLTRUSDT",
+"baseAsset": "PLTR",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TRBUSDT",
+"baseAsset": "TRB",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MMTUSDT",
+"baseAsset": "MMT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XLMUSDT",
+"baseAsset": "XLM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MOODENGUSDT",
+"baseAsset": "MOODENG",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "VIRTUALUSDT",
+"baseAsset": "VIRTUAL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PENGUINR",
+"baseAsset": "PENGU",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "VETUSDT",
+"baseAsset": "VET",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LISTAUSDT",
+"baseAsset": "LISTA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PENGUUSDT",
+"baseAsset": "PENGU",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZROINR",
+"baseAsset": "ZRO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JCTUSDT",
+"baseAsset": "JCT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ETCUSDT",
+"baseAsset": "ETC",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CATIUSDT",
+"baseAsset": "CATI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HOODUSDT",
+"baseAsset": "HOOD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BZINR",
+"baseAsset": "BZ",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MELANIAUSDT",
+"baseAsset": "MELANIA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SKYAIINR",
+"baseAsset": "SKYAI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TRADOORINR",
+"baseAsset": "TRADOOR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MEMEINR",
+"baseAsset": "MEME",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "KASUSDT",
+"baseAsset": "KAS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOXLUSDT",
+"baseAsset": "SOXL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "VTHOUSDT",
+"baseAsset": "VTHO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MSFTINR",
+"baseAsset": "MSFT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GRASSUSDT",
+"baseAsset": "GRASS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "INTCINR",
+"baseAsset": "INTC",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "THEINR",
+"baseAsset": "THE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NATGASUSDT",
+"baseAsset": "NATGAS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ENSOUSDT",
+"baseAsset": "ENSO",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANANAUSDT",
+"baseAsset": "BANANA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NATGASINR",
+"baseAsset": "NATGAS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ZENUSDT",
+"baseAsset": "ZEN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "2ZUSDT",
+"baseAsset": "2Z",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MORPHOUSDT",
+"baseAsset": "MORPHO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RVNUSDT",
+"baseAsset": "RVN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TSLAUSDT",
+"baseAsset": "TSLA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SWARMSUSDT",
+"baseAsset": "SWARMS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RENDERUSDT",
+"baseAsset": "RENDER",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZECUSDT",
+"baseAsset": "ZEC",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MONUSDT",
+"baseAsset": "MON",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PAXGINR",
+"baseAsset": "PAXG",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SUIINR",
+"baseAsset": "SUI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XPTUSDT",
+"baseAsset": "XPT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ARBUSDT",
+"baseAsset": "ARB",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SKYAIUSDT",
+"baseAsset": "SKYAI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TIAUSDT",
+"baseAsset": "TIA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MUUSDT",
+"baseAsset": "MU",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "B2USDT",
+"baseAsset": "B2",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MSTRUSDT",
+"baseAsset": "MSTR",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANINR",
+"baseAsset": "BAN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BLUAIINR",
+"baseAsset": "BLUAI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "DASHUSDT",
+"baseAsset": "DASH",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MSFTUSDT",
+"baseAsset": "MSFT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SOXLINR",
+"baseAsset": "SOXL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PYTHUSDT",
+"baseAsset": "PYTH",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "UAIINR",
+"baseAsset": "UAI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "KORUUSDT",
+"baseAsset": "KORU",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANANAS31INR",
+"baseAsset": "BANANAS31",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XAIUSDT",
+"baseAsset": "XAI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MYXUSDT",
+"baseAsset": "MYX",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ICPINR",
+"baseAsset": "ICP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GRASSINR",
+"baseAsset": "GRASS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "KORUINR",
+"baseAsset": "KORU",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CRCLINR",
+"baseAsset": "CRCL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "HMSTRINR",
+"baseAsset": "HMSTR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GIGGLEINR",
+"baseAsset": "GIGGLE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "INTCUSDT",
+"baseAsset": "INTC",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "IRYSUSDT",
+"baseAsset": "IRYS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZILUSDT",
+"baseAsset": "ZIL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NEOUSDT",
+"baseAsset": "NEO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TNSRUSDT",
+"baseAsset": "TNSR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MUBARAKUSDT",
+"baseAsset": "MUBARAK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FETUSDT",
+"baseAsset": "FET",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AMZNINR",
+"baseAsset": "AMZN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NVDAUSDT",
+"baseAsset": "NVDA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AMZNUSDT",
+"baseAsset": "AMZN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NVDAINR",
+"baseAsset": "NVDA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BATUSDT",
+"baseAsset": "BAT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TAUSDT",
+"baseAsset": "TA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AKTINR",
+"baseAsset": "AKT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "COININR",
+"baseAsset": "COIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SOONUSDT",
+"baseAsset": "SOON",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CRCLUSDT",
+"baseAsset": "CRCL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MARSCOININR",
+"baseAsset": "MARSCOIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "DOODUSDT",
+"baseAsset": "DOOD",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DEXEUSDT",
+"baseAsset": "DEXE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ANIMEUSDT",
+"baseAsset": "ANIME",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MARSCOINUSDT",
+"baseAsset": "MARSCOIN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SPCXUSDT",
+"baseAsset": "SPCX",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BATINR",
+"baseAsset": "BAT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BNBUSDT",
+"baseAsset": "BNB",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TRUSTUSDT",
+"baseAsset": "TRUST",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FLOCKUSDT",
+"baseAsset": "FLOCK",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "POLUSDT",
+"baseAsset": "POL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CRVINR",
+"baseAsset": "CRV",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "4INR",
+"baseAsset": "4",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LYNINR",
+"baseAsset": "LYN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TURTLEUSDT",
+"baseAsset": "TURTLE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ENSUSDT",
+"baseAsset": "ENS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DOGSUSDT",
+"baseAsset": "DOGS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KGENINR",
+"baseAsset": "KGEN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TURBOUSDT",
+"baseAsset": "TURBO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ACTINR",
+"baseAsset": "ACT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RESOLVINR",
+"baseAsset": "RESOLV",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RESOLVUSDT",
+"baseAsset": "RESOLV",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "STOINR",
+"baseAsset": "STO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AVAXUSDT",
+"baseAsset": "AVAX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "STOUSDT",
+"baseAsset": "STO",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000SATSINR",
+"baseAsset": "1000SATS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "REDINR",
+"baseAsset": "RED",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CBRSUSDT",
+"baseAsset": "CBRS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WLDUSDT",
+"baseAsset": "WLD",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BNBINR",
+"baseAsset": "BNB",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PENDLEINR",
+"baseAsset": "PENDLE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PHAINR",
+"baseAsset": "PHA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "UBINR",
+"baseAsset": "UB",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NEARUSDT",
+"baseAsset": "NEAR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HUSDT",
+"baseAsset": "H",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DOTUSDT",
+"baseAsset": "DOT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GALAUSDT",
+"baseAsset": "GALA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "JUPUSDT",
+"baseAsset": "JUP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MAGICUSDT",
+"baseAsset": "MAGIC",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SIRENINR",
+"baseAsset": "SIREN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BLESSINR",
+"baseAsset": "BLESS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GUAUSDT",
+"baseAsset": "GUA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000000MOGUSDT",
+"baseAsset": "1000000MOG",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SPXUSDT",
+"baseAsset": "SPX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SAHARAUSDT",
+"baseAsset": "SAHARA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZROUSDT",
+"baseAsset": "ZRO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "CAKEUSDT",
+"baseAsset": "CAKE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "STRKUSDT",
+"baseAsset": "STRK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "XPININR",
+"baseAsset": "XPIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "THETAUSDT",
+"baseAsset": "THETA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "COMPUSDT",
+"baseAsset": "COMP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANANAINR",
+"baseAsset": "BANANA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "AKTUSDT",
+"baseAsset": "AKT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ETHFIINR",
+"baseAsset": "ETHFI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ALGOINR",
+"baseAsset": "ALGO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "COWUSDT",
+"baseAsset": "COW",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DRIFTINR",
+"baseAsset": "DRIFT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RUNEUSDT",
+"baseAsset": "RUNE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SINR",
+"baseAsset": "S",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ENJUSDT",
+"baseAsset": "ENJ",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "LDOUSDT",
+"baseAsset": "LDO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "USELESSUSDT",
+"baseAsset": "USELESS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "EIGENUSDT",
+"baseAsset": "EIGEN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANUSDT",
+"baseAsset": "BAN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RIVERINR",
+"baseAsset": "RIVER",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SWARMSINR",
+"baseAsset": "SWARMS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ALLOUSDT",
+"baseAsset": "ALLO",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PAXGUSDT",
+"baseAsset": "PAXG",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "IRYSINR",
+"baseAsset": "IRYS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PROMINR",
+"baseAsset": "PROM",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SKLINR",
+"baseAsset": "SKL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CGPTINR",
+"baseAsset": "CGPT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MAVIAUSDT",
+"baseAsset": "MAVIA",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RECALLUSDT",
+"baseAsset": "RECALL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PROMPTUSDT",
+"baseAsset": "PROMPT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BOMEUSDT",
+"baseAsset": "BOME",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TLMUSDT",
+"baseAsset": "TLM",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "RENDERINR",
+"baseAsset": "RENDER",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PIXELUSDT",
+"baseAsset": "PIXEL",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000BONKINR",
+"baseAsset": "1000BONK",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XLMINR",
+"baseAsset": "XLM",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JTOINR",
+"baseAsset": "JTO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "RUNEINR",
+"baseAsset": "RUNE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ADAUSDT",
+"baseAsset": "ADA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "POPCATUSDT",
+"baseAsset": "POPCAT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ICPUSDT",
+"baseAsset": "ICP",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SYNUSDT",
+"baseAsset": "SYN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "APTINR",
+"baseAsset": "APT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MASKUSDT",
+"baseAsset": "MASK",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AKEINR",
+"baseAsset": "AKE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SAGAUSDT",
+"baseAsset": "SAGA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NILINR",
+"baseAsset": "NIL",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "1000RATSUSDT",
+"baseAsset": "1000RATS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "STBLUSDT",
+"baseAsset": "STBL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BEATUSDT",
+"baseAsset": "BEAT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TAKEUSDT",
+"baseAsset": "TAKE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZRXINR",
+"baseAsset": "ZRX",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ESPORTSUSDT",
+"baseAsset": "ESPORTS",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "METUSDT",
+"baseAsset": "MET",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BERAINR",
+"baseAsset": "BERA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ESPORTSINR",
+"baseAsset": "ESPORTS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ETHFIUSDT",
+"baseAsset": "ETHFI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TAKEINR",
+"baseAsset": "TAKE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "CFXUSDT",
+"baseAsset": "CFX",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1MBABYDOGEINR",
+"baseAsset": "1MBABYDOGE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ONDOUSDT",
+"baseAsset": "ONDO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TIAINR",
+"baseAsset": "TIA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FHEUSDT",
+"baseAsset": "FHE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "IOUSDT",
+"baseAsset": "IO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PIPPINUSDT",
+"baseAsset": "PIPPIN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GINR",
+"baseAsset": "G",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FIDAUSDT",
+"baseAsset": "FIDA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PIEVERSEINR",
+"baseAsset": "PIEVERSE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LIGHTINR",
+"baseAsset": "LIGHT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PIEVERSEUSDT",
+"baseAsset": "PIEVERSE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BANANAS31USDT",
+"baseAsset": "BANANAS31",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WCTUSDT",
+"baseAsset": "WCT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SNXUSDT",
+"baseAsset": "SNX",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "FARTCOININR",
+"baseAsset": "FARTCOIN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "SUIUSDT",
+"baseAsset": "SUI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "1000CATINR",
+"baseAsset": "1000CAT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "TRADOORUSDT",
+"baseAsset": "TRADOOR",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TRUMPINR",
+"baseAsset": "TRUMP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BRUSDT",
+"baseAsset": "BR",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DIAUSDT",
+"baseAsset": "DIA",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AGLDUSDT",
+"baseAsset": "AGLD",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KOMAINR",
+"baseAsset": "KOMA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "COMPINR",
+"baseAsset": "COMP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "COAIUSDT",
+"baseAsset": "COAI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ALGOUSDT",
+"baseAsset": "ALGO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "4USDT",
+"baseAsset": "4",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "PARTIINR",
+"baseAsset": "PARTI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PARTIUSDT",
+"baseAsset": "PARTI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "NEIROUSDT",
+"baseAsset": "NEIRO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HINR",
+"baseAsset": "H",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "EGLDUSDT",
+"baseAsset": "EGLD",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SANTOSUSDT",
+"baseAsset": "SANTOS",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SEIINR",
+"baseAsset": "SEI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "NOTINR",
+"baseAsset": "NOT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BRETTUSDT",
+"baseAsset": "BRETT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ORDIUSDT",
+"baseAsset": "ORDI",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SYNINR",
+"baseAsset": "SYN",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BIOINR",
+"baseAsset": "BIO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MUSDT",
+"baseAsset": "M",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AEVOUSDT",
+"baseAsset": "AEVO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "KGENUSDT",
+"baseAsset": "KGEN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DEXEINR",
+"baseAsset": "DEXE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "PYTHINR",
+"baseAsset": "PYTH",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "XPINUSDT",
+"baseAsset": "XPIN",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "API3USDT",
+"baseAsset": "API3",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "DRIFTUSDT",
+"baseAsset": "DRIFT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "YBUSDT",
+"baseAsset": "YB",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "APRUSDT",
+"baseAsset": "APR",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "UBUSDT",
+"baseAsset": "UB",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "HEMIUSDT",
+"baseAsset": "HEMI",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "OPINR",
+"baseAsset": "OP",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "ADAINR",
+"baseAsset": "ADA",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "LINKINR",
+"baseAsset": "LINK",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "BBUSDT",
+"baseAsset": "BB",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "BCHUSDT",
+"baseAsset": "BCH",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ONDOINR",
+"baseAsset": "ONDO",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "MINR",
+"baseAsset": "M",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "COAIINR",
+"baseAsset": "COAI",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "FHEINR",
+"baseAsset": "FHE",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "JTOUSDT",
+"baseAsset": "JTO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "JCTINR",
+"baseAsset": "JCT",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "GRTUSDT",
+"baseAsset": "GRT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 8,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "THEUSDT",
+"baseAsset": "THE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "TNSRINR",
+"baseAsset": "TNSR",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+},
+{
+"name": "EULUSDT",
+"baseAsset": "EUL",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "MITOUSDT",
+"baseAsset": "MITO",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ZEREBROUSDT",
+"baseAsset": "ZEREBRO",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "AIXBTUSDT",
+"baseAsset": "AIXBT",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "WMTUSDT",
+"baseAsset": "WMT",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 8,
+"contractType": "TRADIFI_PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "GRIFFAINUSDT",
+"baseAsset": "GRIFFAIN",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "ACEUSDT",
+"baseAsset": "ACE",
+"quoteAsset": "USDT",
+"takerFee": 0.06,
+"makerFee": 0.02,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "SAFEUSDT",
+"baseAsset": "SAFE",
+"quoteAsset": "USDT",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR",
+"USDT"
+]
+},
+{
+"name": "USELESSINR",
+"baseAsset": "USELESS",
+"quoteAsset": "INR",
+"takerFee": 0.1,
+"makerFee": 0.05,
+"fundingFeeInterval": 4,
+"contractType": "PERPETUAL",
+"marginAssetsSupported": [
+"INR"
+]
+}
+]
