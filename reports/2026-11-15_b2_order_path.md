@@ -13,7 +13,8 @@ finished 20 Nov after an interruption). The tests were pre-registered and pushed
 - **Real orders stay locked behind two separate keys:**
   - the lock `C550_LIVE_OK`, off, and separate from `C488_LIVE_OK`, which also stays off;
   - cross margin confirmed on BOTH exchanges, which is not yet the case.
-- **All 26 pre-registered tests pass** (56 checks, mocked exchanges, zero real network calls). The full battery: section 8.
+- **All 26 pre-registered tests pass** (56 checks, mocked exchanges, zero real network calls; 65 since C551 on 20 Nov,
+  section 10). The full battery: section 8.
 - **The blocker, plainly:** CoinDCX's own API documentation says *"Cross margin mode is not supported on INR margined
   Futures"*. The plan trades CoinDCX's **rupee** futures, and Round 24 requires cross margin.
   - CoinDCX's help centre (updated about 4 months ago) suggests the app may now offer it; the two disagree.
@@ -174,7 +175,7 @@ Orders went only to the pretend exchange; the real order function was replaced b
 
 ## 6. The tests (`omega_c550_test.py`, the 26 pre-registered)
 
-All pass (56 checks). Every exchange is mocked; the real network functions raise if touched, and none was. Two
+All pass (56 checks; 65 after C551, section 10). Every exchange is mocked; the real network functions raise if touched, and none was. Two
 honest notes:
 - **My first test draft had arithmetic slips** (35 Delta contracts where the trade is 50; one case set below CoinDCX's
   minimum, so it never reached the step it tested). The tests' criteria are unchanged.
@@ -196,7 +197,7 @@ honest notes:
 
 ## 8. Tests and battery
 
-`omega_c550_test.py`: 26 tests, 56 checks, all pass. Full battery: **69 of 69** (66 Python + 3 shell). Getting there
+`omega_c550_test.py`: 26 tests, 56 checks, all pass (65 after C551, section 10). Full battery: **69 of 69** (66 Python + 3 shell). Getting there
 took one container fix (the browser path link, as on 1 Nov) and two test fixes:
 
 - **The first full run was 67 of 69.** `omega_c489_test.py` (1 check) and `omega_c530_test.py` (4 checks) failed.
@@ -235,3 +236,113 @@ sudo -u omega bash -c 'grep -h "C550" "$(ls -t /home/omega/omega/omega_detail_*.
 Expect "(dry) boot: both exchanges read", the pairs "opened … CoinDCX … then Delta …", the emergency stops, and
 "would be blocked live: the lock C550_LIVE_OK is off; cross margin not confirmed on CoinDCX and Delta India". Send me
 that output. After any restart the dry book starts again (its exchanges live in memory); that is by design.
+
+## 10. 20 Nov: the server's first dry day, checked -- one bug found and fixed (C551)
+
+Your screens: the page at 10:34 IST, Oracle's billing page at 10:46, and Termius at 10:49. I checked them against the
+logs push of 10:17 IST (`logs/omega_detail_20261120_101433.log`, the ledgers) and the exchanges' own records.
+
+**C550 is deployed** (the page header says `OMEGA V60 C550`; the bot restarted at 10:14:33 IST).
+
+**The page, checked:**
+
+| line | your screen | checked |
+|---|---|---|
+| equity | $1,051.21 | = $1,051.08 at the 06:00 run + **$0.24** rent settled since (04:00 UTC) − $0.11 price moves since; accounts $560.20 + $491.01 = $1,051.21 |
+| rent waiting | +$0.24 | recomputed from Delta's FUNDING records (with `_c549_paid`; all 10 coins 4-hourly, none hourly) and Binance's: **$0.2419** |
+| after tax | $1,035.23 (tax $15.98) | 31.2% × $51.21 = $15.98 |
+| last run | +$0.81 (rent +$1.01, price +$0.13, fees −$0.33) | adds up; BILL closed, JCT opened, as checked this morning |
+| facing | 5 down / 5 up on Delta | matches the ledger's sides (cap 6) |
+| one-coin jump | JCT +531% (Delta), ALT +606% (CoinDCX) | C547's formula at the 06:00 marks: JCT's leg $104.1 against $552.98; ALT's $82.1 against $498.10 |
+| copies | 8 hours +$41.14, 3-day +$52.85, 15 × 12% +$71.55 | from their own ledgers: equity − the start's (equity + transfer charges) + transfer charges; your rule on the same days +$55.78 / +$55.78 / +$53.80. "behind $14.64" is $14.63 to the exact cent (the page subtracts rounded figures) |
+
+**C550's first dry day on the server (10:14:39-43 IST):**
+- **Delta sizes:** all 10 pairs built CoinDCX first, then Delta with exactly the plan's contracts (AIN 9, AIXBT 429,
+  ALT 1,816, ARC 160, AUCTION 269, JCT 56, KAITO 312, LIT 3, NOT 1,986, STRK 17), each facing the plan's way.
+- **Rupee parity:** the two legs agree within ₹5 (AIN ₹8,306 vs ₹8,311, where one AIN on CoinDCX is ₹11; the other
+  nine within ₹2).
+- **Your real accounts:** Delta 0 and CoinDCX 0, as they should be.
+- **The emergency stops:**
+  - I recomputed all ten from the logged prices and accounts, and they match the log to the last digit.
+  - **Delta's five are right:** each leaves its account at 25.0% of its half.
+  - **CoinDCX's five were wrong:** each would have let its account fall to **10.3%** of its half before firing.
+
+**The bug (C550), in plain words:**
+- Your ledger counts in "dollars" worth ₹85 each, Delta's rate; the paper ledger and the tax statement both work this
+  way.
+- CoinDCX's rupee futures quote prices and fees in **USDT, worth ₹102 each**. Its documentation says "fee_amount value
+  is in USDT for INR Futures", and each order carries its own rate (`settlement_currency_conversion_price`).
+- CoinDCX books rent in **rupees** (`price_in_inr: 1.0`).
+- C550 treated CoinDCX's USDT and rupees ÷ 102 as if they were ledger dollars. Like adding pounds to dollars without
+  converting. Three effects:
+  - **the CoinDCX stops sat about 20% too far away;**
+  - **live, the tax journal's CoinDCX rent, fees and price results would have been about 17% off** CoinDCX's own
+    statements;
+  - the live margin check would have compared a USDT balance with a ledger-dollar half.
+- **My tests had the same mix-up written into two expectations** (T12's CoinDCX stop and T23's "₹2.04 = $0.02"), so
+  they agreed with the bug. The pre-registered words were right: "where its account would fall to 25% of its half".
+  The arithmetic I wrote for them wasn't.
+
+**The fix (C551):**
+- A CoinDCX USDT amount is now converted at ×(its own rate ÷ Delta's rate), and a rupee amount at ÷ Delta's rate.
+- The ledger's CoinDCX quantity is the Delta-equivalent one, as in the paper ledger. The real quantity stays in the leg,
+  for talking to CoinDCX.
+- The stops, the rent, the fees, the price results and the real balances all use one unit.
+- The pretend exchange now reports CoinDCX's rate fields as the real one does.
+- **Also hardened:** a CoinDCX exit's price and fee are now read only from that exit's own fills (the closing side, the
+  latest such order, part-fills averaged). Before, C550 took the last trade in CoinDCX's list, which could have been the
+  entry's fill if CoinDCX lists the newest first or is a moment slow.
+
+| at 10:14 prices | short on | old stop (jump) | **new stop (jump)** | account at the old stop |
+|---|---|---|---|---|
+| AIXBT | CoinDCX | 0.114853 (+835%) | **0.0977582 (+696%)** | 10.3% of its half |
+| ALT | CoinDCX | 0.0286206 (+550%) | **0.0245846 (+458%)** | 10.3% |
+| AUCTION | CoinDCX | 18.89 (+641%) | **16.1666 (+534%)** | 10.3% |
+| NOT | CoinDCX | 0.0025113 (+747%) | **0.00214216 (+623%)** | 10.3% |
+| STRK | CoinDCX | 0.289641 (+834%) | **0.246537 (+695%)** | 10.3% |
+| AIN, ARC, JCT, KAITO, LIT | Delta | unchanged | unchanged | 25.0% (right) |
+
+**Tests:**
+- T12 and T23's expectations are corrected, with a note in the file saying why. They now check the rupee meaning,
+  which is stricter, not looser.
+- **9 new checks** (section G2 of `omega_c550_test.py`, marked as added after the bug, not pre-registered):
+  - the ledger's CoinDCX quantity is real × 102/85;
+  - the entry fee is booked at ₹102;
+  - **at each CoinDCX stop the account is at exactly 25% of its half in rupees**, and Delta's still is;
+  - a closed pair in rupees: Delta's result ×85, CoinDCX's ×102; when both prices rise 10%, Delta +₹850.00 and
+    CoinDCX −₹846.60, netting under one CoinDCX step;
+  - CoinDCX's fees in rupees equal its fills' USDT × 102;
+  - the tax statement shows CoinDCX's rent (₹−5.10), its GST and its price result in CoinDCX's own rupees;
+  - the exit's price and fee come from the exit's own fills, even when CoinDCX lists the newest first;
+  - the real balances convert: ₹42,500 or 416.67 USDT on CoinDCX = $500; Delta $500 or ₹42,500 = $500.
+- `omega_c550_test.py`: **65 checks, all pass.** The preview re-run on the 10:17 ledger with live prices: 10 pairs, the
+  plan's contracts, the CoinDCX stops at the corrected level.
+- **The full battery: 69 of 69 on the final files.** The background run gave 68 + 1: the C550 test ran while I was
+  midway through adding its last check. It passes on its own (65 of 65), and the order-path, ledger and boot tests were
+  re-run on the final files: c539, c540, c544-c550 and the boot test (`OMEGA C551` started and answered).
+
+**Still to confirm with real money (B4 pilot, 1 Feb):**
+- the unit of Delta's `net_equity` (dollars assumed; C551 divides by 85 if the wallet shows only rupees);
+- what CoinDCX's futures-wallet `balance` includes (locked margin? open profit?);
+- how each exchange shows GST on rent paid (the paper books 18% on both).
+
+The first real fills settle all three before any full-size money.
+
+**The server, from your Termius screen:**
+- **"System restart required":** a security update (normally the kernel) takes effect only after a reboot. Reboot once
+  at a quiet hour. Deploying C551 first means one restart covers both (commands in the reply).
+- After a reboot the page's trycloudflare address changes. One command prints the new one.
+- "15 updates can be applied immediately" are ordinary, non-security updates; the security ones are installed
+  automatically every night at 03:30. They can wait.
+- Load 0.15, memory 16%, disk 12% of 44 GB: healthy.
+
+**Oracle (10:46):**
+- "Your upgrade is in progress. You will receive an email confirmation when your upgrade is completed." The Pay As You
+  Go step is done from your side.
+- When the e-mail comes, send a screenshot showing **Plan type: Pay As You Go**.
+- Then set the budget alert (`omega-zero-spend`). From then on the account can be charged, so the alarm matters more.
+- Your server is inside the Always Free limits (an Ampere A1 machine set up with 1 OCPU and 6 GB, and a 47 GB boot
+  disk; Oracle's cost page showed SGD 0.00 and 0 paid items on 10 Oct), so the bill should stay at 0.
+
+**Still needed from you: cross margin** (section 3). Nothing in today's screens answers it. The two app checks decide
+whether Round 25 runs on 2 Dec.

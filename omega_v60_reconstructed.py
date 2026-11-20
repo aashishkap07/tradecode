@@ -2401,7 +2401,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C550'
+_OMEGA_VERSION = 'C551'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -25762,6 +25762,15 @@ def _c527_total(bot, now=None):
 #   a write-ahead record of every intent (data/c550_orders.json); at boot the exchanges are reconciled first and any
 #   lone leg is closed. A kill switch (the file data/c550_kill) flattens both. Its own ledger (same shape and journal
 #   as the plan's, so omega_tax_statement.py --live can read it): data/c550_live.json (live) or c550_dry.json (dry).
+# C551 (20 Nov 2026, found checking the operator's 10:14 IST server lines by hand): ONE UNIT FOR THE LEDGER. The
+#   ledger's dollar is Delta's, Rs 85 (the paper ledger and omega_tax_statement.py: "a pair's rupee figures are its
+#   dollar figures x 85"). CoinDCX's rupee futures quote prices and fees in USDT worth Rs 102 (each order carries its
+#   own rate, settlement_currency_conversion_price; "fee_amount value is in USDT for INR Futures") and book rent in
+#   rupees (positions/transactions: price_in_inr 1.0). C550 had booked CoinDCX's USDT and its rupees/102 as if they
+#   were ledger dollars: the CoinDCX emergency stops sat ~20% too far (NOT 0.00251 where 25% of the half is ~0.00214),
+#   and live the tax journal's CoinDCX rent, fees and price results would have been ~17% off CoinDCX's own statements.
+#   Now: a CoinDCX USDT amount x (its rate / Delta's rate); a rupee amount / Delta's rate; the ledger's b_qty is the
+#   Delta-equivalent quantity (the real one stays in the legs, for the exchange). The stops use one unit throughout.
 # ══════════════════════════════════════════════════════════════════════════════
 _C550_DELTA = 'https://api.india.delta.exchange'
 _C550_DCX = 'https://api.coindcx.com'
@@ -25839,6 +25848,7 @@ class _C550Sim:
         self.faults = {}                             # path-key -> list of ('refuse', code, msg) / ('timeout',) / ('partial', f)
         self.cross = True
         self.funding = []                            # (ms, coin, amount) rent records the exchange shows
+        self.inr = 102.0                             # C551: CoinDCX's Rs per USDT on its orders and fills
 
     def _id(self):
         self.n += 1
@@ -25950,7 +25960,8 @@ class _C550Sim:
                       order_type=o['order_type'], total_quantity=float(o['total_quantity']), avg_price=px,
                       remaining_quantity=float(o['total_quantity']) - q, fee_amount=round(q * px * 0.0005 * 1.18, 8),
                       position_margin_type=('crossed' if self.cross else 'isolated'),
-                      margin_currency_short_name=o.get('margin_currency_short_name'), stage='default')
+                      margin_currency_short_name=o.get('margin_currency_short_name'), stage='default',
+                      settlement_currency_conversion_price=self.inr)
             if o['order_type'] in ('stop_market', 'stop_limit'):
                 od.update(status='untriggered', avg_price=0.0, remaining_quantity=float(o['total_quantity']),
                           stop_price=o.get('stop_price'))
@@ -25995,10 +26006,11 @@ class _C550Sim:
         if path == P + '/trades':
             return _C550Resp(200, [dict(pair=f"B-{x['coin']}_USDT", price=x['px'], quantity=abs(x['qty']),
                                         side='buy' if x['qty'] > 0 else 'sell', order_id=x['order_id'],
-                                        fee_amount=round(abs(x['qty']) * x['px'] * 0.0005 * 1.18, 8))
+                                        fee_amount=round(abs(x['qty']) * x['px'] * 0.0005 * 1.18, 8),
+                                        settlement_currency_conversion_price=self.inr, margin_currency_short_name='INR')
                                    for x in self.fills])
         if path == P + '/positions/transactions':
-            return _C550Resp(200, [dict(stage='funding', amount=a, pair=f'B-{c}_USDT', created_at=ms,
+            return _C550Resp(200, [dict(stage='funding', amount=a, pair=f'B-{c}_USDT', created_at=ms, price_in_inr=1.0,
                                         margin_currency_short_name='INR') for ms, c, a in self.funding])
         return _C550Resp(404, {'status': 'error', 'message': 'not_found'})
 
@@ -26114,8 +26126,17 @@ class C550OrderPath:
         self._watch_at = self._rec_at = 0.0
         self._booted = False
         self._said = {}
+        self._rates = None                       # C551: the last good (Delta Rs/$, CoinDCX Rs/USDT)
         self.sims = {'delta': _C550Sim('delta', self._mark_d), 'coindcx': _C550Sim('coindcx', self._mark_b)}
         self._load()
+
+    def _rt(self):
+        """C551: the two rupee rates for CONVERTING (never for opening: open_pair needs a live read): read live, else
+        the last good read, else the long-standing 85 / 102"""
+        r = _c550_rates()
+        if r:
+            self._rates = r
+        return self._rates or (85.0, 102.0)
 
     # ── the switches ──────────────────────────────────────────────────────────
     def active(self):
@@ -26250,6 +26271,8 @@ class C550OrderPath:
         if not rates:
             self._say(f"{coin}: not opened -- a rupee rate could not be read (Delta /v2/settings or CoinDCX conversions)")
             return None
+        if not self.live():
+            self.sims['coindcx'].inr = rates[1]             # C551: the pretend CoinDCX settles at the live rate too
         ins = _c550_instrument(coin)
         dpx, bpx = self._mark_d(coin), self._mark_b(coin)
         if dpx <= 0 or bpx <= 0 or not ins:
@@ -26290,7 +26313,9 @@ class C550OrderPath:
             except Exception:
                 pass
         bfill = float(o.get('avg_price') or bpx)
-        b_inr = got * bfill * rates[1]
+        self._rates = rates
+        conv0 = float(o.get('settlement_currency_conversion_price') or 0) or rates[1]     # C551: the order's own Rs/USDT
+        b_inr = got * bfill * conv0
         # a full CoinDCX fill: Delta's leg is the plan's own whole contracts (the two legs already agree within one CoinDCX
         # quantity step); a PART fill: Delta's is re-sized to the rupees that filled
         k = abs(int(contracts)) if got >= q - 1e-12 else int(round(b_inr / (rates[0] * cv * dpx)))
@@ -26330,13 +26355,19 @@ class C550OrderPath:
             self._say(self.halt + " -- no new pairs until fixed", alert=True)
         dfill = float(res.get('average_fill_price') or dpx)
         fee_d = float(res.get('commission') or 0.0)
-        fee_b = float(o.get('fee_amount') or 0.0)
+        # C551: CoinDCX's fee is in USDT (Rs conv0 each); the ledger's dollar is Delta's (Rs rates[0])
+        fee_b = float(o.get('fee_amount') or 0.0) * conv0 / rates[0]
         leg = dict(side=side, d=dict(sym=coin_sym, k=-side * filled, px=dfill, cv=cv),
-                   b=dict(pair=f'B-{coin}_USDT', qty=side * got, px=bfill), opened=int(time.time() * 1000), stop={})
+                   b=dict(pair=f'B-{coin}_USDT', qty=side * got, px=bfill, conv=conv0), opened=int(time.time() * 1000),
+                   stop={})
         with self._lock:
             self.legs[coin] = leg
             nd = filled * cv * dfill
-            self.led['pairs'][coin] = dict(side=side, d_sym=coin_sym, cv=cv, d_qty=float(-side * filled), b_qty=side * got,
+            # C551: b_qty is the Delta-equivalent quantity (the real CoinDCX one x its rate / Delta's), so that
+            # b_qty x a price move is in ledger dollars, as in the paper ledger; the real quantity stays in the leg
+            self.led['pairs'][coin] = dict(side=side, d_sym=coin_sym, cv=cv, d_qty=float(-side * filled),
+                                           b_qty=side * got * conv0 / rates[0], b_real=side * got, b_conv=conv0,
+                                           d_rate=rates[0],
                                            d_px=dfill, b_px=bfill, notional=round(nd, 2), opened=leg['opened'],
                                            fund_from=leg['opened'], pnl=-(fee_d + fee_b), funding=0.0,
                                            jx=dict(opened=leg['opened'], d_px0=dfill, b_px0=bfill, n_in=nd, fee_d=fee_d,
@@ -26394,13 +26425,24 @@ class C550OrderPath:
         if p is None:
             return False
         dcx = self.venue('coindcx')
+        ex_side = 'sell' if float(p.get('active_pos') or 0) > 0 else 'buy'
         dcx.call('POST', '/exchange/v1/derivatives/futures/positions/exit', dict(id=p['id']))
         try:                                                # the exit's own fill: price and fee, for the journal
+            # C551: only the CLOSING side's fills, of the latest such order (whatever order CoinDCX lists them in),
+            # its part-fills averaged and their fees added -- never the entry's fill
             tr = [x for x in dcx.call('POST', '/exchange/v1/derivatives/futures/trades',
                                       dict(pair=f'B-{coin}_USDT', page='1', size='10',
-                                           margin_currency_short_name=['INR'])) or [] if x.get('pair') == f'B-{coin}_USDT']
+                                           margin_currency_short_name=['INR'])) or []
+                  if x.get('pair') == f'B-{coin}_USDT' and x.get('side') in (None, ex_side)]
             if tr and coin in self.legs and self.legs[coin].get('b'):
-                self.legs[coin]['b'].update(px1=float(tr[-1].get('price') or 0), fee1=float(tr[-1].get('fee_amount') or 0))
+                last = max(tr, key=lambda x: float(x.get('timestamp') or 0)) if any(x.get('timestamp') for x in tr) else tr[-1]
+                oid = last.get('order_id')
+                fl = [x for x in tr if oid and x.get('order_id') == oid] or [last]
+                qf = sum(float(x.get('quantity') or 0) for x in fl)
+                px1 = (sum(float(x.get('price') or 0) * float(x.get('quantity') or 0) for x in fl) / qf if qf
+                       else float(last.get('price') or 0))
+                self.legs[coin]['b'].update(px1=px1, fee1=sum(float(x.get('fee_amount') or 0) for x in fl),
+                                            conv1=float(last.get('settlement_currency_conversion_price') or 0))
         except Exception:
             pass
         return True
@@ -26456,16 +26498,19 @@ class C550OrderPath:
         return ok_b and ok_d
 
     # ── the emergency stops ──────────────────────────────────────────────────
-    def stop_price(self, coin, acct, half):
-        """mark x (1 + (account - 0.25 x half) / leg notional), on the SHORT leg's exchange"""
+    def stop_price(self, coin, acct, half, rates=None):
+        """mark x (1 + (account - 0.25 x half) / leg notional), on the SHORT leg's exchange. C551: one unit throughout,
+        the ledger's dollar (Rs 85): the account and its half are in it; a CoinDCX leg's USDT notional is converted at
+        its own rate (x conv / Delta's rate), so at the stop the account in RUPEES is at 25% of its half"""
         leg = self.legs.get(coin) or {}
         lvl = float(getattr(self.cfg, 'C550_STOP_LEVEL', 0.25))
+        rd, rb = rates or self._rt()
         if leg.get('side', 0) > 0:
             mk = self._mark_d(coin)
             n = abs(leg['d']['k']) * leg['d']['cv'] * mk
         else:
             mk = self._mark_b(coin)
-            n = abs(leg['b']['qty']) * mk
+            n = abs(leg['b']['qty']) * mk * float(leg['b'].get('conv') or rb) / rd
         if n <= 0 or mk <= 0:
             return None
         return mk * (1 + (acct - lvl * half) / n)
@@ -26473,12 +26518,13 @@ class C550OrderPath:
     def place_stops(self, day, accts):
         """a resting reduce-only stop on every short leg, re-placed (old one cancelled first)"""
         lines = []
+        rates = self._rt()
         for coin, leg in sorted(self.legs.items()):
             if not leg.get('side') or leg.get('closing'):
                 continue
             v = 'd' if leg['side'] > 0 else 'b'
             acct, half = accts.get(v, (0.0, 0.0))
-            sp = self.stop_price(coin, acct, half)
+            sp = self.stop_price(coin, acct, half, rates)
             if sp is None:
                 continue
             self._cancel_stops(coin)
@@ -26653,7 +26699,8 @@ class C550OrderPath:
 
     # ── the tax journal: the paper ledger's exact 'close' record ──────────────
     def book_rent(self, coin, d_recs, b_recs):
-        """rent from the exchanges' own records, each in the IST month it was paid: [(ms, $ amount)] per exchange"""
+        """rent from the exchanges' own records, each in the IST month it was paid: [(ms, amount)] per exchange, both
+        in ledger dollars (Rs 85 each; C551: CoinDCX's rupees / Delta's rate)"""
         p = (self.led['pairs'] or {}).get(coin)
         if not p:
             return
@@ -26683,11 +26730,17 @@ class C550OrderPath:
         ld, lb = leg.get('d') or {}, leg.get('b') or {}
         dpx1 = float(ld.get('px1') or 0) or self._mark_d(coin) or p['d_px']      # the exit fills' own prices
         bpx1 = float(lb.get('px1') or 0) or self._mark_b(coin) or p['b_px']
+        # C551: CoinDCX in ledger dollars -- b_qty is already Delta-equivalent at the entry's rate; the exit's own rate
+        # (if CoinDCX moved its Rs 102) scales the price result and the exit fee (USDT)
+        rd = float(p.get('d_rate') or 0) or self._rt()[0]
+        conv0 = float(p.get('b_conv') or 0) or self._rt()[1]
+        conv1 = float(lb.get('conv1') or 0) or conv0
         px_d = p['d_qty'] * p['cv'] * (dpx1 - p['d_px'])
-        px_b = p['b_qty'] * (bpx1 - p['b_px'])
+        px_b = p['b_qty'] * (bpx1 - p['b_px']) * conv1 / conv0
         n_out = abs(p['d_qty']) * p['cv'] * dpx1
         cost_d = float(ld['fee1']) if ld.get('fee1') is not None else n_out * 0.0005 * 1.18
-        cost_b = float(lb['fee1']) if lb.get('fee1') is not None else abs(p['b_qty']) * bpx1 * 0.0005 * 1.18
+        cost_b = (float(lb['fee1']) * conv1 / rd if lb.get('fee1') is not None
+                  else abs(p['b_qty']) * bpx1 * 0.0005 * 1.18 * conv1 / conv0)
         p['pnl'] += px_d + px_b - cost_d - cost_b
         rec = dict(t='close', coin=coin, why=why, venue=jx.get('venue') or 'CoinDCX', side=int(p['side']),
                    d_sym=p['d_sym'], d_qty=float(p['d_qty']), b_qty=float(p['b_qty']), cv=float(p['cv']),
@@ -26743,23 +26796,30 @@ class C550OrderPath:
                   + (f"; would be blocked live: {'; '.join(self.live_blockers())}" if not self.live() else '') + real)
 
     def _real_accts(self):
-        """each REAL account's equity in dollars (C540's reads) and its half of the start; {} if unreadable"""
+        """each REAL account's equity in ledger dollars (C540's reads) and its half of the start; {} if unreadable.
+        C551: Rs 85 each throughout -- CoinDCX's futures wallets: rupees / Delta's rate, USDT x CoinDCX's rate / Delta's;
+        Delta's net equity is in dollars, unless its wallets hold only rupees (then / its rate). Both units are checked
+        on the pilot's first deposit (B4)."""
         snap = getattr(getattr(self.bot, 'c540', None), 'snap', {}) or {}
         d, b = snap.get('delta_india') or {}, snap.get('coindcx') or {}
         if not (d.get('ok') and b.get('ok')):
             return {}
+        rd, rb = self._rt()
         half = float(self.led.get('start_equity') or 0) / 2.0
         de = float(d.get('equity') or 0)
-        be = sum(float(x.get('balance') or 0) for x in b.get('wallets') or [] if x.get('asset') in ('USDT',)) + \
-            sum(float(x.get('balance') or 0) / 102.0 for x in b.get('wallets') or [] if x.get('asset') == 'INR')
+        da = {str(x.get('asset') or '').upper() for x in d.get('wallets') or []}
+        if 'INR' in da and not (da & {'USD', 'USDT'}):
+            de /= rd
+        be = sum(float(x.get('balance') or 0) * rb / rd for x in b.get('wallets') or [] if x.get('asset') == 'USDT') + \
+            sum(float(x.get('balance') or 0) / rd for x in b.get('wallets') or [] if x.get('asset') == 'INR')
         return {'d': (de, half), 'b': (be, half)} if half > 0 and (de > 0 or be > 0) else {}
 
     def _rent(self, now_ms):
-        """each pair's rent since its last booking, from the exchanges' OWN funding records (live and the tests);
-        CoinDCX's INR amounts at its live rupee rate"""
+        """each pair's rent since its last booking, from the exchanges' OWN funding records (live and the tests).
+        C551: CoinDCX's records are in rupees (price_in_inr 1.0): booked as rupees / Delta's rate, the ledger's dollar"""
         if not (self.led.get('pairs') or {}):
             return
-        rates = _c550_rates() or (85.0, 102.0)
+        rates = self._rt()
         try:
             dt_ = self.venue('delta').call('GET', '/v2/wallet/transactions') or []
             bt_ = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions/transactions',
@@ -26773,7 +26833,8 @@ class C550OrderPath:
             dr = [(int(x.get('created_at') or 0), float(x.get('amount') or 0)) for x in dt_
                   if x.get('transaction_type') == 'funding' and x.get('product_symbol') == p['d_sym']
                   and since <= int(x.get('created_at') or 0) < now_ms]
-            br = [(int(x.get('created_at') or 0), float(x.get('amount') or 0) / rates[1]) for x in bt_
+            br = [(int(x.get('created_at') or 0), float(x.get('amount') or 0) * float(x.get('price_in_inr') or 1.0) / rates[0])
+                  for x in bt_
                   if x.get('stage') == 'funding' and x.get('pair') == f'B-{coin}_USDT'
                   and since <= int(x.get('created_at') or 0) < now_ms]
             if dr or br:

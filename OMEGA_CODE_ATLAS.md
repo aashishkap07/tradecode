@@ -13,7 +13,7 @@ checks get_session (`flag_settings.ultracode` true AND `session_context.model` /
 claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. **The full timeline (every routine with its IST time, the gates' dates, the operator's to-dos): `reports/2026-10-09_timeline.md`.**
 Routines (all fire into this session; the 9 active ones re-read 9 Oct): DONE first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
 (5 Oct 01:05 UTC); DONE B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
-(1st, 09:56 IST); DONE Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (fired 22 Oct, run 23 Oct: nothing passed, C547 information only); DONE B2 `trig_01XjNNKCDMzqwQjXGge7753r` (fired 15 Nov, finished 20 Nov: C550, the order path, dry; cross margin on CoinDCX's rupee futures unconfirmed); end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
+(1st, 09:56 IST); DONE Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (fired 22 Oct, run 23 Oct: nothing passed, C547 information only); DONE B2 `trig_01XjNNKCDMzqwQjXGge7753r` (fired 15 Nov, finished 20 Nov: C550, the order path, dry, deployed 20 Nov 10:14 IST; C551 fixed its CoinDCX units the same day; cross margin on CoinDCX's rupee futures unconfirmed); end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
 `trig_01657znZVsvZxzQZrunVxz5H`.
@@ -215,7 +215,63 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
-- **C550 (B2, 15-20 Nov 2026; pushed, not yet deployed): THE TWO-EXCHANGE ORDER PATH, BUILT AND TESTED DRY. ONE
+- **C551 (20 Nov 2026 ~11:00 IST; pushed, not yet deployed): C550'S COINDCX AMOUNTS IN THE LEDGER'S UNIT.** Found by
+  checking the operator's 10:14 IST server lines by hand (`reports/2026-11-15_b2_order_path.md` section 10).
+  - **The bug:**
+    - The ledger's dollar is Delta's, ₹85 (the paper ledger; `omega_tax_statement.py`: "a pair's rupee figures are its
+      dollar figures x 85").
+    - CoinDCX's rupee futures quote prices and fees in USDT at ₹102. Each order and fill carries
+      `settlement_currency_conversion_price`; the docs say "fee_amount value is in USDT for INR Futures".
+    - CoinDCX's `positions/transactions` (rent) are in rupees (`price_in_inr` 1.0).
+    - C550 booked CoinDCX USDT, and rupees ÷ 102, as ledger dollars. So:
+      - **every CoinDCX emergency stop left its account at 10.3% of its half, not 25%** (NOT 0.0025113 vs
+        0.00214216 at 10:14 prices; Delta's five were right);
+      - live, the journal's CoinDCX rent, fees and price results would have been ~17% off CoinDCX's statements;
+      - `_real_accts` mixed a USDT balance with a ledger-dollar half.
+    - T12 and T23's expectations had the same slip (T23: "₹2.04 = $0.02").
+  - **The fix:**
+    - `C550OrderPath._rt()`: rates read live, else the last good read, else 85/102; for converting only.
+      `open_pair` still needs a live read.
+    - `open_pair`:
+      - `conv0` = the order's own rate;
+      - ledger `b_qty` = real × conv0 / 85 (Delta-equivalent, as the paper ledger), plus `b_real`, `b_conv`, `d_rate`;
+      - `fee_b` = USDT fee × conv0 / 85;
+      - the leg keeps the real quantity and `conv`;
+      - the dry sim's rate follows the live one.
+    - `_dcx_exit` reads only the closing side's fills of the latest such order (part-fills averaged, fees added;
+      before, the last trade listed, possibly the entry's) and records `conv1`. `_journal_close`: `px_b` × conv1/conv0;
+      the exit fee × conv1 / 85.
+    - `_rent`: CoinDCX amount × `price_in_inr` / 85.
+    - `stop_price`: a CoinDCX leg's notional × conv / 85.
+    - `_real_accts`: CoinDCX INR / 85 + USDT × 102 / 85; Delta's `net_equity` as dollars, ÷ 85 only if its wallets
+      hold only INR.
+    - `_C550Sim` reports `settlement_currency_conversion_price` on orders and fills, and `price_in_inr` on
+      transactions.
+  - **Tests:** T12/T23 expectations corrected (noted in the file); 9 new checks (G2, added after the bug):
+    - the ledger quantity; the fee at ₹102;
+    - each CoinDCX stop at exactly 25% of the half in rupees, and Delta's too;
+    - a close in rupees (Delta +₹850.00 vs CoinDCX −₹846.60 on a +10% move);
+    - the fees in rupees; the statement's CoinDCX rent, GST and price in CoinDCX's rupees;
+    - the real balances converted; the exit read from its own fills even when listed newest-first.
+    - **65 checks**; battery 69/69 on the final files (c550 re-run alone after a mid-edit run; c539, c540,
+      c544-c550 and the boot test re-run, `OMEGA C551` booted); the preview re-run is clean.
+  - **To confirm on the pilot's first real fills (B4):** Delta's `net_equity` unit; what CoinDCX's futures-wallet
+    `balance` includes; how each exchange shows GST on rent paid.
+- **20 Nov server check (the operator's 10:34/10:46/10:49 IST screens; logs push 04:47 UTC):**
+  - **C550 deployed 10:14:33 IST.**
+    - Its dry day: 10 pairs CoinDCX-first, Delta contracts = the plan's on all 10, rupee legs within ₹5, 10 stops;
+      real accounts empty.
+  - **The page:**
+    - $1,051.21 = $1,051.08 + rent settled at 04:00 UTC (recomputed $0.2419; page $0.24) − $0.11 prices;
+    - accounts $560.20 / $491.01;
+    - after tax $1,035.23;
+    - the copies' scoreboard reproduced from their ledgers (base = equity + transfer charges at the copy's start;
+      $14.64 is $14.63 + rounding);
+    - the jump line = C547's formula at the 06:00 marks.
+  - **Server:** "System restart required" (reboot with the C551 deploy); 15 non-security updates waiting (optional).
+  - **Oracle:** the Pay As You Go upgrade is "in progress" (10:46 IST; e-mail to follow).
+  - **Cross margin:** not yet answered.
+- **C550 (B2, 15-20 Nov 2026; deployed 20 Nov 10:14 IST; C551 fixes its CoinDCX units): THE TWO-EXCHANGE ORDER PATH, BUILT AND TESTED DRY. ONE
   BLOCKER: CROSS MARGIN ON COINDCX'S RUPEE FUTURES.**
   Report: `reports/2026-11-15_b2_order_path.md`; pre-registration (26 tests, pushed first, 780c15d):
   `reports/2026-11-15_b2_preregistration.md`. Routine `trig_01XjNNKCDMzqwQjXGge7753r` (fired 15 Nov; finished 20 Nov).

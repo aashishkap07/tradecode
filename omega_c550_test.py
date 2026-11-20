@@ -303,8 +303,11 @@ ok("T12: Delta's stop on the short AAA leg: stop_loss_order, reduce-only, on the
    and abs(float(ds['stop_price']) - sp_a) < 1e-6, f"{ds['stop_price']} vs {sp_a:.6f}")
 tp = [s for s in SEQ if s[2].endswith('/positions/create_tpsl')][-1][3]
 qb = abs(EX['coindcx'].pos['BBB']['qty'])
-sp_b = 0.5 * (1 + (520.0 - 0.25 * 500.0) / (qb * 0.5))
-ok("T12: CoinDCX's stop on the short BBB leg: the position's own stop loss (stop_market), at the same formula",
+# C551 (20 Nov): this expectation first mixed units like the code (the leg's USDT notional against an account in the
+# ledger's Rs 85 dollars); the pre-registered meaning -- the account at 25% of its half -- needs the leg in ledger dollars
+sp_b = 0.5 * (1 + (520.0 - 0.25 * 500.0) / (qb * 0.5 * 102.0 / 85.0))
+ok("T12: CoinDCX's stop on the short BBB leg: the position's own stop loss (stop_market), at the same formula "
+   "(C551: the leg's USDT at Rs 102, in ledger dollars of Rs 85)",
    tp['id'] == EX['coindcx'].pos['BBB']['id'] and tp['stop_loss']['order_type'] == 'stop_market'
    and abs(float(tp['stop_loss']['stop_price']) - sp_b) < 1e-6, f"{tp}")
 old = q.legs['AAA']['stop']['id']
@@ -406,12 +409,15 @@ q.open_pair('AAA', 1, 50, 1.0, '2026-11-19')
 pp = q.led['pairs']['AAA']
 t0 = pp['fund_from']
 EX['delta'].funding = [(t0 + 1000, 'AAA', 0.06), (t0 + 2000, 'AAA', -0.01)]
-EX['coindcx'].funding = [(t0 + 1500, 'AAA', -2.04)]                          # INR, at Rs 102 = -$0.02
+EX['coindcx'].funding = [(t0 + 1500, 'AAA', -2.04)]                          # INR
 q._rent(t0 + 10 ** 7)
 row = list(pp['jx']['fm'].values())[0]
-ok("T23: rent from the exchanges' own records, by IST month: Delta +$0.06 / -$0.01 (+18% GST), CoinDCX Rs -2.04 = $-0.02",
-   abs(row[0] - 0.06) < 1e-9 and abs(row[1] + 0.01) < 1e-9 and abs(row[2] + 0.0018) < 1e-9 and abs(row[4] + 0.02) < 1e-9,
-   str(row))
+# C551 (20 Nov): first written as Rs 2.04 / 102 = $0.02, the code's own slip; the ledger's dollar is Rs 85 (the paper
+# ledger's and the tax statement's), so CoinDCX's Rs -2.04 is -$0.024
+ok("T23: rent from the exchanges' own records, by IST month: Delta +$0.06 / -$0.01 (+18% GST), CoinDCX Rs -2.04 = $-0.024 "
+   "(C551: rupees / 85, the ledger's dollar)",
+   abs(row[0] - 0.06) < 1e-9 and abs(row[1] + 0.01) < 1e-9 and abs(row[2] + 0.0018) < 1e-9 and abs(row[4] + 2.04 / 85) < 1e-9
+   and abs(row[5] + 2.04 / 85 * 0.18) < 1e-9, str(row))
 paper_rec = []
 stub = types.SimpleNamespace(cfg=cfg, _c544_log=paper_rec.append, venue=lambda: 'coindcx', v2=lambda: 'CoinDCX')
 om.C524CrossVenue._c544_close(stub, 'AAA', copy.deepcopy(pp), 'x', 0, 1.0, 0.0, 0.0)
@@ -435,6 +441,85 @@ try:
 except Exception as ex:
     okj = False; print('    ', type(ex).__name__, ex)
 ok("T23: omega_tax_statement.py --live (its build) reads the order path's ledger without error, the close in it", okj)
+
+print("\nG2. C551: ONE UNIT FOR THE LEDGER (added 20 Nov 2026 after the operator's 10:14 IST server lines; regression "
+      "checks for a bug found then, not pre-registered)")
+q = live_world('units')
+q.led['start_equity'] = 1000.0
+q.open_pair('BBB', -1, 200, 1.0, '2026-11-16')                               # long Delta / short CoinDCX
+lb_, pb_ = q.legs['BBB'], q.led['pairs']['BBB']
+qb = abs(EX['coindcx'].pos['BBB']['qty'])
+ob_ = [o for o in EX['coindcx'].orders.values() if o['pair'] == 'B-BBB_USDT'][-1]
+ok("C551: the ledger's CoinDCX quantity is Delta-equivalent (real x 102/85); the real one stays in the leg (for the exchange)",
+   abs(abs(pb_['b_qty']) - qb * 102 / 85) < 1e-9 and abs(lb_['b']['qty']) == qb and abs(pb_['b_real']) == qb
+   and pb_['b_conv'] == 102.0 and pb_['d_rate'] == 85.0, f"real {qb:g}, ledger {pb_['b_qty']:.4f}")
+ok("C551: CoinDCX's entry fee (USDT, as CoinDCX reports it) is booked at Rs 102 in ledger dollars of Rs 85",
+   abs(pb_['jx']['fee_b'] * 85 - float(ob_['fee_amount']) * 102) < 1e-9, f"{ob_['fee_amount']} USDT")
+q.place_stops('2026-11-16', {'d': (500.0, 500.0), 'b': (480.0, 500.0)})
+spb = float([s for s in SEQ if s[2].endswith('/positions/create_tpsl')][-1][3]['stop_loss']['stop_price'])
+left = (480.0 * 85 - qb * (spb - 0.5) * 102) / (500.0 * 85)
+ok("C551: at CoinDCX's emergency stop, that account in RUPEES is at 25% of its half (not ~10%)", abs(left - 0.25) < 1e-6,
+   f"stop {spb:.6g}: {100 * left:.2f}% of the half")
+q.open_pair('AAA', 1, 50, 1.0, '2026-11-16')                                 # short Delta
+q.place_stops('2026-11-16', {'d': (450.0, 500.0), 'b': (480.0, 500.0)})
+spa = float([s for s in creates('delta') if s[3].get('stop_order_type')][-1][3]['stop_price'])
+ok("C551: at Delta's emergency stop, that account is at 25% of its half (unchanged)",
+   abs((450.0 - 50 * 1.0 * (spa - 2.0)) / 500.0 - 0.25) < 1e-6, f"stop {spa:.6g}")
+t0 = pb_['fund_from']
+EX['coindcx'].funding = [(t0 + 1500, 'BBB', -5.10)]                          # Rs -5.10 of rent paid on CoinDCX
+EX['delta'].funding = []
+q._rent(t0 + 10 ** 7)
+fee_in_usdt = float(ob_['fee_amount'])
+MK['BBB'] = (0.55, 0.55); sync_marks()                                      # both prices +10%
+q.close_pair('BBB', 'spread under 10%/yr', '2026-11-20')
+recb = q.led['journal'][-1]
+fee_out_usdt = float([x for x in EX['coindcx'].fills if x['coin'] == 'BBB'][-1]['px']) * qb * 0.0005 * 1.18
+ok("C551: the close in RUPEES: Delta's price result x 85 and CoinDCX's real one (USDT x 102); the pair nets to under one "
+   "CoinDCX step", abs(recb['px_d'] * 85 - 200 * 1.0 * 0.05 * 85) < 1e-6 and abs(recb['px_b'] * 85 + qb * 0.05 * 102) < 1e-6
+   and abs(recb['px_d'] + recb['px_b']) * 85 <= 1.0 * 0.55 * 102, f"Delta Rs {recb['px_d'] * 85:.2f}, CoinDCX Rs {recb['px_b'] * 85:.2f}")
+ok("C551: CoinDCX's fees in RUPEES = its fills' USDT fees x 102 (entry + exit)",
+   abs(recb['fee_b'] * 85 - (fee_in_usdt + fee_out_usdt) * 102) < 1e-6, f"Rs {recb['fee_b'] * 85:.4f}")
+MK['BBB'] = (0.5, 0.5); sync_marks()
+q.save()
+try:
+    d = ts.load(os.path.join(om.BASE_PATH, 'c550_live.json'))
+    o = ts.build(d, '2026-27', True, 85.0)
+    itb = next(it for it in o['closed'] if it['rec'].get('coin') == 'BBB')
+    lgb = itb['legs']['b']
+    okr = abs(lgb['rent_out'] * 85 + 5.10) < 1e-6 and abs(lgb['rent_gst'] * 85 + 5.10 * 0.18) < 1e-6 \
+        and abs(lgb['price'] * 85 + qb * 0.05 * 102) < 1e-6
+    det = f"rent Rs {lgb['rent_out'] * 85:.2f}, GST Rs {lgb['rent_gst'] * 85:.3f}, price Rs {lgb['price'] * 85:.2f}"
+except Exception as ex:
+    okr, det = False, f"{type(ex).__name__}: {ex}"
+ok("C551: the tax statement (--live build) shows CoinDCX's rent, its GST and its price result in the exchange's own rupees",
+   okr, det)
+q = live_world('exit_px')
+q.open_pair('AAA', 1, 50, 1.0, '2026-11-19')                                 # long CoinDCX: its exit is a sell
+_orig = EX['coindcx']._dcx
+def _newest_first(method, path, body, params, part):
+    r = _orig(method, path, body, params, part)
+    return om._C550Resp(200, list(reversed(r.json()))) if path.endswith('/trades') else r
+EX['coindcx']._dcx = _newest_first
+MK['AAA'] = (2.2, 2.2); sync_marks()
+q.close_pair('AAA', 'spread under 10%/yr', '2026-11-20')
+rx = q.led['journal'][-1]
+qa = abs(rx['b_qty']) * 85 / 102
+ok("C551: the exit's price and fee come from the exit's OWN fills (the closing side), even when CoinDCX lists the newest "
+   "first -- never the entry's fill", rx['b_px1'] == 2.2 and abs(rx['fee_b_out'] * 85 - round(qa * 2.2 * 0.0005 * 1.18, 8) * 102) < 1e-6,
+   f"exit at {rx['b_px1']}")
+MK['AAA'] = (2.0, 2.0); sync_marks()
+q.led['start_equity'] = 1000.0
+bot.c540.snap = snap_ok()
+bot.c540.snap['delta_india'].update(equity=500.0, wallets=[dict(asset='USD', balance=500.0)])
+bot.c540.snap['coindcx']['wallets'] = [dict(asset='INR', balance=42500.0)]
+ra1 = q._real_accts()
+bot.c540.snap['coindcx']['wallets'] = [dict(asset='USDT', balance=42500.0 / 102)]
+bot.c540.snap['delta_india'].update(equity=42500.0, wallets=[dict(asset='INR', balance=42500.0)])
+ra2 = q._real_accts()
+ok("C551: the REAL balances in ledger dollars: CoinDCX Rs 42,500 or 416.67 USDT = $500; Delta $500 or Rs 42,500 = $500",
+   abs(ra1['b'][0] - 500) < 1e-9 and abs(ra1['d'][0] - 500) < 1e-9 and abs(ra2['b'][0] - 500) < 1e-6
+   and abs(ra2['d'][0] - 500) < 1e-9 and ra1['b'][1] == 500.0, f"{ra1} / {ra2}")
+bot.c540.snap = snap_ok()
 
 print("\nH. IN THE BOT; THE READ-ONLY CLIENT UNTOUCHED")
 SRC = open(os.path.join(REPO, 'omega_v60_reconstructed.py')).read()
