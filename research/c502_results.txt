@@ -1,0 +1,24 @@
+================================================================================================================
+C502 S1 SPOT TREND WITH BITGET SPOT'S REAL MINIMUMS | top 20 crypto, vol set point 20%, gross <= 1, 0.10% cost, cash 5% | 2020-04-11 .. 2026-08-31
+================================================================================================================
+  $6 floor (C501, as admitted)
+      CAGR +29.9%/yr = +2.20%/month | Sharpe 1.18 | max DD 27.0% | excess NW t +2.19, quarters+ 4/4, holdout +14.1%/yr -> PASSES C501's bars
+      exposure 23% average, 4.1 coins held on average, turnover 40.3x/yr | months: mean +2.52%, median +0.40%, >= +2% 31%, worst -10.2%, best +36.6%
+      by year: 2020 +39%  2021 +77%  2022 -6%  2023 +46%  2024 +20%  2025 +7%  2026 +23%
+  $6 floor + $1 order minimum
+      CAGR +29.8%/yr = +2.19%/month | Sharpe 1.17 | max DD 27.2% | excess NW t +2.17, quarters+ 3/4, holdout +13.8%/yr -> PASSES C501's bars
+      exposure 23% average, 4.1 coins held on average, turnover 39.9x/yr | months: mean +2.51%, median +0.41%, >= +2% 31%, worst -10.4%, best +36.7%
+      by year: 2020 +38%  2021 +77%  2022 -7%  2023 +46%  2024 +21%  2025 +6%  2026 +23%
+  $2 floor + $1 order minimum (C502)
+      CAGR +36.0%/yr = +2.59%/month | Sharpe 1.26 | max DD 28.8% | excess NW t +2.47, quarters+ 3/4, holdout +13.6%/yr -> PASSES C501's bars
+      exposure 28% average, 7.2 coins held on average, turnover 44.0x/yr | months: mean +2.98%, median -0.28%, >= +2% 32%, worst -10.0%, best +36.1%
+      by year: 2020 +45%  2021 +126%  2022 -13%  2023 +52%  2024 +27%  2025 +5%  2026 +24%
+  no minimum at all (reference)
+      CAGR +36.1%/yr = +2.60%/month | Sharpe 1.26 | max DD 28.5% | excess NW t +2.47, quarters+ 3/4, holdout +12.9%/yr -> PASSES C501's bars
+      exposure 28% average, 8.1 coins held on average, turnover 44.7x/yr | months: mean +3.00%, median -0.44%, >= +2% 32%, worst -10.8%, best +36.0%
+      by year: 2020 +45%  2021 +135%  2022 -12%  2023 +50%  2024 +25%  2025 +4%  2026 +22%
+
+  both pots with $6 floor (C501, as admitted)        : +2.47%/month, Sharpe 1.78, max DD 19.3%, worst month -5.8%, months >= +2% 44%, correlation +0.14
+  both pots with $2 floor + $1 order minimum (C502)  : +2.67%/month, Sharpe 1.81, max DD 22.2%, worst month -5.7%, months >= +2% 45%, correlation +0.16
+
+  DECISION (pre-registered): the $2 floor PASSES C501's four bars -> ADOPT it in the spot pot

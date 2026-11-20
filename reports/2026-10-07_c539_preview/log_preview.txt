@@ -1,0 +1,129 @@
+--- 1. LOAD (OMEGA C539, the server's 4 Oct state) ---
+--- 2. LIVE PRICES ---
+(preview) Binance marks 741 (ok), Delta tickers 226 (ok), Binance prices taken with Delta's: 741 [4s]
+--- 3. BOOT: WHAT IS RUNNING ---
+13:14:09 | 📊 C532 YOUR PLAN (paper until you go live): Delta vs Pi42 funding gap (both in rupees) $1000 = $1000 of your $1000
+13:14:09 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades the Binance paper account (an experiment, not your plan):
+13:14:09 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+13:14:09 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+13:14:09 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+13:14:09 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at Binance's own rate (read every 6 h; 6.69% until the first read) every minute · rule tournament (C510, 9 rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same book on Delta Exchange India, $500 (C521), an experiment · Delta vs Pi42 funding spread, both legs, $1000 (C532: both in rupees; Pi42's rates read from Binance, its source)
+13:14:09 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+--- 4. THE CROSS-VENUE TRADE'S NEXT DAILY RUN, DONE NOW ON LIVE DATA ---
+(preview) the run failed: StopIteration: skipped (OMEGA_PREVIEW_NORUN)
+(preview) C538 Checks every 8 hours: copied 2026-10-06, last decision slot 2026-10-07 08:00 UTC, 10 pairs, 10 the same as the daily rule's, $998.81 (daily $998.41)
+(preview) C538 Uses a 3-day average: copied 2026-10-06, last decision slot 2026-10-07 00:00 UTC, 10 pairs, 10 the same as the daily rule's, $998.41 (daily $998.41)
+(preview) sides now: Delta $520.34 (1.041), Pi42 $478.36 (0.957)
+--- 5. THE 8-MINUTE STATUS BLOCK ---
+
+
+  13:14  up 0h00m  daily book ----------------------------------------
+  PLAN      $998.70 of $1,000.00 ($-1.30)
+            after tax on net profit $998.70
+            Delta vs Pi42 funding gap $998.70  paper
+  BELOW     experiments, not your money
+  EQUITY    $498.88  unreal $-2.50
+  OPEN      no intraday positions  book holds 10 (BOOK row)
+            free $436.66 after open P&L
+  CARRY     $499.07 (-0.15%)  8 held  paper only
+  SPOT      $249.36 (-0.25%)  1 held  3% invested  cash earns 6.69%
+            paper pot
+  SAVINGS   idle $312.72 (0%)  at 6.69% +$0.36 so far  ~$1.74/month
+            paper
+  BFUSD     wallet $499.92 at 7.66%  +$0.55 so far  ~$3.19/month
+            vs Savings $1.74  paper
+  DELTA     $500.67 (+0.13%)  8 held  fees $0.38  funding $+0.17
+            paper experiment: the book on Delta
+  XVENUE    $998.41 (-0.16%)  10 pairs  funding $+5.55  fees $4.87
+            paper, Delta vs Pi42
+  TESTS     every 8 h: ahead $0.01, 1 day  3-day avg: level $0.00, 1 day
+            paper, vs your daily rule
+  BOOK      10 pos gross $297.13 (0.60x)  open $-2.50  funding $-0.05
+            vol 27% top 20  rebal 2026-10-07
+  CONTEXT   since 01 Oct $-1.12 (-0.22%) in 6.4d  normal -2.8% to +5.7%
+            bottom 41%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   6d from 2026-10-01  base -0.27%  N2 -0.52%  N3 -0.22%
+            N2+N3 -0.40%  +K4 -0.41%  +GK* -0.36%  +K4+GK -0.30%
+            +GK+DD -0.10%  +GK+XA +0.46%
+  DATA      on time
+  SESSION   $-2.50 -0.50%
+  DAY       barrier not yet derived (no day anchor)
+  RECORD    book closed 9  5W 4L  net $+1.58  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  --------------------------------------------------------------------
+
+--- 6. THE PLAN TOTAL ---
+{
+ "plan": {
+  "start": 1000.0,
+  "eq": 998.7,
+  "pnl": -1.3,
+  "pct": -0.13,
+  "n": 1
+ },
+ "tax": {
+  "rate": 0.312,
+  "pnl": -1.3,
+  "tax": 0.0,
+  "after": -1.3,
+  "eq_after": 998.7,
+  "business": -1.3,
+  "tax_business": 0.0,
+  "vda": 0,
+  "tax_vda": 0.0,
+  "vda_rate": 0.312
+ },
+ "budget": {
+  "invest": 1000.0,
+  "reserve": 0.0
+ },
+ "rows": [
+  [
+   "book",
+   "Main book (futures)",
+   500.0,
+   498.88,
+   false
+  ],
+  [
+   "savings",
+   "Savings on the book's idle cash",
+   0.0,
+   0.36,
+   false
+  ],
+  [
+   "spot",
+   "Spot pot",
+   250.0,
+   249.36,
+   false
+  ],
+  [
+   "carry",
+   "Funding carry (spot + perp)",
+   499.83,
+   499.07,
+   false
+  ],
+  [
+   "delta",
+   "Same book on Delta India",
+   500.0,
+   500.67,
+   false
+  ],
+  [
+   "xvenue",
+   "Delta vs Pi42 funding gap (both in rupees)",
+   1000.0,
+   998.7,
+   true
+  ]
+ ]
+}
+13:14:09 | 🌐 Remote control on http://0.0.0.0:44673 — TOKEN REQUIRED
+13:14:09 |    📱 Local network: http://192.0.2.2:44673/?t=<your token> (this machine's own address)
+13:14:09 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+13:14:09 |        See deploy/DEPLOY.md — one command, no open ports, free.

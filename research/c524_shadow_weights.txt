@@ -1,0 +1,21 @@
+295 coins (13 stock/metal/oil perps left out), 50376 hours, 2021-01-01 .. 2026-09-30; universe max 40  [101s]
+   returns/flow 20s
+   volume 112s
+   beta/funding 130s
+   chaos 176s
+   markov 188s
+   done 191s
+model: 64 walk-forward fits  [458s]
+
+THE SHADOW'S WEIGHTING, out of sample 2021-07 .. 2026-08 (0.08%/turnover, real funding)
+  M1   net   -218.3%/yr  Sharpe -9.53  t -20.16  | hourly sd 0.283%  worst hour -7.26%  worst day -7.69%  |hour| 99.9% 1.86%  kurtosis 2133.8  | gross +30%/yr (Sharpe +1.31)  cost 249%/yr
+       by year: 2021 -92.2%  2022 -191.6%  2023 -252.8%  2024 -197.5%  2025 -198.5%  2026 -214.6%
+  M1v  net   -228.5%/yr  Sharpe -13.23  t -28.56  | hourly sd 0.199%  worst hour -5.48%  worst day -6.04%  |hour| 99.9% 1.22%  kurtosis  369.7  | gross +31%/yr (Sharpe +1.74)  cost 259%/yr  | Sharpe diff vs M1 -3.71 (p 1.000)
+       by year: 2021 -105.4%  2022 -209.6%  2023 -259.2%  2024 -215.1%  2025 -209.5%  2026 -202.1%
+  M1x  net   -217.0%/yr  Sharpe -11.11  t -24.52  | hourly sd 0.212%  worst hour -4.73%  worst day -7.74%  |hour| 99.9% 1.38%  kurtosis   29.4  | gross +33%/yr (Sharpe +1.64)  cost 249%/yr  | Sharpe diff vs M1 -1.59 (p 1.000)
+       by year: 2021 -95.9%  2022 -206.6%  2023 -256.4%  2024 -198.3%  2025 -193.5%  2026 -189.7%
+  M1x leaves out 1.5% of eligible coin-hours
+  BAR M1v: hourly sd <= 0.8 x M1 yes (0.70x), worst day better yes, Sharpe diff >= 0 NO -> NOT PASSED
+  BAR M1x: hourly sd <= 0.8 x M1 yes (0.75x), worst day better NO, Sharpe diff >= 0 NO -> NOT PASSED
+  added to the shadow: none.  A trading candidate needs net t >= 2: M1 t -20.16, M1v t -28.56, M1x t -24.52
+[487s]

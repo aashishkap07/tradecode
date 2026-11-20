@@ -1,0 +1,137 @@
+--- 1. LOAD (OMEGA C532, the server's 4 Oct state) ---
+11:06:36 |    🔀 C530 cross-venue (paper) rebased $500.00 -> $550.00 (x1.1000): equity $549.93, Delta side $214.73, Pi42 side $335.20; Delta contracts ORDER 130->143, AIN 21->23, KAITO 156->172, EDEN 88->97, AIO 13->14, MON 15->17, FARTCOIN 290->319, CROSS 36->40, IO 330->363, STBL 196->216
+--- 2. LIVE PRICES ---
+(preview) Binance marks 740 (ok), Delta tickers 226 (ok), Binance prices taken with Delta's: 740 [4s]
+--- 3. BOOT: WHAT IS RUNNING ---
+11:06:40 | 📊 C532 YOUR PLAN (paper until you go live): Delta vs Pi42 funding gap (both in rupees) $550 + Reserve (unused rupee margin, half on each venue) $50 = $600 of your $600
+11:06:40 | 📊 C503 WHAT IS RUNNING -- the portfolio book trades the Binance paper account (an experiment, not your plan):
+11:06:40 |    RULE   C2 N2+N3 + range vol (GK): C2 = residual momentum, no crowded shorts (N2+N3) -- a FORWARD TEST in paper (C510); the admitted rule is scored beside it in the rule tournament
+11:06:40 |    BOOK   trend (C1) + momentum (C2) + carry (C3), equal risk; vol target 27% from the 20% dial; gross <= 3x equity; top 20 crypto; $6 minimum; 30% band
+11:06:40 |           rebalanced daily 00:05 UTC with market orders (paper fills at the ask/bid, taker 0.05%); 5x cross margin; funding at each coin's own interval; its one limit is the month guard on MARKED equity
+11:06:40 |    PAPER  never touches the account: intraday shadow (C489) hourly · carry (C490) 00:10 UTC · spot pot (C501/C502) $250, spot minimum $5, 00:20 UTC · idle cash -> Savings at Binance's own rate (read every 6 h; 6.69% until the first read) every minute · rule tournament (C510, 9 rules on the same prices) at each rebalance · BFUSD wallet at 7.66% (C521) · the same plan on Delta Exchange India, $500 (C521) · Delta vs Pi42 funding spread, both legs, $550 (C532: both in rupees; Pi42's rates read from Binance, its source)
+11:06:40 |    IDLE   the intraday scanner, the OLD strategy (139 trades, 44W/95L before the 29 Sep 2026 fresh start; it lost after fees): it opens nothing, and its boot description is not printed (OMEGA_ENGINE=intraday runs and describes it)
+--- 4. THE CROSS-VENUE TRADE'S NEXT DAILY RUN, DONE NOW ON LIVE DATA ---
+11:07:33 |    🔀 C531 cross-venue (paper): the monthly re-balance -> Pi42 sends $88.30 to Delta (fee $1.00); now Delta $275.05, Pi42 $274.05. LIVE: make this transfer (rupees, by bank transfer)
+(preview) run: day -2.72 -> $547.21; held before ['AIN', 'AIO', 'CROSS', 'EDEN', 'FARTCOIN', 'IO', 'KAITO', 'MON', 'ORDER', 'STBL']; after ['ARB', 'BEAT', 'FARTCOIN', 'H', 'IO', 'KAITO', 'LIT', 'PIEVERSE', 'STRK', 'TST']
+(preview) entered: ['TST short Delta/long Pi42 +100%/yr', 'BEAT short Delta/long Pi42 +91%/yr', 'STRK long Delta/short Pi42 -90%/yr', 'LIT short Delta/long Pi42 +89%/yr', 'ARB short Delta/long Pi42 +88%/yr', 'H short Delta/long Pi42 +84%/yr', 'PIEVERSE short Delta/long Pi42 +83%/yr']
+(preview) exited: ['ORDER (not on Pi42)', 'AIN (not on Pi42)', 'EDEN (not on Pi42)', 'AIO (not on Pi42)', 'MON (not on Pi42)', 'CROSS (not on Pi42)', 'STBL (not on Pi42)']
+(preview) 95 of 185 coins at 20%/yr+, 56 of them on Pi42 (182 Pi42 coins); skipped (one contract > a leg): []
+(preview) transfer: {'at': '2026-10-04 11:06', 'frm': 'Pi42', 'to': 'Delta', 'amt': 88.3, 'fee': 1.0, 'why': 'the monthly re-balance', 'd': 275.05, 'b': 274.05}
+(preview) sides now: Delta $274.36 (0.998), Pi42 $272.87 (0.992)
+--- 5. THE 8-MINUTE STATUS BLOCK ---
+
+
+  11:07  up 0h00m  daily book ----------------------------------------
+  PLAN      $597.24 of $600.00 ($-2.76)  after tax on net profit $597.24
+            Delta vs Pi42 funding gap $547.24  Reserve $50.00  paper
+  BELOW     experiments, not your money
+  EQUITY    $502.35  unreal $+2.65
+  OPEN      no intraday positions  book holds 9 (BOOK row)
+            free $439.65 after open P&L
+  CARRY     $498.90 (-0.19%)  8 held  paper only
+  SPOT      $249.80 (-0.08%)  2 held  8% invested  cash earns 6.69%
+            paper pot
+  SAVINGS   idle $313.46 (0%)  at 6.69% +$0.18 so far  ~$1.75/month
+            paper
+  BFUSD     wallet $501.49 at 7.66%  +$0.21 so far  ~$3.20/month
+            vs Savings $1.75  paper
+  DELTA     $503.06 (+0.61%)  9 held  fees $0.20  funding $+0.04
+            paper experiment: the book on Delta
+  XVENUE    $547.21 (-0.51%)  10 pairs  funding $+0.95  fees $2.71
+            paper, Delta vs Pi42
+  BOOK      9 pos gross $313.49 (0.62x)  open $+2.65  funding $-0.06
+            vol 27% top 20  rebal 2026-10-04
+  CONTEXT   since 01 Oct $+2.35 (+0.47%) in 3.3d  normal -2.1% to +3.4%
+            top 44%: normal
+  RULE      C2 N2+N3 + range vol (GK)  forward test (paper)
+  TOURNEY   3d from 2026-10-01  base -0.54%  N2 -0.62%  N3 -0.03%
+            N2+N3 -0.04%  +K4 +0.02%  +GK* +0.05%  +K4+GK +0.07%
+            +GK+DD +0.31%  +GK+XA +1.05%
+  DATA      on time
+  SESSION   $+2.65 +0.53%
+  DAY       barrier not yet derived (no day anchor)
+  RECORD    book closed 3  2W 1L  net $-0.09  fees and funding in
+  FEES      no fills yet this run (the book trades at 00:05 UTC)
+  --------------------------------------------------------------------
+
+--- 6. THE PLAN TOTAL ---
+{
+ "plan": {
+  "start": 600.0,
+  "eq": 597.24,
+  "pnl": -2.76,
+  "pct": -0.46,
+  "n": 2
+ },
+ "tax": {
+  "rate": 0.312,
+  "pnl": -2.76,
+  "tax": 0.0,
+  "after": -2.76,
+  "eq_after": 597.24,
+  "business": -2.76,
+  "tax_business": 0.0,
+  "vda": 0,
+  "tax_vda": 0.0,
+  "vda_rate": 0.312
+ },
+ "budget": {
+  "invest": 600.0,
+  "reserve": 50.0
+ },
+ "rows": [
+  [
+   "book",
+   "Main book (futures)",
+   500.0,
+   502.35,
+   false
+  ],
+  [
+   "savings",
+   "Savings on the book's idle cash",
+   0.0,
+   0.18,
+   false
+  ],
+  [
+   "spot",
+   "Spot pot",
+   250.0,
+   249.8,
+   false
+  ],
+  [
+   "carry",
+   "Funding carry (spot + perp)",
+   499.83,
+   498.9,
+   false
+  ],
+  [
+   "delta",
+   "Same book on Delta India",
+   500.0,
+   503.06,
+   false
+  ],
+  [
+   "xvenue",
+   "Delta vs Pi42 funding gap (both in rupees)",
+   550.0,
+   547.24,
+   true
+  ],
+  [
+   "reserve",
+   "Reserve (unused rupee margin, half on each venue)",
+   50.0,
+   50.0,
+   true
+  ]
+ ]
+}
+11:07:33 | 🌐 Remote control on http://0.0.0.0:53155 — TOKEN REQUIRED
+11:07:33 |    📱 Local network: http://192.0.2.2:53155/?t=<your token> (this machine's own address)
+11:07:33 |    🌍 Internet: put a Cloudflare Tunnel in front of this port.
+11:07:33 |        See deploy/DEPLOY.md — one command, no open ports, free.

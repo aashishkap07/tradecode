@@ -1,0 +1,1243 @@
+{
+ "coins": 64,
+ "engine_check": true,
+ "A": {
+  "2025-10-10 base": {
+   "day": "2025-10-10",
+   "sd0": 642.0372144680736,
+   "sb0": 524.9452030258694,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 3,
+   "low_d": 0.5013107046604153,
+   "low_b": 0.9545830274571008,
+   "when_d": "21:22 UTC",
+   "when_b": "13:26 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "JUP on Delta",
+    "KSM on Delta",
+    "NEAR on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "iso_half": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "JUP on Delta",
+    "KSM on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "worst_legs": [
+    [
+     "ZK on Delta",
+     -87.1
+    ],
+    [
+     "AVAAI on CoinDCX",
+     -77.9
+    ],
+    [
+     "ENA on CoinDCX",
+     -76.1
+    ],
+    [
+     "FIL on Delta",
+     -75.4
+    ],
+    [
+     "JUP on Delta",
+     -75.2
+    ]
+   ]
+  },
+  "2025-10-10 K7": {
+   "day": "2025-10-10",
+   "sd0": 678.9092509688079,
+   "sb0": 546.6390198773594,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 4,
+   "low_d": 0.7140509103665265,
+   "low_b": 0.9679434825278941,
+   "when_d": "21:22 UTC",
+   "when_b": "13:26 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "H on CoinDCX",
+    "KSM on Delta",
+    "NEAR on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "iso_half": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "H on CoinDCX",
+    "KSM on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "worst_legs": [
+    [
+     "ZK on Delta",
+     -87.1
+    ],
+    [
+     "AVAAI on CoinDCX",
+     -77.9
+    ],
+    [
+     "ENA on CoinDCX",
+     -76.1
+    ],
+    [
+     "FIL on Delta",
+     -75.4
+    ],
+    [
+     "KSM on Delta",
+     -70.6
+    ]
+   ]
+  },
+  "2025-10-10 K6": {
+   "day": "2025-10-10",
+   "sd0": 673.423215349827,
+   "sb0": 539.5805800522184,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 4,
+   "low_d": 0.699242342347045,
+   "low_b": 0.9662349374038489,
+   "when_d": "21:22 UTC",
+   "when_b": "13:26 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "H on CoinDCX",
+    "KSM on Delta",
+    "NEAR on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "iso_half": [
+    "AIN on CoinDCX",
+    "AVAAI on CoinDCX",
+    "ENA on CoinDCX",
+    "FIL on Delta",
+    "H on CoinDCX",
+    "KSM on Delta",
+    "STX on Delta",
+    "ZK on Delta",
+    "ZRO on Delta"
+   ],
+   "worst_legs": [
+    [
+     "ZK on Delta",
+     -87.1
+    ],
+    [
+     "AVAAI on CoinDCX",
+     -77.9
+    ],
+    [
+     "ENA on CoinDCX",
+     -76.1
+    ],
+    [
+     "FIL on Delta",
+     -75.4
+    ],
+    [
+     "KSM on Delta",
+     -70.6
+    ]
+   ]
+  },
+  "2026-08-05 base": {
+   "day": "2026-08-05",
+   "sd0": 908.2840178522023,
+   "sb0": 1553.2084174137785,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 6,
+   "low_d": 0.6124176991104283,
+   "low_b": 0.997762308220936,
+   "when_d": "00:27 UTC",
+   "when_b": "00:39 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta"
+   ],
+   "iso_half": [
+    "BLESS on Delta"
+   ],
+   "worst_legs": [
+    [
+     "BLESS on Delta",
+     -147.7
+    ],
+    [
+     "SKYAI on Delta",
+     -30.6
+    ],
+    [
+     "LAB on CoinDCX",
+     -22.2
+    ],
+    [
+     "KITE on CoinDCX",
+     -9.9
+    ],
+    [
+     "H on Delta",
+     -7.6
+    ]
+   ]
+  },
+  "2026-08-05 K7": {
+   "day": "2026-08-05",
+   "sd0": 911.5328847586704,
+   "sb0": 1661.1654610144383,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 7,
+   "low_d": 0.5486814996350359,
+   "low_b": 0.9982540833077426,
+   "when_d": "00:27 UTC",
+   "when_b": "00:52 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta"
+   ],
+   "iso_half": [
+    "BLESS on Delta"
+   ],
+   "worst_legs": [
+    [
+     "BLESS on Delta",
+     -147.7
+    ],
+    [
+     "SKYAI on Delta",
+     -30.6
+    ],
+    [
+     "LAB on CoinDCX",
+     -22.2
+    ],
+    [
+     "H on Delta",
+     -7.6
+    ],
+    [
+     "LIT on Delta",
+     -7.6
+    ]
+   ]
+  },
+  "2026-08-05 K6": {
+   "day": "2026-08-05",
+   "sd0": 910.9158036954706,
+   "sb0": 1656.4553038215356,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 6,
+   "low_d": 0.5707939182456003,
+   "low_b": 0.9980425363849497,
+   "when_d": "00:27 UTC",
+   "when_b": "00:39 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta"
+   ],
+   "iso_half": [
+    "BLESS on Delta"
+   ],
+   "worst_legs": [
+    [
+     "BLESS on Delta",
+     -147.7
+    ],
+    [
+     "SKYAI on Delta",
+     -30.6
+    ],
+    [
+     "LAB on CoinDCX",
+     -22.2
+    ],
+    [
+     "KITE on CoinDCX",
+     -9.9
+    ],
+    [
+     "H on Delta",
+     -7.6
+    ]
+   ]
+  },
+  "2026-06-16 base": {
+   "day": "2026-06-16",
+   "sd0": 1090.37962177947,
+   "sb0": 1006.7684452360038,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 8,
+   "low_d": 0.6715592592505969,
+   "low_b": 0.9420167391642261,
+   "when_d": "00:29 UTC",
+   "when_b": "04:52 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BEAT on Delta",
+    "BLESS on Delta",
+    "H on CoinDCX",
+    "LAB on Delta"
+   ],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "LAB on Delta",
+     -44.6
+    ],
+    [
+     "H on CoinDCX",
+     -42.5
+    ],
+    [
+     "BEAT on Delta",
+     -41.3
+    ],
+    [
+     "BLESS on Delta",
+     -39.3
+    ],
+    [
+     "SKYAI on Delta",
+     -30.2
+    ]
+   ]
+  },
+  "2026-06-16 K7": {
+   "day": "2026-06-16",
+   "sd0": 1129.2036164315036,
+   "sb0": 1080.1942649797127,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 7,
+   "low_d": 0.713869500444362,
+   "low_b": 0.9341412792692256,
+   "when_d": "00:05 UTC",
+   "when_b": "04:44 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BEAT on Delta",
+    "BLESS on Delta",
+    "H on CoinDCX",
+    "LAB on Delta"
+   ],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "LAB on Delta",
+     -44.6
+    ],
+    [
+     "H on CoinDCX",
+     -42.5
+    ],
+    [
+     "BEAT on Delta",
+     -41.3
+    ],
+    [
+     "BLESS on Delta",
+     -39.3
+    ],
+    [
+     "H on Delta",
+     -28.5
+    ]
+   ]
+  },
+  "2026-06-16 K6": {
+   "day": "2026-06-16",
+   "sd0": 1013.4561025382254,
+   "sb0": 1199.5590091450135,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 6,
+   "low_d": 0.7696094502430381,
+   "low_b": 0.9423587245627136,
+   "when_d": "18:31 UTC",
+   "when_b": "04:44 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BEAT on Delta",
+    "H on CoinDCX",
+    "LAB on Delta"
+   ],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "LAB on Delta",
+     -44.6
+    ],
+    [
+     "H on CoinDCX",
+     -42.5
+    ],
+    [
+     "BEAT on Delta",
+     -41.3
+    ],
+    [
+     "H on Delta",
+     -28.5
+    ],
+    [
+     "SAGA on Delta",
+     -12.6
+    ]
+   ]
+  },
+  "2025-05-08 base": {
+   "day": "2025-05-08",
+   "sd0": 511.92709787207787,
+   "sb0": 510.16256692560574,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 0,
+   "low_d": 0.9906823926807137,
+   "low_b": 0.6981894602057477,
+   "when_d": "00:46 UTC",
+   "when_b": "00:21 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "ENA on CoinDCX",
+     -30.3
+    ],
+    [
+     "ZK on CoinDCX",
+     -24.1
+    ],
+    [
+     "JTO on CoinDCX",
+     -16.7
+    ],
+    [
+     "LINK on CoinDCX",
+     -15.1
+    ],
+    [
+     "KSM on CoinDCX",
+     -14.9
+    ]
+   ]
+  },
+  "2025-05-08 K7": {
+   "day": "2025-05-08",
+   "sd0": 479.8965662402851,
+   "sb0": 545.1580214594998,
+   "n_legs": 7,
+   "missing": [],
+   "short_delta": 0,
+   "low_d": 0.9930324947273084,
+   "low_b": 0.8145682027948206,
+   "when_d": "00:46 UTC",
+   "when_b": "00:00 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "ENA on CoinDCX",
+     -30.3
+    ],
+    [
+     "JTO on CoinDCX",
+     -16.7
+    ],
+    [
+     "KSM on CoinDCX",
+     -14.9
+    ],
+    [
+     "API3 on CoinDCX",
+     -14.5
+    ],
+    [
+     "JUP on CoinDCX",
+     -11.7
+    ]
+   ]
+  },
+  "2025-05-08 K6": {
+   "day": "2025-05-08",
+   "sd0": 484.2017477303391,
+   "sb0": 541.0556236042289,
+   "n_legs": 6,
+   "missing": [],
+   "short_delta": 0,
+   "low_d": 0.994061618275953,
+   "low_b": 0.8320337311116426,
+   "when_d": "00:46 UTC",
+   "when_b": "00:00 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [],
+   "iso_half": [],
+   "worst_legs": [
+    [
+     "ENA on CoinDCX",
+     -30.3
+    ],
+    [
+     "JTO on CoinDCX",
+     -16.7
+    ],
+    [
+     "KSM on CoinDCX",
+     -14.9
+    ],
+    [
+     "API3 on CoinDCX",
+     -14.5
+    ],
+    [
+     "JUP on CoinDCX",
+     -11.7
+    ]
+   ]
+  },
+  "2026-06-11 base": {
+   "day": "2026-06-11",
+   "sd0": 1240.8255140554654,
+   "sb0": 802.3263188596277,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 7,
+   "low_d": 0.711002826156087,
+   "low_b": 0.9665137303001176,
+   "when_d": "00:27 UTC",
+   "when_b": "02:11 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on Delta",
+    "BEAT on CoinDCX",
+    "H on Delta"
+   ],
+   "iso_half": [
+    "AIN on Delta",
+    "H on Delta"
+   ],
+   "worst_legs": [
+    [
+     "H on Delta",
+     -137.8
+    ],
+    [
+     "AIN on Delta",
+     -50.9
+    ],
+    [
+     "BEAT on CoinDCX",
+     -43.7
+    ],
+    [
+     "LAB on Delta",
+     -22.0
+    ],
+    [
+     "LAB on CoinDCX",
+     -20.0
+    ]
+   ]
+  },
+  "2026-06-11 K7": {
+   "day": "2026-06-11",
+   "sd0": 1316.7756261304962,
+   "sb0": 834.8512673011234,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 7,
+   "low_d": 0.7175862057006813,
+   "low_b": 0.9660502586715766,
+   "when_d": "00:27 UTC",
+   "when_b": "02:11 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on Delta",
+    "BEAT on CoinDCX",
+    "H on Delta"
+   ],
+   "iso_half": [
+    "AIN on Delta",
+    "H on Delta"
+   ],
+   "worst_legs": [
+    [
+     "H on Delta",
+     -137.8
+    ],
+    [
+     "AIN on Delta",
+     -50.9
+    ],
+    [
+     "BEAT on CoinDCX",
+     -43.7
+    ],
+    [
+     "LAB on Delta",
+     -22.0
+    ],
+    [
+     "LAB on CoinDCX",
+     -20.0
+    ]
+   ]
+  },
+  "2026-06-11 K6": {
+   "day": "2026-06-11",
+   "sd0": 1077.0763853834464,
+   "sb0": 1077.0763853834464,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 6,
+   "low_d": 0.6914301807220854,
+   "low_b": 0.9682624384418688,
+   "when_d": "00:27 UTC",
+   "when_b": "01:49 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "AIN on Delta",
+    "BEAT on CoinDCX",
+    "H on Delta"
+   ],
+   "iso_half": [
+    "AIN on Delta",
+    "H on Delta"
+   ],
+   "worst_legs": [
+    [
+     "H on Delta",
+     -137.8
+    ],
+    [
+     "AIN on Delta",
+     -50.9
+    ],
+    [
+     "BEAT on CoinDCX",
+     -43.7
+    ],
+    [
+     "LAB on Delta",
+     -22.0
+    ],
+    [
+     "LAB on CoinDCX",
+     -20.0
+    ]
+   ]
+  },
+  "2025-11-07 base": {
+   "day": "2025-11-07",
+   "sd0": 735.4179932520696,
+   "sb0": 509.1334241205374,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 4,
+   "low_d": 0.8406220506134106,
+   "low_b": 0.7103890775436928,
+   "when_d": "05:08 UTC",
+   "when_b": "18:15 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta",
+    "FIL on CoinDCX",
+    "NEAR on CoinDCX"
+   ],
+   "iso_half": [
+    "BLESS on Delta",
+    "FIL on CoinDCX"
+   ],
+   "worst_legs": [
+    [
+     "BLESS on Delta",
+     -96.7
+    ],
+    [
+     "FIL on CoinDCX",
+     -83.9
+    ],
+    [
+     "NEAR on CoinDCX",
+     -39.7
+    ],
+    [
+     "ZRO on CoinDCX",
+     -21.3
+    ],
+    [
+     "STX on CoinDCX",
+     -19.7
+    ]
+   ]
+  },
+  "2025-11-07 K7": {
+   "day": "2025-11-07",
+   "sd0": 863.5091762072668,
+   "sb0": 440.33247554205565,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 5,
+   "low_d": 0.8456167360367125,
+   "low_b": 0.8293704384721376,
+   "when_d": "05:08 UTC",
+   "when_b": "18:15 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta",
+    "FIL on CoinDCX",
+    "H on Delta",
+    "NEAR on CoinDCX"
+   ],
+   "iso_half": [
+    "BLESS on Delta",
+    "FIL on CoinDCX",
+    "H on Delta"
+   ],
+   "worst_legs": [
+    [
+     "H on Delta",
+     -136.0
+    ],
+    [
+     "BLESS on Delta",
+     -96.7
+    ],
+    [
+     "FIL on CoinDCX",
+     -83.9
+    ],
+    [
+     "NEAR on CoinDCX",
+     -39.7
+    ],
+    [
+     "ZRO on CoinDCX",
+     -21.3
+    ]
+   ]
+  },
+  "2025-11-07 K6": {
+   "day": "2025-11-07",
+   "sd0": 861.1567334804821,
+   "sb0": 431.1240161101081,
+   "n_legs": 10,
+   "missing": [],
+   "short_delta": 5,
+   "low_d": 0.8447666373227485,
+   "low_b": 0.8036928548130075,
+   "when_d": "05:08 UTC",
+   "when_b": "18:15 UTC",
+   "cross_wiped_d": false,
+   "cross_wiped_b": false,
+   "iso_third": [
+    "BLESS on Delta",
+    "FIL on CoinDCX",
+    "H on Delta",
+    "NEAR on CoinDCX"
+   ],
+   "iso_half": [
+    "BLESS on Delta",
+    "FIL on CoinDCX",
+    "H on Delta"
+   ],
+   "worst_legs": [
+    [
+     "H on Delta",
+     -136.0
+    ],
+    [
+     "BLESS on Delta",
+     -96.7
+    ],
+    [
+     "FIL on CoinDCX",
+     -83.9
+    ],
+    [
+     "NEAR on CoinDCX",
+     -39.7
+    ],
+    [
+     "ZRO on CoinDCX",
+     -21.3
+    ]
+   ]
+  }
+ },
+ "verdict": {
+  "S40": {
+   "bars": {
+    "average month >= +1.5%": true,
+    "no month below -4%": true,
+    "poorer account >= 40%": false,
+    "HAC t >= 2": true,
+    "both years positive": 1.0,
+    "list wobble holds": false,
+    ">= $50 a year more after tax": false,
+    "at most one more losing month": true,
+    "daily difference HAC t >= 2.5": false,
+    "ahead in >= 3 of 4 half-years": true,
+    "ahead at costs x1 too": true
+   },
+   "passed": false,
+   "diff_t": 1.7518449111859569,
+   "halves": {
+    "2024H2": 0.0,
+    "2025H1": 0.0013939531677313638,
+    "2025H2": 0.03413149460749138,
+    "2026H1": 0.049374632154263354,
+    "2026H2": 0.025098124358893786
+   }
+  },
+  "S80": {
+   "bars": {
+    "average month >= +1.5%": true,
+    "no month below -4%": true,
+    "poorer account >= 40%": true,
+    "HAC t >= 2": true,
+    "both years positive": 1.0,
+    "list wobble holds": true,
+    ">= $50 a year more after tax": false,
+    "at most one more losing month": true,
+    "daily difference HAC t >= 2.5": false,
+    "ahead in >= 3 of 4 half-years": true,
+    "ahead at costs x1 too": true
+   },
+   "passed": false,
+   "diff_t": 2.3102819830850607,
+   "halves": {
+    "2024H2": 0.0,
+    "2025H1": -0.0011960553087903524,
+    "2025H2": 0.05437160921431299,
+    "2026H1": 0.0599884281863078,
+    "2026H2": 0.02188939580476502
+   }
+  },
+  "K7": {
+   "bars": {
+    "average month >= +1.5%": true,
+    "no month below -4%": true,
+    "poorer account >= 40%": true,
+    "HAC t >= 2": true,
+    "both years positive": 1.0,
+    "list wobble holds": true,
+    "safer (poorer account +5 points, or transfers -30%)": 0.0,
+    "crash replay no worse for either account": true,
+    "costs at most $30 a year after tax": true
+   },
+   "passed": false
+  },
+  "K6": {
+   "bars": {
+    "average month >= +1.5%": true,
+    "no month below -4%": true,
+    "poorer account >= 40%": true,
+    "HAC t >= 2": true,
+    "both years positive": 1.0,
+    "list wobble holds": true,
+    "safer (poorer account +5 points, or transfers -30%)": true,
+    "crash replay no worse for either account": true,
+    "costs at most $30 a year after tax": true
+   },
+   "passed": true
+  }
+ },
+ "D": {
+  "months": [
+   "2024-10",
+   "2024-11",
+   "2024-12",
+   "2025-01",
+   "2025-02",
+   "2025-03",
+   "2025-04",
+   "2025-05",
+   "2025-06",
+   "2025-07",
+   "2025-08",
+   "2025-09",
+   "2025-10",
+   "2025-11",
+   "2025-12",
+   "2026-01",
+   "2026-02",
+   "2026-03",
+   "2026-04",
+   "2026-05",
+   "2026-06",
+   "2026-07",
+   "2026-08",
+   "2026-09"
+  ],
+  "gap": [
+   0.3768521502946429,
+   0.2297763192516667,
+   0.2033582153852535,
+   0.16729342030944697,
+   0.3170715947607143,
+   0.40180789443801845,
+   0.4990369206695238,
+   0.4978851301154378,
+   0.6126098946276192,
+   0.4579373376428571,
+   0.9156392272923963,
+   1.157386416797857,
+   1.1317182298920507,
+   1.3382696748130953,
+   1.4392504213708235,
+   2.0970697044581503,
+   1.9182824542562182,
+   1.5592275512745393,
+   1.4745077271657143,
+   1.404823956298272,
+   2.237130756241399,
+   2.5865004662323736,
+   1.3831737747116362,
+   0.9590672825226191
+  ],
+  "net": [
+   0.010154116684433513,
+   -0.017457241664100537,
+   -0.00799879137595971,
+   -0.004623067965100149,
+   -0.001328609181753547,
+   0.01897139504160589,
+   0.007608336184663612,
+   0.016223791158511643,
+   0.03918397214607961,
+   0.010943072107946303,
+   0.029351309975866414,
+   0.028381438725668895,
+   0.07059566877075775,
+   0.0898624178687136,
+   0.1032629189558908,
+   0.09811749699910839,
+   0.10656414027181421,
+   0.08280418683427154,
+   0.08388222471663552,
+   0.05358248036944308,
+   0.11158325344963527,
+   0.16683700778067134,
+   0.06398065626237676,
+   0.03039588930371643
+  ],
+  "gap_slope": 0.9877893674525046,
+  "gap_t": 6.341501645989489,
+  "net_slope": 0.061976088860187774,
+  "net_t": 5.565241191692365,
+  "gap_first18": 0.8511373643139062,
+  "gap_last6": 1.674200660528669,
+  "net_first18": 0.03781203064102323,
+  "net_last6": 0.0850435853137464
+ },
+ "R": {
+  "base": {
+   "avg": 0.04961991930920403,
+   "t": 7.1775831092913105,
+   "worst": -0.017457241664100537,
+   "neg": 4,
+   "low": 0.5692675930003,
+   "transfers_yr": 7.583102493074792,
+   "oneway": 0.7471656896968101,
+   "after1": 0.03413850448473237,
+   "after2": -0.00605025300378927,
+   "x1_after1": 0.0403153622529645,
+   "swaps": 0,
+   "wobble": {
+    "without LAB": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.02820508111503124
+    },
+    "without BLESS": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.03219505841819256
+    },
+    "without AIN": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.032870256460200864
+    },
+    "without ZRO": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.0331443868918157
+    },
+    "without JUP": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.033630481523871866
+    },
+    "floor $75k": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.034742509189842126
+    },
+    "floor $150k": {
+     "worst": -0.017457241664100537,
+     "low": 0.5318985307491245,
+     "after1": 0.0335989739322591
+    }
+   }
+  },
+  "S40": {
+   "avg": 0.054203177821219854,
+   "t": 7.3706985736866075,
+   "worst": -0.017457241664100537,
+   "neg": 4,
+   "low": -0.34418649897075604,
+   "transfers_yr": 11.121883656509695,
+   "oneway": 0.7426013743441129,
+   "after1": 0.037291786340999215,
+   "after2": -0.017568402688685314,
+   "x1_after1": 0.04745520578780362,
+   "swaps": 160,
+   "wobble": {
+    "without LAB": {
+     "worst": -0.017457241664100537,
+     "low": -0.34418649897075604,
+     "after1": 0.030875968491140302
+    },
+    "without BLESS": {
+     "worst": -0.017457241664100537,
+     "low": 0.5501994132102639,
+     "after1": 0.035239347096653204
+    },
+    "without AIN": {
+     "worst": -0.017457241664100537,
+     "low": -0.37547083293178957,
+     "after1": 0.03584147594485588
+    },
+    "without RIVER": {
+     "worst": -0.017457241664100537,
+     "low": -0.34418649897075604,
+     "after1": 0.036048260694788704
+    },
+    "without VVV": {
+     "worst": -0.017457241664100537,
+     "low": -0.2911224576977095,
+     "after1": 0.036693510327681096
+    },
+    "floor $75k": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.038676582776514
+    },
+    "floor $150k": {
+     "worst": -0.017457241664100537,
+     "low": -0.33770615623926925,
+     "after1": 0.036592184488549444
+    }
+   }
+  },
+  "S80": {
+   "avg": 0.055247143388228837,
+   "t": 7.4125883993235275,
+   "worst": -0.017457241664100537,
+   "neg": 4,
+   "low": 0.5692675930003,
+   "transfers_yr": 11.121883656509695,
+   "oneway": 0.7450910009001296,
+   "after1": 0.038010034651101414,
+   "after2": -0.01099046305086529,
+   "x1_after1": 0.046432483676124015,
+   "swaps": 95,
+   "wobble": {
+    "without LAB": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.031754810361546225
+    },
+    "without BLESS": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.03603411599548462
+    },
+    "without AIN": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.036446604198086846
+    },
+    "without RIVER": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.03688362844950444
+    },
+    "without VVV": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.03750532702919141
+    },
+    "floor $75k": {
+     "worst": -0.017457241664100537,
+     "low": 0.5692675930003,
+     "after1": 0.0398947589632103
+    },
+    "floor $150k": {
+     "worst": -0.017457241664100537,
+     "low": 0.5318985307491245,
+     "after1": 0.03691215153815929
+    }
+   }
+  },
+  "K7": {
+   "avg": 0.05055842899047821,
+   "t": 7.310762103275265,
+   "worst": -0.014144746768072682,
+   "neg": 4,
+   "low": 0.6149509799629805,
+   "transfers_yr": 6.57202216066482,
+   "oneway": 0.6992107400821093,
+   "after1": 0.03478419914544903,
+   "after2": -0.00254689700991965,
+   "x1_after1": 0.04085202864459589,
+   "swaps": 0,
+   "wobble": {
+    "without LAB": {
+     "worst": -0.014144746768072682,
+     "low": 0.6149509799629805,
+     "after1": 0.029019202802404952
+    },
+    "without BLESS": {
+     "worst": -0.014144746768072682,
+     "low": 0.6149509799629805,
+     "after1": 0.032754764064181006
+    },
+    "without AIN": {
+     "worst": -0.014144746768072682,
+     "low": 0.6149509799629805,
+     "after1": 0.0331042784713213
+    },
+    "without ZRO": {
+     "worst": -0.014144746768072682,
+     "low": 0.5678108191398076,
+     "after1": 0.03377212890081338
+    },
+    "without H": {
+     "worst": -0.014144746768072682,
+     "low": 0.6149509799629805,
+     "after1": 0.03330812584071585
+    },
+    "floor $75k": {
+     "worst": -0.014144746768072682,
+     "low": 0.4715819462988185,
+     "after1": 0.0355870887021998
+    },
+    "floor $150k": {
+     "worst": -0.014144746768072682,
+     "low": 0.6516357403856405,
+     "after1": 0.033672303586958684
+    }
+   }
+  },
+  "K6": {
+   "avg": 0.05003359108571828,
+   "t": 7.336107294756417,
+   "worst": -0.012827014110131919,
+   "neg": 4,
+   "low": 0.6631969109639244,
+   "transfers_yr": 7.077562326869805,
+   "oneway": 0.6707386550747545,
+   "after1": 0.034423110666974184,
+   "after2": 0.00044598351389860125,
+   "x1_after1": 0.04031799592013826,
+   "swaps": 0,
+   "wobble": {
+    "without LAB": {
+     "worst": -0.012827014110131919,
+     "low": 0.6631969109639244,
+     "after1": 0.028187538469716323
+    },
+    "without BLESS": {
+     "worst": -0.012827014110131919,
+     "low": 0.6631969109639244,
+     "after1": 0.03228084165227114
+    },
+    "without AIN": {
+     "worst": -0.012827014110131919,
+     "low": 0.5122388116656059,
+     "after1": 0.03265568845925494
+    },
+    "without ZRO": {
+     "worst": -0.012827014110131919,
+     "low": 0.5757869828411264,
+     "after1": 0.03309391273405549
+    },
+    "without STX": {
+     "worst": -0.012169757373600992,
+     "low": 0.5899853861367014,
+     "after1": 0.033584887680342325
+    },
+    "floor $75k": {
+     "worst": -0.012827014110131919,
+     "low": 0.470630121458804,
+     "after1": 0.034684537564320876
+    },
+    "floor $150k": {
+     "worst": -0.012827014110131919,
+     "low": 0.645241796323212,
+     "after1": 0.03276549724301251
+    }
+   }
+  }
+ }
+}

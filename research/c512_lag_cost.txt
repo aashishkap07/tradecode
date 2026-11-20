@@ -1,0 +1,11 @@
+C512: one extra day of signal delay (lag 1 = as researched, lag 2 = the stale-candle bot)
+  admitted  dial 15%: lag 1 +35.5%/yr Sharpe 1.55 DD 31.4% | lag 2 +27.3%/yr Sharpe 1.28 DD 36.5% | cost +8.2 pts/yr
+  admitted  dial 20%: lag 1 +53.8%/yr Sharpe 1.66 DD 41.5% | lag 2 +41.7%/yr Sharpe 1.40 DD 43.9% | cost +12.1 pts/yr
+  N2+N3     dial 15%: lag 1 +41.1%/yr Sharpe 1.76 DD 24.9% | lag 2 +29.7%/yr Sharpe 1.37 DD 36.6% | cost +11.4 pts/yr
+  N2+N3     dial 20%: lag 1 +60.2%/yr Sharpe 1.81 DD 38.3% | lag 2 +42.5%/yr Sharpe 1.41 DD 49.5% | cost +17.7 pts/yr
+
+the bot's actual defect (price inputs a day old, funding current):
+  admitted  dial 15%: correct +35.5%/yr Sharpe 1.55 DD 31.4% | stale prices +31.8%/yr Sharpe 1.45 DD 36.7% | cost +3.7 pts/yr
+  admitted  dial 20%: correct +53.8%/yr Sharpe 1.66 DD 41.5% | stale prices +44.9%/yr Sharpe 1.47 DD 48.5% | cost +8.9 pts/yr
+  N2+N3     dial 15%: correct +41.1%/yr Sharpe 1.76 DD 24.9% | stale prices +37.6%/yr Sharpe 1.65 DD 35.0% | cost +3.5 pts/yr
+  N2+N3     dial 20%: correct +60.2%/yr Sharpe 1.81 DD 38.3% | stale prices +55.7%/yr Sharpe 1.70 DD 47.9% | cost +4.6 pts/yr

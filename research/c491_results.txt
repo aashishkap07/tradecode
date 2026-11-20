@@ -1,0 +1,22 @@
+loaded 383 coins, 17520 window hours  [54s]
+  R4-H  hourly bars, stop first (R3a code)     2024-09..2026-08  net -353.1%/yr  vol  61.8%  Sharpe -5.71  t -7.92  quarters+ 0/4  maxDD 99.9%  month -29.43% (0% +)  - | 32783 fills, 44% target
+  R4-Ho hourly bars, optimistic                2024-09..2026-08  net  +36.1%/yr  vol  46.7%  Sharpe +0.77  t +1.17  quarters+ 3/4  maxDD 28.6%  month +3.01% (54% +)  - | 30008 fills, 49% target
+minute data for 109 of 109 universe coins  [56s]
+  R4-M  1-minute path, stop first (PRIMARY)    2024-09..2026-08  net -209.4%/yr  vol  58.3%  Sharpe -3.59  t -5.30  quarters+ 0/4  maxDD 99.0%  month -17.45% (17% +)  - | 33612 fills, 47% target, minute coverage 100.0%
+      by year: 2024 -59.6%  2025 -158.1%  2026 -201.1%
+  R4-Mo 1-minute path, target first            2024-09..2026-08  net -209.4%/yr  vol  58.3%  Sharpe -3.59  t -5.30  quarters+ 0/4  maxDD 99.0%  month -17.45% (17% +)  - | 33612 fills, 47% target, minute coverage 100.0%
+
+VERDICT (pre-registered): FAIL   [66s]
+
+BREAKDOWN of R4-M trades by exit (every candidate, before the cap of 10), research/c491_breakdown.py:
+  target  19898 trades (47.1%)  mean +2.083%  total +41440.4%
+  stop    20490 trades (48.5%)  mean -2.192%  total -44923.5%
+  time     1822 trades ( 4.3%)  mean -0.232%  total   -422.6%
+  all     42210 trades           mean -0.093%  (per trade, of its notional, costs included; before the cap of 10)
+  median hours held 2.0
+
+research/c488_tradfi_check.py -- the book (top 20) with and without the 2026 stock/commodity perps:
+days a TradFi perp was in the top 20: 92
+2020-01..2026-08   as researched: +33.0%/yr t +3.55   crypto only: +36.0%/yr t +3.96
+2021-07..2026-08   as researched: +27.3%/yr t +2.57   crypto only: +31.0%/yr t +2.99
+2026 only          as researched: +29.1%/yr t +0.83   crypto only: +57.7%/yr t +1.93

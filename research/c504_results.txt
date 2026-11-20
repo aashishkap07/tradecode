@@ -1,0 +1,36 @@
+======================================================================================================================================================
+C504: THE PROBABILITY OF +2%/MONTH | crypto top 20 | 2020-05-10 .. 2026-08-31 | Savings at 5%/yr (conservative; 7.63% on 28 Sep)
+======================================================================================================================================================
+  book, dial 15% (running)                     +2.57%/mo | month>=2%:  49% (haircut  39%)  month>=0:  63%  in 2-4%:  11% | 12 months avg>=2%: rolling  66%, boot  61%, haircut  42% | 6 months: boot  57% | worst month -14.6%, max DD 31.4%
+  book, dial 15% + idle cash in Savings        +2.86%/mo | month>=2%:  50% (haircut  43%)  month>=0:  67%  in 2-4%:  12% | 12 months avg>=2%: rolling  71%, boot  67%, haircut  45% | 6 months: boot  63% | worst month -14.5%, max DD 29.5%
+  book, dial 20% + Savings                     +3.92%/mo | month>=2%:  53% (haircut  47%)  month>=0:  68%  in 2-4%:   8% | 12 months avg>=2%: rolling  80%, boot  78%, haircut  58% | 6 months: boot  71% | worst month -18.5%, max DD 40.6%
+  spot pot (S1, C502 minimums)                 +2.50%/mo | month>=2%:  32% (haircut  32%)  month>=0:  46%  in 2-4%:   0% | 12 months avg>=2%: rolling  49%, boot  53%, haircut  39% | 6 months: boot  50% | worst month -11.0%, max DD 28.8%
+  both pots: book 15% + Savings, spot pot      +2.79%/mo | month>=2%:  46% (haircut  42%)  month>=0:  62%  in 2-4%:  13% | 12 months avg>=2%: rolling  63%, boot  64%, haircut  43% | 6 months: boot  59% | worst month  -5.6%, max DD 21.4%
+  both pots: book 20% + Savings, spot pot      +3.35%/mo | month>=2%:  54% (haircut  43%)  month>=0:  63%  in 2-4%:  14% | 12 months avg>=2%: rolling  72%, boot  74%, haircut  50% | 6 months: boot  66% | worst month  -6.7%, max DD 26.8%
+
+  THE DIAL, the book alone + Savings (every dial on the same data):
+   dial  5.0%: P(a +2%/month year)   2% (haircut   0%) | median year   +12% | P(losing year)   2% | max DD  6.3% | log growth +11.8%/yr
+   dial  7.5%: P(a +2%/month year)  20% (haircut   9%) | median year   +16% | P(losing year)   7% | max DD 13.8% | log growth +15.6%/yr
+   dial 10.0%: P(a +2%/month year)  45% (haircut  24%) | median year   +24% | P(losing year)   6% | max DD 19.0% | log growth +22.4%/yr
+   dial 12.5%: P(a +2%/month year)  59% (haircut  37%) | median year   +32% | P(losing year)   6% | max DD 24.4% | log growth +28.5%/yr
+   dial 15.0%: P(a +2%/month year)  67% (haircut  45%) | median year   +39% | P(losing year)   6% | max DD 29.5% | log growth +33.9%/yr
+   dial 17.5%: P(a +2%/month year)  72% (haircut  52%) | median year   +48% | P(losing year)   6% | max DD 35.6% | log growth +39.8%/yr
+   dial 20.0%: P(a +2%/month year)  78% (haircut  57%) | median year   +58% | P(losing year)   6% | max DD 40.6% | log growth +46.2%/yr
+   dial 22.5%: P(a +2%/month year)  78% (haircut  59%) | median year   +64% | P(losing year)   7% | max DD 45.3% | log growth +50.3%/yr
+   dial 25.0%: P(a +2%/month year)  80% (haircut  61%) | median year   +72% | P(losing year)   7% | max DD 50.2% | log growth +55.1%/yr
+   dial 30.0%: P(a +2%/month year)  81% (haircut  64%) | median year   +86% | P(losing year)   8% | max DD 56.5% | log growth +63.3%/yr
+   growth (Kelly) peaks at dial 30% on this data; the best haircut chance of a +2%/month year is at dial 30%
+
+  THE ARITHMETIC: P(month >= +2%) = Phi((mu - 2%) / sigma) for a monthly mean mu and spread sigma
+   50% of months >= +2% with a 2% monthly spread needs a mean of +2.0%/month -> annual Sharpe 3.5
+   50% of months >= +2% with a 4% monthly spread needs a mean of +2.0%/month -> annual Sharpe 1.7
+   50% of months >= +2% with a 6% monthly spread needs a mean of +2.0%/month -> annual Sharpe 1.2
+   70% of months >= +2% with a 2% monthly spread needs a mean of +3.0%/month -> annual Sharpe 5.3
+   70% of months >= +2% with a 4% monthly spread needs a mean of +4.1%/month -> annual Sharpe 3.5
+   70% of months >= +2% with a 6% monthly spread needs a mean of +5.1%/month -> annual Sharpe 3.0
+   80% of months >= +2% with a 2% monthly spread needs a mean of +3.7%/month -> annual Sharpe 6.4
+   80% of months >= +2% with a 4% monthly spread needs a mean of +5.4%/month -> annual Sharpe 4.6
+   80% of months >= +2% with a 6% monthly spread needs a mean of +7.0%/month -> annual Sharpe 4.1
+   90% of months >= +2% with a 2% monthly spread needs a mean of +4.6%/month -> annual Sharpe 7.9
+   90% of months >= +2% with a 4% monthly spread needs a mean of +7.1%/month -> annual Sharpe 6.2
+   90% of months >= +2% with a 6% monthly spread needs a mean of +9.7%/month -> annual Sharpe 5.6

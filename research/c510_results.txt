@@ -1,0 +1,32 @@
+======================================================================================================================
+C510 ROUND 11 | crypto only, top 20, dial 15% (vol 20%), $6 floor at $250 | 2020-05-01 .. 2026-08-31
+======================================================================================================================
+  BASE (what runs)                             net  +32.6%/yr Sharpe 1.56 maxDD 31.4% months>=2%  49%  worst month -14.6%  worst day -8.5%
+
+  range estimates ready on 100.0% / 100.0% of eligible coin-days; median Parkinson sd / 30-day sd = 1.12
+
+V1 Parkinson range volatility (EWMA, 10-day half-life)
+  V1 per-coin sd from (ln H/L)^2               net  +36.8%/yr Sharpe 1.81 maxDD 29.5% months>=2%  46%  worst month -12.8%  worst day -7.1%
+                                               vs base:  +3.62%/yr  NW t +1.79  quarters+ 3/4  holdout 2025-26 +0.87%/yr  -> not admitted
+
+V2 Garman-Klass range volatility (EWMA, 10-day half-life)
+  V2 per-coin sd from Garman-Klass             net  +37.4%/yr Sharpe 1.84 maxDD 30.1% months>=2%  47%  worst month -12.2%  worst day -7.3%
+                                               vs base:  +4.26%/yr  NW t +1.87  quarters+ 3/4  holdout 2025-26 +1.53%/yr  -> not admitted
+
+======================================================================================================================
+DESCRIPTIVE ONLY (chosen after seeing round 10; cannot be admitted on this data) -- book + idle cash in Savings at 5%/yr
+======================================================================================================================
+  base @ dial 15%                    +2.86%/mo | months>=2%  50% <0  33% | year avg>=2%/mo: boot  67% haircut  46% | worst month -14.5% maxDD 29.5% | 2020:+28% 2021:+48% 2022:-12% 2023:+60% 2024:+65% 2025:+42% 2026:+37%
+  N2 @ dial 15%                      +3.10%/mo | months>=2%  47% <0  34% | year avg>=2%/mo: boot  71% haircut  48% | worst month -15.7% maxDD 28.0% | 2020:+31% 2021:+46% 2022:-12% 2023:+75% 2024:+69% 2025:+56% 2026:+30%
+  N3 @ dial 15%                      +3.05%/mo | months>=2%  50% <0  34% | year avg>=2%/mo: boot  71% haircut  48% | worst month -13.5% maxDD 24.1% | 2020:+35% 2021:+51% 2022:-6% 2023:+51% 2024:+64% 2025:+51% 2026:+37%
+  N2+N3 @ dial 15%                   +3.20%/mo | months>=2%  53% <0  34% | year avg>=2%/mo: boot  75% haircut  50% | worst month -13.6% maxDD 22.6% | 2020:+40% 2021:+52% 2022:-8% 2023:+63% 2024:+63% 2025:+58% 2026:+35%
+  base, K4 sizing @ dial 15%         +2.88%/mo | months>=2%  53% <0  36% | year avg>=2%/mo: boot  68% haircut  47% | worst month  -9.3% maxDD 28.1% | 2020:+29% 2021:+44% 2022:-7% 2023:+36% 2024:+77% 2025:+42% 2026:+45%
+  N2+N3, K4 sizing @ dial 15%        +2.97%/mo | months>=2%  51% <0  30% | year avg>=2%/mo: boot  71% haircut  46% | worst month  -9.7% maxDD 21.5% | 2020:+31% 2021:+51% 2022:-9% 2023:+40% 2024:+73% 2025:+47% 2026:+45%
+
+  base @ dial 20%                    +3.91%/mo | months>=2%  53% <0  32% | year avg>=2%/mo: boot  77% haircut  58% | worst month -18.5% maxDD 40.6% | 2020:+50% 2021:+79% 2022:-21% 2023:+80% 2024:+87% 2025:+60% 2026:+62%
+  N2 @ dial 20%                      +4.14%/mo | months>=2%  53% <0  30% | year avg>=2%/mo: boot  79% haircut  59% | worst month -19.8% maxDD 44.4% | 2020:+54% 2021:+77% 2022:-29% 2023:+113% 2024:+92% 2025:+81% 2026:+53%
+  N3 @ dial 20%                      +4.14%/mo | months>=2%  54% <0  34% | year avg>=2%/mo: boot  80% haircut  59% | worst month -17.5% maxDD 34.6% | 2020:+54% 2021:+83% 2022:-14% 2023:+71% 2024:+88% 2025:+73% 2026:+62%
+  N2+N3 @ dial 20%                   +4.26%/mo | months>=2%  54% <0  32% | year avg>=2%/mo: boot  81% haircut  60% | worst month -17.7% maxDD 36.6% | 2020:+59% 2021:+82% 2022:-21% 2023:+95% 2024:+89% 2025:+78% 2026:+59%
+  base, K4 sizing @ dial 20%         +4.04%/mo | months>=2%  58% <0  33% | year avg>=2%/mo: boot  80% haircut  59% | worst month -11.9% maxDD 37.2% | 2020:+43% 2021:+81% 2022:-11% 2023:+55% 2024:+105% 2025:+71% 2026:+63%
+  N2+N3, K4 sizing @ dial 20%        +3.93%/mo | months>=2%  51% <0  32% | year avg>=2%/mo: boot  79% haircut  58% | worst month -12.5% maxDD 33.9% | 2020:+44% 2021:+82% 2022:-20% 2023:+59% 2024:+105% 2025:+74% 2026:+58%
+

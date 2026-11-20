@@ -1,0 +1,558 @@
+{
+ "read": "2026-11-20 06:29 UTC",
+ "rules": {
+  "1000PEPE": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "AAVE": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "ADA": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "AIN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "AIOT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "AKE": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "ALT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "ARC": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "ARIA": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "AVAAI": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "AVAX": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "BCH": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "BEAT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "BILL": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "BLESS": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "BMT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "BNB": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 25.0,
+   "status": "active"
+  },
+  "BTC": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 20.0,
+   "status": "active"
+  },
+  "CHIP": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "CROSS": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "DASH": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "DOGE": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "DOT": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "DUSK": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "ESPORTS": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "ETH": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 20.0,
+   "status": "active"
+  },
+  "ETHFI": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "EVAA": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "FARTCOIN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "FF": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "FIL": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 20.0,
+   "status": "active"
+  },
+  "GOAT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "GRIFFAIN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "H": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "HYPE": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "INIT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "INJ": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "JUP": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "LAB": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "LINK": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "LIT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "LTC": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 25.0,
+   "status": "active"
+  },
+  "M": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "MASK": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 20.0,
+   "status": "active"
+  },
+  "MMT": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "MOODENG": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "MUBARAK": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "NEAR": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.015,
+   "maxlev": 15.0,
+   "status": "active"
+  },
+  "ONDO": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "OPN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "PARTI": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "PIEVERSE": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "PIPPIN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "PUMP": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "RARE": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "RAVE": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "RIVER": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "SIREN": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "SKYAI": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "SOL": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "SOLV": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "SOPH": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "STBL": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "STRK": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "STX": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "SUI": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "TAC": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "TAO": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "TIA": {
+   "listed": true,
+   "mmr": 0.01,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "TRUMP": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "UNI": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 20.0,
+   "status": "active"
+  },
+  "VELVET": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "VVV": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 4.0,
+   "status": "active"
+  },
+  "WLD": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "XMR": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 15.0,
+   "status": "active"
+  },
+  "XRP": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 10.0,
+   "status": "active"
+  },
+  "ZEC": {
+   "listed": true,
+   "mmr": 0.005,
+   "fee": 0.01,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "ZORA": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  },
+  "ZRO": {
+   "listed": true,
+   "mmr": 0.015,
+   "fee": 0.015,
+   "maxlev": 5.0,
+   "status": "active"
+  }
+ }
+}

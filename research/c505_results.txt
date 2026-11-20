@@ -1,0 +1,16 @@
+==============================================================================================================
+C505 ROUND 9 | crypto only, top 20, dial 15% (vol 20%), $6 floor at $250 | 2020-05-01 .. 2026-08-31
+==============================================================================================================
+  BASE (what runs)                               net  +32.6%/yr Sharpe 1.56 maxDD 31.4% months>=2%  49%  >=0  63%  worst -14.6%
+
+L1 variance ratio > 1 (persistent, H > 0.5) on 43% of eligible coin-days
+  L1 trend kept where VR>1, halved where not     net  +31.9%/yr Sharpe 1.52 maxDD 31.2% months>=2%  49%  >=0  62%  worst -15.1%
+                                                 vs base:  -0.74%/yr  NW t -0.63  quarters+ 2/4  holdout 2025-26 -3.08%/yr  -> not admitted
+
+L2 dispersion multiplier: median 1.01, at the 0.5 floor 6% / 1.5 cap 23% of days
+  L2 momentum x clip(dispersion/median, .5, 1.5) net  +32.4%/yr Sharpe 1.50 maxDD 32.1% months>=2%  47%  >=0  63%  worst -16.0%
+                                                 vs base:  -0.27%/yr  NW t -0.14  quarters+ 2/4  holdout 2025-26 +0.76%/yr  -> not admitted
+
+L3 drawdown feedback: scale below 1 on 94% of days, at the 0.25 floor 2%
+  L3 book x clip(1 - DD/25%, .25, 1)             net  +24.6%/yr Sharpe 1.51 maxDD 19.7% months>=2%  39%  >=0  62%  worst -5.9%
+                                                 vs base:  -8.05%/yr  NW t -2.68  quarters+ 0/4  holdout 2025-26 -7.90%/yr  -> not admitted
