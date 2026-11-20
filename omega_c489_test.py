@@ -218,10 +218,14 @@ print("\n6. PERSISTENCE AND WIRING")
 bot, sh = mkshadow(); sh.syms = [f'S{j:02d}USDT' for j in range(20)] + ['AUSDT', 'BUSDT']
 for i in range(5):
     sh.step(h0 + i * 3600000, p, True, np.full(k, 0.001))
-sh.last_hour = h0 + 4 * 3600000; sh.flow = {'AUSDT': {h0: 0.55}}; sh.save()
+# 20 Nov 2026: the flow is stamped with the current hour. save() keeps only the
+# last CACHE_H (1000) hours by the wall clock, so a flow stamped h0 (21 Sep 2026)
+# was dropped once the clock passed 2 Nov and this check failed. Unchanged otherwise.
+hf = int(time.time()) // 3600 * 3600000
+sh.last_hour = h0 + 4 * 3600000; sh.flow = {'AUSDT': {hf: 0.55}}; sh.save()
 sh2 = om.C489Shadow(bot)
 ok("the ledgers, the last hour, the dollar seed and the collected flow survive a restart",
-   abs(sh2.led['M1']['eq'] - sh.led['M1']['eq']) < 1e-15 and sh2.last_hour == sh.last_hour and sh2.flow.get('AUSDT') == {h0: 0.55}
+   abs(sh2.led['M1']['eq'] - sh.led['M1']['eq']) < 1e-15 and sh2.last_hour == sh.last_hour and sh2.flow.get('AUSDT') == {hf: 0.55}
    and sh2.start_equity == 1000.0)
 sh2.reset()
 ok("reset (fresh start) empties the record", sh2.led['M1']['eq'] == 1.0 and not sh2.flow and sh2.last_hour == 0 and sh2.start_equity == 0.0)

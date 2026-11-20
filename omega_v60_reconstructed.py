@@ -2401,7 +2401,7 @@ _c467_cfg_ref = [None]
 # C471 and C472, so the operator's dashboard said C469 while running C471 --
 # and the one question they could not answer by looking was "did my pull
 # actually land?". A version string that does not move is worse than none.
-_OMEGA_VERSION = 'C549'
+_OMEGA_VERSION = 'C550'
 
 _c462_report = _C462Report(_C462_REPORT_PATH)
 # atexit is LIFO, so registering AFTER _c52_flush makes the summary print
@@ -3189,6 +3189,15 @@ class Config:
         # experiments with no route to the operator's money are switched off when the bot starts (_c548_retire).
         # Their code, tests and saved ledgers stay; False brings all six back.
         self.C548_RETIRE = True
+        # C550 (B2, 15 Nov 2026): the two-exchange order path. It builds, logs and sends to an in-memory exchange every
+        # order the plan would send; NOTHING reaches a real exchange unless C550_LIVE_OK is True AND
+        # C550_CROSS_CONFIRMED names both exchanges ('delta', 'coindcx') -- set only after the operator confirms cross
+        # margin on the real accounts (reports/2026-11-15_b2_order_path.md). C488_LIVE_OK is a different lock and stays False.
+        self.C550_ORDERS = True                 # the dry order path runs beside the plan
+        self.C550_LIVE_OK = False               # THE LOCK for real orders (never set by code)
+        self.C550_CROSS_CONFIRMED = ()          # e.g. ('delta', 'coindcx') once both are confirmed on the real accounts
+        self.C550_STOP_LEVEL = 0.25             # the emergency stop: where the short leg's account would fall to 25% of its half
+        self.C550_WATCH_S = 60                  # the watch (a leg gone -> its twin closed), every minute
         self.C530_PENDLE_EQUITY = 100.0         # C530: at most $100
         self.C530_PENDLE_RUN_UTC = (0, 40)      # C530: once a day, after cross-venue (00:30); marked every 6 h
         self.C530_PENDLE_TAX = 0.312            # C530: a VDA -- 30% + 4% cess on the gain, a loss offsets nothing
@@ -25733,6 +25742,1123 @@ def _c527_total(bot, now=None):
     return out
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# C550 (B2, 15 Nov 2026): THE TWO-EXCHANGE ORDER PATH -- DRY.
+# Pre-registered first: reports/2026-11-15_b2_preregistration.md (26 tests, omega_c550_test.py); the report is
+# reports/2026-11-15_b2_order_path.md. It turns the plan's daily decisions into the orders both exchanges would get
+# and, in this step, SENDS NONE: every order goes to an in-memory exchange (_C550Sim) that fills market orders at the
+# bot's own marks, and is logged.
+#   THE LOCK: C550_LIVE_OK (Config, False). Separate from C488_LIVE_OK (which stays False). Even with it True nothing is
+#   sent unless C550_CROSS_CONFIRMED names BOTH exchanges (cross margin, confirmed by the operator on the real accounts):
+#   on 15 Nov CoinDCX's own API docs said cross margin is NOT supported on INR-margined futures, and Delta's API cannot
+#   show an empty account's mode.
+#   The order classes are separate from C540's read-only client (C540ReadOnly), whose read list is unchanged; these
+#   refuse any path that is not on their own list (_C550_PATHS).
+#   What it does, per pair: the CoinDCX leg FIRST (it can be refused: close-only markets, expired keys); Delta's only
+#   after CoinDCX's fill is read back, sized to the rupees that filled; if Delta's fails, CoinDCX's is unwound at once.
+#   Exits: CoinDCX's exit-position call, then Delta's reduce-only close. A resting emergency stop on every SHORT leg
+#   where its account would fall to 25% of its half; a 60-second watch closes the twin of any leg that disappears
+#   (stopped, liquidated, auto-deleveraged). Restart safety: Delta client order ids from the day, coin, leg and action;
+#   a write-ahead record of every intent (data/c550_orders.json); at boot the exchanges are reconciled first and any
+#   lone leg is closed. A kill switch (the file data/c550_kill) flattens both. Its own ledger (same shape and journal
+#   as the plan's, so omega_tax_statement.py --live can read it): data/c550_live.json (live) or c550_dry.json (dry).
+# ══════════════════════════════════════════════════════════════════════════════
+_C550_DELTA = 'https://api.india.delta.exchange'
+_C550_DCX = 'https://api.coindcx.com'
+_C550_HTTP = requests.request              # THE ONLY NETWORK CALL THAT CAN PLACE AN ORDER (tests replace it)
+_C550_PUBLIC = requests.get               # keyless reads: the two rupee rates and CoinDCX's instrument data
+_C550_PATHS = {                            # (method, path) each exchange may be sent; anything else raises
+    'delta': {('POST', '/v2/orders'), ('DELETE', '/v2/orders'), ('DELETE', '/v2/orders/all'), ('GET', '/v2/orders'),
+              ('GET', '/v2/orders/client_order_id/'), ('GET', '/v2/positions/margined'), ('GET', '/v2/fills'),
+              ('GET', '/v2/wallet/balances'), ('GET', '/v2/wallet/transactions')},
+    'coindcx': {('POST', '/exchange/v1/derivatives/futures/orders/create'),
+                ('POST', '/exchange/v1/derivatives/futures/orders/cancel'),
+                ('POST', '/exchange/v1/derivatives/futures/orders'),
+                ('POST', '/exchange/v1/derivatives/futures/positions'),
+                ('POST', '/exchange/v1/derivatives/futures/positions/exit'),
+                ('POST', '/exchange/v1/derivatives/futures/positions/create_tpsl'),
+                ('POST', '/exchange/v1/derivatives/futures/positions/cancel_all_open_orders'),
+                ('POST', '/exchange/v1/derivatives/futures/positions/transactions'),
+                ('POST', '/exchange/v1/derivatives/futures/trades')},
+}
+_C550_NAME = {'delta': 'Delta India', 'coindcx': 'CoinDCX'}
+_C550_C540 = {'delta': 'delta_india', 'coindcx': 'coindcx'}
+
+
+class C550Refused(Exception):
+    """an exchange refused an order (its words, never a key)"""
+
+
+class C550Timeout(Exception):
+    """an order's answer did not arrive: its state must be read back before anything else"""
+
+
+def _c550_cid(day, coin, leg, action):
+    """Delta's client order id: the day, the coin, the leg and the action -- the same on a re-run (max 32)"""
+    return f"c550-{str(day).replace('-', '')[2:8]}-{str(coin)[:12]}-{leg}-{action}"[:32]
+
+
+def _c550_rates(now=None):
+    """the two fixed rupee rates, read live (never hard-coded): Delta's Rs per dollar, CoinDCX's Rs per USDT; None if
+    either cannot be read -- and then nothing is opened"""
+    try:
+        d = _C550_PUBLIC(_C550_DELTA + '/v2/settings', timeout=10).json()
+        rd = float(((d.get('result') or {}).get('fiat_to_usd') or {}).get('asset_to_fiat_value') or 0)
+        c = _C550_PUBLIC(_C550_DCX + '/api/v1/derivatives/futures/data/conversions', timeout=10).json()
+        rb = next((float(x.get('conversion_price') or 0) for x in c or []
+                   if str(x.get('symbol')) == 'USDTINR' and str(x.get('margin_currency_short_name')) == 'INR'), 0.0)
+    except Exception:
+        return None
+    return (rd, rb) if rd > 0 and rb > 0 else None
+
+
+def _c550_instrument(coin):
+    """CoinDCX's rupee-margined instrument: quantity step, minimum notional, its own fees, close-only -- or None"""
+    try:
+        d = _C550_PUBLIC(_C549_DCX_ONE, params={'pair': f'B-{coin}_USDT', 'margin_currency_short_name': 'INR'},
+                         timeout=10).json()
+        i = d.get('instrument', d) if isinstance(d, dict) else None
+        if not isinstance(i, dict) or 'quantity_increment' not in i:
+            return None
+        return dict(step=float(i.get('quantity_increment') or 0), min_notional=float(i.get('min_notional') or 0),
+                    taker=float(i.get('taker_fee') or 0) / 100.0, maker=float(i.get('maker_fee') or 0) / 100.0,
+                    exit_only=bool(i.get('exit_only')), status=str(i.get('status') or ''))
+    except Exception:
+        return None
+
+
+class _C550Sim:
+    """an in-memory exchange that answers like Delta India's or CoinDCX's API: market orders fill at the mark it is
+    given, stops rest until the mark crosses them, a liquidation is a fill too. The dry run sends every order here;
+    the tests also use it, with faults switched on (refuse, time out, part-fill, a jump)."""
+
+    def __init__(self, venue, mark):
+        self.venue, self.mark = venue, mark          # mark(coin) -> price
+        self.pos, self.orders, self.fills, self.log = {}, {}, [], []
+        self.n = 0
+        self.faults = {}                             # path-key -> list of ('refuse', code, msg) / ('timeout',) / ('partial', f)
+        self.cross = True
+        self.funding = []                            # (ms, coin, amount) rent records the exchange shows
+
+    def _id(self):
+        self.n += 1
+        return f"{self.venue[0]}{self.n:06d}"
+
+    def _fault(self, key):
+        q = self.faults.get(key) or []
+        return q.pop(0) if q else None
+
+    def _fill(self, coin, qty, px, kind='normal', oid=None):
+        p = self.pos.setdefault(coin, dict(qty=0.0, px=0.0, id=self._id() + '-pos'))
+        q0 = p['qty']
+        if q0 == 0 or (q0 > 0) == (qty > 0):
+            p['px'] = (p['px'] * abs(q0) + px * abs(qty)) / max(abs(q0) + abs(qty), 1e-12)
+        p['qty'] = q0 + qty
+        if abs(p['qty']) < 1e-12:
+            self.pos.pop(coin, None)
+        self.fills.append(dict(coin=coin, qty=qty, px=px, kind=kind, order_id=oid, at=time.time()))
+
+    def request(self, method, url, headers=None, data=None, params=None, timeout=None):
+        path = url.split('://', 1)[-1].split('/', 1)[-1]
+        path = '/' + path.split('?', 1)[0]
+        body = json.loads(data) if data else {}
+        self.log.append((method, path, body))
+        f = self._fault(path) or self._fault('*')
+        if f and f[0] == 'timeout':
+            raise C550Timeout(path)
+        if f and f[0] == 'refuse':
+            return _C550Resp(int(f[1]), {'success': False, 'error': {'code': f[2]}, 'message': f[2], 'status': 'error'})
+        part = f[1] if f and f[0] == 'partial' else 1.0
+        h = self._delta if self.venue == 'delta' else self._dcx
+        r = h(method, path, body, params or {}, part)
+        if f and f[0] == 'timeout_after':                   # the exchange did it; the answer was lost on the way
+            raise C550Timeout(path)
+        return r
+
+    # Delta India
+    def _delta(self, method, path, body, params, part):
+        if method == 'POST' and path == '/v2/orders':
+            coin, size = str(body['product_symbol'])[:-3], int(body['size'])
+            sgn = 1 if body['side'] == 'buy' else -1
+            cid = body.get('client_order_id')
+            if cid and any(o.get('client_order_id') == cid and o['state'] in ('open', 'pending') for o in self.orders.values()):
+                return _C550Resp(400, {'success': False, 'error': {'code': 'duplicate_client_order_id'}})
+            held = (self.pos.get(coin) or {}).get('qty', 0.0)
+            if body.get('reduce_only') and (held == 0 or (held > 0) == (sgn > 0) or size > abs(held)):
+                return _C550Resp(400, {'success': False, 'error': {'code': 'reduce_only_violation'}})
+            oid = self._id()
+            o = dict(id=oid, client_order_id=cid, product_symbol=body['product_symbol'], size=size, side=body['side'],
+                     order_type=body['order_type'], reduce_only=bool(body.get('reduce_only')),
+                     stop_order_type=body.get('stop_order_type'), stop_price=body.get('stop_price'),
+                     stop_trigger_method=body.get('stop_trigger_method'), state='open', unfilled_size=size,
+                     average_fill_price=None, commission='0')
+            self.orders[oid] = o
+            if not body.get('stop_order_type'):
+                k = int(size * part)
+                px = self.mark(coin)
+                if k:
+                    self._fill(coin, sgn * k, px, oid=oid)
+                o.update(state='closed' if k == size else 'open', unfilled_size=size - k,
+                         average_fill_price=str(px) if k else None, commission=str(round(abs(k) * px * 0.0005 * 1.18, 8)),
+                         margin_mode='cross' if self.cross else 'isolated')
+            return _C550Resp(200, {'success': True, 'result': dict(o)})
+        if method == 'DELETE' and path == '/v2/orders':
+            o = self.orders.get(str(body.get('id')))
+            if o and o['state'] in ('open', 'pending'):
+                o['state'] = 'cancelled'
+            return _C550Resp(200, {'success': True, 'result': dict(o or {})})
+        if method == 'DELETE' and path == '/v2/orders/all':
+            for o in self.orders.values():
+                if o['state'] in ('open', 'pending'):
+                    o['state'] = 'cancelled'
+            return _C550Resp(200, {'success': True})
+        if method == 'GET' and path.startswith('/v2/orders/client_order_id/'):
+            cid = path.rsplit('/', 1)[-1]
+            o = next((x for x in self.orders.values() if x.get('client_order_id') == cid), None)
+            return _C550Resp(200, {'success': True, 'result': dict(o)}) if o else \
+                _C550Resp(404, {'success': False, 'error': {'code': 'not_found'}})
+        if method == 'GET' and path == '/v2/orders':
+            return _C550Resp(200, {'success': True, 'result': [dict(o) for o in self.orders.values()
+                                                                if o['state'] in ('open', 'pending')]})
+        if method == 'GET' and path == '/v2/positions/margined':
+            return _C550Resp(200, {'success': True, 'result': [
+                dict(product_symbol=c + 'USD', size=int(round(p['qty'])), entry_price=str(p['px']),
+                     margin_mode='cross' if self.cross else 'isolated') for c, p in self.pos.items()]})
+        if method == 'GET' and path == '/v2/fills':
+            return _C550Resp(200, {'success': True, 'result': [
+                dict(product_symbol=x['coin'] + 'USD', size=abs(int(round(x['qty']))), side='buy' if x['qty'] > 0 else 'sell',
+                     price=str(x['px']), fill_type=x['kind'], order_id=x['order_id']) for x in self.fills]})
+        if method == 'GET' and path == '/v2/wallet/transactions':
+            return _C550Resp(200, {'success': True, 'result': [
+                dict(transaction_type='funding', amount=str(a), product_symbol=c + 'USD', created_at=ms)
+                for ms, c, a in self.funding]})
+        return _C550Resp(404, {'success': False, 'error': {'code': 'not_found'}})
+
+    # CoinDCX
+    def _dcx(self, method, path, body, params, part):
+        P = '/exchange/v1/derivatives/futures'
+        if path == P + '/orders/create':
+            o = body['order']
+            coin = str(o['pair'])[2:-5]
+            if getattr(self, 'exit_only', set()) and coin in self.exit_only:
+                return _C550Resp(422, {'status': 'error', 'message': 'Market is in exit-only mode'})
+            sgn = 1 if o['side'] == 'buy' else -1
+            q = float(o['total_quantity']) * part
+            px = self.mark(coin)
+            oid = self._id()
+            od = dict(id=oid, pair=o['pair'], side=o['side'], status='filled' if part >= 1 else 'partially_filled',
+                      order_type=o['order_type'], total_quantity=float(o['total_quantity']), avg_price=px,
+                      remaining_quantity=float(o['total_quantity']) - q, fee_amount=round(q * px * 0.0005 * 1.18, 8),
+                      position_margin_type=('crossed' if self.cross else 'isolated'),
+                      margin_currency_short_name=o.get('margin_currency_short_name'), stage='default')
+            if o['order_type'] in ('stop_market', 'stop_limit'):
+                od.update(status='untriggered', avg_price=0.0, remaining_quantity=float(o['total_quantity']),
+                          stop_price=o.get('stop_price'))
+            elif q > 0:
+                self._fill(coin, sgn * q, px, oid=oid)
+            self.orders[oid] = od
+            return _C550Resp(200, [dict(od)])
+        if path == P + '/orders':
+            st = body.get('status')
+            return _C550Resp(200, [dict(o) for o in self.orders.values()
+                                   if not st or o['status'] in str(st).split(',')])
+        if path == P + '/orders/cancel':
+            o = self.orders.get(str(body.get('id')))
+            if o and o['status'] in ('open', 'partially_filled', 'untriggered', 'init'):
+                o['status'] = 'cancelled'
+            return _C550Resp(200, {'message': 'success', 'status': 200})
+        if path == P + '/positions':
+            return _C550Resp(200, [dict(id=p['id'], pair=f'B-{c}_USDT', active_pos=p['qty'], avg_price=p['px'],
+                                        position_margin_type='crossed' if self.cross else 'isolated',
+                                        margin_currency_short_name='INR') for c, p in self.pos.items()])
+        if path == P + '/positions/exit':
+            c = next((c for c, p in self.pos.items() if p['id'] == body.get('id')), None)
+            if c is None:
+                return _C550Resp(422, {'status': 'error', 'message': 'Position not found'})
+            q = -self.pos[c]['qty']
+            self._fill(c, q, self.mark(c), kind='exit')
+            return _C550Resp(200, {'message': 'success', 'status': 200})
+        if path == P + '/positions/create_tpsl':
+            c = next((c for c, p in self.pos.items() if p['id'] == body.get('id')), None)
+            if c is None:
+                return _C550Resp(422, {'status': 'error', 'message': 'Position not found'})
+            sl = body.get('stop_loss') or {}
+            oid = self._id()
+            self.orders[oid] = dict(id=oid, pair=f'B-{c}_USDT', status='untriggered', order_type='stop_market',
+                                    stop_price=float(sl.get('stop_price') or 0), stage='tpsl_exit', position_id=body.get('id'))
+            return _C550Resp(200, {'stop_loss': {'id': oid, 'status': 'untriggered'}})
+        if path == P + '/positions/cancel_all_open_orders':
+            for o in self.orders.values():
+                if o['status'] in ('open', 'partially_filled', 'untriggered', 'init'):
+                    o['status'] = 'cancelled'
+            return _C550Resp(200, {'message': 'success', 'status': 200})
+        if path == P + '/trades':
+            return _C550Resp(200, [dict(pair=f"B-{x['coin']}_USDT", price=x['px'], quantity=abs(x['qty']),
+                                        side='buy' if x['qty'] > 0 else 'sell', order_id=x['order_id'],
+                                        fee_amount=round(abs(x['qty']) * x['px'] * 0.0005 * 1.18, 8))
+                                   for x in self.fills])
+        if path == P + '/positions/transactions':
+            return _C550Resp(200, [dict(stage='funding', amount=a, pair=f'B-{c}_USDT', created_at=ms,
+                                        margin_currency_short_name='INR') for ms, c, a in self.funding])
+        return _C550Resp(404, {'status': 'error', 'message': 'not_found'})
+
+    def jump(self, coin, new_mark, liq_at=None):
+        """the price jumps: resting stops at or past it fire; with none (or past `liq_at`) the exchange liquidates"""
+        held = (self.pos.get(coin) or {}).get('qty', 0.0)
+        if not held:
+            return None
+        for oid, o in self.orders.items():
+            sp = o.get('stop_price')
+            mine = (o.get('product_symbol') == coin + 'USD') or (o.get('pair') == f'B-{coin}_USDT')
+            if not mine or sp in (None, '', 0) or o.get('state', o.get('status')) not in ('open', 'untriggered'):
+                continue
+            if (held < 0 and new_mark >= float(sp)) or (held > 0 and new_mark <= float(sp)):
+                self._fill(coin, -held, new_mark, kind='stop', oid=oid)
+                if 'state' in o:
+                    o['state'] = 'closed'
+                else:
+                    o['status'] = 'filled'
+                return 'stop'
+        if liq_at is not None and ((held < 0 and new_mark >= liq_at) or (held > 0 and new_mark <= liq_at)):
+            oid = self._id()
+            if self.venue == 'coindcx':
+                self.orders[oid] = dict(id=oid, pair=f'B-{coin}_USDT', status='filled', order_type='market_order',
+                                        stage='liquidate')
+            self._fill(coin, -held, new_mark, kind='liquidation', oid=oid)
+            return 'liquidation'
+        return None
+
+
+class _C550Resp:
+    def __init__(self, status, js):
+        self.status_code, self._js = status, js
+
+    def json(self):
+        return self._js
+
+
+class C550Venue:
+    """ONE exchange's ORDER client (separate from C540's read-only one): it builds and signs the requests the
+    exchange's docs describe, refuses any path not on _C550_PATHS, and sends through the dispatcher it is given --
+    the in-memory exchange (dry) or _C550_HTTP (live, behind the lock)."""
+
+    def __init__(self, venue, dispatch, keys=None):
+        self.venue, self.dispatch, self.keys = venue, dispatch, keys or ('DRY', 'DRY')
+
+    def _send(self, method, url, headers, data):
+        try:
+            return self.dispatch(method, url, headers=headers, data=data, timeout=15)
+        except C550Timeout:
+            raise
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as ex:
+            raise C550Timeout(f'{type(ex).__name__}')
+
+    def call(self, method, path, body=None, query=''):
+        base = path if not path.startswith('/v2/orders/client_order_id/') else '/v2/orders/client_order_id/'
+        if (method, base) not in _C550_PATHS[self.venue]:
+            raise PermissionError(f'C550: {method} {path} is not on the order list')
+        key, secret = self.keys
+        if self.venue == 'delta':
+            js = json.dumps(body, separators=(',', ':')) if body is not None else ''
+            ts = str(int(time.time()))
+            h = {'api-key': key, 'timestamp': ts, 'signature': _c540_delta_sign(secret, method, ts, path, query, js),
+                 'User-Agent': 'omega-c550', 'Content-Type': 'application/json'}
+            r = self._send(method, _C550_DELTA + path + query, headers=h, data=js or None)
+            try:
+                out = r.json()
+            except Exception:
+                out = None
+            if r.status_code != 200 or (isinstance(out, dict) and out.get('success') is False):
+                err = (out or {}).get('error') if isinstance(out, dict) else None
+                code = (err or {}).get('code') if isinstance(err, dict) else (err or (out or {}).get('message') if isinstance(out, dict) else None)
+                raise C550Refused(f"Delta India HTTP {r.status_code}" + (f" ({code})" if code else ''))
+            return (out or {}).get('result')
+        body = _c540_dcx_body(body or {}, time.time() * 1000)
+        h = {'Content-Type': 'application/json', 'X-AUTH-APIKEY': key, 'X-AUTH-SIGNATURE': _c540_dcx_sign(secret, body),
+             'User-Agent': 'omega-c550'}
+        r = self._send(method, _C550_DCX + path, headers=h, data=body)
+        try:
+            out = r.json()
+        except Exception:
+            out = None
+        if r.status_code != 200 or (isinstance(out, dict) and str(out.get('status') or '').lower() == 'error'):
+            m = _c549_venue_msg(out)
+            raise C550Refused(f"CoinDCX HTTP {r.status_code}" + (f' ("{m}")' if m else ''))
+        return out
+
+    # the orders, as each exchange's docs describe them
+    def delta_market(self, sym, size, side, reduce_only, cid):
+        return self.call('POST', '/v2/orders', dict(product_symbol=sym, size=int(size), side=side, order_type='market_order',
+                                                    reduce_only=bool(reduce_only), client_order_id=cid))
+
+    def delta_stop(self, sym, size, side, stop_px, cid):
+        return self.call('POST', '/v2/orders', dict(product_symbol=sym, size=int(size), side=side, order_type='market_order',
+                                                    stop_order_type='stop_loss_order', stop_price=f'{stop_px:.8g}',
+                                                    stop_trigger_method='mark_price', reduce_only=True, client_order_id=cid))
+
+    def dcx_market(self, coin, qty, side):
+        return self.call('POST', '/exchange/v1/derivatives/futures/orders/create',
+                         dict(order=dict(side=side, pair=f'B-{coin}_USDT', order_type='market_order', total_quantity=qty,
+                                         notification='no_notification', margin_currency_short_name='INR',
+                                         position_margin_type='crossed')))
+
+
+class C550OrderPath:
+    """the plan's daily decisions as orders on both exchanges (dry in B2; see the section header)"""
+
+    def __init__(self, bot):
+        self.bot, self.cfg = bot, bot.cfg
+        self._lock = threading.RLock()
+        self.legs, self.intents, self.halt, self.plan_day = {}, {}, '', ''
+        self.events, self.led = [], None
+        self._watch_at = self._rec_at = 0.0
+        self._booted = False
+        self._said = {}
+        self.sims = {'delta': _C550Sim('delta', self._mark_d), 'coindcx': _C550Sim('coindcx', self._mark_b)}
+        self._load()
+
+    # ── the switches ──────────────────────────────────────────────────────────
+    def active(self):
+        return bool(getattr(self.cfg, 'C550_ORDERS', True))
+
+    def live(self):
+        """real orders only with THE LOCK open AND cross margin confirmed on both exchanges"""
+        return (bool(getattr(self.cfg, 'C550_LIVE_OK', False))
+                and set(getattr(self.cfg, 'C550_CROSS_CONFIRMED', ()) or ()) >= {'delta', 'coindcx'})
+
+    def venue(self, v):
+        if self.live():
+            return C550Venue(v, _C550_HTTP, self._keys(v))
+        return C550Venue(v, self.sims[v].request)
+
+    def _keys(self, v):
+        k, _ = _c540_keys()
+        return k.get(_C550_C540[v]) or ('', '')
+
+    def _file(self):
+        return os.path.join(BASE_PATH, 'c550_live.json' if self.live() else 'c550_dry.json')
+
+    # ── marks (the bot's own: Delta's tickers, Binance's for CoinDCX) ──────────
+    def _mark_d(self, coin):
+        de = getattr(self.bot, 'c521d', None)
+        xv = getattr(self.bot, 'c524x', None)
+        sym = ((getattr(xv, 'prods', None) or {}).get(coin) or {}).get('sym') or coin + 'USD'
+        return float(((getattr(de, 'marks', None) or {}).get(sym) or {}).get('mark') or 0.0) or \
+            float(((getattr(xv, 'pairs', None) or {}).get(coin) or {}).get('d_px') or 0.0)
+
+    def _mark_b(self, coin):
+        e = getattr(self.bot, 'c488', None)
+        try:
+            m = float(e.mark(C488Engine._ccxt(coin + 'USDT')) or 0.0) if e is not None else 0.0
+        except Exception:
+            m = 0.0
+        return m or float(((getattr(getattr(self.bot, 'c524x', None), 'pairs', None) or {}).get(coin) or {}).get('b_px') or 0.0)
+
+    # ── memory ────────────────────────────────────────────────────────────────
+    def _load(self):
+        try:
+            d = json.load(open(os.path.join(BASE_PATH, 'c550_orders.json')))
+        except Exception:
+            d = {}
+        self.legs, self.intents = dict(d.get('legs') or {}), dict(d.get('intents') or {})
+        self.halt, self.plan_day = str(d.get('halt') or ''), str(d.get('plan_day') or '')
+        try:
+            self.led = json.load(open(self._file()))
+        except Exception:
+            self.led = None
+        if not isinstance(self.led, dict) or 'journal' not in self.led:
+            self.led = dict(start_equity=0.0, eq=0.0, pairs={}, fees=0.0, funding=0.0, price_pnl=0.0, trades=0,
+                            closed=[], last_run='', info={}, daily={}, side={'d': 0.0, 'b': 0.0}, rebased=[],
+                            transfers=[], transfer_fees=0.0, venue='coindcx', venue_moves=[], journal=[])
+
+    def save(self):
+        with self._lock:
+            d = dict(legs=self.legs, intents=dict(list(self.intents.items())[-400:]), halt=self.halt,
+                     plan_day=self.plan_day, at=time.time())
+            for name, obj in (('c550_orders.json', d), (os.path.basename(self._file()), self.led)):
+                p = os.path.join(BASE_PATH, name)
+                try:
+                    tmp = p + '.tmp'
+                    json.dump(obj, open(tmp, 'w'), default=float)
+                    os.replace(tmp, p)
+                except Exception as ex:
+                    logger.warning(f"⚠️ C550 could not save {name}: {type(ex).__name__}")
+
+    def _intent(self, key, **kw):
+        """the write-ahead record: written BEFORE an order is sent, updated after"""
+        with self._lock:
+            self.intents[key] = dict(self.intents.get(key) or {}, **kw, at=time.time())
+        self.save()
+
+    def _say(self, text, alert=False):
+        self.events = (self.events + [dict(at=time.time(), text=text, alert=alert)])[-200:]
+        (logger.warning if alert else logger.info)(("🚨 C550 ALERT: " if alert else "   \U0001f9fe C550 ") +
+                                                   ("(dry) " if not self.live() else "") + text)
+
+    # ── the gates ─────────────────────────────────────────────────────────────
+    def keys_ok(self, now=None):
+        """both exchanges' keys read successfully within the last hour (C540); else the reasons"""
+        now = now or time.time()
+        snap = getattr(getattr(self.bot, 'c540', None), 'snap', {}) or {}
+        bad = []
+        for v in ('delta', 'coindcx'):
+            s = snap.get(_C550_C540[v])
+            if not s:
+                bad.append(f"{_C550_NAME[v]}: no read yet")
+            elif not s.get('ok'):
+                bad.append(f"{_C550_NAME[v]}: {s.get('error')}")
+            elif now - float(s.get('at') or 0) > 3600:
+                bad.append(f"{_C550_NAME[v]}: last read over an hour ago")
+        return bad
+
+    def open_gates(self, coin):
+        """what stops a new pair (dry and live alike), or []"""
+        why = []
+        if self.halt:
+            why.append(self.halt)
+        if os.path.exists(os.path.join(BASE_PATH, 'c550_kill')):
+            why.append('the kill switch is on (data/c550_kill)')
+        why += self.keys_ok()
+        if coin is not None:
+            ins = _c550_instrument(coin)
+            if ins is None:
+                why.append(f"CoinDCX's {coin} instrument could not be read")
+            elif ins['exit_only'] or _c549_dcx_exit_only(coin):
+                why.append(f"CoinDCX takes closing orders only on {coin}")
+        return why
+
+    # ── the size of the CoinDCX leg: equal RUPEES ─────────────────────────────
+    @staticmethod
+    def dcx_qty(delta_usd, rates, px, ins):
+        """CoinDCX's quantity = Delta's dollar notional x (Delta's Rs/$ / CoinDCX's Rs/USDT) / price, down to its step"""
+        rd, rb = rates
+        q = delta_usd * rd / rb / px
+        st = ins['step'] or 1.0
+        q = math.floor(q / st + 1e-9) * st
+        q = float(f'{q:.10g}')
+        return q if q * px >= ins['min_notional'] else 0.0
+
+    # ── one pair: open ────────────────────────────────────────────────────────
+    def open_pair(self, coin, side, contracts, cv, day, why_in=''):
+        """CoinDCX first, read back, then Delta sized to what filled; Delta failing -> CoinDCX unwound at once"""
+        gates = self.open_gates(coin)
+        if gates:
+            keyish = any(('key' in g.lower() or 'not read' in g or 'no read' in g or 'HTTP' in g) for g in gates)
+            self._say(f"{coin}: not opened -- " + '; '.join(gates), alert=keyish)
+            return None
+        rates = _c550_rates()
+        if not rates:
+            self._say(f"{coin}: not opened -- a rupee rate could not be read (Delta /v2/settings or CoinDCX conversions)")
+            return None
+        ins = _c550_instrument(coin)
+        dpx, bpx = self._mark_d(coin), self._mark_b(coin)
+        if dpx <= 0 or bpx <= 0 or not ins:
+            self._say(f"{coin}: not opened -- no price or instrument")
+            return None
+        q = self.dcx_qty(abs(contracts) * cv * dpx, rates, bpx, ins)
+        if q <= 0:
+            self._say(f"{coin}: not opened -- the CoinDCX leg is under its minimum")
+            return None
+        b_side = 'buy' if side > 0 else 'sell'           # side +1: short Delta / long CoinDCX
+        key = f"{day}:{coin}:open"
+        self._intent(key, coin=coin, side=side, stage='coindcx sending', qty=q, contracts=contracts)
+        dcx = self.venue('coindcx')
+        try:
+            r = dcx.dcx_market(coin, q, b_side)
+            o = (r or [{}])[0] if isinstance(r, list) else (r or {})
+        except C550Refused as ex:
+            self._intent(key, stage='coindcx refused', error=str(ex))
+            self._say(f"{coin}: CoinDCX refused the first leg ({ex}); Delta's leg not sent", alert=True)
+            return None
+        except C550Timeout:
+            o = self._dcx_read_back(coin, b_side)
+            if o is None:
+                self._intent(key, stage='coindcx no answer')
+                self._say(f"{coin}: CoinDCX did not answer and no order or position is there; Delta's leg not sent", alert=True)
+                return None
+        got = float(o.get('total_quantity') or 0) - float(o.get('remaining_quantity') or 0)
+        if o.get('position_margin_type') not in (None, 'crossed') or (o.get('position_margin_type') is None and self.live()):
+            self.halt = f"CoinDCX opened {coin} on {o.get('position_margin_type') or 'isolated'} margin, not cross"
+            self._say(self.halt + " -- no new pairs until fixed", alert=True)
+        if got <= 0:
+            self._intent(key, stage='coindcx not filled')
+            self._say(f"{coin}: CoinDCX filled nothing; Delta's leg not sent", alert=True)
+            return None
+        if o.get('remaining_quantity'):
+            try:
+                dcx.call('POST', '/exchange/v1/derivatives/futures/orders/cancel', dict(id=o.get('id')))
+            except Exception:
+                pass
+        bfill = float(o.get('avg_price') or bpx)
+        b_inr = got * bfill * rates[1]
+        # a full CoinDCX fill: Delta's leg is the plan's own whole contracts (the two legs already agree within one CoinDCX
+        # quantity step); a PART fill: Delta's is re-sized to the rupees that filled
+        k = abs(int(contracts)) if got >= q - 1e-12 else int(round(b_inr / (rates[0] * cv * dpx)))
+        self._intent(key, stage='coindcx filled', got=got, b_px=bfill, k=k)
+        if k < 1:
+            self._unwind_dcx(coin, f"{coin}: CoinDCX filled {got:g} (Rs {b_inr:,.0f}), under one Delta contract")
+            return None
+        cid = _c550_cid(day, coin, 'd', 'open')
+        dlt = self.venue('delta')
+        d_side = 'sell' if side > 0 else 'buy'
+        coin_sym = self._dsym(coin)
+        try:
+            res = dlt.delta_market(coin_sym, k, d_side, False, cid)
+        except C550Timeout:
+            res = self._delta_read_back(cid)
+        except C550Refused as ex:
+            res = None
+            self._say(f"{coin}: Delta refused the second leg ({ex})", alert=True)
+        filled = int(res.get('size', 0)) - int(res.get('unfilled_size') or 0) if res else 0
+        if filled < k:
+            if res and res.get('state') == 'open':
+                try:
+                    dlt.call('DELETE', '/v2/orders', dict(id=res.get('id'), product_symbol=coin_sym))
+                except Exception:
+                    pass
+            if filled == 0:
+                self._intent(key, stage='delta failed')
+                self._unwind_dcx(coin, f"{coin}: Delta's leg did not fill; the CoinDCX leg is unwound")
+                return None
+        try:                                                # the position carries the account's margin mode
+            mm = next((x.get('margin_mode') for x in dlt.call('GET', '/v2/positions/margined') or []
+                       if x.get('product_symbol') == coin_sym), None)
+        except Exception:
+            mm = None
+        if mm == 'isolated':
+            self.halt = f"Delta opened {coin} on isolated margin, not cross"
+            self._say(self.halt + " -- no new pairs until fixed", alert=True)
+        dfill = float(res.get('average_fill_price') or dpx)
+        fee_d = float(res.get('commission') or 0.0)
+        fee_b = float(o.get('fee_amount') or 0.0)
+        leg = dict(side=side, d=dict(sym=coin_sym, k=-side * filled, px=dfill, cv=cv),
+                   b=dict(pair=f'B-{coin}_USDT', qty=side * got, px=bfill), opened=int(time.time() * 1000), stop={})
+        with self._lock:
+            self.legs[coin] = leg
+            nd = filled * cv * dfill
+            self.led['pairs'][coin] = dict(side=side, d_sym=coin_sym, cv=cv, d_qty=float(-side * filled), b_qty=side * got,
+                                           d_px=dfill, b_px=bfill, notional=round(nd, 2), opened=leg['opened'],
+                                           fund_from=leg['opened'], pnl=-(fee_d + fee_b), funding=0.0,
+                                           jx=dict(opened=leg['opened'], d_px0=dfill, b_px0=bfill, n_in=nd, fee_d=fee_d,
+                                                   fee_b=fee_b, px_d=0.0, px_b=0.0, fm={}, venue='CoinDCX',
+                                                   rates=_c544_rates(self.cfg, 'coindcx'), carry=None, why_in=why_in))
+            self.led['fees'] += fee_d + fee_b
+            self.led['trades'] += 1
+        self._intent(key, stage='open', k=filled)
+        self._say(f"{coin}: opened {'short Delta / long CoinDCX' if side > 0 else 'long Delta / short CoinDCX'} -- "
+                  f"CoinDCX {b_side} {got:g} at {bfill:.6g} (INR margin, cross), then Delta {d_side} {filled} contracts at "
+                  f"{dfill:.6g} [{cid}]; rupees: CoinDCX Rs {b_inr:,.0f} vs Delta Rs {filled * cv * dfill * rates[0]:,.0f}")
+        return leg
+
+    def _dsym(self, coin):
+        xv = getattr(self.bot, 'c524x', None)
+        return ((getattr(xv, 'prods', None) or {}).get(coin) or {}).get('sym') or coin + 'USD'
+
+    def _dcx_read_back(self, coin, side):
+        """after a CoinDCX timeout: the position (or a filled order) for that pair, as an order record, or None"""
+        try:
+            ps = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions',
+                                            dict(page='1', size='100', margin_currency_short_name=['INR']))
+            p = next((x for x in ps or [] if x.get('pair') == f'B-{coin}_USDT' and float(x.get('active_pos') or 0)), None)
+        except Exception:
+            return None
+        if not p:
+            return None
+        q = abs(float(p['active_pos']))
+        return dict(id=None, total_quantity=q, remaining_quantity=0.0, avg_price=float(p.get('avg_price') or 0),
+                    position_margin_type=p.get('position_margin_type'), fee_amount=0.0)
+
+    def _delta_read_back(self, cid):
+        try:
+            return self.venue('delta').call('GET', f'/v2/orders/client_order_id/{cid}')
+        except Exception:
+            return None
+
+    def _unwind_dcx(self, coin, why):
+        try:
+            self._dcx_exit(coin)
+            self._say(why + " -- unwound (CoinDCX exit-position)", alert=True)
+        except Exception as ex:
+            self._say(why + f" -- and the unwind FAILED ({ex}); it is retried at every watch", alert=True)
+            with self._lock:
+                self.legs[coin] = dict(side=0, d=None, b=dict(pair=f'B-{coin}_USDT', qty=None), lone=True,
+                                       opened=int(time.time() * 1000), stop={})
+
+    def _dcx_pos(self, coin):
+        ps = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions',
+                                        dict(page='1', size='100', margin_currency_short_name=['INR']))
+        return next((x for x in ps or [] if x.get('pair') == f'B-{coin}_USDT' and float(x.get('active_pos') or 0)), None)
+
+    def _dcx_exit(self, coin):
+        p = self._dcx_pos(coin)
+        if p is None:
+            return False
+        dcx = self.venue('coindcx')
+        dcx.call('POST', '/exchange/v1/derivatives/futures/positions/exit', dict(id=p['id']))
+        try:                                                # the exit's own fill: price and fee, for the journal
+            tr = [x for x in dcx.call('POST', '/exchange/v1/derivatives/futures/trades',
+                                      dict(pair=f'B-{coin}_USDT', page='1', size='10',
+                                           margin_currency_short_name=['INR'])) or [] if x.get('pair') == f'B-{coin}_USDT']
+            if tr and coin in self.legs and self.legs[coin].get('b'):
+                self.legs[coin]['b'].update(px1=float(tr[-1].get('price') or 0), fee1=float(tr[-1].get('fee_amount') or 0))
+        except Exception:
+            pass
+        return True
+
+    def _delta_close(self, coin, contracts, day, action='close'):
+        held = self._delta_held(coin)
+        if not held:
+            return False
+        k = min(abs(int(contracts or held)), abs(held))
+        r = self.venue('delta').delta_market(self._dsym(coin), k, 'buy' if held < 0 else 'sell', True,
+                                             _c550_cid(day, coin, 'd', action))
+        if r and coin in self.legs and self.legs[coin].get('d'):
+            self.legs[coin]['d'].update(px1=float(r.get('average_fill_price') or 0) or None,
+                                        fee1=float(r.get('commission') or 0))
+        return True
+
+    def _delta_held(self, coin):
+        ps = self.venue('delta').call('GET', '/v2/positions/margined')
+        p = next((x for x in ps or [] if x.get('product_symbol') == self._dsym(coin)), None)
+        return int((p or {}).get('size') or 0)
+
+    # ── one pair: close ───────────────────────────────────────────────────────
+    def close_pair(self, coin, why, day, now_ms=None):
+        """CoinDCX's exit-position first, then Delta's reduce-only close; a failed half is retried at every watch"""
+        leg = self.legs.get(coin)
+        if not leg:
+            return False
+        key = f"{day}:{coin}:close"
+        self._intent(key, coin=coin, stage='closing', why=why)
+        self._cancel_stops(coin)
+        ok_b = ok_d = False
+        try:
+            self._dcx_exit(coin)
+            ok_b = True
+        except Exception as ex:
+            self._say(f"{coin}: CoinDCX exit failed ({ex}); Delta's leg kept so the pair stays hedged; retried", alert=True)
+        if ok_b:
+            try:
+                self._delta_close(coin, (leg.get('d') or {}).get('k'), day)
+                ok_d = True
+            except Exception as ex:
+                self._say(f"{coin}: Delta's close failed ({ex}) -- a lone Delta leg; retried at every watch", alert=True)
+        if ok_b and ok_d:
+            self._journal_close(coin, why, now_ms or int(time.time() * 1000))
+            with self._lock:
+                self.legs.pop(coin, None)
+            self._intent(key, stage='closed')
+            self._say(f"{coin}: closed ({why}) -- CoinDCX exit-position, then Delta reduce-only")
+        else:
+            with self._lock:
+                leg['closing'] = why
+        self.save()
+        return ok_b and ok_d
+
+    # ── the emergency stops ──────────────────────────────────────────────────
+    def stop_price(self, coin, acct, half):
+        """mark x (1 + (account - 0.25 x half) / leg notional), on the SHORT leg's exchange"""
+        leg = self.legs.get(coin) or {}
+        lvl = float(getattr(self.cfg, 'C550_STOP_LEVEL', 0.25))
+        if leg.get('side', 0) > 0:
+            mk = self._mark_d(coin)
+            n = abs(leg['d']['k']) * leg['d']['cv'] * mk
+        else:
+            mk = self._mark_b(coin)
+            n = abs(leg['b']['qty']) * mk
+        if n <= 0 or mk <= 0:
+            return None
+        return mk * (1 + (acct - lvl * half) / n)
+
+    def place_stops(self, day, accts):
+        """a resting reduce-only stop on every short leg, re-placed (old one cancelled first)"""
+        lines = []
+        for coin, leg in sorted(self.legs.items()):
+            if not leg.get('side') or leg.get('closing'):
+                continue
+            v = 'd' if leg['side'] > 0 else 'b'
+            acct, half = accts.get(v, (0.0, 0.0))
+            sp = self.stop_price(coin, acct, half)
+            if sp is None:
+                continue
+            self._cancel_stops(coin)
+            try:
+                if v == 'd':
+                    n = int(leg.get('stop_n') or 0) + 1
+                    r = self.venue('delta').delta_stop(self._dsym(coin), abs(leg['d']['k']), 'buy', sp,
+                                                       _c550_cid(day, coin, 'd', f'stp{n}'))
+                    leg['stop'] = dict(v='delta', id=(r or {}).get('id'), px=sp, acct=acct)
+                    leg['stop_n'] = n
+                else:
+                    p = self._dcx_pos(coin)
+                    r = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions/create_tpsl',
+                                                   dict(id=(p or {}).get('id'),
+                                                        stop_loss=dict(stop_price=float(f'{sp:.8g}'), order_type='stop_market')))
+                    leg['stop'] = dict(v='coindcx', id=((r or {}).get('stop_loss') or {}).get('id'), px=sp, acct=acct)
+                lines.append(f"{coin} {'Delta' if v == 'd' else 'CoinDCX'} short at {sp:.6g}")
+            except Exception as ex:
+                self._say(f"{coin}: the emergency stop could not be placed ({ex})", alert=True)
+        if lines:
+            self._say("emergency stops (account at 25% of its half): " + '; '.join(lines))
+        self.save()
+
+    def _cancel_stops(self, coin):
+        st = (self.legs.get(coin) or {}).get('stop') or {}
+        if not st.get('id'):
+            return
+        try:
+            if st['v'] == 'delta':
+                self.venue('delta').call('DELETE', '/v2/orders', dict(id=st['id'], product_symbol=self._dsym(coin)))
+            else:
+                self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/orders/cancel', dict(id=st['id']))
+        except Exception:
+            pass
+        st['id'] = None
+
+    # ── the watch: a leg gone -> its twin closed at once ─────────────────────
+    def watch(self, day=None, now_ms=None):
+        day = day or datetime.utcnow().strftime('%Y-%m-%d')
+        try:
+            dpos = {x.get('product_symbol'): int(x.get('size') or 0)
+                    for x in self.venue('delta').call('GET', '/v2/positions/margined') or []}
+            bpos = {x.get('pair'): float(x.get('active_pos') or 0) for x in
+                    self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions',
+                                               dict(page='1', size='100', margin_currency_short_name=['INR'])) or []}
+            dfills = self.venue('delta').call('GET', '/v2/fills') or []
+        except Exception as ex:
+            if self._said.get('watch') != int(time.time() // 3600):
+                self._said['watch'] = int(time.time() // 3600)
+                self._say(f"the watch could not read the exchanges ({ex})", alert=True)
+            return
+        for coin, leg in list(self.legs.items()):
+            if leg.get('lone'):
+                self._close_lone(coin, day)
+                continue
+            if leg.get('closing'):
+                self.close_pair(coin, leg['closing'], day, now_ms)
+                continue
+            d_has = bool(dpos.get(self._dsym(coin)))
+            b_has = bool(bpos.get(f'B-{coin}_USDT'))
+            if d_has and b_has:
+                continue
+            gone = 'Delta' if not d_has else 'CoinDCX'
+            last = [x.get('fill_type') for x in dfills if x.get('product_symbol') == self._dsym(coin)]
+            kind = last[-1] if last else None
+            why = ('liquidated' if kind == 'liquidation' else 'auto-deleveraged' if kind == 'adl' else 'emergency stop')
+            if gone == 'CoinDCX':
+                st = self._dcx_order_stage(coin)
+                why = 'liquidated' if st == 'liquidate' else 'emergency stop'
+            self._say(f"{coin}: the {gone} leg is gone ({why}) -- closing the twin at once", alert=True)
+            try:
+                if d_has:
+                    self._delta_close(coin, abs(leg['d']['k']), day, 'twin')
+                if b_has:
+                    self._dcx_exit(coin)
+            except Exception as ex:
+                self._say(f"{coin}: the twin close FAILED ({ex}); retried at the next watch", alert=True)
+                continue
+            self._cancel_stops(coin)
+            self._journal_close(coin, why, now_ms or int(time.time() * 1000))
+            with self._lock:
+                self.legs.pop(coin, None)
+            self.save()
+
+    def _dcx_order_stage(self, coin):
+        try:
+            os_ = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/orders',
+                                             dict(status='filled', side='buy,sell', page='1', size='50',
+                                                  margin_currency_short_name=['INR'])) or []
+        except Exception:
+            return None
+        st = [o.get('stage') for o in os_ if o.get('pair') == f'B-{coin}_USDT']
+        return 'liquidate' if 'liquidate' in st else (st[-1] if st else None)
+
+    def _close_lone(self, coin, day):
+        try:
+            if self._delta_held(coin):
+                self._delta_close(coin, None, day, 'lone')
+            if self._dcx_pos(coin):
+                self._dcx_exit(coin)
+            with self._lock:
+                self.legs.pop(coin, None)
+            self._say(f"{coin}: a lone leg closed")
+        except Exception as ex:
+            self._say(f"{coin}: a lone leg could not be closed ({ex}); retried", alert=True)
+        self.save()
+
+    # ── boot: the exchanges first ─────────────────────────────────────────────
+    def boot_reconcile(self, day=None):
+        """before ANY action after a start: every position on both exchanges is matched to a pair; a lone leg (the
+        process stopped between two legs) is closed first"""
+        day = day or datetime.utcnow().strftime('%Y-%m-%d')
+        if not self.live() and (self.legs or (self.led or {}).get('pairs')):
+            # dry: the in-memory exchanges start empty after a restart, so the rehearsal book starts again (it would
+            # otherwise re-open every pair and count its fees twice)
+            with self._lock:
+                self.legs = {}
+                self.led.update(pairs={}, fees=0.0, funding=0.0, price_pnl=0.0, trades=0, closed=[], journal=[])
+                self.plan_day = ''
+            self._say("boot: a restart -- the dry book starts again (the in-memory exchanges are empty)")
+        try:
+            dpos = {str(x.get('product_symbol'))[:-3]: int(x.get('size') or 0)
+                    for x in self.venue('delta').call('GET', '/v2/positions/margined') or [] if int(x.get('size') or 0)}
+            bpos = {str(x.get('pair'))[2:-5]: float(x.get('active_pos') or 0) for x in
+                    self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions',
+                                               dict(page='1', size='100', margin_currency_short_name=['INR'])) or []
+                    if float(x.get('active_pos') or 0)}
+        except Exception as ex:
+            self._say(f"boot: the exchanges could not be read ({ex}); nothing will be sent until they are", alert=True)
+            return False
+        lone = []
+        for coin in sorted(set(dpos) | set(bpos)):
+            if coin in dpos and coin in bpos and (dpos[coin] < 0) != (bpos[coin] < 0):
+                if coin not in self.legs:
+                    self._say(f"boot: {coin} held on both exchanges but not in the record -- kept and recorded", alert=True)
+                    self.legs[coin] = dict(side=1 if dpos[coin] < 0 else -1, d=dict(sym=coin + 'USD', k=dpos[coin], px=0.0,
+                                                                                     cv=1.0), b=dict(pair=f'B-{coin}_USDT', qty=bpos[coin], px=0.0),
+                                           opened=int(time.time() * 1000), stop={})
+                continue
+            lone.append(coin)
+            try:
+                if coin in dpos:
+                    self._delta_close(coin, None, day, 'boot')
+                if coin in bpos:
+                    self._dcx_exit(coin)
+            except Exception as ex:
+                self._say(f"boot: the lone {coin} leg could not be closed ({ex})", alert=True)
+                return False
+        for coin in list(self.legs):
+            if coin not in dpos and coin not in bpos:
+                self.legs.pop(coin, None)
+            elif coin in lone:
+                self.legs.pop(coin, None)
+        self._say(f"boot: both exchanges read; {len(self.legs)} pair(s) matched" +
+                  (f"; lone leg(s) closed first: {', '.join(lone)}" if lone else ''), alert=bool(lone))
+        self.save()
+        return True
+
+    # ── the kill switch ───────────────────────────────────────────────────────
+    def kill(self, day=None):
+        day = day or datetime.utcnow().strftime('%Y-%m-%d')
+        self._say("THE KILL SWITCH: cancelling every order and closing every leg on both exchanges", alert=True)
+        for v, path, body in (('delta', '/v2/orders/all', {}), ('coindcx', '/exchange/v1/derivatives/futures/positions/cancel_all_open_orders', {})):
+            try:
+                self.venue(v).call('DELETE' if v == 'delta' else 'POST', path, body)
+            except Exception as ex:
+                self._say(f"kill: {_C550_NAME[v]} cancel-all failed ({ex})", alert=True)
+        for coin in list(self.legs):
+            self.close_pair(coin, 'kill switch', day)
+        self.halt = 'the kill switch was used (remove data/c550_kill to allow new pairs)'
+        self.save()
+
+    # ── the tax journal: the paper ledger's exact 'close' record ──────────────
+    def book_rent(self, coin, d_recs, b_recs):
+        """rent from the exchanges' own records, each in the IST month it was paid: [(ms, $ amount)] per exchange"""
+        p = (self.led['pairs'] or {}).get(coin)
+        if not p:
+            return
+        fm = p['jx'].setdefault('fm', {})
+        g = float(getattr(self.cfg, 'C532_FUNDING_GST', 0.18))
+        tot = 0.0
+        for recs, k in ((d_recs, 0), (b_recs, 3)):
+            for ms, a in recs or []:
+                row = fm.setdefault(_c544_month(int(ms)), [0.0] * 6)
+                if a > 0:
+                    row[k] += a
+                    tot += a
+                elif a < 0:
+                    row[k + 1] += a
+                    row[k + 2] += a * g
+                    tot += a * (1 + g)
+        p['funding'] += tot
+        p['pnl'] += tot
+        self.led['funding'] += tot
+
+    def _journal_close(self, coin, why, now_ms):
+        p = (self.led.get('pairs') or {}).pop(coin, None)
+        leg = self.legs.get(coin) or {}
+        if not p:
+            return None
+        jx = p.get('jx') or {}
+        ld, lb = leg.get('d') or {}, leg.get('b') or {}
+        dpx1 = float(ld.get('px1') or 0) or self._mark_d(coin) or p['d_px']      # the exit fills' own prices
+        bpx1 = float(lb.get('px1') or 0) or self._mark_b(coin) or p['b_px']
+        px_d = p['d_qty'] * p['cv'] * (dpx1 - p['d_px'])
+        px_b = p['b_qty'] * (bpx1 - p['b_px'])
+        n_out = abs(p['d_qty']) * p['cv'] * dpx1
+        cost_d = float(ld['fee1']) if ld.get('fee1') is not None else n_out * 0.0005 * 1.18
+        cost_b = float(lb['fee1']) if lb.get('fee1') is not None else abs(p['b_qty']) * bpx1 * 0.0005 * 1.18
+        p['pnl'] += px_d + px_b - cost_d - cost_b
+        rec = dict(t='close', coin=coin, why=why, venue=jx.get('venue') or 'CoinDCX', side=int(p['side']),
+                   d_sym=p['d_sym'], d_qty=float(p['d_qty']), b_qty=float(p['b_qty']), cv=float(p['cv']),
+                   opened=int(jx.get('opened') or p.get('opened') or now_ms), closed=int(now_ms),
+                   d_px0=float(jx.get('d_px0') or 0.0), b_px0=float(jx.get('b_px0') or 0.0),
+                   d_px1=float(dpx1), b_px1=float(bpx1), n_in=float(jx.get('n_in') or 0.0), n_out=float(n_out),
+                   px_d=float(jx.get('px_d') or 0.0) + px_d, px_b=float(jx.get('px_b') or 0.0) + px_b,
+                   fee_d=float(jx.get('fee_d') or 0.0) + cost_d, fee_b=float(jx.get('fee_b') or 0.0) + cost_b,
+                   fee_d_out=cost_d, fee_b_out=cost_b, fm=dict(jx.get('fm') or {}),
+                   rates=jx.get('rates') or _c544_rates(self.cfg, 'coindcx'), carry=jx.get('carry'), pnl=float(p['pnl']))
+        self.led['journal'].append(rec)
+        self.led['closed'] = (self.led.get('closed') or []) + [dict(coin=coin, why=why, pnl=round(rec['pnl'], 4))]
+        self.led['fees'] += cost_d + cost_b
+        self.led['price_pnl'] += px_d + px_b
+        self.led['trades'] += 1
+        return rec
+
+    # ── the day ───────────────────────────────────────────────────────────────
+    def plan(self, now_ms=None):
+        """after the plan's daily run: its exits, then its entries, as orders; then the stops"""
+        xv = getattr(self.bot, 'c524x', None)
+        if xv is None:
+            return
+        day = str(xv.last_run or '')
+        target = {c: p for c, p in (xv.pairs or {}).items()}
+        why_out = {x.get('coin'): x.get('why') for x in (xv.closed or [])[-20:]}
+        for coin in sorted(self.legs):
+            p = target.get(coin)
+            if p is None or int(p['side']) != int(self.legs[coin].get('side') or 0):
+                self.close_pair(coin, why_out.get(coin) or 'the plan closed it', day, now_ms)
+        for coin, p in sorted(target.items()):
+            if coin not in self.legs:
+                self.open_pair(coin, int(p['side']), int(abs(p['d_qty'])), float(p['cv']), day, 'the plan opened it')
+        self._rent(now_ms or int(time.time() * 1000))
+        try:
+            m = xv.margins()
+            accts = {v: (float(m[v]['eq']), float(m[v]['start'])) for v in ('d', 'b')}
+        except Exception:
+            accts = {}
+        if self.live():
+            real = self._real_accts()
+            if not real:
+                self._say("the real balances could not be read: the stops use the plan's own account figures", alert=True)
+            accts = real or accts
+        self.place_stops(day, accts)
+        self.plan_day = day
+        self.save()
+        real = self._real_line()
+        if accts:
+            real += (f" | the plan's accounts: Delta ${accts.get('d', (0, 0))[0]:,.2f}, "
+                     f"CoinDCX ${accts.get('b', (0, 0))[0]:,.2f}")
+        self._say(f"day {day}: {len(self.legs)} pair(s) held on both exchanges"
+                  + (f"; would be blocked live: {'; '.join(self.live_blockers())}" if not self.live() else '') + real)
+
+    def _real_accts(self):
+        """each REAL account's equity in dollars (C540's reads) and its half of the start; {} if unreadable"""
+        snap = getattr(getattr(self.bot, 'c540', None), 'snap', {}) or {}
+        d, b = snap.get('delta_india') or {}, snap.get('coindcx') or {}
+        if not (d.get('ok') and b.get('ok')):
+            return {}
+        half = float(self.led.get('start_equity') or 0) / 2.0
+        de = float(d.get('equity') or 0)
+        be = sum(float(x.get('balance') or 0) for x in b.get('wallets') or [] if x.get('asset') in ('USDT',)) + \
+            sum(float(x.get('balance') or 0) / 102.0 for x in b.get('wallets') or [] if x.get('asset') == 'INR')
+        return {'d': (de, half), 'b': (be, half)} if half > 0 and (de > 0 or be > 0) else {}
+
+    def _rent(self, now_ms):
+        """each pair's rent since its last booking, from the exchanges' OWN funding records (live and the tests);
+        CoinDCX's INR amounts at its live rupee rate"""
+        if not (self.led.get('pairs') or {}):
+            return
+        rates = _c550_rates() or (85.0, 102.0)
+        try:
+            dt_ = self.venue('delta').call('GET', '/v2/wallet/transactions') or []
+            bt_ = self.venue('coindcx').call('POST', '/exchange/v1/derivatives/futures/positions/transactions',
+                                             dict(stage='funding', page='1', size='100',
+                                                  margin_currency_short_name=['INR'])) or []
+        except Exception as ex:
+            self._say(f"rent could not be read from the exchanges ({ex}); booked at the next run", alert=True)
+            return
+        for coin, p in self.led['pairs'].items():
+            since = int(p.get('fund_from') or 0)
+            dr = [(int(x.get('created_at') or 0), float(x.get('amount') or 0)) for x in dt_
+                  if x.get('transaction_type') == 'funding' and x.get('product_symbol') == p['d_sym']
+                  and since <= int(x.get('created_at') or 0) < now_ms]
+            br = [(int(x.get('created_at') or 0), float(x.get('amount') or 0) / rates[1]) for x in bt_
+                  if x.get('stage') == 'funding' and x.get('pair') == f'B-{coin}_USDT'
+                  and since <= int(x.get('created_at') or 0) < now_ms]
+            if dr or br:
+                self.book_rent(coin, dr, br)
+            p['fund_from'] = now_ms
+
+    def _real_line(self):
+        """the REAL accounts (C540's reads) beside the plan"""
+        snap = getattr(getattr(self.bot, 'c540', None), 'snap', {}) or {}
+        bits = []
+        for v in ('delta', 'coindcx'):
+            s = snap.get(_C550_C540[v]) or {}
+            if s.get('ok'):
+                w = ', '.join(f"{x['asset']} {x['balance']:.2f}" for x in s.get('wallets') or []) or '0'
+                bits.append(f"{_C550_NAME[v]} {w}, {len(s.get('positions') or [])} position(s)")
+            else:
+                bits.append(f"{_C550_NAME[v]} not read")
+        return ' | real accounts (read-only): ' + '; '.join(bits)
+
+    def live_blockers(self):
+        out = []
+        if not bool(getattr(self.cfg, 'C550_LIVE_OK', False)):
+            out.append('the lock C550_LIVE_OK is off')
+        miss = {'delta', 'coindcx'} - set(getattr(self.cfg, 'C550_CROSS_CONFIRMED', ()) or ())
+        if miss:
+            out.append('cross margin not confirmed on ' + ' and '.join(_C550_NAME[v] for v in sorted(miss)))
+        return out
+
+    def reconcile(self):
+        """hourly: the exchanges' positions against the record; dry: the REAL accounts must hold nothing"""
+        snap = getattr(getattr(self.bot, 'c540', None), 'snap', {}) or {}
+        real = sum(len((snap.get(_C550_C540[v]) or {}).get('positions') or []) for v in ('delta', 'coindcx'))
+        if not self.live():
+            if real:
+                self._say(f"the REAL accounts hold {real} position(s) while the lock is off -- not placed by this bot", alert=True)
+            return
+        try:
+            dpos = {str(x.get('product_symbol'))[:-3] for x in self.venue('delta').call('GET', '/v2/positions/margined') or []
+                    if int(x.get('size') or 0)}
+            bpos = {str(x.get('pair'))[2:-5] for x in self.venue('coindcx').call(
+                'POST', '/exchange/v1/derivatives/futures/positions', dict(page='1', size='100',
+                                                                            margin_currency_short_name=['INR'])) or []
+                    if float(x.get('active_pos') or 0)}
+        except Exception as ex:
+            self._say(f"the hourly reconciliation could not read the exchanges ({ex})", alert=True)
+            return
+        mine = set(self.legs)
+        diff = (dpos ^ mine) | (bpos ^ mine)
+        if diff:
+            self._say(f"hourly reconciliation: unexplained difference on {', '.join(sorted(diff))}", alert=True)
+
+    def tick(self, now=None):
+        if not self.active():
+            return
+        now = now or time.time()
+        xv = getattr(self.bot, 'c524x', None)
+        if not bool(getattr(self.bot, '_c462_state_settled', False)) or xv is None:
+            return
+        day = datetime.utcfromtimestamp(now).strftime('%Y-%m-%d')
+        try:
+            if not self._booted:
+                self._booted = self.boot_reconcile(day) or not self.live()
+                if not self._booted:
+                    return
+            killf = os.path.exists(os.path.join(BASE_PATH, 'c550_kill'))
+            if killf and not self.halt.startswith('the kill switch'):
+                self.kill(day)
+            elif not killf and self.halt.startswith('the kill switch'):
+                self.halt = ''
+                self._say("the kill switch file is gone: new pairs allowed again")
+                self.save()
+            if now - self._watch_at >= float(getattr(self.cfg, 'C550_WATCH_S', 60)):
+                self._watch_at = now
+                self.watch(day)
+            if xv.last_run and xv.last_run != self.plan_day:
+                self.plan()
+            if now - self._rec_at >= 3600:
+                self._rec_at = now
+                self.reconcile()
+        except Exception as ex:
+            if self._said.get('fail') != int(now // 3600):
+                self._said['fail'] = int(now // 3600)
+                logger.warning(f"⚠️ C550 order path (dry) failed: {type(ex).__name__}: {ex}")
+
+
 # C548: the six paper experiments switched off (reports/2026-10-23_recheck.md section 6). None has a route to the
 # operator's money: each runs on Binance (a crypto-asset gain there is taxed at 30% flat with 1% TDS and no loss
 # set-off; the operator's plan is India-only), and none earned its keep:
@@ -25777,6 +26903,7 @@ class TradingBot:
         self.c524x = C524CrossVenue(self)       # C524: Delta vs Binance/Pi42 (C532) funding spread, both legs (paper)
         self.c538 = [C538TestRule(self, k) for k in ('f8', 'w3', 'dx', 'b15')]   # C538: two test rules beside it (paper); C541: CoinDCX; C542: 15 x 12%
         self.c540 = C540ReadOnly(self)           # C540 (B1): the real accounts, read-only, when keys exist
+        self.c550 = C550OrderPath(self)          # C550 (B2): the plan's orders on both exchanges -- DRY (sends none)
         self.c530p = C530Pendle(self)           # C530: Pendle fixed yield, at most $100 (paper)
         self.c527p = C527Pending(self)          # C527: funding settled since carry's and cross-venue's daily run
         self.news = NewsAnalyzer(cfg)
@@ -26808,6 +27935,10 @@ class TradingBot:
                         self.c540.tick()
                     except Exception as _e540:
                         logger.warning(f"⚠️ C540 read-only tick failed: {type(_e540).__name__}")
+                    try:                                  # C550 (B2): the order path, dry -- after the plan's run
+                        self.c550.tick()
+                    except Exception as _e550:
+                        logger.warning(f"⚠️ C550 order path tick failed: {type(_e550).__name__}")
                     # 1. Check new day
                     # C200: a session runs its 4 phases to completion and is NEVER reset
                     # at calendar midnight. The old midnight reset re-anchored the equity

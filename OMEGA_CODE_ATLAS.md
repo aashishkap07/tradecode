@@ -13,7 +13,7 @@ checks get_session (`flag_settings.ultracode` true AND `session_context.model` /
 claude-opus-5-5 or newer); if not, it pushes a prompt to switch and waits. **The full timeline (every routine with its IST time, the gates' dates, the operator's to-dos): `reports/2026-10-09_timeline.md`.**
 Routines (all fire into this session; the 9 active ones re-read 9 Oct): DONE first Pi42 run `trig_01BrmGndVaY8XCaQghEGscEt`
 (5 Oct 01:05 UTC); DONE B1 `trig_01QxSwbjS8XPAzoFxQgNo8V1`; monthly review `trig_01JZa71yehwKWQQgbKtw5XHE`
-(1st, 09:56 IST); DONE Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (fired 22 Oct, run 23 Oct: nothing passed, C547 information only); B2 `trig_01XjNNKCDMzqwQjXGge7753r`; end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
+(1st, 09:56 IST); DONE Round 23 jump protection `trig_012MbGyCcxg2dL75KpKXLzGP` (fired 22 Oct, run 23 Oct: nothing passed, C547 information only); DONE B2 `trig_01XjNNKCDMzqwQjXGge7753r` (fired 15 Nov, finished 20 Nov: C550, the order path, dry; cross margin on CoinDCX's rupee futures unconfirmed); end-Nov review `trig_012w7z29Wh77d1jX2vgYsHfq`;
 Dec refresh `trig_01UNB1hEcBW2pKAEadGSFswm`; B3 `trig_014fCVNMfi4FPxzJMkU69iDi`; B4
 `trig_0138V2rqcRrpPapkCgv2KCkD`; go/no-go `trig_0183TJJTMZgwLFsuynRn1RMw`; live day
 `trig_01657znZVsvZxzQZrunVxz5H`.
@@ -215,7 +215,76 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
-- **C549 (1 Nov 2026, the monthly review; pushed, not yet deployed): DELTA'S HOURLY RENT COUNTED RIGHT; NO EXIT ON A FETCH
+- **C550 (B2, 15-20 Nov 2026; pushed, not yet deployed): THE TWO-EXCHANGE ORDER PATH, BUILT AND TESTED DRY. ONE
+  BLOCKER: CROSS MARGIN ON COINDCX'S RUPEE FUTURES.**
+  Report: `reports/2026-11-15_b2_order_path.md`; pre-registration (26 tests, pushed first, 780c15d):
+  `reports/2026-11-15_b2_preregistration.md`. Routine `trig_01XjNNKCDMzqwQjXGge7753r` (fired 15 Nov; finished 20 Nov).
+  - **Config** (after `C548_RETIRE`, ~line 3196):
+    - `C550_ORDERS = True` (the dry path runs beside the plan);
+    - **`C550_LIVE_OK = False`**: its own lock, separate from `C488_LIVE_OK` (also False), never set by code;
+    - `C550_CROSS_CONFIRMED = ()`: live needs it to contain both 'delta' and 'coindcx', set only after the operator
+      confirms cross margin on the real accounts;
+    - `C550_STOP_LEVEL = 0.25`, `C550_WATCH_S = 60`.
+  - **Module (~line 25766, before the C548 block):**
+    - `_C550_HTTP = requests.request` is the ONLY call that can place an order (the tests replace it); `_C550_PUBLIC`
+      for keyless reads;
+    - `_C550_PATHS`: each exchange's allowed (method, path) list (Delta `/v2/orders` POST/DELETE/GET,
+      `/v2/orders/all`, `/v2/orders/client_order_id/`, `/v2/positions/margined`, `/v2/fills`, `/v2/wallet/balances`,
+      `/v2/wallet/transactions`; CoinDCX `derivatives/futures/orders/create|cancel`, `orders`, `positions`,
+      `positions/exit`, `positions/create_tpsl`, `positions/cancel_all_open_orders`, `positions/transactions`,
+      `trades`). No transfer or withdrawal path exists; anything else raises;
+    - `C550Refused`, `C550Timeout`; `_c550_cid(day, coin, leg, action)` (Delta client order id, <= 32 chars, the
+      same on a re-run); `_c550_rates()` (Delta `/v2/settings` 85, CoinDCX conversions USDTINR 102, or None);
+      `_c550_instrument(coin)` (step, min notional, own fees, `exit_only`, status);
+    - `_C550Sim`: the in-memory pretend exchange (both venues; faults refuse / timeout / partial / timeout_after;
+      `jump()` fires stops or liquidates; Delta fills carry `fill_type` liquidation/adl);
+    - `C550Venue`: signs Delta with `_c540_delta_sign`, CoinDCX with `_c540_dcx_body`/`_c540_dcx_sign`; refuses paths
+      not on its list; maps timeouts and connection errors to `C550Timeout`. **C540's read-only client is unchanged.**
+  - **`C550OrderPath`** (`TradingBot.c550`, ticked after C540 in the main loop):
+    - **opens CoinDCX first** (gates: halt, kill file, keys read within 1 h, instrument readable, not `exit_only`,
+      both rupee rates live); quantity = Delta's dollars x (85 / 102) / price, floored to CoinDCX's step and >= its
+      minimum; the fill is read back (after a timeout, from orders and positions) before Delta's leg is sent;
+    - Delta: the plan's own contracts on a full fill, re-sized to the filled rupees on a part-fill, by client order
+      id (read back by that id after a timeout; never sent twice); Delta fails -> CoinDCX unwound at once;
+    - a CoinDCX fill not `crossed`, or a Delta position `isolated` -> halt and alert;
+    - **closes CoinDCX first** (its exit-position call) then Delta reduce-only; a failed half is retried;
+    - **emergency stop** on every short leg at mark x (1 + (account - 0.25 x half) / leg notional): Delta
+      `stop_loss_order`, reduce-only, mark-price trigger; CoinDCX the position's stop loss (`create_tpsl`, last price,
+      the only trigger it documents); re-placed daily and on change, the old one cancelled first;
+    - **the watch** (60 s): a leg gone -> its twin closed; why from Delta's last `fill_type` or CoinDCX's order stage
+      ('emergency stop' / 'liquidated' / 'auto-deleveraged'); journalled; alert "🚨 C550 ALERT:";
+    - **boot**: both exchanges read first; a lone leg closed; both-exchange pairs recognised; the dry book restarts;
+    - **kill switch** `data/c550_kill` (cancel all, close all, nothing opens until removed);
+    - **hourly reconcile** (dry: the REAL accounts must be empty; live: positions vs legs); the margin line states
+      the real balances beside the plan's;
+    - write-ahead intents `data/c550_orders.json`; ledgers `c550_dry.json` / `c550_live.json` with the paper ledger's
+      close-record keys (`_c544_close`), rent from the exchanges' own funding records by IST month (Delta's via
+      `_c549_paid`), so `omega_tax_statement.py --live` reads them (tested).
+  - **Exchange rules recorded:** CoinDCX futures orders have NO client order id and NO reduce-only flag; its API docs
+    say "Cross margin mode is not supported on INR margined Futures" (the help centre implies otherwise); stops on
+    last price; liquidation clearance fee 1.0-1.5% of notional; no auto-deleveraging documented. Delta: liquidation
+    on mark, auto-deleveraging if it cannot close within 5%, insurance fund; margin mode account-level, changed only
+    when empty; the API cannot show it on an empty account.
+  - **Preview** (`research/c550_preview.py`, the 20 Nov 06:00 ledger + live public data): 10 pairs built CoinDCX
+    first, Delta contracts = the plan's on all 10, rupee legs equal within Rs 2, 10 stops (5 per exchange); the day
+    line: "would be blocked live: the lock is off; cross margin not confirmed on CoinDCX and Delta India"; real
+    accounts Delta 0, CoinDCX Rs 0.07.
+  - **Tests:** `omega_c550_test.py` 26 tests, 56 checks, all pass (every network function raises if touched; none
+    was). One real gap was fixed in the code: the first draft shrank Delta to the floored CoinDCX rupees (49 vs the
+    plan's 50 contracts); T3 requires the plan's size on a full fill. Battery **69/69** (66 Python + 3 shell) after
+    two TEST fixes: `omega_c489_test.py` stamped its saved flow 21 Sep 2026 (dropped by the bot's correct 1,000-hour
+    cut from ~2 Nov) and `omega_c530_test.py` read Pendle's 4 Oct list against today (its sUSDe PT matures 26 Nov,
+    under 21 days from ~5 Nov). Both failed identically on the pre-C550 commit; both now use today's date; no check
+    loosened.
+  - **Paper to 20 Nov:** $1,051.08 (+5.11%); identity exact; rent recomputed 15 Nov $0.7890 (booked $0.79), 20 Nov
+    $1.0090 ($1.01); all gaps identical; G2 191/191; restart 14 Nov 03:40 (inside the update window); 1MBABYDOGE
+    -$1.32 (8-11 Nov), the 7-day lag (a "latest day agrees" filter goes to the 2 Dec refresh, pre-registered only).
+  - **Routines updated 20 Nov:** B3 (15 Dec), end-Nov review, Dec refresh (new item (j): Round 25, isolated ~1x +
+    automatic top-up, only if the operator reports CoinDCX INR futures isolated-only), go/no-go (cross margin
+    confirmed in both apps AND on the first real fills, or a passed Round 25).
+  - **Asked of the operator (20 Nov):** in the CoinDCX app, Futures -> Margin Type INR -> is Cross offered? In the
+    Delta app, Portfolio -> Change Margin Mode -> Cross (switch now, while empty).
+- **C549 (1 Nov 2026, the monthly review; deployed 1 Nov 12:03 IST, verified 6 Nov): DELTA'S HOURLY RENT COUNTED RIGHT; NO EXIT ON A FETCH
   GAP; COINDCX CLOSE-ONLY RESPECTED; COINDCX'S REFUSAL REASON LOGGED. RESEARCH FIGURES CORRECTED.**
   Report: `reports/2026-11-01_monthly_review.md` (routine `trig_01JZa71yehwKWQQgbKtw5XHE`, fired 1 Nov 04:26 UTC).
   - **The error:**

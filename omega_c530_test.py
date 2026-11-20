@@ -227,7 +227,16 @@ de = bot.c521d
 de.marks = {s: dict(mark=m, bid=b or m, ask=a or m, fr=0.0) for s, (m, b, a) in PX['delta'].items()}
 de._marks_at = NOW
 bot.c530p = om.C530Pendle(bot)
-om.requests.get = lambda url, params=None, timeout=None: _R(PM)
+# 20 Nov 2026: the 4 Oct list's sUSDe PT matures 26 Nov, under the rule's 21 days
+# once the wall clock passes 5 Nov, so this live-wiring part saw "no market
+# qualifies". The list is moved forward by the whole days since 4 Oct, so it
+# stands to NOW exactly as it stood to 4 Oct. The checks are unchanged.
+_shift = int((NOW - T0) // 86400) * 86400
+PMn = json.loads(json.dumps(PM))
+for _x in PMn['results']:
+    _t = datetime.strptime(_x['expiry'][:19], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc).timestamp() + _shift
+    _x['expiry'] = datetime.fromtimestamp(_t, timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+om.requests.get = lambda url, params=None, timeout=None: _R(PMn)
 bot.c530p.run(now=NOW)
 om.requests.get = real_get
 ok("the 3 Oct cross-venue ledger is rebased too ($500 -> $250)", bot.c524x.start_equity == 250.0 and xv0['start_equity'] == 500.0)
