@@ -215,6 +215,44 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
     - then `C524_MARK=1 python3 research/c542b_pairs.py XV_CACHE LOGS_DIR`, the report (part 2) and the decision;
     - delete the keys afterwards unless a venue wins;
     - settle it before B2 (15 Nov).
+- **ROUND 25 (20 Nov 2026 ~12:00 IST, research only): COINDCX'S RUPEE FUTURES ARE ISOLATED-ONLY -- NO ISOLATED DESIGN
+  PASSES; AND REAL (CONSTANT-QUANTITY) ACCOUNTS DRIFT FAR MORE THAN THE RESEARCH SHOWED.**
+  - **The facts:** the operator's app screenshots: CoinDCX 10:53 IST, INR futures "Isolated", *"Cross margin mode is
+    currently only available in USDT margin Futures"*; Delta 11:00 IST, "Cross (Current)", balance in USD.
+  - **Files:**
+    - pre-registered first: `research/r25_preregistration.md` (dd0cc59);
+    - `research/r25_round25.py` (`legs5` / `sides5` = Round 23's engine with a CoinDCX margin switch, constant-quantity
+      booking, `minute_day5`);
+    - `research/r25_round25.txt` / `.json`; CoinDCX's rules `research/r25_dcx_rules.json`;
+    - report `reports/2026-11-20_round25_isolated.md`.
+  - **CoinDCX's rules (instrument data, 79 coins):** 43 coins 5×/1.5% maintenance/1.5% liquidation fee; ARC, AVAAI,
+    BMT, MUBARAK, PIPPIN, TRUMP, VVV at most 4×; majors 10-25×. The API has `positions/add_margin`, `remove_margin`,
+    `update_leverage`.
+  - **Checks:** the engine (cross, Round 23's booking) == `legs3` / `sides3` exactly; the minute code == `minute_day3`
+    on the six days.
+  - **Results** (costs ×5; after tax vs X = run3 +2.52%/month):
+
+    | variant | after tax $/yr vs X | liquidations/yr | poorer account's low |
+    |---|---|---|---|
+    | I2 (2×) | −168 | 18.2 | below 0 |
+    | I3T (3× + top-ups) | −75 | 10.1 | 6.3% |
+    | I5T (5× + top-ups) | −49 (incl. +$8 calibration) | 8.6 | below 0 |
+    | XQ (cross, constant quantity) | — | — | **5.0%**, wiped on 3 of the 46 replay days |
+
+    **Every variant FAILS.**
+  - **The bigger finding:**
+    - Rounds 21-24 booked each leg at its entry dollar size every day.
+    - Real positions (and the paper ledger, and C550) hold a fixed quantity, so a trending coin grows both legs.
+    - **H 24 Oct 2025:** its $101 Delta short was $359, then +155%; EVAA (3.2×) +38% the same day. The Delta account
+      fell to 4% of its half. C550's per-leg 25% stop (0.379) fires, but EVAA would still leave the account at ~1%.
+    - **AKE 18-20 Sep 2026:** a CoinDCX short grown 6.6×; cross wiped the account; isolated contained it.
+    - Legs above 1.5× target on 6.6% of pair-days, above 2× on 3.6%, above 3× on 1.1%; largest 7.4×.
+    - The returns are unchanged (pairs stay balanced). The 59.7% "lowest account" was too optimistic.
+  - **Next:** Round 26, in the 2 Dec refresh routine's item (j): constant quantity + C550's stops on both exchanges +
+    a trim rule (k = 1.5 / 2) + CoinDCX I5T / I3T; bars as Round 25 plus positive on Oct-Nov 2026.
+  - **Routines updated 20 Nov:** Dec refresh, B3, end-Nov, go/no-go (G6 cannot be met with cross on CoinDCX; only a
+    Round 26 pass can stand in).
+  - **The paper plan is unchanged** until a design passes.
 - **C551 (20 Nov 2026 ~11:00 IST; pushed, not yet deployed): C550'S COINDCX AMOUNTS IN THE LEDGER'S UNIT.** Found by
   checking the operator's 10:14 IST server lines by hand (`reports/2026-11-15_b2_order_path.md` section 10).
   - **The bug:**

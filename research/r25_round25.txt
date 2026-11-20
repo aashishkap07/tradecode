@@ -1,0 +1,32 @@
+ROUND 25: THE PLAN WITH COINDCX'S LEGS ON ISOLATED MARGIN (pre-registered: research/r25_preregistration.md)
+
+the coin list: Round 23's 63 coins (research/r23_round23.json); 2024-10-01 -> 2026-09-30; wobble floors on Delta turnover read 2026-11-20 06:28 UTC
+
+engine check (cross, Round 23's booking == legs3/sides3): OK (net 0.443760 / 0.443760; lowest account 0.597492 / 0.597492; transfers 8.089 / 8.089)
+daily mark highs/lows for 79 coins; CoinDCX's rules read for 79 (63 of the 63 listed now; the rest at 1.5% / 1.5% / 5x)
+   the list's (maintenance, liquidation fee, max leverage) combinations: 0.5%/1.0%/5x, 0.5%/1.0%/10x, 0.5%/1.0%/20x, 0.5%/1.0%/25x, 1.0%/1.0%/5x, 1.0%/1.0%/10x, 1.0%/1.5%/15x, 1.5%/1.5%/4x, 1.5%/1.5%/5x, 1.5%/1.5%/10x, 1.5%/1.5%/15x, 1.5%/1.5%/20x
+
+the 24 months done [84s]
+minute data: 1016 series fetched [277s]
+minute check (cross, Round 23's booking == minute_day3, the six days): OK
+
+THE VARIANTS (10 x 10% + K6, costs x5; x1 = the expected case; accounts booked at constant quantity except X)
+     |  pre-tax     t   worst  down poorer | after T1   $/yr  x1 T1 | liq/yr skip d/yr  held  top-ups free low | replays: lowest wiped liqs 10 Oct 25     E $
+X    |   +3.66%  7.11  -1.44%  6/24  59.7% |   +2.52%     +0 +3.13% |    0.0       0.0  8.13        0   100.0% |    (X: Round 23 booking; the replays use XQ)
+XQ   |   +3.66%  7.11  -1.44%  6/24   5.0% |   +2.52%     +0 +3.13% |    0.0       0.0  8.13        0   100.0% |          -66.6%     3    0     46.7%    +0.0
+I2   |   +1.63%  3.41  -7.57%  9/24  -8.5% |   +1.12%   -168 +1.88% |   18.2     206.3  6.68        0    -7.8% |          -17.7%     1   13     73.1%   -96.1
+I3T  |   +2.75%  5.22  -4.06%  7/24   6.3% |   +1.89%    -75 +2.60% |   10.1      70.8  7.63    16555    -6.1% |           -2.6%     1    9     71.1%  -108.6
+I5T  |   +3.16%  5.99  -1.28%  6/24 -30.2% |   +2.18%    -41 +2.84% |    8.6      20.7  8.01    21059    -2.2% |          -43.8%     1   11     44.7%   +16.3
+   ($/yr = after tax against X, the cross reference; skip d/yr = days a year with a pair not opened for lack of CoinDCX free margin; held = average pairs held; E = the minute model's extra loss from liquidations on the replayed days, in $ on a $1,000 plan)
+   XQ: the poorer account's lowest day 2025-10-24
+   I2: the poorer account's lowest day 2025-10-24
+   I3T: the poorer account's lowest day 2025-10-24
+   I5T: the poorer account's lowest day 2025-10-27
+
+I2: FAIL -- no month below -4%, poorer account >= 40%, list wobble holds, cost -168 $/yr after calibration (bar -30), poorer account -8.5% vs XQ 5.0% - 5, replays: wiped 1, lowest -17.7% vs XQ -66.6% - 5  (cost after calibration -168 $/yr)
+I3T: FAIL -- no month below -4%, poorer account >= 40%, list wobble holds, cost -75 $/yr after calibration (bar -30), replays: wiped 1, lowest -2.6% vs XQ -66.6% - 5  (cost after calibration -75 $/yr)
+I5T: FAIL -- poorer account >= 40%, list wobble holds, cost -49 $/yr after calibration (bar -30), poorer account -30.2% vs XQ 5.0% - 5, replays: wiped 1, lowest -43.8% vs XQ -66.6% - 5  (cost after calibration -49 $/yr)
+
+RESULT: every variant FAILS
+
+[287s]
