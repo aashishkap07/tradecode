@@ -12,7 +12,7 @@
 | Delta India app, 11:00 | Margin mode **Cross (Current)**; available margin "0 USD" | Delta is right for the plan. Its balance unit is USD, as C551 assumed |
 | Oracle, 11:08 | "Success. Congratulations. Your account was successfully upgraded"; Plan type **Pay As You Go** | the server can no longer be stopped as "idle". Next: the budget alert (`omega-zero-spend`) |
 | Termius, 11:26 | kernel 7.0.0-1016 (was 1013), no "restart required", both services `active`, `OMEGA C551` at 11:24:46, a new page address | the reboot and C551 worked. "20 updates, 1 security" are installed by the nightly 03:30 window |
-| the stops line, 11:24:59 | e.g. NOT CoinDCX short at 0.00214295, ALT 0.0246055 | the corrected level (10:14 recomputation: 0.00214216 / 0.0245846; prices moved a little) |
+| the stops line, 11:24:59 | e.g. NOT CoinDCX short at 0.00214295, ALT 0.0246055 | **checked from the 12:17 IST logs push: all 10 stops leave their account at exactly 25.00% of its half, in rupees** (C550 had left the five CoinDCX ones at 10.3%). The bot shut down cleanly before the reboot; no warnings since; the dry book restarted as designed, all 10 pairs with the plan's Delta contracts |
 | the page, 11:27 | $1,051.16; Delta $560.25 + CoinDCX $490.91; after tax $1,035.20 (tax $15.96) | the accounts add up; 31.2% of $51.16 = $15.96 |
 
 ## 2. Isolated margin on CoinDCX's rupee futures, as CoinDCX defines it

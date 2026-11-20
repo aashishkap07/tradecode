@@ -253,7 +253,8 @@ https://claude.ai/artifact/ES2JAoch2kD5uembwApA83, source `reports/2026-10-04_re
   - **Routines updated 20 Nov:** Dec refresh, B3, end-Nov, go/no-go (G6 cannot be met with cross on CoinDCX; only a
     Round 26 pass can stand in).
   - **The paper plan is unchanged** until a design passes.
-- **C551 (20 Nov 2026 ~11:00 IST; pushed, not yet deployed): C550'S COINDCX AMOUNTS IN THE LEDGER'S UNIT.** Found by
+- **C551 (20 Nov 2026 ~11:00 IST; deployed 11:24 IST with a reboot, kernel 7.0.0-1016; verified from the 12:17 IST logs
+  push: all 10 stops at exactly 25.00% of their account's half in rupees): C550'S COINDCX AMOUNTS IN THE LEDGER'S UNIT.** Found by
   checking the operator's 10:14 IST server lines by hand (`reports/2026-11-15_b2_order_path.md` section 10).
   - **The bug:**
     - The ledger's dollar is Delta's, ₹85 (the paper ledger; `omega_tax_statement.py`: "a pair's rupee figures are its
